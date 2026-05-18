@@ -2272,7 +2272,7 @@ function renderCookedGrid() {
     return `
       <button class="cooked-cell heat-${lvl}" data-route="/section/${s.pos}"
               aria-label="Section ${s.pos}: ${escapeHtml(s.title)} — ${COOKED_FOOT[lvl]}">
-        <div class="sec-num">§${String(s.pos).padStart(2,'0')}</div>
+        <div class="sec-num">${String(s.pos).padStart(2,'0')}</div>
         <div class="sec-title">${escapeHtml(titleShort)}</div>
         <div class="sec-foot">${avg ? `~${Math.round(avg)} min · ${COOKED_FOOT[lvl]}` : COOKED_FOOT[lvl]}</div>
       </button>`;
