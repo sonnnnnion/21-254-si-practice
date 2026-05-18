@@ -1,0 +1,3998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="21-254 Practice Lab — original SI-style practice problems for CMU's Linear Algebra and Vector Calculus for Engineers." />
+<title>21-254 Practice Lab</title>
+
+<!-- Favicon: stylized ∇ (nabla / gradient) on a soft red-tint pad -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%23FCEFF1'/%3E%3Cpath d='M14 16 L50 16 L32 52 Z' fill='none' stroke='%23C8102E' stroke-width='6' stroke-linejoin='round' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='52' r='3.4' fill='%23C8102E'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%23FCEFF1'/%3E%3Cpath d='M14 16 L50 16 L32 52 Z' fill='none' stroke='%23C8102E' stroke-width='6' stroke-linejoin='round' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='52' r='3.4' fill='%23C8102E'/%3E%3C/svg%3E" />
+
+<!-- Fonts: Fraunces (display serif) + Manrope (UI sans) + JetBrains Mono (monospace accents) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<!-- MathJax v3 configuration. Must come before the script tag. -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],
+      processEscapes: true,
+      tags: 'none'
+    },
+    svg: { fontCache: 'global' },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+      ignoreHtmlClass: 'tex2jax_ignore',
+      processHtmlClass: 'tex2jax_process'
+    },
+    startup: {
+      typeset: false
+    }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+  /* ============================================================
+     DESIGN TOKENS
+     ============================================================ */
+  :root {
+    /* Surfaces */
+    --bg:           #FBF8F4;   /* warm off-white */
+    --bg-subtle:    #F4EFE7;   /* paper warm */
+    --surface:      #FFFFFF;
+    --surface-2:    #FAF7F1;
+
+    /* Ink */
+    --ink:          #1F2933;   /* charcoal */
+    --ink-soft:     #46535F;
+    --ink-mute:     #6B7682;
+    --ink-faint:    #95A0AB;
+
+    /* CMU-inspired red, kept slightly refined for product use */
+    --red:          #C8102E;
+    --red-deep:     #9A0B22;
+    --red-soft:     #F7DEE2;
+    --red-tint:     #FCEFF1;
+
+    /* Supporting accents */
+    --gold:         #B89642;
+    --green:        #2F7A4A;
+    --green-soft:   #E1F0E5;
+
+    /* Borders & lines */
+    --border:       #E7E1D6;
+    --border-strong:#D8D0C0;
+    --border-ink:   #1F2933;
+
+    /* Shape */
+    --r-sm: 6px;
+    --r:    10px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-xl: 28px;
+
+    /* Elevation */
+    --sh-1: 0 1px 2px rgba(31,41,51,.04), 0 1px 1px rgba(31,41,51,.03);
+    --sh-2: 0 4px 14px -6px rgba(31,41,51,.10), 0 2px 4px -2px rgba(31,41,51,.05);
+    --sh-3: 0 18px 40px -22px rgba(31,41,51,.22), 0 6px 14px -8px rgba(31,41,51,.10);
+
+    /* Typography */
+    --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --font-sans:    'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+    /* Motion */
+    --ease: cubic-bezier(.2,.7,.2,1);
+    --ease-out: cubic-bezier(.16,1,.3,1);
+
+    /* Layout */
+    --maxw: 1180px;
+    --nav-h: 64px;
+  }
+
+  /* ============================================================
+     RESET / BASE
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink);
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(31,41,51,.045) 1px, transparent 0),
+      radial-gradient(1200px 600px at 80% -10%, rgba(200,16,46,.05), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(184,150,66,.05), transparent 60%);
+    background-size: 26px 26px, 100% 100%, 100% 100%;
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+  }
+
+  ::selection { background: var(--red); color: #fff; }
+
+  button { font: inherit; color: inherit; cursor: pointer; }
+  a { color: var(--red-deep); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  :focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Container */
+  .container {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+  @media (max-width: 640px) {
+    .container { padding: 0 18px; }
+  }
+
+  /* ============================================================
+     NAVIGATION
+     ============================================================ */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--nav-h);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    background: rgba(251, 248, 244, 0.78);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -.02em;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-mark::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 6px;
+    background: var(--red);
+  }
+  .brand-text {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -.015em;
+    color: var(--ink);
+  }
+  .brand-text .num { color: var(--red); }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .nav-link {
+    background: transparent;
+    border: 0;
+    padding: 8px 14px;
+    border-radius: var(--r);
+    color: var(--ink-soft);
+    font-weight: 500;
+    font-size: 14.5px;
+    letter-spacing: -.005em;
+    transition: background .18s var(--ease), color .18s var(--ease);
+  }
+  .nav-link:hover { background: var(--bg-subtle); color: var(--ink); }
+  .nav-link.active { background: var(--ink); color: #fff; }
+  .nav-link.active:hover { background: var(--ink); }
+
+  /* Mobile nav */
+  .nav-toggle { display: none; }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .nav-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 8px 12px;
+      font-weight: 600;
+      font-size: 13.5px;
+      color: var(--ink);
+    }
+    .nav.open .nav-links {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: var(--nav-h);
+      left: 0; right: 0;
+      background: var(--surface);
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--sh-2);
+      gap: 2px;
+    }
+    .nav.open .nav-link { width: 100%; text-align: left; padding: 12px 14px; font-size: 15px; }
+  }
+
+  /* ============================================================
+     VIEWS / ROUTING
+     ============================================================ */
+  .view { display: none; animation: viewIn .42s var(--ease-out); }
+  .view.active { display: block; }
+  @keyframes viewIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  main { padding: 36px 0 80px; }
+
+  /* ============================================================
+     HERO (HOME)
+     ============================================================ */
+  .hero {
+    position: relative;
+    padding: 56px 0 24px;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .hero-eyebrow .dot {
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(200,16,46,.12);
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.02;
+    letter-spacing: -.025em;
+    margin: 20px 0 18px;
+    color: var(--ink);
+    font-variation-settings: "opsz" 120, "SOFT" 30;
+  }
+  .hero h1 .accent {
+    color: var(--red);
+    font-style: italic;
+    font-weight: 500;
+  }
+  .hero-sub {
+    font-size: clamp(17px, 1.6vw, 19px);
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin-bottom: 12px;
+  }
+  .hero-explain {
+    color: var(--ink-mute);
+    max-width: 620px;
+    margin-bottom: 28px;
+    font-size: 15.5px;
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 44px;
+  }
+
+  /* ============================================================
+     HOME — single-viewport layout
+     ============================================================ */
+  .home-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 36px;
+    padding: 28px 0 14px;
+  }
+  .home-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(38px, 5.4vw, 64px);
+    line-height: 1.02;
+    letter-spacing: -.025em;
+    margin: 16px 0 14px;
+    color: var(--ink);
+    font-variation-settings: "opsz" 120, "SOFT" 30;
+  }
+  .home-title .accent {
+    color: var(--red);
+    font-style: italic;
+    font-weight: 500;
+  }
+  .home-left .hero-actions { margin-bottom: 0; margin-top: 24px; }
+  .home-right { position: relative; min-width: 0; }
+  .hero-art {
+    width: 100%;
+    height: auto;
+    max-height: 360px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(ellipse at 70% 30%, var(--red-tint) 0%, transparent 55%),
+      var(--surface-2);
+    box-shadow: var(--sh-1, 0 1px 0 rgba(31,41,51,0.02), 0 8px 26px -16px rgba(31,41,51,0.18));
+  }
+  @media (max-width: 880px) {
+    .home-grid { grid-template-columns: 1fr; gap: 24px; padding: 28px 0 16px; }
+    .home-right { order: -1; max-width: 460px; margin: 0 auto; }
+  }
+
+  /* Modules row */
+  .home-modules {
+    display: grid;
+    grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 18px;
+  }
+  @media (max-width: 880px) {
+    .home-modules { grid-template-columns: 1fr; }
+  }
+  .module {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 18px 20px;
+    box-shadow: 0 1px 0 rgba(31,41,51,0.02), 0 2px 10px -6px rgba(31,41,51,0.08);
+  }
+  .module-kicker {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--red);
+    font-family: var(--font-sans);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  /* Progress module */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .progress-ring {
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+  }
+  #progressRingFill {
+    transition: stroke-dashoffset .9s var(--ease-out);
+  }
+  .progress-detail { min-width: 0; flex: 1; }
+  .progress-line { display: flex; align-items: baseline; gap: 6px; }
+  .progress-num {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 36px;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -.02em;
+    font-variation-settings: "opsz" 144;
+  }
+  .progress-total {
+    color: var(--ink-faint);
+    font-size: 16px;
+    font-weight: 500;
+    font-family: var(--font-display);
+  }
+  .progress-label {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 6px 0 8px;
+  }
+  .progress-help {
+    font-size: 12px;
+    color: var(--ink-mute);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Cooked heatmap module */
+  .cooked-legend {
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cooked-legend em { font-style: normal; color: var(--ink-faint); font-size: 10.5px; }
+  .leg { display: inline-block; width: 11px; height: 11px; border-radius: 3px; }
+  .leg-1 { background: #F3EBD8; }
+  .leg-2 { background: #F2D6A1; }
+  .leg-3 { background: #EFA76D; }
+  .leg-4 { background: #DD5A3A; }
+  .leg-5 { background: #9A0B22; }
+
+  .cooked-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .cooked-cell {
+    position: relative;
+    padding: 10px 10px 9px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-align: left;
+    transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+    background: var(--bg-subtle);
+    color: var(--ink);
+    font-family: inherit;
+    overflow: hidden;
+  }
+  .cooked-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px -10px rgba(31,41,51,.35);
+  }
+  .cooked-cell .sec-num {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    line-height: 1;
+    letter-spacing: -.02em;
+    margin-bottom: 5px;
+    font-variation-settings: "opsz" 144;
+  }
+  .cooked-cell .sec-title {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: inherit;
+    opacity: .92;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 22px;
+  }
+  .cooked-cell .sec-foot {
+    margin-top: 6px;
+    font-size: 10px;
+    color: inherit;
+    opacity: .65;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  /* heat levels */
+  .cooked-cell.heat-1 { background: #F3EBD8; color: #5C4A1E; }
+  .cooked-cell.heat-2 { background: #F2D6A1; color: #714E0E; }
+  .cooked-cell.heat-3 { background: #EFA76D; color: #6B2807; }
+  .cooked-cell.heat-4 { background: #DD5A3A; color: #FFF4EF; }
+  .cooked-cell.heat-5 { background: #9A0B22; color: #FFE8EC; }
+
+  @media (max-width: 720px) {
+    .cooked-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Single-viewport home: tighten chrome */
+  body.is-home main { padding-bottom: 18px; }
+  body.is-home footer {
+    margin-top: 12px;
+    padding: 10px 0 12px;
+    font-size: 11.5px;
+    border-top: 0;
+  }
+  body.is-home footer .foot-brand { display: none; }
+  @media (max-height: 820px) {
+    body.is-home footer { display: none; }
+    body.is-home main { padding-top: 24px; padding-bottom: 8px; }
+    body.is-home .home-grid { padding: 14px 0 10px; gap: 24px; }
+    body.is-home .home-modules { margin-top: 12px; gap: 14px; }
+    body.is-home .hero-art { max-height: 280px; }
+    body.is-home .module { padding: 14px 16px; }
+    body.is-home .module-kicker { margin-bottom: 10px; }
+    body.is-home .progress-ring { width: 96px; height: 96px; }
+    body.is-home .progress-num { font-size: 30px; }
+  }
+  @media (max-height: 720px) {
+    body.is-home .hero-art { max-height: 220px; }
+    body.is-home .home-title { font-size: clamp(30px, 4vw, 44px); margin: 10px 0 10px; }
+    body.is-home .hero-explain { display: none; }
+    body.is-home .home-grid { padding: 10px 0 6px; }
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: var(--r);
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+    border: 1px solid transparent;
+    background: var(--surface);
+    color: var(--ink);
+    transition: transform .14s var(--ease), background .18s var(--ease),
+                box-shadow .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease);
+    text-align: center;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary {
+    background: var(--ink);
+    color: #fff;
+    box-shadow: var(--sh-2), inset 0 -2px 0 rgba(0,0,0,.18);
+  }
+  .btn-primary:hover { background: #000; box-shadow: var(--sh-3); }
+  .btn-red {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 6px 16px -6px rgba(200,16,46,.5), inset 0 -2px 0 rgba(0,0,0,.15);
+  }
+  .btn-red:hover { background: var(--red-deep); }
+  .btn-ghost {
+    background: var(--surface);
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
+  .btn-ghost:hover { background: var(--bg-subtle); border-color: var(--ink); }
+  .btn-sm { padding: 8px 14px; font-size: 13.5px; border-radius: 8px; }
+  .btn-block { width: 100%; justify-content: center; }
+  .btn .arrow {
+    transition: transform .2s var(--ease);
+  }
+  .btn:hover .arrow { transform: translateX(3px); }
+
+  /* Stats strip */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    box-shadow: var(--sh-1);
+    overflow: hidden;
+  }
+  .stat {
+    padding: 22px 24px;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .stat:last-child { border-right: 0; }
+  .stat-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -.025em;
+    font-variation-settings: "opsz" 144;
+  }
+  .stat-value .total {
+    color: var(--ink-faint);
+    font-size: 18px;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+  .stat-foot {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--ink-mute);
+  }
+  .stat.red .stat-value { color: var(--red); }
+  @media (max-width: 720px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(2) { border-right: 0; }
+    .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--border); }
+    .stat:nth-child(3) { border-right: 1px solid var(--border); }
+    .stat-value { font-size: 30px; }
+  }
+
+  /* ============================================================
+     SECTION HEADINGS
+     ============================================================ */
+  .section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 56px 0 22px;
+  }
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(24px, 3vw, 32px);
+    letter-spacing: -.02em;
+    margin: 0 0 4px;
+    color: var(--ink);
+  }
+  .section-head .kicker {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+  .section-head p {
+    margin: 0;
+    color: var(--ink-mute);
+    font-size: 15px;
+    max-width: 540px;
+  }
+
+  /* ============================================================
+     EXAM TABS
+     ============================================================ */
+  .exam-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: var(--sh-1);
+    margin-bottom: 14px;
+  }
+  .exam-tab {
+    flex: 1 1 auto;
+    min-width: 110px;
+    padding: 10px 14px;
+    border: 0;
+    background: transparent;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    transition: all .2s var(--ease);
+    text-align: center;
+  }
+  .exam-tab:hover { background: var(--bg-subtle); color: var(--ink); }
+  .exam-tab.active {
+    background: var(--ink);
+    color: #fff;
+    box-shadow: var(--sh-2);
+  }
+  .exam-tab.active.final { background: var(--red); }
+
+  .exam-explain {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: var(--r);
+    padding: 14px 18px;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    margin-bottom: 24px;
+    display: none;
+  }
+  .exam-explain.visible { display: block; animation: viewIn .3s var(--ease-out); }
+  .exam-explain strong { color: var(--ink); }
+  .exam-explain .review-cta {
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  /* ============================================================
+     TOPIC CARDS GRID
+     ============================================================ */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 22px 22px 20px;
+    box-shadow: var(--sh-1);
+    transition: transform .25s var(--ease), box-shadow .25s var(--ease),
+                border-color .25s var(--ease), opacity .25s var(--ease);
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--red-deep) 60%, var(--red));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .4s var(--ease-out);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sh-3);
+    border-color: var(--border-strong);
+  }
+  .card:hover::before { transform: scaleX(1); }
+  .card.dimmed { opacity: .35; }
+  .card.highlighted {
+    border-color: var(--red);
+    box-shadow: 0 0 0 1px var(--red), var(--sh-2);
+  }
+  .card.highlighted::before { transform: scaleX(1); }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .card-num {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink-faint);
+    letter-spacing: .05em;
+  }
+  .card-num .n {
+    color: var(--ink);
+    font-size: 22px;
+    letter-spacing: -.02em;
+    margin-left: 2px;
+  }
+  .card-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    background: var(--bg-subtle);
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+  }
+  .card h3 {
+    font-family: var(--font-display);
+    font-size: 19px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -.015em;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+  .card-desc {
+    font-size: 13.5px;
+    color: var(--ink-mute);
+    margin: 0 0 18px;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .progress {
+    height: 4px;
+    background: var(--bg-subtle);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--red-deep));
+    border-radius: 999px;
+    transition: width .6s var(--ease-out);
+  }
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .card-progress-text {
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============================================================
+     SECTION DETAIL — PROBLEM LIST
+     ============================================================ */
+  .section-detail-head {
+    margin-bottom: 28px;
+  }
+  .breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-mute);
+    margin-bottom: 14px;
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+  .breadcrumb:hover { color: var(--ink); }
+  .breadcrumb .arr { transform: rotate(180deg); }
+
+  .section-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    color: var(--ink-mute);
+    font-size: 13.5px;
+    margin-top: 8px;
+  }
+  .section-meta span strong { color: var(--ink); font-weight: 600; }
+
+  /* Filters */
+  .filters {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 16px;
+    box-shadow: var(--sh-1);
+    margin-bottom: 22px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  @media (max-width: 860px) {
+    .filters { grid-template-columns: 1fr 1fr; }
+    .filters .search { grid-column: 1 / -1; }
+    .filters .random-btn { grid-column: 1 / -1; }
+  }
+  .field {
+    position: relative;
+  }
+  .field-label {
+    position: absolute;
+    top: -8px; left: 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    background: var(--surface);
+    padding: 0 6px;
+  }
+  .input, .select, textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface);
+    transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  .input:focus, .select:focus, textarea:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(200,16,46,.12);
+    outline: none;
+  }
+  .select { appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2346535F' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+  }
+
+  /* Problem rows */
+  .prob-list { display: flex; flex-direction: column; gap: 10px; }
+  .prob-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: transform .18s var(--ease), box-shadow .18s var(--ease), border-color .18s var(--ease);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font: inherit;
+    color: inherit;
+  }
+  .prob-row:hover {
+    transform: translateX(3px);
+    border-color: var(--border-strong);
+    box-shadow: var(--sh-2);
+  }
+  .prob-row-main { flex: 1; min-width: 0; }
+  .prob-row-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -.01em;
+    color: var(--ink);
+    margin: 0 0 4px;
+  }
+  .prob-row-sub {
+    font-size: 12.5px;
+    color: var(--ink-mute);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+  }
+  .prob-row-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .01em;
+    background: var(--bg-subtle);
+    color: var(--ink-soft);
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .pill.diff-warm    { background: #FDF5E1; color: #7A5B0F; }
+  .pill.diff-core    { background: #E9F1FB; color: #1F4977; }
+  .pill.diff-stretch { background: var(--red-tint); color: var(--red-deep); }
+  .pill.status-got {
+    background: var(--green-soft);
+    color: var(--green);
+    border-color: rgba(47,122,74,.2);
+  }
+  .pill.status-review {
+    background: var(--red-tint);
+    color: var(--red-deep);
+    border-color: rgba(200,16,46,.2);
+  }
+  .pill.status-got::before, .pill.status-review::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+  @media (max-width: 540px) {
+    .prob-row { flex-direction: column; align-items: flex-start; }
+    .prob-row-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+  }
+
+  /* ============================================================
+     PROBLEM STUDY VIEW
+     ============================================================ */
+  .study-wrap {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 980px) {
+    .study-wrap { grid-template-columns: 1fr; }
+  }
+  .study-main {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 36px;
+    box-shadow: var(--sh-2);
+    position: relative;
+    overflow: hidden;
+  }
+  .study-main::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--red), var(--red-deep));
+  }
+  @media (max-width: 640px) { .study-main { padding: 24px 20px; } }
+
+  .study-title {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 3.4vw, 34px);
+    letter-spacing: -.022em;
+    font-weight: 600;
+    line-height: 1.15;
+    margin: 6px 0 12px;
+    color: var(--ink);
+  }
+  .study-metabar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .study-section-tag {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 4px;
+  }
+  .skills-row {
+    margin: 18px 0 24px;
+    padding: 14px 16px;
+    background: var(--bg-subtle);
+    border-radius: var(--r);
+    font-size: 13.5px;
+  }
+  .skills-row strong {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--ink-mute);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .skills-row .skill-chip {
+    display: inline-block;
+    margin: 2px 6px 2px 0;
+    padding: 3px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+
+  /* Math content blocks */
+  .math-block {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink);
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .math-block mjx-container { font-size: 1em !important; }
+  .math-block mjx-container[display="true"] {
+    margin: 0.8em 0 !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+  }
+
+  .problem-statement {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 22px 24px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 640px) { .problem-statement { padding: 18px; } }
+
+  /* Concept-sketch panel (visual learning layer) */
+  .concept-panel {
+    margin: 18px 0 22px;
+    background: linear-gradient(180deg, #FFFFFF, var(--surface-2));
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 18px 20px 14px;
+    box-shadow: 0 1px 0 rgba(31,41,51,0.02), 0 2px 12px -6px rgba(31,41,51,0.08);
+    position: relative;
+  }
+  .concept-panel-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .concept-panel-kicker {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--red);
+    font-weight: 700;
+    font-family: var(--font-sans);
+  }
+  .concept-panel-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--ink);
+    margin: 0;
+    flex-grow: 1;
+  }
+  .concept-panel-tag {
+    font-size: 11px;
+    color: var(--ink-faint);
+    font-weight: 500;
+    letter-spacing: .04em;
+  }
+  .concept-svg-wrap {
+    margin: 4px -4px 6px;
+    display: flex;
+    justify-content: center;
+    animation: cv-fade .55s var(--ease-out);
+  }
+  .concept-svg {
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    display: block;
+  }
+  .concept-caption {
+    font-size: 12.5px;
+    color: var(--ink-mute);
+    line-height: 1.5;
+    font-family: var(--font-sans);
+    text-align: center;
+    margin: 0;
+    font-style: italic;
+  }
+  @keyframes cv-fade {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 640px) {
+    .concept-panel { padding: 14px 16px 12px; }
+    .concept-svg   { max-width: 100%; }
+  }
+
+  /* Reveal blocks */
+  .reveal-block {
+    margin: 14px 0;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    background: var(--surface);
+    overflow: hidden;
+    transition: border-color .2s var(--ease);
+  }
+  .reveal-trigger {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: left;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--ink);
+    transition: background .15s var(--ease);
+  }
+  .reveal-trigger:hover { background: var(--bg-subtle); }
+  .reveal-trigger .left {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .reveal-trigger .icon {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    display: grid; place-items: center;
+    background: var(--bg-subtle);
+    color: var(--ink-soft);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .reveal-trigger .chev {
+    color: var(--ink-faint);
+    transition: transform .25s var(--ease);
+    flex-shrink: 0;
+  }
+  .reveal-block.open .reveal-trigger .chev { transform: rotate(180deg); }
+  .reveal-block.open { border-color: var(--border-strong); }
+  .reveal-block.open .reveal-trigger { background: var(--bg-subtle); }
+  .reveal-block.open .reveal-trigger .icon { background: var(--red); color: #fff; }
+
+  .reveal-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .5s var(--ease-out);
+  }
+  .reveal-body-inner {
+    padding: 4px 22px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+  }
+  .reveal-block.open .reveal-body-inner { padding-top: 16px; }
+
+  /* Think-first prompt */
+  .think-first {
+    border-left: 3px solid var(--gold);
+    background: #FFFAEB;
+    padding: 16px 18px;
+    border-radius: 0 var(--r) var(--r) 0;
+    margin: 20px 0;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+  }
+  .think-first strong {
+    color: var(--ink);
+    display: block;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  /* Scratch attempt */
+  .scratch {
+    margin: 24px 0;
+  }
+  .scratch label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .scratch textarea {
+    min-height: 110px;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.6;
+    resize: vertical;
+    background: #FCFAF6;
+    background-image:
+      linear-gradient(transparent calc(1.6em - 1px), var(--border) calc(1.6em - 1px), var(--border) 1.6em, transparent 1.6em);
+    background-size: 100% 1.6em;
+    background-attachment: local;
+    padding: 12px 14px;
+  }
+
+  /* Solution step boxes */
+  .sol-step {
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    background: var(--surface-2);
+    padding: 14px 18px;
+  }
+  .sol-step:first-child { margin-top: 4px; }
+  .sol-step-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .sol-step-label .n {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: var(--ink);
+    color: #fff;
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Final answer */
+  .final-answer-box {
+    margin-top: 14px;
+    background: linear-gradient(180deg, var(--red-tint), #fff 60%);
+    border: 1px solid var(--red-soft);
+    border-left: 3px solid var(--red);
+    border-radius: var(--r);
+    padding: 18px 20px;
+  }
+  .final-answer-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--red-deep);
+    margin-bottom: 8px;
+  }
+
+  /* Common mistakes */
+  .mistakes-list {
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mistakes-list li {
+    position: relative;
+    padding: 6px 0 6px 24px;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+  }
+  .mistakes-list li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 13px;
+    width: 12px; height: 2px;
+    background: var(--red);
+    border-radius: 2px;
+  }
+
+  /* Status / action bar */
+  .study-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Sidebar */
+  .study-side {
+    position: sticky;
+    top: calc(var(--nav-h) + 18px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  @media (max-width: 980px) { .study-side { position: static; } }
+  .side-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 18px;
+    box-shadow: var(--sh-1);
+  }
+  .side-card h4 {
+    margin: 0 0 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--ink-mute);
+  }
+  .side-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 14px;
+    font-size: 13.5px;
+  }
+  .side-meta dt { color: var(--ink-mute); font-weight: 500; }
+  .side-meta dd { margin: 0; color: var(--ink); font-weight: 600; }
+  .study-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  /* ============================================================
+     EXAM MODE & REVIEW
+     ============================================================ */
+  .exam-setup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    box-shadow: var(--sh-2);
+    margin-bottom: 28px;
+  }
+  .exam-setup h2 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    letter-spacing: -.02em;
+    margin: 0 0 6px;
+  }
+  .exam-setup p { color: var(--ink-mute); margin: 0 0 22px; font-size: 14.5px; }
+
+  .group-label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--ink-mute);
+    margin: 18px 0 10px;
+  }
+  .choice-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .choice {
+    padding: 10px 18px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r);
+    background: var(--surface);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink-soft);
+    transition: all .18s var(--ease);
+  }
+  .choice:hover { border-color: var(--ink); color: var(--ink); }
+  .choice.selected {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .choice.red.selected { background: var(--red); border-color: var(--red); }
+
+  .exam-disclaimer {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: var(--r);
+    background: var(--bg-subtle);
+    color: var(--ink-mute);
+    font-size: 13px;
+    border: 1px solid var(--border);
+  }
+
+  /* ============================================================
+     EMPTY / ERROR STATES
+     ============================================================ */
+  .empty {
+    text-align: center;
+    padding: 60px 24px;
+    background: var(--surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--r-lg);
+  }
+  .empty-icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 16px;
+    background: var(--bg-subtle);
+    display: grid; place-items: center;
+    color: var(--ink-mute);
+    font-family: var(--font-display);
+    font-size: 24px;
+  }
+  .empty h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: -.015em;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+  .empty p {
+    color: var(--ink-mute);
+    margin: 0 auto 20px;
+    max-width: 460px;
+    font-size: 15px;
+  }
+  .error-state {
+    background: var(--red-tint);
+    border: 1px solid var(--red-soft);
+    border-left: 3px solid var(--red);
+    border-radius: var(--r);
+    padding: 18px 22px;
+    margin: 24px 0;
+    color: var(--ink);
+  }
+  .error-state h3 {
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--red-deep);
+  }
+
+  /* ============================================================
+     LOADING SHIMMER
+     ============================================================ */
+  .skeleton {
+    background: linear-gradient(90deg, var(--bg-subtle) 0%, var(--surface-2) 50%, var(--bg-subtle) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: var(--r);
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+  }
+  .card.loading { min-height: 210px; }
+  .card.loading .skel-line { height: 12px; margin-bottom: 10px; }
+  .card.loading .skel-line.w1 { width: 30%; }
+  .card.loading .skel-line.w2 { width: 80%; height: 18px; margin-bottom: 16px; }
+  .card.loading .skel-line.w3 { width: 100%; }
+  .card.loading .skel-line.w4 { width: 70%; }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 28px 0 36px;
+    color: var(--ink-mute);
+    font-size: 13px;
+    text-align: center;
+  }
+  footer .foot-brand {
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--ink);
+    letter-spacing: -.01em;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  footer .foot-brand .num { color: var(--red); }
+
+  /* ============================================================
+     TINY ICONS (inline SVG strokes from CSS)
+     ============================================================ */
+  .ic { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* Subtle decorative grid lines element behind hero */
+  .hero-decor {
+    position: absolute;
+    top: 0; right: -40px;
+    width: 280px; height: 280px;
+    pointer-events: none;
+    opacity: .55;
+    display: none;
+  }
+  @media (min-width: 900px) { .hero-decor { display: block; } }
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     TOP NAV
+     ============================================================ -->
+<header class="nav" id="topnav">
+  <div class="container nav-inner">
+    <div class="brand" data-route="/home" role="button" tabindex="0" aria-label="Home">
+      <div class="brand-mark">21</div>
+      <div class="brand-text"><span class="num">21-254</span> Practice Lab</div>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      Menu
+    </button>
+    <nav class="nav-links" id="navLinks">
+      <button class="nav-link" data-route="/home">Home</button>
+      <button class="nav-link" data-route="/topics">Practice</button>
+      <button class="nav-link" data-route="/exam">Exam Mode</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <!-- ============================================================
+         VIEW: HOME
+         ============================================================ -->
+    <section class="view" id="view-home">
+      <div class="home-grid">
+        <div class="home-left">
+          <span class="hero-eyebrow"><span class="dot"></span>CMU · Linear Algebra &amp; Vector Calculus</span>
+          <h1 class="home-title">21-254 <span class="accent">Practice Lab</span></h1>
+          <p class="hero-sub">Original SI-style practice for CMU 21-254.</p>
+          <p class="hero-explain">Pick a topic, try a problem, reveal hints gradually, and study the worked solution step by step. Built for review — not for grades.</p>
+          <div class="hero-actions">
+            <button class="btn btn-red" data-route="/topics">Start Practicing <span class="arrow">→</span></button>
+            <button class="btn btn-ghost" data-route="/exam">Exam Mode</button>
+          </div>
+        </div>
+
+        <div class="home-right" aria-hidden="true">
+          <svg class="hero-art" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="home-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                <path d="M32 0L0 0 0 32" fill="none" stroke="#1F2933" stroke-width=".35" opacity=".18"/>
+              </pattern>
+              <marker id="home-arrM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#46535F" opacity="0.65"/>
+              </marker>
+              <marker id="home-arrR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#C8102E"/>
+              </marker>
+            </defs>
+            <rect width="400" height="360" fill="url(#home-grid)" rx="20"/>
+
+            <!-- subtle rotational vector field: 6×5 grid, tangent-to-center swirl -->
+            <g id="home-field" opacity="0.9">
+              <line x1="50.8" y1="59.9" x2="59.2" y2="50.1" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="52.3" y1="120.9" x2="57.7" y2="109.1" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="54.8" y1="181.5" x2="55.2" y2="168.5" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="57.3" y1="241.1" x2="52.7" y2="228.9" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="59.0" y1="300.1" x2="51.0" y2="289.9" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="109.6" y1="58.7" x2="120.4" y2="51.3" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="111.1" y1="120.2" x2="118.9" y2="109.8" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="114.6" y1="181.5" x2="115.4" y2="168.5" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="118.5" y1="240.5" x2="111.5" y2="229.5" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="120.2" y1="298.9" x2="109.8" y2="291.1" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="168.6" y1="56.3" x2="181.4" y2="53.7" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="168.9" y1="117.3" x2="181.1" y2="112.7" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="180.9" y1="237.7" x2="169.1" y2="232.3" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="181.4" y1="296.4" x2="168.6" y2="293.6" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="228.7" y1="53.2" x2="241.3" y2="56.8" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="229.3" y1="111.9" x2="240.7" y2="118.1" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="234.1" y1="168.6" x2="235.9" y2="181.4" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="240.5" y1="231.5" x2="229.5" y2="238.5" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="241.2" y1="293.1" x2="228.8" y2="296.9" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="289.8" y1="51.1" x2="300.2" y2="58.9" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="291.3" y1="109.6" x2="298.7" y2="120.4" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="294.7" y1="168.5" x2="295.3" y2="181.5" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="298.3" y1="229.4" x2="291.7" y2="240.6" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="300.0" y1="290.9" x2="290.0" y2="299.1" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="350.9" y1="49.9" x2="359.1" y2="60.1" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="352.5" y1="109.0" x2="357.5" y2="121.0" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="354.8" y1="168.5" x2="355.2" y2="181.5" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="357.2" y1="228.9" x2="352.8" y2="241.1" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+              <line x1="358.9" y1="289.8" x2="351.1" y2="300.2" stroke="#46535F" stroke-width="1.3" stroke-linecap="round" marker-end="url(#home-arrM)" opacity="0.55"/>
+            </g>
+
+            <!-- flowing curve C through the field, CMU red -->
+            <path d="M 40 290 C 110 180, 150 320, 220 200 S 340 90, 380 50"
+                  fill="none" stroke="#C8102E" stroke-width="3" stroke-linecap="round"/>
+
+            <!-- start and end markers -->
+            <circle cx="40"  cy="290" r="5" fill="#C8102E"/>
+            <circle cx="380" cy="50"  r="5" fill="#C8102E"/>
+
+            <!-- three highlighted tangent arrows along the curve -->
+            <line x1="135" y1="232" x2="170" y2="252" stroke="#9A0B22" stroke-width="2.4" marker-end="url(#home-arrR)"/>
+            <line x1="218" y1="204" x2="252" y2="170" stroke="#9A0B22" stroke-width="2.4" marker-end="url(#home-arrR)"/>
+            <line x1="316" y1="108" x2="348" y2="76"  stroke="#9A0B22" stroke-width="2.4" marker-end="url(#home-arrR)"/>
+
+            <!-- a discreet ∇f label at upper right, italic -->
+            <text x="346" y="34" font-family="'Fraunces', Georgia, serif" font-size="18"
+                  font-style="italic" fill="#46535F" font-weight="500">∇f</text>
+          </svg>
+        </div>
+      </div>
+
+      <div id="homeError"></div>
+
+      <div class="home-modules" id="homeModules">
+        <div class="module module-progress">
+          <div class="module-kicker">Your Progress</div>
+          <div class="progress-row">
+            <svg class="progress-ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="8"/>
+              <circle id="progressRingFill" cx="60" cy="60" r="50" fill="none"
+                      stroke="var(--red)" stroke-width="8" stroke-linecap="round"
+                      stroke-dasharray="314.159" stroke-dashoffset="314.159"
+                      transform="rotate(-90 60 60)"/>
+              <text id="progressRingText" x="60" y="58" text-anchor="middle"
+                    font-family="var(--font-display)" font-size="28" font-weight="600"
+                    fill="var(--ink)">0%</text>
+              <text x="60" y="78" text-anchor="middle" font-family="var(--font-sans)"
+                    font-size="11" font-weight="500" fill="var(--ink-mute)"
+                    letter-spacing="0.08em">MASTERED</text>
+            </svg>
+            <div class="progress-detail">
+              <div class="progress-line">
+                <span class="progress-num" id="progressGotNum">0</span>
+                <span class="progress-total" id="progressTotalNum">/ —</span>
+              </div>
+              <p class="progress-label">problems marked “Got it”</p>
+              <p class="progress-help" id="progressHelp">Mark problems as you finish — your progress is saved in this browser.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="module module-cooked">
+          <div class="module-kicker">Section Difficulty <span class="cooked-legend"><span class="leg leg-1"></span><span class="leg leg-2"></span><span class="leg leg-3"></span><span class="leg leg-4"></span><span class="leg leg-5"></span> <em>chill → cooked</em></span></div>
+          <div class="cooked-grid" id="cookedGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW: TOPICS (Browser + Exam Highlighting)
+         ============================================================ -->
+    <section class="view" id="view-topics">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Practice</div>
+          <h2>Browse all topics</h2>
+          <p>Filter by exam to highlight the sections most relevant to that assessment.</p>
+        </div>
+      </div>
+
+      <div class="exam-tabs" id="examTabs" role="tablist" aria-label="Filter by exam">
+        <button class="exam-tab active" data-exam="all">All Topics</button>
+        <button class="exam-tab" data-exam="1">Exam 1</button>
+        <button class="exam-tab" data-exam="2">Exam 2</button>
+        <button class="exam-tab" data-exam="3">Exam 3</button>
+        <button class="exam-tab" data-exam="4">Exam 4</button>
+        <button class="exam-tab final" data-exam="final">Final Exam</button>
+      </div>
+      <div class="exam-explain" id="examExplain"></div>
+
+      <div class="cards" id="topicCards"></div>
+    </section>
+
+    <!-- ============================================================
+         VIEW: SECTION (problem list inside one section)
+         ============================================================ -->
+    <section class="view" id="view-section">
+      <button class="breadcrumb" data-route="/topics"><span class="arr">→</span> Back to topics</button>
+      <div class="section-detail-head">
+        <div class="kicker" id="sectionDetailKicker"></div>
+        <h2 id="sectionDetailTitle" style="font-family:var(--font-display); font-size:clamp(26px,3.4vw,36px); letter-spacing:-.022em; margin:0 0 8px; font-weight:600; color:var(--ink); line-height:1.1;"></h2>
+        <p id="sectionDetailDesc" style="margin:0 0 12px; color:var(--ink-mute); max-width:680px;"></p>
+        <div class="section-meta" id="sectionDetailMeta"></div>
+      </div>
+
+      <div class="filters">
+        <div class="field search">
+          <span class="field-label">Search</span>
+          <input class="input" type="search" id="filterSearch" placeholder="Title, skills, problem text…" autocomplete="off" />
+        </div>
+        <div class="field">
+          <span class="field-label">Difficulty</span>
+          <select class="select" id="filterDifficulty">
+            <option value="">All</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="field-label">Status</span>
+          <select class="select" id="filterStatus">
+            <option value="">All</option>
+            <option value="got">Got it</option>
+            <option value="none">Not yet</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="field-label">Sort</span>
+          <select class="select" id="filterSort">
+            <option value="default">Original order</option>
+            <option value="difficulty">By difficulty</option>
+            <option value="minutes">By est. minutes</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost btn-sm random-btn" id="randomBtn">Random</button>
+      </div>
+
+      <div class="prob-list" id="problemList"></div>
+    </section>
+
+    <!-- ============================================================
+         VIEW: PROBLEM (study view)
+         ============================================================ -->
+    <section class="view" id="view-problem">
+      <button class="breadcrumb" id="problemBackBtn"><span class="arr">→</span> Back to section</button>
+      <div class="study-wrap">
+        <article class="study-main" id="studyMain"></article>
+        <aside class="study-side" id="studySide"></aside>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW: EXAM MODE
+         ============================================================ -->
+    <section class="view" id="view-exam">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Review Mode</div>
+          <h2>Exam Mode</h2>
+          <p>Generate a guided review set from the sections most likely to appear on a given exam.</p>
+        </div>
+      </div>
+
+      <div class="exam-setup" id="examSetup">
+        <h2>Build your review set</h2>
+        <p>Choose an exam and a set size. We'll randomize problems from the matched sections.</p>
+
+        <span class="group-label">Exam</span>
+        <div class="choice-row" id="examChoiceRow">
+          <button class="choice selected" data-exam-pick="1">Exam 1</button>
+          <button class="choice" data-exam-pick="2">Exam 2</button>
+          <button class="choice" data-exam-pick="3">Exam 3</button>
+          <button class="choice" data-exam-pick="4">Exam 4</button>
+          <button class="choice red" data-exam-pick="final">Final Exam</button>
+        </div>
+
+        <span class="group-label">Number of problems</span>
+        <div class="choice-row" id="examSizeRow">
+          <button class="choice" data-size-pick="5">5</button>
+          <button class="choice selected" data-size-pick="8">8</button>
+          <button class="choice" data-size-pick="10">10</button>
+        </div>
+
+        <div style="margin-top: 24px; display:flex; gap:10px; flex-wrap: wrap;">
+          <button class="btn btn-red" id="examGenerate">Generate Review Set <span class="arrow">→</span></button>
+          <button class="btn btn-ghost" id="examReshuffle" style="display:none;">Reshuffle</button>
+        </div>
+
+        <div class="exam-disclaimer">This is a practice review set generated from the available SI-style problem library, not an official exam.</div>
+      </div>
+
+      <div id="examSetContainer"></div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="foot-brand"><span class="num">21-254</span> Practice Lab</div>
+  <div>Original SI-style practice problems. Not official course materials.</div>
+</footer>
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script>
+/* ============================================================
+   CONSTANTS & CONFIG
+   ============================================================ */
+
+// Canonical section list. Order is authoritative.
+// `files` are tried in order until one loads (handles the slight
+// naming inconsistency: most files use "21-254_section..." prefix,
+// section 10 uses "section10_..." in the current repo).
+const SECTIONS = [
+  { pos: 1,  title: "Vectors, Matrices, Transposes, and Basic Operations",
+              short: "Vector & matrix arithmetic, dot products, magnitudes, transposes, and special matrices.",
+              files: ["data/21-254_section01_vectors_matrices_transposes.json",
+                      "data/section01_vectors_matrices_transposes.json"] },
+  { pos: 2,  title: "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+              short: "Row reduction, solving Ax = b, rank, and null space.",
+              files: ["data/21-254_section02_linear_systems_rref_rank_nullspace.json",
+                      "data/section02_linear_systems_rref_rank_nullspace.json"] },
+  { pos: 3,  title: "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+              short: "Subspace tests, span, independence, bases, and the fundamental spaces.",
+              files: ["data/21-254_section03_subspaces_span_li_bases_spaces.json",
+                      "data/section03_subspaces_span_li_bases_spaces.json"] },
+  { pos: 4,  title: "Linear Transformations, Determinants, and Inverses",
+              short: "Matrix transformations, determinants, and matrix inverses.",
+              files: ["data/21-254_section04_linear_transformations_determinants_inverses.json",
+                      "data/section04_linear_transformations_determinants_inverses.json"] },
+  { pos: 5,  title: "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+              short: "Characteristic polynomials, eigenbases, and complex eigenvalue behavior.",
+              files: ["data/21-254_section05_eigenvalues_eigenvectors_multiplicity_eigenbases_complex.json",
+                      "data/section05_eigenvalues_eigenvectors_multiplicity_eigenbases_complex.json"] },
+  { pos: 6,  title: "Diagonalization, Projections, Components, and Cross Product",
+              short: "PDP⁻¹, projections, vector components, and the cross product.",
+              files: ["data/21-254_section06_diagonalization_projections_components_cross_product.json",
+                      "data/section06_diagonalization_projections_components_cross_product.json"] },
+  { pos: 7,  title: "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+              short: "Parametric curves, partial derivatives, gradients, and multivariable optimization.",
+              files: ["data/21-254_section07_curves_scalar_functions_partials_gradients_optimization.json",
+                      "data/section07_curves_scalar_functions_partials_gradients_optimization.json"] },
+  { pos: 8,  title: "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+              short: "Vector fields, divergence/curl, line integrals, and conservative fields.",
+              files: ["data/21-254_section08_vector_fields_divergence_curl_line_integrals_path_independence.json",
+                      "data/section08_vector_fields_divergence_curl_line_integrals_path_independence.json"] },
+  { pos: 9,  title: "Double Integrals, Change of Variables, and Green's Theorem",
+              short: "Double integrals in various coordinates, Jacobians, and Green's theorem.",
+              files: ["data/21-254_section09_double_integrals_change_variables_greens_theorem.json",
+                      "data/section09_double_integrals_change_variables_greens_theorem.json"] },
+  { pos: 10, title: "Surfaces, Surface Integrals, Stokes' Theorem, Triple Integrals, and Final Review",
+              short: "Parametric surfaces, scalar/vector surface integrals, Stokes' theorem, triple integrals.",
+              files: ["data/section10_surfaces_stokes_triples.json",
+                      "data/21-254_section10_surfaces_stokes_triples.json"] },
+];
+
+// Which sections to emphasize for each exam, with explanatory copy.
+// Easy to edit later.
+const EXAM_MAP = {
+  "1":   { sections: [1, 2, 3, 4],
+           title: "Exam 1",
+           explain: "Focus on vectors, matrices, linear systems, subspaces/span/bases, linear transformations, and determinants. Inverses (Section 4) are more strongly associated with Exam 2, but Section 4 still contains relevant transformation/determinant material." },
+  "2":   { sections: [4, 5, 6],
+           title: "Exam 2",
+           explain: "Emphasis on inverses, eigenvalues/eigenvectors, multiplicity, eigenbases, complex eigenvalues, diagonalization, projections, components, and the cross product." },
+  "3":   { sections: [7, 8],
+           title: "Exam 3",
+           explain: "Curves, scalar functions, partial derivatives, gradients, optimization, vector fields, divergence/curl, conservative fields, line integrals, and path independence." },
+  "4":   { sections: [9, 10],
+           title: "Exam 4",
+           explain: "Double integrals, change of variables, Green's Theorem, surfaces, and scalar/vector surface integrals plus Stokes' Theorem. Triple integrals and final-review material in Section 10 lean toward the final." },
+  "final": { sections: [1,2,3,4,5,6,7,8,9,10],
+             title: "Final Exam",
+             explain: "Comprehensive review across all 10 sections of the course." }
+};
+
+// localStorage namespace
+const LS = {
+  STATUS: "pl254:status",        // { [problemId]: "got" | "review" }
+  SCRATCH: "pl254:scratch",      // { [problemId]: string }
+  LAST_SECTION: "pl254:lastSection",
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+const State = {
+  sectionsData: [],        // [{ pos, title, short, sectionId, description, problems: [...], ...}, ...]
+  sectionsByPos: new Map(),
+  problemsById: new Map(),
+  currentSection: null,
+  currentProblem: null,
+  examChoice: "1",
+  examSize: 8,
+  examSet: null,
+  filters: { search: "", difficulty: "", status: "", sort: "default" },
+  loadErrors: [],
+};
+
+/* ============================================================
+   STORAGE HELPERS
+   ============================================================ */
+
+function lsGet(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw);
+  } catch { return fallback; }
+}
+function lsSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); }
+  catch { /* ignore quota */ }
+}
+function getStatusMap()  { return lsGet(LS.STATUS, {}); }
+function getScratchMap() { return lsGet(LS.SCRATCH, {}); }
+function setStatus(problemId, status) {
+  const map = getStatusMap();
+  if (status === null) delete map[problemId];
+  else map[problemId] = status;
+  lsSet(LS.STATUS, map);
+}
+function getStatus(problemId) { return getStatusMap()[problemId] || null; }
+function setScratch(problemId, text) {
+  const map = getScratchMap();
+  if (!text) delete map[problemId];
+  else map[problemId] = text;
+  lsSet(LS.SCRATCH, map);
+}
+function getScratch(problemId) { return getScratchMap()[problemId] || ""; }
+
+/* ============================================================
+   DATA LOADING & NORMALIZATION
+   ============================================================ */
+
+// Try a list of candidate URLs, return JSON from the first that succeeds.
+async function fetchFirst(urls) {
+  let lastErr;
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { cache: "no-cache" });
+      if (!res.ok) { lastErr = new Error(`HTTP ${res.status} for ${url}`); continue; }
+      return await res.json();
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error("No URL succeeded");
+}
+
+// Normalize one problem object so the UI doesn't need to care about
+// minor field-name variations.
+function normalizeProblem(raw, sectionMeta) {
+  return {
+    id:                 raw.id || raw.problemId || cryptoId(),
+    title:              raw.title || "Untitled problem",
+    unit:               raw.unit || sectionMeta.title,
+    section:            sectionMeta.title,
+    sectionPos:         sectionMeta.pos,
+    topic:              raw.topic || "",
+    subtopic:           raw.subtopic || "",
+    difficulty:         raw.difficulty || "",
+    estimatedMinutes:   raw.estimatedMinutes || raw.estMinutes || null,
+    skills:             Array.isArray(raw.skills) ? raw.skills : [],
+    examFlavor:         raw.examFlavor || "",
+    problemLatex:       raw.problemLatex || raw.problem || "",
+    thinkFirst:         raw.thinkFirst || raw.thinkFirstPrompt || "",
+    hints:              Array.isArray(raw.hints) ? raw.hints : [],
+    setupLatex:         raw.setupLatex || raw.setup || "",
+    solutionSteps:      Array.isArray(raw.solutionSteps) ? raw.solutionSteps : [],
+    finalAnswerLatex:   raw.finalAnswerLatex || raw.finalAnswer || "",
+    commonMistakes:     Array.isArray(raw.commonMistakes) ? raw.commonMistakes : [],
+    similarProblemPrompt: raw.similarProblemPrompt || raw.similarProblemIdea || "",
+    _raw: raw
+  };
+}
+function cryptoId() {
+  return "p-" + Math.random().toString(36).slice(2, 10);
+}
+
+async function loadAllSections() {
+  const results = await Promise.allSettled(
+    SECTIONS.map(s => fetchFirst(s.files).then(json => ({ s, json })))
+  );
+
+  State.sectionsData = [];
+  State.problemsById.clear();
+  State.sectionsByPos.clear();
+  State.loadErrors = [];
+
+  results.forEach((res, i) => {
+    const meta = SECTIONS[i];
+    if (res.status === "fulfilled") {
+      const d = res.value.json;
+      const sec = {
+        pos: meta.pos,
+        title: d.sectionTitle || meta.title,
+        short: d.studentFacingDescription || meta.short,
+        sectionId: d.sectionId || `sec-${meta.pos}`,
+        problems: (d.problems || []).map(p => normalizeProblem(p, meta)),
+      };
+      State.sectionsData.push(sec);
+      State.sectionsByPos.set(meta.pos, sec);
+      sec.problems.forEach(p => State.problemsById.set(p.id, p));
+    } else {
+      State.loadErrors.push({ pos: meta.pos, title: meta.title, error: String(res.reason) });
+      // Add empty placeholder so user still sees the card.
+      const sec = { pos: meta.pos, title: meta.title, short: meta.short, sectionId: `sec-${meta.pos}`, problems: [], _error: String(res.reason) };
+      State.sectionsData.push(sec);
+      State.sectionsByPos.set(meta.pos, sec);
+    }
+  });
+  State.sectionsData.sort((a,b) => a.pos - b.pos);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+
+const $  = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+// Render math after DOM updates. MathJax v3 is async; safe-call.
+function typesetMath(root) {
+  if (window.MathJax && MathJax.typesetPromise) {
+    return MathJax.typesetPromise(root ? [root] : undefined).catch(err => {
+      console.warn("MathJax error:", err);
+    });
+  }
+  return Promise.resolve();
+}
+
+function classForDifficulty(d) {
+  if (!d) return "";
+  const k = d.toLowerCase();
+  if (k.includes("warm")) return "diff-warm";
+  if (k.includes("stretch") || k.includes("hard") || k.includes("challenge")) return "diff-stretch";
+  return "diff-core";
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ============================================================
+   ROUTING (hash-based SPA)
+   ============================================================ */
+
+function navigate(route, opts = {}) {
+  if (opts.replace) location.replace("#" + route);
+  else location.hash = route;
+}
+function currentRoute() {
+  const h = location.hash.replace(/^#/, "");
+  return h || "/home";
+}
+
+function handleRoute() {
+  const route = currentRoute();
+  const parts = route.split("/").filter(Boolean);
+  const head = parts[0] || "home";
+
+  // Switch active view
+  $$(".view").forEach(v => v.classList.remove("active"));
+  $$(".nav-link").forEach(b => b.classList.remove("active"));
+  $("#topnav").classList.remove("open");
+
+  // Body class so we can tighten chrome on the single-viewport home page
+  document.body.classList.toggle("is-home", head === "home");
+
+  if (head === "home")    { $("#view-home").classList.add("active"); markNav("/home"); renderHome(); }
+  else if (head === "topics") { $("#view-topics").classList.add("active"); markNav("/topics"); renderTopics(); }
+  else if (head === "section" && parts[1]) {
+    $("#view-section").classList.add("active"); markNav("/topics");
+    renderSection(Number(parts[1]));
+  }
+  else if (head === "problem" && parts[1]) {
+    $("#view-problem").classList.add("active"); markNav("/topics");
+    renderProblem(parts[1]);
+  }
+  else if (head === "exam")    { $("#view-exam").classList.add("active"); markNav("/exam"); renderExamSetup(); }
+  else { navigate("/home", { replace: true }); }
+
+  // Scroll to top on every route change
+  window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+}
+function markNav(route) {
+  $$(".nav-link").forEach(b => {
+    if (b.dataset.route === route) b.classList.add("active");
+  });
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+
+function computeStats() {
+  const status = getStatusMap();
+  const totalProblems = State.problemsById.size;
+  let got = 0, review = 0;
+  Object.values(status).forEach(v => {
+    if (v === "got") got++;
+    if (v === "review") review++;
+  });
+  return { sections: State.sectionsData.length, problems: totalProblems, got, review };
+}
+
+function updateStats() {
+  // Stats are now only used by the home progress ring; do nothing if not on home.
+  const root = document.getElementById("homeModules");
+  if (!root) return;
+  const s = computeStats();
+  const pct = s.problems ? Math.round((s.got / s.problems) * 100) : 0;
+  const ring = document.getElementById("progressRingFill");
+  const txt  = document.getElementById("progressRingText");
+  if (ring) {
+    const circumference = 2 * Math.PI * 50;
+    ring.setAttribute("stroke-dasharray", circumference.toFixed(2));
+    ring.setAttribute("stroke-dashoffset", (circumference * (1 - pct / 100)).toFixed(2));
+  }
+  if (txt) txt.textContent = `${pct}%`;
+  const gotNum = document.getElementById("progressGotNum");
+  const totNum = document.getElementById("progressTotalNum");
+  if (gotNum) gotNum.textContent = s.got;
+  if (totNum) totNum.textContent = `/ ${s.problems || "—"}`;
+}
+
+/* ============================================================
+   RENDER: HOME
+   ============================================================ */
+
+function sectionProgress(section) {
+  const status = getStatusMap();
+  let got = 0;
+  section.problems.forEach(p => { if (status[p.id] === "got") got++; });
+  const total = section.problems.length;
+  const pct = total ? Math.round((got / total) * 100) : 0;
+  return { got, total, pct };
+}
+
+/* Cooked-level (difficulty heatmap) computation.
+   Combines average estimated minutes per section with the proportion of
+   non-warmup problems. Output is a 1..5 integer, low → high effort. */
+function sectionCookedLevel(section) {
+  const probs = section.problems || [];
+  if (!probs.length) return null;
+  const mins = probs.map(p => Number(p.estimatedMinutes) || 0);
+  const avg  = mins.reduce((a, b) => a + b, 0) / probs.length;
+  const heavyCount = probs.filter(p => {
+    const d = (p.difficulty || "").toLowerCase();
+    return d.includes("core") || d.includes("exam") || d.includes("final");
+  }).length;
+  const heavyFrac = heavyCount / probs.length;
+  // Composite score; tune so the typical range maps cleanly to 1..5
+  const score = avg * 0.55 + heavyFrac * 6.2;
+  return { score, avg, heavyFrac };
+}
+
+function bucketCooked(score, allScores) {
+  if (!score) return 1;
+  const sorted = allScores.slice().sort((a, b) => a - b);
+  const idx = sorted.indexOf(score);
+  // Map ordinal to 1..5 fairly
+  const lvl = 1 + Math.floor((idx / Math.max(1, sorted.length - 1)) * 4 + 0.0001);
+  return Math.max(1, Math.min(5, lvl));
+}
+
+const COOKED_FOOT = {
+  1: "chill",
+  2: "warm-up",
+  3: "engaged",
+  4: "challenging",
+  5: "cooked"
+};
+
+function renderCookedGrid() {
+  const grid = document.getElementById("cookedGrid");
+  if (!grid) return;
+  const sections = State.sectionsData;
+  if (!sections.length) {
+    grid.innerHTML = Array.from({ length: 10 }).map(() => `
+      <div class="cooked-cell" style="background:var(--bg-subtle); opacity:.45;">
+        <div class="skeleton" style="height: 16px; width: 40%; margin-bottom: 8px;"></div>
+        <div class="skeleton" style="height: 11px; width: 80%; margin-bottom: 4px;"></div>
+        <div class="skeleton" style="height: 11px; width: 60%;"></div>
+      </div>`).join("");
+    return;
+  }
+
+  // First pass: compute cooked scores for sections that have data
+  const computed = sections.map(s => {
+    const r = sectionCookedLevel(s);
+    return { section: s, score: r ? r.score : 0, avg: r ? r.avg : 0 };
+  });
+  const allScores = computed.filter(c => c.score > 0).map(c => c.score);
+
+  grid.innerHTML = computed.map(({ section: s, score, avg }) => {
+    const lvl = score ? bucketCooked(score, allScores) : 1;
+    const titleShort = s.title.length > 38 ? s.title.slice(0, 36).trim() + "…" : s.title;
+    return `
+      <button class="cooked-cell heat-${lvl}" data-route="/section/${s.pos}"
+              aria-label="Section ${s.pos}: ${escapeHtml(s.title)} — ${COOKED_FOOT[lvl]}">
+        <div class="sec-num">§${String(s.pos).padStart(2,'0')}</div>
+        <div class="sec-title">${escapeHtml(titleShort)}</div>
+        <div class="sec-foot">${avg ? `~${Math.round(avg)} min · ${COOKED_FOOT[lvl]}` : COOKED_FOOT[lvl]}</div>
+      </button>`;
+  }).join("");
+}
+
+function renderHome() {
+  updateStats();
+  renderCookedGrid();
+
+  // Error/empty state pinned below the hero (so layout still fits the viewport)
+  const err = document.getElementById("homeError");
+  if (err) {
+    const allErrored = State.sectionsData.length && State.sectionsData.every(s => s._error);
+    if (!State.sectionsData.length) {
+      err.innerHTML = "";
+    } else if (allErrored) {
+      err.innerHTML = `<div class="error-state" style="margin:10px 0 0;">
+        <h3>We couldn't load any problem files</h3>
+        <div>This site reads JSON files from the <code>/data</code> folder. Make sure those files exist in your repository and that GitHub Pages is enabled.</div>
+      </div>`;
+    } else {
+      err.innerHTML = "";
+    }
+  }
+}
+
+function topicCardHtml(section, options = {}) {
+  const { dimmed = false, highlighted = false } = options;
+  const prog = sectionProgress(section);
+  const err = section._error;
+  const cls = ["card"];
+  if (dimmed) cls.push("dimmed");
+  if (highlighted) cls.push("highlighted");
+  return `
+    <button class="${cls.join(' ')}" data-route="/section/${section.pos}" aria-label="${escapeHtml(section.title)}">
+      <div class="card-top">
+        <div class="card-num">SECTION<span class="n">${String(section.pos).padStart(2,'0')}</span></div>
+        <div class="card-count">${err ? "—" : prog.total + " problem" + (prog.total === 1 ? "" : "s")}</div>
+      </div>
+      <h3>${escapeHtml(section.title)}</h3>
+      <p class="card-desc">${escapeHtml(section.short || "")}</p>
+      ${err ? `<div class="error-state" style="margin:0 0 14px; padding:10px 12px; font-size:13px;">
+                 <h3 style="font-size:14px; margin:0 0 2px;">Couldn't load</h3>
+                 <div>${escapeHtml(err.slice(0, 120))}</div>
+               </div>` : `
+      <div class="progress" aria-hidden="true"><div class="progress-bar" style="width:${prog.pct}%"></div></div>
+      <div class="card-foot">
+        <span class="card-progress-text">${prog.got} / ${prog.total} got it · ${prog.pct}%</span>
+        <span class="btn btn-sm btn-ghost" style="pointer-events:none;">Study Section <span class="arrow">→</span></span>
+      </div>`}
+    </button>
+  `;
+}
+
+function renderLoadingCards(n) {
+  return Array.from({ length: n }).map(() => `
+    <div class="card loading" aria-hidden="true">
+      <div class="skel-line w1 skeleton"></div>
+      <div class="skel-line w2 skeleton"></div>
+      <div class="skel-line w3 skeleton"></div>
+      <div class="skel-line w4 skeleton"></div>
+    </div>
+  `).join("");
+}
+
+/* ============================================================
+   RENDER: TOPICS (Browser + Exam Highlighting)
+   ============================================================ */
+
+let activeExamFilter = "all";
+
+function renderTopics() {
+  // Tabs
+  $$(".exam-tab").forEach(b => {
+    b.classList.toggle("active", b.dataset.exam === activeExamFilter);
+  });
+  // Explainer
+  const explainBox = $("#examExplain");
+  if (activeExamFilter === "all") {
+    explainBox.classList.remove("visible");
+    explainBox.innerHTML = "";
+  } else {
+    const cfg = EXAM_MAP[activeExamFilter];
+    explainBox.classList.add("visible");
+    explainBox.innerHTML = `
+      <strong>${escapeHtml(cfg.title)} coverage:</strong> ${escapeHtml(cfg.explain)}
+      <div><a class="review-cta" href="#/exam" data-route="/exam-with-pick:${activeExamFilter}">Start ${escapeHtml(cfg.title)} review →</a></div>
+    `;
+    // Wire that link manually because it needs to also preselect the exam
+    explainBox.querySelector("a").addEventListener("click", (e) => {
+      e.preventDefault();
+      State.examChoice = activeExamFilter;
+      navigate("/exam");
+    });
+  }
+  // Cards with highlight / dim
+  const wrap = $("#topicCards");
+  const highlightSet = new Set(
+    activeExamFilter === "all" ? [] : EXAM_MAP[activeExamFilter].sections
+  );
+  wrap.innerHTML = State.sectionsData.map(s => topicCardHtml(s, {
+    dimmed:      activeExamFilter !== "all" && !highlightSet.has(s.pos),
+    highlighted: activeExamFilter !== "all" && highlightSet.has(s.pos),
+  })).join("");
+  typesetMath(wrap);
+}
+
+/* ============================================================
+   RENDER: SECTION (problem list)
+   ============================================================ */
+
+function renderSection(pos) {
+  const section = State.sectionsByPos.get(pos);
+  if (!section) {
+    // Data may still be loading (deep-link / refresh on a hash route).
+    // Show shimmer; init() calls handleRoute() again once data lands.
+    if (State.sectionsData.length === 0) {
+      $("#sectionDetailKicker").textContent = "";
+      $("#sectionDetailTitle").textContent  = "Loading…";
+      $("#sectionDetailDesc").textContent   = "";
+      $("#sectionDetailMeta").innerHTML     = "";
+      $("#problemList").innerHTML = renderLoadingCards(4);
+      return;
+    }
+    // Truly unknown section — back to topics.
+    navigate("/topics", { replace: true });
+    return;
+  }
+  State.currentSection = section;
+  lsSet(LS.LAST_SECTION, pos);
+
+  $("#sectionDetailKicker").textContent = `Section ${String(pos).padStart(2,'0')}`;
+  $("#sectionDetailTitle").textContent  = section.title;
+  $("#sectionDetailDesc").textContent   = section.short || "";
+
+  const prog = sectionProgress(section);
+  $("#sectionDetailMeta").innerHTML = `
+    <span><strong>${section.problems.length}</strong> problems</span>
+    <span><strong>${prog.got}</strong> got it</span>
+    <span><strong>${prog.pct}%</strong> complete</span>
+  `;
+
+  // Populate difficulty dropdown from problems
+  const diffs = Array.from(new Set(section.problems.map(p => p.difficulty).filter(Boolean)));
+  const diffSel = $("#filterDifficulty");
+  diffSel.innerHTML = `<option value="">All</option>` + diffs.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join("");
+
+  // Reset filter UI (keep search if user just navigated)
+  $("#filterSearch").value = State.filters.search || "";
+  $("#filterStatus").value = "";
+  $("#filterSort").value = "default";
+  State.filters = { search: $("#filterSearch").value, difficulty: "", status: "", sort: "default" };
+
+  renderProblemList();
+}
+
+function renderProblemList() {
+  const section = State.currentSection;
+  if (!section) return;
+  const list = $("#problemList");
+  const { search, difficulty, status, sort } = State.filters;
+  let problems = section.problems.slice();
+
+  if (difficulty) problems = problems.filter(p => p.difficulty === difficulty);
+  if (status === "got")    problems = problems.filter(p => getStatus(p.id) === "got");
+  if (status === "review") problems = problems.filter(p => getStatus(p.id) === "review");
+  if (status === "none")   problems = problems.filter(p => !getStatus(p.id));
+
+  if (search.trim()) {
+    const q = search.toLowerCase();
+    problems = problems.filter(p => {
+      return (p.title || "").toLowerCase().includes(q)
+          || (p.skills || []).some(s => s.toLowerCase().includes(q))
+          || (p.problemLatex || "").toLowerCase().includes(q)
+          || (p.topic || "").toLowerCase().includes(q)
+          || (p.examFlavor || "").toLowerCase().includes(q);
+    });
+  }
+
+  if (sort === "difficulty") {
+    const order = { "warm-up": 0, "warm up": 0, "core": 1, "challenge": 2, "stretch": 3 };
+    problems.sort((a,b) => (order[a.difficulty?.toLowerCase()] ?? 1) - (order[b.difficulty?.toLowerCase()] ?? 1));
+  } else if (sort === "minutes") {
+    problems.sort((a,b) => (a.estimatedMinutes || 999) - (b.estimatedMinutes || 999));
+  }
+
+  if (!problems.length) {
+    list.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">∅</div>
+        <h3>No problems match your filters</h3>
+        <p>Try clearing the search or relaxing the difficulty / status filter.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = problems.map((p, idx) => {
+    const st = getStatus(p.id);
+    return `
+    <button class="prob-row" data-problem-id="${escapeHtml(p.id)}">
+      <div class="prob-row-main">
+        <div class="prob-row-title">${String(idx+1).padStart(2,'0')}. ${escapeHtml(p.title)}</div>
+        <div class="prob-row-sub">
+          ${p.estimatedMinutes ? `<span>~${p.estimatedMinutes} min</span>` : ""}
+          ${(p.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join("")}
+        </div>
+      </div>
+      <div class="prob-row-right">
+        ${p.difficulty ? `<span class="pill ${classForDifficulty(p.difficulty)}">${escapeHtml(p.difficulty)}</span>` : ""}
+        ${st === "got" ? `<span class="pill status-got">Got it</span>` : ""}
+
+      </div>
+    </button>`;
+  }).join("");
+  typesetMath(list);
+}
+/* ============================================================
+   CONCEPT VISUALS — lightweight inline SVG sketches keyed to
+   problem skills. All visuals are conceptual ("not to scale").
+   ============================================================ */
+
+// Shared SVG helpers (defs, frame).  Every visual reuses these so
+// markers and styling are consistent.
+const CV_NS = "http://www.w3.org/2000/svg";
+
+function cvDefs(prefix) {
+  // Unique marker ids per visual so multiple SVGs on one page don't collide.
+  const p = prefix || "cv";
+  return `
+    <defs>
+      <marker id="${p}-arrR" viewBox="0 0 10 10" refX="9" refY="5"
+              markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--red)"/>
+      </marker>
+      <marker id="${p}-arrI" viewBox="0 0 10 10" refX="9" refY="5"
+              markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+      </marker>
+      <marker id="${p}-arrG" viewBox="0 0 10 10" refX="9" refY="5"
+              markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--gold)"/>
+      </marker>
+      <marker id="${p}-arrM" viewBox="0 0 10 10" refX="9" refY="5"
+              markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint)"/>
+      </marker>
+    </defs>`;
+}
+
+function cvFrame(body, opts) {
+  const w = (opts && opts.w) || 320;
+  const h = (opts && opts.h) || 220;
+  const t = (opts && opts.t) || "Concept sketch";
+  const p = (opts && opts.prefix) || "cv";
+  return `
+    <svg viewBox="0 0 ${w} ${h}" xmlns="${CV_NS}" class="concept-svg"
+         role="img" aria-labelledby="${p}-title">
+      <title id="${p}-title">${t}</title>
+      ${cvDefs(p)}
+      ${body}
+    </svg>`;
+}
+
+// Returns the math-italic label (uses Fraunces italic, matches LaTeX style)
+function cvLabel(x, y, text, opts) {
+  const fill  = (opts && opts.fill)  || "var(--ink)";
+  const size  = (opts && opts.size)  || 14;
+  const anchor= (opts && opts.anchor)|| "start";
+  const italic= (opts && opts.italic !== false);
+  const family= (opts && opts.family) || "var(--font-display)";
+  const weight= (opts && opts.weight) || 500;
+  return `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}"
+                font-family="${family}"
+                font-weight="${weight}"
+                ${italic ? 'font-style="italic"' : ''}
+                text-anchor="${anchor}">${text}</text>`;
+}
+
+function cvNote(x, y, text, opts) {
+  const fill  = (opts && opts.fill)  || "var(--ink-mute)";
+  const size  = (opts && opts.size)  || 11;
+  const anchor= (opts && opts.anchor)|| "start";
+  return `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}"
+                font-family="var(--font-sans)" font-weight="500"
+                text-anchor="${anchor}">${text}</text>`;
+}
+
+/* ============================================================
+   The CONCEPT registry. Each entry returns
+   { kicker, title, svg, caption }.
+   ============================================================ */
+
+const CONCEPT = {
+
+  /* ---------- Vectors: arithmetic, addition ---------- */
+  vectorAdd: () => ({
+    kicker: "Visual idea",
+    title:  "Vector addition — parallelogram rule",
+    svg: cvFrame(`
+      <line x1="50" y1="180" x2="290" y2="180" stroke="var(--border)" stroke-width="1"/>
+      <line x1="60" y1="40"  x2="60"  y2="180" stroke="var(--border)" stroke-width="1"/>
+      <circle cx="60" cy="180" r="3" fill="var(--ink)"/>
+      ${cvNote(50, 195, "0", {anchor:"end"})}
+      <!-- u (solid red, NE) -->
+      <line x1="60" y1="180" x2="170" y2="140" stroke="var(--red)" stroke-width="2.2"
+            marker-end="url(#cv-vadd-arrR)"/>
+      ${cvLabel(112, 174, "u", {fill:"var(--red)", size:15})}
+      <!-- v (solid ink, N-NE) -->
+      <line x1="60" y1="180" x2="100" y2="90" stroke="var(--ink)" stroke-width="2.2"
+            marker-end="url(#cv-vadd-arrI)"/>
+      ${cvLabel(72, 130, "v", {fill:"var(--ink)", size:15})}
+      <!-- v translated to u's tip (dashed) -->
+      <line x1="170" y1="140" x2="210" y2="50" stroke="var(--ink)" stroke-width="1.3"
+            stroke-dasharray="4 3" marker-end="url(#cv-vadd-arrM)"/>
+      <!-- u translated to v's tip (dashed) -->
+      <line x1="100" y1="90" x2="210" y2="50" stroke="var(--red)" stroke-width="1.3"
+            stroke-dasharray="4 3" marker-end="url(#cv-vadd-arrM)"/>
+      <!-- u + v diagonal -->
+      <line x1="60" y1="180" x2="210" y2="50" stroke="var(--gold)" stroke-width="2.4"
+            marker-end="url(#cv-vadd-arrG)"/>
+      ${cvLabel(216, 50, "u + v", {fill:"var(--gold)", size:14})}
+    `, {prefix:"cv-vadd", t:"Vector addition"}),
+    caption: "Place v's tail at u's head — the diagonal of the parallelogram is u + v."
+  }),
+
+  /* ---------- Dot product / angle ---------- */
+  dotProduct: () => ({
+    kicker: "Visual idea",
+    title:  "Dot product and the angle between vectors",
+    svg: cvFrame(`
+      <line x1="60" y1="170" x2="280" y2="170" stroke="var(--border)" stroke-width="1"/>
+      <circle cx="60" cy="170" r="3" fill="var(--ink)"/>
+      ${cvNote(50, 185, "0", {anchor:"end"})}
+      <line x1="60" y1="170" x2="240" y2="170" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-dot-arrI)"/>
+      ${cvLabel(248, 174, "v", {fill:"var(--ink)", size:16})}
+      <line x1="60" y1="170" x2="200" y2="70" stroke="var(--red)" stroke-width="2"
+            marker-end="url(#cv-dot-arrR)"/>
+      ${cvLabel(206, 64, "u", {fill:"var(--red)", size:16})}
+      <path d="M 110 170 A 50 50 0 0 0 95 134" stroke="var(--ink-soft)"
+            stroke-width="1.3" fill="none"/>
+      ${cvLabel(112, 152, "θ", {fill:"var(--ink-soft)", size:13, italic:false})}
+      ${cvNote(160, 35, "u · v = |u| |v| cos θ", {anchor:"middle", size:12, fill:"var(--ink-soft)"})}
+    `, {prefix:"cv-dot", t:"Dot product angle"}),
+    caption: "θ is the angle between u and v. Orthogonal ⇔ u · v = 0."
+  }),
+
+  /* ---------- Cross product (3D-ish) ---------- */
+  crossProduct: () => ({
+    kicker: "Visual idea",
+    title:  "Cross product — a vector perpendicular to both",
+    svg: cvFrame(`
+      <!-- a tilted plane containing u, v -->
+      <ellipse cx="170" cy="150" rx="120" ry="34" fill="var(--red-tint)"
+               stroke="var(--border)" stroke-width="1" opacity="0.85"/>
+      <circle cx="170" cy="150" r="3" fill="var(--ink)"/>
+      ${cvNote(160, 165, "0", {anchor:"end"})}
+      <line x1="170" y1="150" x2="240" y2="138" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-cross-arrI)"/>
+      ${cvLabel(246, 138, "v", {fill:"var(--ink)", size:15})}
+      <line x1="170" y1="150" x2="90" y2="166" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-cross-arrI)"/>
+      ${cvLabel(70, 174, "u", {fill:"var(--ink)", size:15})}
+      <line x1="170" y1="150" x2="170" y2="40" stroke="var(--red)" stroke-width="2.4"
+            marker-end="url(#cv-cross-arrR)"/>
+      ${cvLabel(178, 50, "u × v", {fill:"var(--red)", size:15})}
+      <!-- right-hand curl hint -->
+      <path d="M 200 100 A 22 22 0 0 0 156 106" stroke="var(--ink-faint)"
+            stroke-width="1" fill="none" stroke-dasharray="3 3"/>
+      ${cvNote(160, 200, "|u × v| = area of parallelogram", {anchor:"middle", size:11})}
+    `, {prefix:"cv-cross", t:"Cross product"}),
+    caption: "u × v is normal to the plane through u and v (right-hand rule)."
+  }),
+
+  /* ---------- Scalar triple product / parallelepiped ---------- */
+  tripleProduct: () => ({
+    kicker: "Visual idea",
+    title:  "Scalar triple product — signed volume",
+    svg: cvFrame(`
+      <!-- parallelepiped: project (0,0,0), (a), (b), (c), (a+b), (a+c), (b+c), (a+b+c) -->
+      <!-- a along front-right, b along front-left, c upward -->
+      <polygon points="80,160 200,180 200,90 80,70" fill="var(--red-tint)" opacity="0.6"
+               stroke="var(--ink-soft)" stroke-width="1"/>
+      <polygon points="200,180 280,150 280,60 200,90" fill="var(--red-soft)" opacity="0.7"
+               stroke="var(--ink-soft)" stroke-width="1"/>
+      <polygon points="80,70 200,90 280,60 160,40" fill="#FFFFFF" opacity="0.8"
+               stroke="var(--ink-soft)" stroke-width="1"/>
+      <circle cx="80" cy="160" r="3" fill="var(--ink)"/>
+      ${cvNote(70, 175, "0", {anchor:"end"})}
+      <line x1="80" y1="160" x2="200" y2="180" stroke="var(--red)" stroke-width="2"
+            marker-end="url(#cv-trp-arrR)"/>
+      ${cvLabel(207, 192, "a", {fill:"var(--red)", size:14})}
+      <line x1="80" y1="160" x2="80" y2="70" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-trp-arrI)"/>
+      ${cvLabel(58, 70, "c", {fill:"var(--ink)", size:14, anchor:"end"})}
+      <line x1="80" y1="160" x2="160" y2="40" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-trp-arrI)"/>
+      ${cvLabel(165, 36, "b", {fill:"var(--ink)", size:14})}
+      ${cvNote(160, 210, "Volume = |a · (b × c)|", {anchor:"middle", size:11})}
+    `, {prefix:"cv-trp", t:"Triple product"}),
+    caption: "The three vectors span a parallelepiped whose signed volume is a · (b × c)."
+  }),
+
+  /* ---------- Projection of one vector onto another ---------- */
+  projection: () => ({
+    kicker: "Visual idea",
+    title:  "Vector decomposition — parallel and perpendicular",
+    svg: cvFrame(`
+      <line x1="40" y1="180" x2="290" y2="180" stroke="var(--border)" stroke-width="1"/>
+      <circle cx="60" cy="180" r="3" fill="var(--ink)"/>
+      ${cvNote(50, 195, "0", {anchor:"end"})}
+      <!-- direction a along the x-axis -->
+      <line x1="60" y1="180" x2="260" y2="180" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-prj-arrI)"/>
+      ${cvLabel(268, 184, "a", {fill:"var(--ink)", size:15})}
+      <!-- vector b -->
+      <line x1="60" y1="180" x2="200" y2="80" stroke="var(--red)" stroke-width="2.2"
+            marker-end="url(#cv-prj-arrR)"/>
+      ${cvLabel(208, 76, "b", {fill:"var(--red)", size:15})}
+      <!-- projection onto a (along x-axis, length = 200-60 = 140) -->
+      <line x1="60" y1="180" x2="200" y2="180" stroke="var(--gold)" stroke-width="3.2"
+            stroke-linecap="round"/>
+      ${cvLabel(130, 200, "proj_a b", {fill:"var(--gold)", size:13, anchor:"middle"})}
+      <!-- perpendicular component (drop from b to its projection) -->
+      <line x1="200" y1="180" x2="200" y2="80" stroke="var(--ink-mute)" stroke-width="1.5"
+            stroke-dasharray="4 4"/>
+      ${cvLabel(206, 130, "b − proj_a b", {fill:"var(--ink-mute)", size:12})}
+      <!-- right angle -->
+      <path d="M 200 168 L 188 168 L 188 180" stroke="var(--ink-soft)" stroke-width="1"
+            fill="none"/>
+    `, {prefix:"cv-prj", t:"Vector projection"}),
+    caption: "Drop a perpendicular from b to span(a). The foot is proj_a b; the leftover is perpendicular."
+  }),
+
+  /* ---------- Span — line through origin (R²) ---------- */
+  spanLine: () => ({
+    kicker: "Visual idea",
+    title:  "Span of one vector — a line through the origin",
+    svg: cvFrame(`
+      <line x1="160" y1="20" x2="160" y2="200" stroke="var(--border)" stroke-width="1"/>
+      <line x1="30"  y1="110" x2="290" y2="110" stroke="var(--border)" stroke-width="1"/>
+      <!-- the spanned line -->
+      <line x1="60"  y1="180" x2="260" y2="40"  stroke="var(--red)" stroke-width="2.5"
+            opacity="0.65"/>
+      <line x1="60"  y1="180" x2="260" y2="40"  stroke="var(--red)" stroke-width="1.5"
+            stroke-dasharray="2 5" opacity="0.5"/>
+      <circle cx="160" cy="110" r="3" fill="var(--ink)"/>
+      ${cvNote(166, 124, "0", {anchor:"start"})}
+      <!-- the vector v -->
+      <line x1="160" y1="110" x2="220" y2="68" stroke="var(--red)" stroke-width="2.6"
+            marker-end="url(#cv-spl-arrR)"/>
+      ${cvLabel(226, 64, "v", {fill:"var(--red)", size:16})}
+      ${cvNote(160, 210, "span{ v } = { c·v : c ∈ ℝ }", {anchor:"middle", size:12})}
+    `, {prefix:"cv-spl", t:"Span — line"}),
+    caption: "All scalar multiples of v sweep out a line through the origin."
+  }),
+
+  /* ---------- Span — plane in R³ ---------- */
+  spanPlane: () => ({
+    kicker: "Visual idea",
+    title:  "Span of two vectors — a plane through the origin",
+    svg: cvFrame(`
+      <!-- tilted plane through origin -->
+      <ellipse cx="160" cy="125" rx="125" ry="44" fill="var(--red-tint)"
+               stroke="var(--red)" stroke-width="1.1" opacity="0.7"/>
+      <circle cx="160" cy="125" r="3" fill="var(--ink)"/>
+      ${cvNote(160, 142, "0", {anchor:"start"})}
+      <line x1="160" y1="125" x2="80" y2="100" stroke="var(--red)" stroke-width="2.2"
+            marker-end="url(#cv-spp-arrR)"/>
+      ${cvLabel(60, 92, "u", {fill:"var(--red)", size:15})}
+      <line x1="160" y1="125" x2="234" y2="150" stroke="var(--ink)" stroke-width="2.2"
+            marker-end="url(#cv-spp-arrI)"/>
+      ${cvLabel(240, 154, "v", {fill:"var(--ink)", size:15})}
+      ${cvNote(160, 40, "span{ u, v }", {anchor:"middle", size:13, fill:"var(--red)"})}
+      ${cvNote(160, 200, "every point = au + bv", {anchor:"middle", size:11})}
+    `, {prefix:"cv-spp", t:"Span — plane"}),
+    caption: "Two non-parallel vectors sweep out a plane through the origin in ℝ³."
+  }),
+
+  /* ---------- Subspace (plane through origin) ---------- */
+  subspace: () => ({
+    kicker: "Visual idea",
+    title:  "Subspace — must contain the origin and be closed",
+    svg: cvFrame(`
+      <ellipse cx="120" cy="120" rx="90" ry="34" fill="var(--red-tint)"
+               stroke="var(--red)" stroke-width="1.1" opacity="0.7"/>
+      <circle cx="120" cy="120" r="3" fill="var(--ink)"/>
+      ${cvNote(124, 136, "0", {anchor:"start"})}
+      ${cvNote(120, 70, "subspace ✓", {anchor:"middle", size:12, fill:"var(--red)"})}
+      <ellipse cx="240" cy="80" rx="60" ry="22" fill="var(--bg-subtle)"
+               stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 3" opacity="0.85"/>
+      ${cvNote(240, 50, "shifted plane ✗", {anchor:"middle", size:11, fill:"var(--ink-mute)"})}
+      ${cvNote(240, 110, "(misses 0)", {anchor:"middle", size:10, fill:"var(--ink-mute)"})}
+      ${cvNote(160, 200, "closed under + and scalar ×", {anchor:"middle", size:11})}
+    `, {prefix:"cv-sub", t:"Subspace"}),
+    caption: "Subspaces are planes / lines / etc. that pass through the origin and stay closed under combinations."
+  }),
+
+  /* ---------- Linear independence (vectors in plane) ---------- */
+  linearIndep: () => ({
+    kicker: "Visual idea",
+    title:  "Linearly dependent — one vector lies in the span of the others",
+    svg: cvFrame(`
+      <line x1="160" y1="20" x2="160" y2="200" stroke="var(--border)" stroke-width="1"/>
+      <line x1="30"  y1="120" x2="290" y2="120" stroke="var(--border)" stroke-width="1"/>
+      <circle cx="160" cy="120" r="3" fill="var(--ink)"/>
+      <line x1="160" y1="120" x2="240" y2="80" stroke="var(--red)" stroke-width="2.2"
+            marker-end="url(#cv-lid-arrR)"/>
+      ${cvLabel(246, 74, "v₁", {fill:"var(--red)", size:14})}
+      <line x1="160" y1="120" x2="100" y2="170" stroke="var(--ink)" stroke-width="2.2"
+            marker-end="url(#cv-lid-arrI)"/>
+      ${cvLabel(85, 184, "v₂", {fill:"var(--ink)", size:14, anchor:"end"})}
+      <!-- v3 = v1 + v2 -->
+      <line x1="160" y1="120" x2="180" y2="130" stroke="var(--gold)" stroke-width="2.4"
+            marker-end="url(#cv-lid-arrG)"/>
+      ${cvLabel(186, 144, "v₃ = v₁ + v₂", {fill:"var(--gold)", size:12})}
+      ${cvNote(160, 30, "{ v₁, v₂, v₃ } dependent", {anchor:"middle", size:12, fill:"var(--ink-soft)"})}
+    `, {prefix:"cv-lid", t:"Linear dependence"}),
+    caption: "If one vector is a combination of the others, the set is linearly dependent."
+  }),
+
+  /* ---------- Basis / coordinates ---------- */
+  basisCoords: () => ({
+    kicker: "Visual idea",
+    title:  "Coordinates in a basis",
+    svg: cvFrame(`
+      <line x1="160" y1="20" x2="160" y2="200" stroke="var(--border)" stroke-width="1"/>
+      <line x1="30"  y1="160" x2="290" y2="160" stroke="var(--border)" stroke-width="1"/>
+      <circle cx="60" cy="160" r="3" fill="var(--ink)"/>
+      <!-- basis vectors b1 along +x, b2 tilted -->
+      <line x1="60" y1="160" x2="120" y2="160" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-bc-arrI)"/>
+      ${cvLabel(96, 178, "b₁", {fill:"var(--ink)", size:13, anchor:"middle"})}
+      <line x1="60" y1="160" x2="100" y2="100" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-bc-arrI)"/>
+      ${cvLabel(74, 108, "b₂", {fill:"var(--ink)", size:13, anchor:"end"})}
+      <!-- target vector v -->
+      <line x1="60" y1="160" x2="240" y2="60" stroke="var(--red)" stroke-width="2.2"
+            marker-end="url(#cv-bc-arrR)"/>
+      ${cvLabel(246, 56, "v", {fill:"var(--red)", size:16})}
+      <!-- decomposition: 3 b1 + 2 b2 conceptually -->
+      <line x1="60" y1="160" x2="240" y2="160" stroke="var(--gold)" stroke-width="1.6"
+            stroke-dasharray="3 3"/>
+      <line x1="240" y1="160" x2="240" y2="60" stroke="var(--gold)" stroke-width="1.6"
+            stroke-dasharray="3 3"/>
+      ${cvNote(160, 210, "[v]_B = ( 3, 2 ) in basis B = { b₁, b₂ }", {anchor:"middle", size:11})}
+    `, {prefix:"cv-bc", t:"Basis coordinates"}),
+    caption: "v's coordinates in a basis are the unique scalars that combine the basis vectors into v."
+  }),
+
+  /* ---------- Linear transformation: unit square → parallelogram ---------- */
+  transformation: () => ({
+    kicker: "Visual idea",
+    title:  "A linear map sends the unit square to a parallelogram",
+    svg: cvFrame(`
+      <!-- before -->
+      <rect x="40" y="80" width="80" height="80" fill="var(--bg-subtle)"
+            stroke="var(--ink-soft)" stroke-width="1.2"/>
+      <line x1="40" y1="160" x2="120" y2="160" stroke="var(--red)" stroke-width="2"
+            marker-end="url(#cv-trn-arrR)"/>
+      <line x1="40" y1="160" x2="40"  y2="80"  stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-trn-arrI)"/>
+      ${cvLabel(80, 178, "e₁", {fill:"var(--red)", size:12, anchor:"middle"})}
+      ${cvLabel(32, 120, "e₂", {fill:"var(--ink)", size:12, anchor:"end"})}
+      ${cvNote(80, 200, "domain", {anchor:"middle", size:11})}
+      <!-- arrow A -->
+      <line x1="140" y1="120" x2="180" y2="120" stroke="var(--ink-soft)"
+            stroke-width="1.8" marker-end="url(#cv-trn-arrI)"/>
+      ${cvLabel(160, 110, "A", {fill:"var(--ink-soft)", size:13, anchor:"middle"})}
+      <!-- after: parallelogram -->
+      <polygon points="200,160 280,140 270,70 190,90" fill="var(--red-tint)"
+               stroke="var(--red)" stroke-width="1.2"/>
+      <line x1="200" y1="160" x2="280" y2="140" stroke="var(--red)" stroke-width="2"
+            marker-end="url(#cv-trn-arrR)"/>
+      <line x1="200" y1="160" x2="190" y2="90"  stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-trn-arrI)"/>
+      ${cvLabel(244, 158, "Ae₁", {fill:"var(--red)", size:12, anchor:"middle"})}
+      ${cvLabel(180, 122, "Ae₂", {fill:"var(--ink)", size:12, anchor:"end"})}
+      ${cvNote(240, 200, "image", {anchor:"middle", size:11})}
+    `, {prefix:"cv-trn", t:"Linear transformation"}),
+    caption: "A maps basis vectors to its columns; the unit square's image is the parallelogram those columns span."
+  }),
+
+  /* ---------- Determinant — signed area scaling ---------- */
+  determinant: () => ({
+    kicker: "Visual idea",
+    title:  "|det A| = area scale factor",
+    svg: cvFrame(`
+      <rect x="40" y="100" width="60" height="60" fill="var(--bg-subtle)"
+            stroke="var(--ink-soft)" stroke-width="1.2"/>
+      ${cvNote(70, 178, "area = 1", {anchor:"middle", size:11})}
+      <line x1="110" y1="130" x2="160" y2="130" stroke="var(--ink-soft)"
+            stroke-width="1.6" marker-end="url(#cv-det-arrI)"/>
+      ${cvLabel(135, 122, "A", {fill:"var(--ink-soft)", size:13, anchor:"middle"})}
+      <polygon points="170,160 270,140 260,70 180,90" fill="var(--red-tint)"
+               stroke="var(--red)" stroke-width="1.2"/>
+      ${cvNote(220, 200, "area = | det A |", {anchor:"middle", size:11, fill:"var(--red)"})}
+      ${cvNote(220, 40, "sign of det = orientation", {anchor:"middle", size:11, fill:"var(--ink-soft)"})}
+    `, {prefix:"cv-det", t:"Determinant"}),
+    caption: "The determinant tells you how A scales area, and whether it flips orientation."
+  }),
+
+  /* ---------- Eigenvector — invariant direction ---------- */
+  eigenvector: () => ({
+    kicker: "Visual idea",
+    title:  "An eigenvector keeps its direction under A",
+    svg: cvFrame(`
+      <line x1="160" y1="20" x2="160" y2="200" stroke="var(--border)" stroke-width="1"/>
+      <line x1="30" y1="120" x2="290" y2="120" stroke="var(--border)" stroke-width="1"/>
+      <circle cx="160" cy="120" r="3" fill="var(--ink)"/>
+      <!-- eigenvector v along a fixed direction -->
+      <line x1="160" y1="120" x2="220" y2="80" stroke="var(--red)" stroke-width="2.2"
+            marker-end="url(#cv-eig-arrR)"/>
+      ${cvLabel(226, 76, "v", {fill:"var(--red)", size:14})}
+      <!-- Av on the same line, longer (lambda > 1) -->
+      <line x1="160" y1="120" x2="250" y2="60" stroke="var(--red)" stroke-width="2.4"
+            stroke-dasharray="5 4" marker-end="url(#cv-eig-arrR)"/>
+      ${cvLabel(256, 56, "Av = λv", {fill:"var(--red)", size:13})}
+      <!-- non-eigenvector w → Aw rotated -->
+      <line x1="160" y1="120" x2="100" y2="80" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-eig-arrI)"/>
+      ${cvLabel(86, 78, "w", {fill:"var(--ink)", size:13, anchor:"end"})}
+      <line x1="160" y1="120" x2="80" y2="60" stroke="var(--ink-mute)" stroke-width="1.7"
+            stroke-dasharray="5 4" marker-end="url(#cv-eig-arrM)"/>
+      ${cvLabel(72, 56, "Aw", {fill:"var(--ink-mute)", size:12, anchor:"end"})}
+      ${cvNote(160, 210, "v's direction is preserved; w's is not", {anchor:"middle", size:11})}
+    `, {prefix:"cv-eig", t:"Eigenvector"}),
+    caption: "Eigenvectors are special directions where A acts as pure scaling by λ."
+  }),
+
+  /* ---------- RREF / pivots ---------- */
+  rref: () => ({
+    kicker: "Visual idea",
+    title:  "Reduced row echelon form — pivots in red",
+    svg: cvFrame(`
+      <rect x="30" y="40" width="260" height="120" fill="#FFFFFF"
+            stroke="var(--ink-soft)" stroke-width="1.2" rx="6"/>
+      <!-- bracket-like sides -->
+      <line x1="38" y1="46" x2="38" y2="154" stroke="var(--ink)" stroke-width="1.8"/>
+      <line x1="282" y1="46" x2="282" y2="154" stroke="var(--ink)" stroke-width="1.8"/>
+      <!-- entries: rough RREF pattern  1 0 *  | 2
+                                          0 1 *  | 5
+                                          0 0 0  | 0 -->
+      ${cvNote(70,  75, "1", {size:14, fill:"var(--ink)"})}
+      ${cvNote(120, 75, "0", {size:14, fill:"var(--ink-faint)"})}
+      ${cvNote(170, 75, "★", {size:14, fill:"var(--ink-mute)"})}
+      ${cvNote(70,  110, "0", {size:14, fill:"var(--ink-faint)"})}
+      ${cvNote(120, 110, "1", {size:14, fill:"var(--ink)"})}
+      ${cvNote(170, 110, "★", {size:14, fill:"var(--ink-mute)"})}
+      ${cvNote(70,  145, "0", {size:14, fill:"var(--ink-faint)"})}
+      ${cvNote(120, 145, "0", {size:14, fill:"var(--ink-faint)"})}
+      ${cvNote(170, 145, "0", {size:14, fill:"var(--ink-faint)"})}
+      <!-- pivot circles -->
+      <circle cx="70" cy="71" r="14" fill="none" stroke="var(--red)" stroke-width="2"/>
+      <circle cx="120" cy="106" r="14" fill="none" stroke="var(--red)" stroke-width="2"/>
+      <!-- vertical separator for augmented -->
+      <line x1="210" y1="50" x2="210" y2="150" stroke="var(--ink-faint)" stroke-width="1"
+            stroke-dasharray="3 3"/>
+      ${cvNote(250, 75, "2", {size:14, fill:"var(--ink)"})}
+      ${cvNote(250, 110, "5", {size:14, fill:"var(--ink)"})}
+      ${cvNote(250, 145, "0", {size:14, fill:"var(--ink-faint)"})}
+      ${cvNote(160, 200, "circled = pivot · ★ = free column", {anchor:"middle", size:11})}
+    `, {prefix:"cv-rref", t:"RREF and pivots"}),
+    caption: "Each pivot fixes one variable; free columns give a parametric family of solutions."
+  }),
+
+  /* ---------- Matrix multiplication dimensions ---------- */
+  matrixDims: () => ({
+    kicker: "Visual idea",
+    title:  "AB defined when inner dimensions match",
+    svg: cvFrame(`
+      <rect x="20" y="80" width="70" height="60" fill="var(--bg-subtle)"
+            stroke="var(--ink-soft)" stroke-width="1"/>
+      ${cvNote(55, 115, "A", {size:18, fill:"var(--ink)", anchor:"middle"})}
+      ${cvNote(55, 70, "m × n", {anchor:"middle", size:11, fill:"var(--ink-mute)"})}
+      <rect x="120" y="80" width="70" height="60" fill="var(--bg-subtle)"
+            stroke="var(--ink-soft)" stroke-width="1"/>
+      ${cvNote(155, 115, "B", {size:18, fill:"var(--ink)", anchor:"middle"})}
+      ${cvNote(155, 70, "n × p", {anchor:"middle", size:11, fill:"var(--ink-mute)"})}
+      <!-- inner-dim match arrow -->
+      <path d="M 80 150 Q 105 175 130 150" stroke="var(--red)" stroke-width="1.6"
+            fill="none" marker-end="url(#cv-mdm-arrR)"/>
+      ${cvNote(105, 190, "n = n  ✓", {anchor:"middle", size:11, fill:"var(--red)"})}
+      <!-- equals -->
+      ${cvNote(205, 115, "=", {anchor:"middle", size:18, fill:"var(--ink)"})}
+      <rect x="220" y="80" width="70" height="60" fill="var(--red-tint)"
+            stroke="var(--red)" stroke-width="1"/>
+      ${cvNote(255, 115, "AB", {size:16, fill:"var(--ink)", anchor:"middle"})}
+      ${cvNote(255, 70, "m × p", {anchor:"middle", size:11, fill:"var(--red)"})}
+    `, {prefix:"cv-mdm", t:"Matrix dimensions"}),
+    caption: "Inner dims must agree; outer dims tell you the shape of AB."
+  }),
+
+  /* ---------- Symmetric matrix ---------- */
+  symmetric: () => ({
+    kicker: "Visual idea",
+    title:  "Symmetric — entries mirror across the diagonal",
+    svg: cvFrame(`
+      <rect x="60" y="40" width="200" height="140" fill="#FFFFFF"
+            stroke="var(--ink-soft)" stroke-width="1.2" rx="6"/>
+      <line x1="70" y1="50" x2="250" y2="170" stroke="var(--gold)" stroke-width="1.5"
+            stroke-dasharray="4 3"/>
+      ${cvNote(110, 80, "a", {size:14, fill:"var(--ink)"})}
+      ${cvNote(170, 80, "b", {size:14, fill:"var(--red)"})}
+      ${cvNote(230, 80, "c", {size:14, fill:"var(--red)"})}
+      ${cvNote(110, 120, "b", {size:14, fill:"var(--red)"})}
+      ${cvNote(170, 120, "d", {size:14, fill:"var(--ink)"})}
+      ${cvNote(230, 120, "e", {size:14, fill:"var(--red)"})}
+      ${cvNote(110, 160, "c", {size:14, fill:"var(--red)"})}
+      ${cvNote(170, 160, "e", {size:14, fill:"var(--red)"})}
+      ${cvNote(230, 160, "f", {size:14, fill:"var(--ink)"})}
+      ${cvNote(160, 25, "M = Mᵀ", {anchor:"middle", size:13, fill:"var(--ink-soft)"})}
+      ${cvNote(160, 205, "mirror pairs shown in red", {anchor:"middle", size:11})}
+    `, {prefix:"cv-sym", t:"Symmetric matrix"}),
+    caption: "A symmetric matrix is unchanged by transposition: aᵢⱼ = aⱼᵢ."
+  }),
+
+  /* ---------- Parametric curve with tangent ---------- */
+  parametricCurve: () => ({
+    kicker: "Visual idea",
+    title:  "A curve and its tangent direction",
+    svg: cvFrame(`
+      <line x1="30" y1="180" x2="290" y2="180" stroke="var(--border)" stroke-width="1"/>
+      <line x1="50" y1="30" x2="50" y2="200" stroke="var(--border)" stroke-width="1"/>
+      <!-- smooth curve via cubic Bezier -->
+      <path d="M 60 170 C 110 60, 200 230, 280 80" stroke="var(--red)" stroke-width="2.4"
+            fill="none"/>
+      <!-- point on curve at parameter t0 = around halfway -->
+      <circle cx="170" cy="118" r="4" fill="var(--red-deep)"/>
+      <!-- tangent direction at that point (approx slope) -->
+      <line x1="170" y1="118" x2="240" y2="98" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-pc-arrI)"/>
+      ${cvLabel(244, 92, "r'(t)", {fill:"var(--ink)", size:13})}
+      ${cvLabel(146, 110, "r(t)", {fill:"var(--red-deep)", size:13, anchor:"end"})}
+      ${cvNote(160, 215, "speed = | r'(t) |,  unit tangent = r'/| r' |",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-pc", t:"Parametric curve"}),
+    caption: "r(t) traces a curve; r'(t) points along it. |r'(t)| is the instantaneous speed."
+  }),
+
+  /* ---------- Level curves (contours) ---------- */
+  levelCurves: () => ({
+    kicker: "Visual idea",
+    title:  "Level curves of a scalar function",
+    svg: cvFrame(`
+      <line x1="30" y1="170" x2="290" y2="170" stroke="var(--border)" stroke-width="1"/>
+      <line x1="50" y1="20" x2="50" y2="190" stroke="var(--border)" stroke-width="1"/>
+      <!-- concentric ellipses -->
+      <ellipse cx="160" cy="100" rx="100" ry="60" fill="none" stroke="var(--ink-faint)" stroke-width="1.2"/>
+      <ellipse cx="160" cy="100" rx="75" ry="44" fill="none" stroke="var(--ink-mute)" stroke-width="1.2"/>
+      <ellipse cx="160" cy="100" rx="48" ry="28" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+      <ellipse cx="160" cy="100" rx="20" ry="12" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.2"/>
+      ${cvNote(266, 64, "f = 1", {size:11, fill:"var(--ink-mute)"})}
+      ${cvNote(241, 80, "f = 2", {size:11, fill:"var(--ink-mute)"})}
+      ${cvNote(216, 92, "f = 3", {size:11, fill:"var(--ink-mute)"})}
+      ${cvNote(170, 98, "max", {size:11, fill:"var(--red)"})}
+      ${cvNote(160, 205, "each curve = points where f has one value", {anchor:"middle", size:11})}
+    `, {prefix:"cv-lvc", t:"Level curves"}),
+    caption: "Each curve is the set of inputs where f(x, y) hits a single value — like a contour line on a map."
+  }),
+
+  /* ---------- Gradient + level curves ---------- */
+  gradient: () => ({
+    kicker: "Visual idea",
+    title:  "Gradient points along steepest ascent",
+    svg: cvFrame(`
+      <line x1="30" y1="170" x2="290" y2="170" stroke="var(--border)" stroke-width="1"/>
+      <line x1="50" y1="20" x2="50" y2="190" stroke="var(--border)" stroke-width="1"/>
+      <ellipse cx="160" cy="100" rx="100" ry="60" fill="none" stroke="var(--ink-faint)" stroke-width="1.2"/>
+      <ellipse cx="160" cy="100" rx="75" ry="44" fill="none" stroke="var(--ink-mute)" stroke-width="1.2"/>
+      <ellipse cx="160" cy="100" rx="48" ry="28" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+      <ellipse cx="160" cy="100" rx="20" ry="12" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.2"/>
+      <!-- point on a level curve & gradient arrow -->
+      <circle cx="232" cy="86" r="3" fill="var(--ink)"/>
+      ${cvNote(216, 80, "P", {size:12, fill:"var(--ink)", anchor:"end"})}
+      <!-- gradient roughly perpendicular to ellipse tangent at P -->
+      <line x1="232" y1="86" x2="195" y2="60" stroke="var(--red)" stroke-width="2.2"
+            marker-end="url(#cv-grd-arrR)"/>
+      ${cvLabel(180, 56, "∇f", {fill:"var(--red)", size:14, anchor:"end", italic:false})}
+      ${cvNote(160, 205, "∇f is perpendicular to the level curve at every point",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-grd", t:"Gradient"}),
+    caption: "∇f at P points in the direction of fastest increase, perpendicular to that level curve."
+  }),
+
+  /* ---------- Tangent plane ---------- */
+  tangentPlane: () => ({
+    kicker: "Visual idea",
+    title:  "Tangent plane at a point on a surface",
+    svg: cvFrame(`
+      <!-- saddle-ish surface -->
+      <path d="M 50 120 Q 130 60 210 100 Q 280 130 290 80
+               L 290 130 Q 200 170 130 130 Q 80 110 50 165 Z"
+            fill="var(--bg-subtle)" stroke="var(--ink-soft)" stroke-width="1"/>
+      <!-- tangent plane (parallelogram) -->
+      <polygon points="120,110 220,90 240,160 140,180" fill="var(--red-tint)"
+               stroke="var(--red)" stroke-width="1.2" opacity="0.75"/>
+      <circle cx="180" cy="135" r="3.5" fill="var(--red-deep)"/>
+      ${cvNote(186, 138, "(a, b, f(a,b))", {size:11, fill:"var(--red-deep)"})}
+      <line x1="180" y1="135" x2="200" y2="60" stroke="var(--ink)" stroke-width="1.8"
+            stroke-dasharray="4 3" marker-end="url(#cv-tp-arrI)"/>
+      ${cvLabel(206, 56, "n", {fill:"var(--ink)", size:13})}
+      ${cvNote(160, 205, "z = f(a,b) + f_x · (x−a) + f_y · (y−b)",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-tp", t:"Tangent plane"}),
+    caption: "The tangent plane is the best linear approximation of f at (a, b)."
+  }),
+
+  /* ---------- Vector field (grid of arrows, swirling) ---------- */
+  vectorField: () => ({
+    kicker: "Visual idea",
+    title:  "A vector field — one vector at every point",
+    svg: cvFrame(`
+      <rect x="40" y="30" width="240" height="160" fill="#FFFFFF"
+            stroke="var(--border)" stroke-width="1"/>
+      ${(() => {
+        // grid of arrows, mildly rotational
+        let out = "";
+        for (let i = 0; i < 6; i++) {
+          for (let j = 0; j < 4; j++) {
+            const cx = 60 + i * 36;
+            const cy = 50 + j * 36;
+            // rotational pattern: arrow tangent to circle around grid center
+            const dx = -(cy - 110);
+            const dy =  (cx - 160);
+            const len = Math.sqrt(dx*dx + dy*dy) || 1;
+            const k = 12 / len;
+            const x2 = cx + dx * k;
+            const y2 = cy + dy * k;
+            out += `<line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"
+                          stroke="var(--ink-soft)" stroke-width="1.2"
+                          marker-end="url(#cv-vf-arrM)"/>`;
+          }
+        }
+        return out;
+      })()}
+      ${cvNote(160, 210, "F(x, y) = ⟨ −y, x ⟩ — a swirling field",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-vf", t:"Vector field"}),
+    caption: "A vector field assigns a vector to every point — like wind, fluid flow, or force."
+  }),
+
+  /* ---------- Line integral: curve through field ---------- */
+  lineIntegral: () => ({
+    kicker: "Visual idea",
+    title:  "Line integral — a curve through a vector field",
+    svg: cvFrame(`
+      <rect x="40" y="30" width="240" height="160" fill="#FFFFFF"
+            stroke="var(--border)" stroke-width="1"/>
+      ${(() => {
+        let out = "";
+        for (let i = 0; i < 5; i++) {
+          for (let j = 0; j < 4; j++) {
+            const cx = 65 + i * 42;
+            const cy = 50 + j * 36;
+            const dx = 1, dy = 0.3;
+            const k = 9;
+            out += `<line x1="${cx}" y1="${cy}" x2="${cx + dx*k}" y2="${cy + dy*k}"
+                          stroke="var(--ink-faint)" stroke-width="1"
+                          marker-end="url(#cv-li-arrM)"/>`;
+          }
+        }
+        return out;
+      })()}
+      <!-- curve C -->
+      <path d="M 60 160 C 110 60, 200 200, 270 70" stroke="var(--red)" stroke-width="2.4"
+            fill="none" marker-end="url(#cv-li-arrR)"/>
+      <circle cx="60" cy="160" r="3" fill="var(--red)"/>
+      <circle cx="270" cy="70" r="3" fill="var(--red)"/>
+      ${cvNote(54, 178, "A", {size:11, fill:"var(--red)"})}
+      ${cvNote(274, 64, "B", {size:11, fill:"var(--red)"})}
+      ${cvNote(150, 210, "∫_C F · dr accumulates F along C from A to B",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-li", t:"Line integral"}),
+    caption: "∫_C F · dr adds up F's component along the curve from start to finish."
+  }),
+
+  /* ---------- Conservative field / path independence ---------- */
+  conservative: () => ({
+    kicker: "Visual idea",
+    title:  "Conservative field — value depends only on endpoints",
+    svg: cvFrame(`
+      <rect x="40" y="30" width="240" height="160" fill="#FFFFFF"
+            stroke="var(--border)" stroke-width="1"/>
+      <circle cx="80" cy="160" r="4" fill="var(--ink)"/>
+      <circle cx="250" cy="60" r="4" fill="var(--ink)"/>
+      ${cvNote(72, 178, "A", {size:11, fill:"var(--ink)"})}
+      ${cvNote(254, 56, "B", {size:11, fill:"var(--ink)"})}
+      <path d="M 80 160 Q 130 80 250 60" stroke="var(--red)" stroke-width="2.2"
+            fill="none"/>
+      <path d="M 80 160 Q 220 180 250 60" stroke="var(--gold)" stroke-width="2.2"
+            fill="none" stroke-dasharray="5 4"/>
+      ${cvNote(150, 80, "path 1", {anchor:"middle", size:11, fill:"var(--red)"})}
+      ${cvNote(170, 170, "path 2", {anchor:"middle", size:11, fill:"var(--gold)"})}
+      ${cvNote(160, 210, "∫_C F · dr = f(B) − f(A)  for any path",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-cons", t:"Conservative field"}),
+    caption: "If F = ∇f, then the line integral only depends on the endpoints — every path gives the same value."
+  }),
+
+  /* ---------- Double-integral region ---------- */
+  doubleRegion: () => ({
+    kicker: "Visual idea",
+    title:  "Region of integration",
+    svg: cvFrame(`
+      <line x1="40" y1="180" x2="290" y2="180" stroke="var(--ink-soft)" stroke-width="1.2"/>
+      <line x1="60" y1="30" x2="60" y2="200" stroke="var(--ink-soft)" stroke-width="1.2"/>
+      ${cvNote(296, 184, "x", {size:11, fill:"var(--ink-mute)"})}
+      ${cvNote(56, 28, "y", {size:11, fill:"var(--ink-mute)", anchor:"end"})}
+      <!-- region between y = x and y = x^2 from x=0 to x=1 scaled -->
+      <path d="M 60 180 Q 130 165 200 100 L 200 60 Q 130 130 60 180 Z"
+            fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.4"/>
+      ${cvNote(140, 92, "y = top(x)", {size:11, fill:"var(--ink-soft)", anchor:"middle"})}
+      ${cvNote(140, 165, "y = bot(x)", {size:11, fill:"var(--ink-soft)", anchor:"middle"})}
+      ${cvNote(60, 215, "a", {anchor:"middle", size:11})}
+      ${cvNote(200, 215, "b", {anchor:"middle", size:11})}
+      <line x1="200" y1="180" x2="200" y2="60" stroke="var(--ink-faint)" stroke-width="1"
+            stroke-dasharray="3 3"/>
+      ${cvNote(245, 40, "∫_a^b ∫_bot^top f dy dx",
+               {anchor:"middle", size:11, fill:"var(--red)"})}
+    `, {prefix:"cv-dr", t:"Double-integral region"}),
+    caption: "For a vertically simple region, integrate y from bot(x) to top(x), then x from a to b."
+  }),
+
+  /* ---------- Polar region ---------- */
+  polarRegion: () => ({
+    kicker: "Visual idea",
+    title:  "Polar region — sweep r between θ-rays",
+    svg: cvFrame(`
+      <line x1="40" y1="170" x2="290" y2="170" stroke="var(--ink-soft)" stroke-width="1.2"/>
+      <line x1="60" y1="20" x2="60" y2="190" stroke="var(--ink-soft)" stroke-width="1.2"/>
+      <!-- annular sector from θ = 10° to θ = 60°, r from 30 to 110 -->
+      <path d="M 60 170
+               L 138 156
+               A 78 78 0 0 0 99 100
+               L 79 144
+               A 30 30 0 0 1 90 167 Z"
+            fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.4"/>
+      <!-- rays -->
+      <line x1="60" y1="170" x2="155" y2="153" stroke="var(--ink-mute)" stroke-width="1"
+            stroke-dasharray="3 3"/>
+      <line x1="60" y1="170" x2="115" y2="83" stroke="var(--ink-mute)" stroke-width="1"
+            stroke-dasharray="3 3"/>
+      <path d="M 100 170 A 40 40 0 0 0 87 138" stroke="var(--ink-soft)"
+            stroke-width="1" fill="none"/>
+      ${cvNote(105, 158, "θ", {size:12, fill:"var(--ink-soft)", italic:false})}
+      ${cvNote(160, 130, "r", {size:13, fill:"var(--red)", italic:true})}
+      ${cvNote(160, 210, "dA = r dr dθ", {anchor:"middle", size:12, fill:"var(--red)"})}
+    `, {prefix:"cv-pol", t:"Polar region"}),
+    caption: "In polar coordinates dA = r dr dθ — the extra r keeps area honest as you sweep around the origin."
+  }),
+
+  /* ---------- Green's theorem: closed region + CCW boundary ---------- */
+  greens: () => ({
+    kicker: "Visual idea",
+    title:  "Green's theorem — boundary ↔ region interior",
+    svg: cvFrame(`
+      <line x1="30" y1="180" x2="290" y2="180" stroke="var(--border)" stroke-width="1"/>
+      <line x1="50" y1="20" x2="50" y2="200" stroke="var(--border)" stroke-width="1"/>
+      <!-- closed region -->
+      <path d="M 90 160 C 80 100, 200 80, 240 130 C 250 160, 160 190, 90 160 Z"
+            fill="var(--red-tint)" stroke="var(--red)" stroke-width="2"/>
+      <!-- CCW orientation arrows along boundary -->
+      <line x1="84" y1="135" x2="83" y2="125" stroke="var(--red-deep)" stroke-width="2"
+            marker-end="url(#cv-grn-arrR)"/>
+      <line x1="155" y1="84" x2="170" y2="82" stroke="var(--red-deep)" stroke-width="2"
+            marker-end="url(#cv-grn-arrR)"/>
+      <line x1="246" y1="140" x2="248" y2="153" stroke="var(--red-deep)" stroke-width="2"
+            marker-end="url(#cv-grn-arrR)"/>
+      <line x1="170" y1="186" x2="155" y2="184" stroke="var(--red-deep)" stroke-width="2"
+            marker-end="url(#cv-grn-arrR)"/>
+      <!-- interior label -->
+      ${cvLabel(170, 132, "D", {fill:"var(--red-deep)", size:16, anchor:"middle"})}
+      ${cvNote(170, 152, "interior", {anchor:"middle", size:11, fill:"var(--ink-mute)"})}
+      ${cvNote(160, 210, "∮_∂D P dx + Q dy = ∬_D (Q_x − P_y) dA",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-grn", t:"Green's theorem"}),
+    caption: "Counterclockwise boundary ∂D circulates around the region D — line integral = double integral."
+  }),
+
+  /* ---------- Change of variables / Jacobian ---------- */
+  changeOfVars: () => ({
+    kicker: "Visual idea",
+    title:  "Change of variables — straighten a region",
+    svg: cvFrame(`
+      <rect x="30" y="100" width="80" height="60" fill="var(--bg-subtle)"
+            stroke="var(--ink-soft)" stroke-width="1.2"/>
+      ${cvNote(70, 134, "S", {anchor:"middle", size:14, fill:"var(--ink)"})}
+      ${cvNote(70, 178, "uv-plane", {anchor:"middle", size:11, fill:"var(--ink-mute)"})}
+      <line x1="125" y1="130" x2="180" y2="130" stroke="var(--ink-soft)" stroke-width="1.6"
+            marker-end="url(#cv-cov-arrI)"/>
+      ${cvLabel(152, 122, "T", {fill:"var(--ink-soft)", size:13, anchor:"middle"})}
+      <polygon points="200,160 280,150 270,80 195,90" fill="var(--red-tint)"
+               stroke="var(--red)" stroke-width="1.2"/>
+      ${cvNote(238, 130, "R", {anchor:"middle", size:14, fill:"var(--red)"})}
+      ${cvNote(238, 178, "xy-plane", {anchor:"middle", size:11, fill:"var(--ink-mute)"})}
+      ${cvNote(160, 35, "∬_R f dA = ∬_S f(T(u,v)) | J | du dv",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-cov", t:"Change of variables"}),
+    caption: "T maps a tidy S to the original region R. The Jacobian |J| corrects how T stretches area."
+  }),
+
+  /* ---------- Surface patch with normal ---------- */
+  surfacePatch: () => ({
+    kicker: "Visual idea",
+    title:  "Parametrized surface and its normal",
+    svg: cvFrame(`
+      <!-- a curved patch -->
+      <path d="M 50 130 Q 130 50 200 90 Q 270 130 290 90
+               L 290 140 Q 220 180 150 145 Q 100 120 50 175 Z"
+            fill="var(--bg-subtle)" stroke="var(--ink-soft)" stroke-width="1"/>
+      <!-- two tangent vectors r_u, r_v at one point -->
+      <circle cx="175" cy="115" r="3" fill="var(--ink)"/>
+      <line x1="175" y1="115" x2="220" y2="100" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-srf-arrI)"/>
+      ${cvLabel(226, 96, "r_u", {fill:"var(--ink)", size:12})}
+      <line x1="175" y1="115" x2="150" y2="160" stroke="var(--ink)" stroke-width="2"
+            marker-end="url(#cv-srf-arrI)"/>
+      ${cvLabel(132, 172, "r_v", {fill:"var(--ink)", size:12, anchor:"end"})}
+      <!-- normal = r_u × r_v -->
+      <line x1="175" y1="115" x2="195" y2="50" stroke="var(--red)" stroke-width="2.4"
+            marker-end="url(#cv-srf-arrR)"/>
+      ${cvLabel(201, 46, "n = r_u × r_v", {fill:"var(--red)", size:12})}
+      ${cvNote(160, 210, "dS = | r_u × r_v | du dv", {anchor:"middle", size:11})}
+    `, {prefix:"cv-srf", t:"Surface patch"}),
+    caption: "Tangent vectors r_u, r_v span the tangent plane; their cross product is normal to the surface."
+  }),
+
+  /* ---------- Flux through a surface ---------- */
+  flux: () => ({
+    kicker: "Visual idea",
+    title:  "Flux — vector field through an oriented surface",
+    svg: cvFrame(`
+      <!-- curved surface (dome) -->
+      <path d="M 50 160 Q 160 30 270 160 Z" fill="var(--red-tint)"
+            stroke="var(--red)" stroke-width="1.4"/>
+      <!-- field arrows poking through, varying angle -->
+      <line x1="100" y1="180" x2="105" y2="115" stroke="var(--ink-soft)" stroke-width="1.4"
+            marker-end="url(#cv-flx-arrM)"/>
+      <line x1="160" y1="190" x2="160" y2="75" stroke="var(--ink-soft)" stroke-width="1.4"
+            marker-end="url(#cv-flx-arrM)"/>
+      <line x1="220" y1="180" x2="215" y2="115" stroke="var(--ink-soft)" stroke-width="1.4"
+            marker-end="url(#cv-flx-arrM)"/>
+      <!-- a normal vector on the surface -->
+      <line x1="160" y1="75" x2="160" y2="30" stroke="var(--red-deep)" stroke-width="2.2"
+            marker-end="url(#cv-flx-arrR)"/>
+      ${cvLabel(168, 30, "n", {fill:"var(--red-deep)", size:14})}
+      ${cvNote(160, 210, "Flux = ∬_S F · n dS", {anchor:"middle", size:12, fill:"var(--red)"})}
+    `, {prefix:"cv-flx", t:"Flux"}),
+    caption: "Flux measures how much of F passes through S in the direction of the chosen normal n."
+  }),
+
+  /* ---------- Stokes' theorem ---------- */
+  stokes: () => ({
+    kicker: "Visual idea",
+    title:  "Stokes' theorem — surface curl ↔ boundary circulation",
+    svg: cvFrame(`
+      <!-- disk-like surface in perspective -->
+      <ellipse cx="160" cy="120" rx="110" ry="36" fill="var(--red-tint)"
+               stroke="var(--red)" stroke-width="1.6"/>
+      <!-- boundary orientation arrows -->
+      <line x1="50" y1="120" x2="50" y2="113" stroke="var(--red-deep)" stroke-width="2"
+            marker-end="url(#cv-stk-arrR)"/>
+      <line x1="160" y1="84"  x2="170" y2="84"  stroke="var(--red-deep)" stroke-width="2"
+            marker-end="url(#cv-stk-arrR)"/>
+      <line x1="270" y1="120" x2="270" y2="128" stroke="var(--red-deep)" stroke-width="2"
+            marker-end="url(#cv-stk-arrR)"/>
+      <line x1="160" y1="156" x2="148" y2="156" stroke="var(--red-deep)" stroke-width="2"
+            marker-end="url(#cv-stk-arrR)"/>
+      <!-- curl arrows inside -->
+      <path d="M 130 110 A 20 8 0 1 0 170 110" stroke="var(--ink-soft)" stroke-width="1.4"
+            fill="none" marker-end="url(#cv-stk-arrM)"/>
+      <path d="M 110 130 A 20 8 0 1 0 150 130" stroke="var(--ink-soft)" stroke-width="1.4"
+            fill="none" marker-end="url(#cv-stk-arrM)"/>
+      <!-- normal -->
+      <line x1="160" y1="120" x2="160" y2="50" stroke="var(--red-deep)" stroke-width="2.2"
+            stroke-dasharray="4 3" marker-end="url(#cv-stk-arrR)"/>
+      ${cvLabel(168, 50, "n", {fill:"var(--red-deep)", size:13})}
+      ${cvNote(160, 35, "S", {anchor:"middle", size:13, fill:"var(--red-deep)", italic:true})}
+      ${cvNote(160, 195, "∮_∂S F · dr = ∬_S (∇×F) · n dS",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-stk", t:"Stokes' theorem"}),
+    caption: "Circulation around the boundary equals the total curl through S, oriented by n."
+  }),
+
+  /* ---------- Triple integral region (tetrahedron) ---------- */
+  tripleRegion: () => ({
+    kicker: "Visual idea",
+    title:  "Triple integral — a 3D region with bounds",
+    svg: cvFrame(`
+      <!-- axes -->
+      <line x1="60" y1="180" x2="280" y2="180" stroke="var(--ink-soft)" stroke-width="1.2"
+            marker-end="url(#cv-tr3-arrI)"/>
+      <line x1="60" y1="180" x2="60" y2="40" stroke="var(--ink-soft)" stroke-width="1.2"
+            marker-end="url(#cv-tr3-arrI)"/>
+      <line x1="60" y1="180" x2="160" y2="120" stroke="var(--ink-soft)" stroke-width="1.2"
+            marker-end="url(#cv-tr3-arrI)"/>
+      ${cvNote(286, 184, "x", {size:11, fill:"var(--ink-mute)"})}
+      ${cvNote(56, 36, "z", {size:11, fill:"var(--ink-mute)", anchor:"end"})}
+      ${cvNote(164, 120, "y", {size:11, fill:"var(--ink-mute)"})}
+      <!-- tetrahedron vertices: origin (60,180), x-axis (210, 180), y-axis (135, 135), z-axis (60, 70) -->
+      <polygon points="60,180 210,180 135,135" fill="var(--red-tint)"
+               stroke="var(--red)" stroke-width="1.2" opacity="0.7"/>
+      <polygon points="60,180 210,180 60,70" fill="var(--red-soft)"
+               stroke="var(--red)" stroke-width="1.2" opacity="0.6"/>
+      <polygon points="60,180 135,135 60,70" fill="#FFFFFF" opacity="0.4"
+               stroke="var(--red)" stroke-width="1.2"/>
+      <line x1="210" y1="180" x2="60" y2="70" stroke="var(--red)" stroke-width="1.2"/>
+      <line x1="210" y1="180" x2="135" y2="135" stroke="var(--red)" stroke-width="1.2"/>
+      <line x1="135" y1="135" x2="60" y2="70" stroke="var(--red)" stroke-width="1.2"/>
+      ${cvNote(160, 210, "bounds: 0 ≤ z ≤ top(x,y), region in xy-plane",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-tr3", t:"Triple integral region"}),
+    caption: "Pick an order (e.g. dz dy dx) and integrate the innermost over the slice at each step."
+  }),
+
+  /* ---------- Critical points / extrema ---------- */
+  extrema: () => ({
+    kicker: "Visual idea",
+    title:  "Critical points — where ∇f = 0",
+    svg: cvFrame(`
+      <!-- a wavy surface silhouette -->
+      <path d="M 30 140 Q 80 70 120 130 Q 160 200 200 100 Q 240 40 290 130"
+            fill="none" stroke="var(--ink-soft)" stroke-width="1.6"/>
+      <!-- min (left bowl bottom-ish at 120,130 — that's a min) -->
+      <circle cx="120" cy="130" r="4" fill="var(--gold)"/>
+      ${cvNote(112, 148, "min", {anchor:"middle", size:11, fill:"var(--gold)"})}
+      <!-- saddle: middle inflection-ish at 160, 165 -->
+      <circle cx="160" cy="165" r="4" fill="var(--ink)"/>
+      ${cvNote(160, 184, "saddle", {anchor:"middle", size:11, fill:"var(--ink)"})}
+      <!-- max -->
+      <circle cx="240" cy="40" r="4" fill="var(--red)"/>
+      ${cvNote(248, 36, "max", {size:11, fill:"var(--red)"})}
+      ${cvNote(160, 208, "second derivative test classifies them",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-ext", t:"Critical points"}),
+    caption: "At critical points the gradient vanishes; the Hessian sorts mins from maxes from saddles."
+  }),
+
+  /* ---------- Conservative test / curl ---------- */
+  curlVis: () => ({
+    kicker: "Visual idea",
+    title:  "Curl — local rotation of a vector field",
+    svg: cvFrame(`
+      <rect x="40" y="30" width="240" height="160" fill="#FFFFFF"
+            stroke="var(--border)" stroke-width="1"/>
+      ${(() => {
+        let out = "";
+        for (let i = 0; i < 5; i++) {
+          for (let j = 0; j < 4; j++) {
+            const cx = 70 + i * 40;
+            const cy = 50 + j * 36;
+            const dx = -(cy - 110);
+            const dy =  (cx - 160);
+            const len = Math.sqrt(dx*dx + dy*dy) || 1;
+            const k = 12 / len;
+            const x2 = cx + dx * k;
+            const y2 = cy + dy * k;
+            out += `<line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"
+                          stroke="var(--ink-faint)" stroke-width="1"
+                          marker-end="url(#cv-crl-arrM)"/>`;
+          }
+        }
+        return out;
+      })()}
+      <!-- a small paddle at center -->
+      <circle cx="160" cy="110" r="22" fill="none" stroke="var(--red)" stroke-width="1.6"
+              stroke-dasharray="3 3"/>
+      <path d="M 160 88 A 22 22 0 0 1 182 110" stroke="var(--red)" stroke-width="2.2"
+            fill="none" marker-end="url(#cv-crl-arrR)"/>
+      ${cvNote(160, 210, "∇ × F at a point measures the local spin",
+               {anchor:"middle", size:11})}
+    `, {prefix:"cv-crl", t:"Curl of a field"}),
+    caption: "Drop a tiny paddlewheel into F: curl tells you how fast (and which way) it spins."
+  }),
+
+};
+
+/* ============================================================
+   PICKER — choose a visual based on problem skills + title.
+   Order matters: most specific patterns first.
+   ============================================================ */
+
+function pickConceptVisual(p) {
+  if (!p) return null;
+  const skills = (p.skills || []).map(s => String(s).toLowerCase());
+  const title  = String(p.title || "").toLowerCase();
+  const text   = String(p.problemLatex || "").toLowerCase();
+  const flav   = String(p.examFlavor || "").toLowerCase();
+  const all    = [title, text, flav].concat(skills);
+
+  const has = (...kws) => kws.some(kw =>
+    all.some(s => s.includes(kw))
+  );
+
+  // Vector calculus — most specific first
+  if (has("stokes")) return CONCEPT.stokes();
+  if (has("divergence theorem", "flux through a closed surface")) return CONCEPT.flux();
+  if (has("flux", "vector surface integral", "outward orientation")) return CONCEPT.flux();
+  if (has("scalar surface integral", "surface area", "{r_u × r_v}", "parameterize a graph surface", "parameterize a cylindrical surface", "graph parametrization", "parametric surface")) return CONCEPT.surfacePatch();
+  if (has("triple integral", "tetrahedral", "cylindrical-coordinate", "cylindrical coordinates")) return CONCEPT.tripleRegion();
+  if (has("green's theorem", "greens theorem", "green theorem", "q_x-p_y", "q_x − p_y")) return CONCEPT.greens();
+  if (has("change of variable", "jacobian", "transform a parallelogram", "elliptical region", "scaled polar")) return CONCEPT.changeOfVars();
+  if (has("polar coordinates", "polar double integral", "polar integral", "da=r", "quarter disk")) return CONCEPT.polarRegion();
+  if (has("double integral", "iterated integral", "vertically simple", "switch the order", "non-rectangular region", "sketch a region")) return CONCEPT.doubleRegion();
+  if (has("conservative", "potential function", "gradient field", "path independence", "path-dependent", "fundamental theorem of line integrals")) return CONCEPT.conservative();
+  if (has("line integral", "parametrize a line segment", "piecewise paths", "parametrize a circle with orientation")) return CONCEPT.lineIntegral();
+  if (has("curl", "divergence", "source/sink", "local rotation")) return CONCEPT.curlVis();
+  if (has("vector field")) return CONCEPT.vectorField();
+
+  // Multivariable calculus
+  if (has("critical point", "second derivative test", "absolute extrema", "boundary behavior on a closed", "interior critical")) return CONCEPT.extrema();
+  if (has("tangent plane", "linearization")) return CONCEPT.tangentPlane();
+  if (has("gradient", "directional derivative", "direction of maximum increase", "use the gradient as a normal")) return CONCEPT.gradient();
+  if (has("level curve", "level set", "describe level curves", "interpret a scalar function geometrically")) return CONCEPT.levelCurves();
+  if (has("vector-valued curve", "speed and unit tangent", "arc length", "parametrize a circle in the xy-plane", "differentiate a vector-valued curve")) return CONCEPT.parametricCurve();
+  // partial derivatives & chain rule fall through to no visual
+
+  // Linear algebra: geometry-rich first
+  if (has("eigen")) return CONCEPT.eigenvector();
+  if (has("cross product", "scalar triple product", "parallelepiped", "signed volume", "parallelogram and triangle area")) {
+    if (has("scalar triple product", "parallelepiped", "signed volume")) return CONCEPT.tripleProduct();
+    return CONCEPT.crossProduct();
+  }
+  if (has("projection", "split a vector into parallel and perpendicular", "scalar component", "closest point", "perpendicular component", "vector components parallel and perpendicular")) return CONCEPT.projection();
+  if (has("determinant as an area scale factor", "area scale", "sign and magnitude of a determinant")) return CONCEPT.determinant();
+  if (has("determinant", "invertibility", "singular", "row replacement", "row swap", "scalar multiplication determinant", "determinant of a transpose", "determinant of an inverse", "determinant product rule", "values that make a matrix singular", "compute a 3 by 3 inverse", "solve ax=b using an inverse")) return CONCEPT.determinant();
+  if (has("standard matrix of a transformation", "linear map", "kernel", "image/range", "transformation equation", "evaluate a transformation", "matrix of a transformation", "apply a linear map", "linearity")) return CONCEPT.transformation();
+  if (has("rref", "row reduce", "pivot", "rank", "null space", "column space", "row space", "rank and nullity", "augmented matrix", "parametric vector solution", "consistency", "inconsistent")) return CONCEPT.rref();
+  if (has("linear independ", "linear depend", "dependence relation", "redundant vectors")) return CONCEPT.linearIndep();
+  if (has("coordinate vector", "coordinates in a basis", "verify a basis", "determine the dimension of a span")) return CONCEPT.basisCoords();
+  if (has("subspace", "homogeneous solution set", "parametrize a subspace", "test closure", "recognize a homogeneous solution set")) return CONCEPT.subspace();
+  if (has("plane", "use a normal vector to describe a plane", "write a plane equation")) return CONCEPT.spanPlane();
+  if (has("span", "spanning", "linear combination", "vector is in a span", "remove redundant", "write a vector as a linear combination")) {
+    // single-vector span feels like a line; multi-vector span like a plane.
+    if (has("two direction vectors", "spanning set", "remove redundant", "linear combination of others")) return CONCEPT.spanPlane();
+    return CONCEPT.spanLine();
+  }
+  if (has("perpendicular", "orthogonal", "angle between", "geometric condition", "dot product")) return CONCEPT.dotProduct();
+  if (has("symmetric matrix", "m^t=m")) return CONCEPT.symmetric();
+  if (has("multiply", "matrix product", "product dimensions", "track matrix dimensions", "matrix powers", "(ab)", "noncommutativity")) return CONCEPT.matrixDims();
+  if (has("add and scale vectors", "magnitude", "find magnitudes and distances", "vector arithmetic")) return CONCEPT.vectorAdd();
+
+  return null;
+}
+
+
+/* ============================================================
+   RENDER: PROBLEM (study view)
+   ============================================================ */
+
+function renderProblem(problemId) {
+  const p = State.problemsById.get(problemId);
+  if (!p) {
+    if (State.sectionsData.length === 0) {
+      // Still loading — show shimmer; init() will call handleRoute() again.
+      $("#studyMain").innerHTML = `
+        <div class="skeleton" style="height: 24px; width: 30%; margin-bottom: 12px;"></div>
+        <div class="skeleton" style="height: 36px; width: 70%; margin-bottom: 24px;"></div>
+        <div class="skeleton" style="height: 140px; width: 100%; margin-bottom: 18px;"></div>
+        <div class="skeleton" style="height: 50px; width: 100%; margin-bottom: 10px;"></div>
+        <div class="skeleton" style="height: 50px; width: 100%; margin-bottom: 10px;"></div>`;
+      $("#studySide").innerHTML = "";
+      return;
+    }
+    $("#studyMain").innerHTML = `<div class="error-state">
+      <h3>Problem not found</h3><div>This problem ID isn't in the loaded library.</div>
+    </div>`;
+    $("#studySide").innerHTML = "";
+    return;
+  }
+  State.currentProblem = p;
+
+  // Back button target
+  $("#problemBackBtn").onclick = () => navigate(`/section/${p.sectionPos}`);
+
+  // Compute neighbor problems
+  const section = State.sectionsByPos.get(p.sectionPos);
+  const idx = section.problems.findIndex(x => x.id === p.id);
+  const prev = idx > 0 ? section.problems[idx - 1] : null;
+  const next = idx < section.problems.length - 1 ? section.problems[idx + 1] : null;
+
+  const status  = getStatus(p.id);
+  const scratch = getScratch(p.id);
+
+  // Build reveal blocks dynamically
+  const hintBlocks = (p.hints || []).map((h, i) => revealBlock({
+    label: `Hint ${i + 1}`,
+    n: i + 1,
+    body: `<div class="math-block">${h}</div>`
+  })).join("");
+
+  const setupBlock = p.setupLatex ? revealBlock({
+    label: "Setup",
+    n: "S",
+    body: `<div class="math-block">${p.setupLatex}</div>`
+  }) : "";
+
+  const solutionBody = (p.solutionSteps || []).map((step, i) => `
+    <div class="sol-step">
+      <div class="sol-step-label">
+        <span class="n">${i + 1}</span>
+        <span>${escapeHtml(step.label || `Step ${i + 1}`)}</span>
+      </div>
+      <div class="math-block">${step.latex || step.text || ""}</div>
+    </div>`).join("");
+
+  const solutionBlock = (p.solutionSteps && p.solutionSteps.length) ? revealBlock({
+    label: "Worked Solution",
+    n: "✓",
+    body: solutionBody
+  }) : "";
+
+  const answerBlock = p.finalAnswerLatex ? revealBlock({
+    label: "Final Answer",
+    n: "=",
+    body: `<div class="final-answer-box">
+             <div class="final-answer-label">Final Answer</div>
+             <div class="math-block">${p.finalAnswerLatex}</div>
+           </div>`
+  }) : "";
+
+  const mistakesBlock = (p.commonMistakes && p.commonMistakes.length) ? revealBlock({
+    label: "Common Mistakes",
+    n: "!",
+    body: `<ul class="mistakes-list">${p.commonMistakes.map(m =>
+      `<li><div class="math-block" style="display:inline-block;">${m}</div></li>`).join("")}</ul>`
+  }) : "";
+
+  const similarBlock = p.similarProblemPrompt ? revealBlock({
+    label: "Try a Similar Problem",
+    n: "↻",
+    body: `<div class="math-block" style="color:var(--ink-soft);">${p.similarProblemPrompt}</div>`
+  }) : "";
+
+  // Mailto for report
+  const subject = encodeURIComponent(`21-254 Practice Lab Issue: ${p.id}`);
+  const body    = encodeURIComponent(
+    `Problem ID: ${p.id}\nSection: ${p.section}\nTitle: ${p.title}\n\nWhat seems incorrect or confusing?\n`
+  );
+  const mailto  = `mailto:mbocksta@andrew.cmu.edu?subject=${subject}&body=${body}`;
+
+  $("#studyMain").innerHTML = `
+    <div class="study-section-tag">Section ${String(p.sectionPos).padStart(2,'0')} · ${escapeHtml(p.section)}</div>
+    <h1 class="study-title">${escapeHtml(p.title)}</h1>
+
+    <div class="study-metabar">
+      ${p.difficulty ? `<span class="pill ${classForDifficulty(p.difficulty)}">${escapeHtml(p.difficulty)}</span>` : ""}
+      ${p.estimatedMinutes ? `<span class="pill">~${p.estimatedMinutes} min</span>` : ""}
+      ${p.topic ? `<span class="pill">${escapeHtml(p.topic)}</span>` : ""}
+      ${status === "got" ? `<span class="pill status-got">Got it</span>` : ""}
+
+    </div>
+
+    ${p.skills && p.skills.length ? `
+      <div class="skills-row">
+        <strong>Skills practiced</strong>
+        ${p.skills.map(s => `<span class="skill-chip">${escapeHtml(s)}</span>`).join("")}
+      </div>` : ""}
+
+    <div class="problem-statement">
+      <div class="math-block tex2jax_process">${p.problemLatex || "<em style='color:var(--ink-mute)'>No problem statement.</em>"}</div>
+    </div>
+
+    ${(() => {
+      const cv = pickConceptVisual(p);
+      if (!cv) return "";
+      return `
+        <div class="concept-panel">
+          <div class="concept-panel-header">
+            <span class="concept-panel-kicker">${cv.kicker}</span>
+            <h3 class="concept-panel-title">${cv.title}</h3>
+            <span class="concept-panel-tag">Not to scale</span>
+          </div>
+          <div class="concept-svg-wrap">${cv.svg}</div>
+          <p class="concept-caption">${cv.caption}</p>
+        </div>`;
+    })()}
+
+    ${p.thinkFirst ? `
+      <div class="think-first">
+        <strong>Think first</strong>
+        <div class="math-block">${p.thinkFirst}</div>
+      </div>` : ""}
+
+    <div class="scratch">
+      <label for="scratchBox">Write your attempt here before revealing the solution.</label>
+      <textarea id="scratchBox" placeholder="Your work, ideas, or false starts — saved locally to your browser.">${escapeHtml(scratch)}</textarea>
+    </div>
+
+    ${hintBlocks}
+    ${setupBlock}
+    ${solutionBlock}
+    ${answerBlock}
+    ${mistakesBlock}
+    ${similarBlock}
+
+    <div class="study-actions">
+      <button class="btn ${status === 'got' ? 'btn-primary' : 'btn-ghost'}" id="markGot">
+        ${status === "got" ? "✓ Got it" : "Mark as Got It"}
+      </button>
+      ${status ? `<button class="btn btn-ghost btn-sm" id="clearStatus">Clear status</button>` : ""}
+      <a class="btn btn-ghost btn-sm" href="${mailto}" id="reportBtn" aria-label="Report an issue with this problem">
+        Report Issue
+      </a>
+    </div>
+  `;
+
+  // Sidebar
+  $("#studySide").innerHTML = `
+    <div class="side-card">
+      <h4>Problem Info</h4>
+      <dl class="side-meta">
+        <dt>ID</dt><dd style="font-family: var(--font-mono); font-size: 12.5px;">${escapeHtml(p.id)}</dd>
+        ${p.unit ? `<dt>Unit</dt><dd>${escapeHtml(p.unit)}</dd>` : ""}
+        ${p.difficulty ? `<dt>Level</dt><dd>${escapeHtml(p.difficulty)}</dd>` : ""}
+        ${p.estimatedMinutes ? `<dt>Est. time</dt><dd>${p.estimatedMinutes} min</dd>` : ""}
+        ${p.examFlavor ? `<dt>Style</dt><dd>${escapeHtml(p.examFlavor)}</dd>` : ""}
+      </dl>
+    </div>
+    <div class="side-card">
+      <h4>Move Through Section</h4>
+      <div class="study-nav">
+        <button class="btn btn-ghost btn-sm" ${prev ? `data-go="${prev.id}"` : "disabled"}>← Prev</button>
+        <button class="btn btn-ghost btn-sm" ${next ? `data-go="${next.id}"` : "disabled"}>Next →</button>
+      </div>
+      <div style="margin-top:10px; font-size:12.5px; color:var(--ink-mute);">
+        ${idx + 1} of ${section.problems.length} in section
+      </div>
+    </div>
+    <div class="side-card">
+      <h4>Find Something Else</h4>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="btn btn-ghost btn-sm btn-block" id="sideRandom">Random Problem</button>
+        <button class="btn btn-ghost btn-sm btn-block" id="sideRandomSection">Random from Section</button>
+        <button class="btn btn-ghost btn-sm btn-block" data-route="/section/${p.sectionPos}">Back to Section</button>
+      </div>
+    </div>
+  `;
+
+  wireProblemView(p, prev, next);
+
+  // Re-render math
+  typesetMath($("#view-problem"));
+}
+
+function revealBlock({ label, n, body }) {
+  return `
+    <div class="reveal-block">
+      <button class="reveal-trigger" type="button" aria-expanded="false">
+        <span class="left">
+          <span class="icon">${escapeHtml(String(n))}</span>
+          <span>${escapeHtml(label)}</span>
+        </span>
+        <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+      <div class="reveal-body">
+        <div class="reveal-body-inner">${body}</div>
+      </div>
+    </div>`;
+}
+
+function wireProblemView(p, prev, next) {
+  // Reveal toggles with smooth height animation
+  $$("#view-problem .reveal-block").forEach(block => {
+    const trigger = block.querySelector(".reveal-trigger");
+    const body    = block.querySelector(".reveal-body");
+    trigger.addEventListener("click", () => {
+      const open = block.classList.toggle("open");
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        body.style.maxHeight = body.scrollHeight + "px";
+        // After expand, re-measure (math may have changed height); ensure typeset.
+        setTimeout(() => {
+          body.style.maxHeight = body.scrollHeight + "px";
+        }, 480);
+      } else {
+        body.style.maxHeight = "0px";
+      }
+    });
+  });
+
+  // Scratch persistence
+  const ta = $("#scratchBox");
+  if (ta) {
+    let saveT;
+    ta.addEventListener("input", () => {
+      clearTimeout(saveT);
+      saveT = setTimeout(() => setScratch(p.id, ta.value), 250);
+    });
+  }
+
+  // Status actions
+  $("#markGot")?.addEventListener("click", () => {
+    const cur = getStatus(p.id);
+    setStatus(p.id, cur === "got" ? null : "got");
+    renderProblem(p.id);
+  });
+  $("#clearStatus")?.addEventListener("click", () => {
+    setStatus(p.id, null);
+    renderProblem(p.id);
+  });
+
+  // Sidebar nav
+  $$("#view-problem .study-nav button[data-go]").forEach(b => {
+    b.addEventListener("click", () => navigate(`/problem/${b.dataset.go}`));
+  });
+  $("#sideRandom")?.addEventListener("click", () => {
+    const all = Array.from(State.problemsById.values());
+    const pick = all[Math.floor(Math.random() * all.length)];
+    if (pick) navigate(`/problem/${pick.id}`);
+  });
+  $("#sideRandomSection")?.addEventListener("click", () => {
+    const section = State.sectionsByPos.get(p.sectionPos);
+    const pick = section.problems[Math.floor(Math.random() * section.problems.length)];
+    if (pick) navigate(`/problem/${pick.id}`);
+  });
+}
+
+/* ============================================================
+   RENDER: EXAM MODE
+   ============================================================ */
+
+function renderExamSetup() {
+  // Sync UI to State
+  $$("[data-exam-pick]").forEach(b => {
+    b.classList.toggle("selected", b.dataset.examPick === State.examChoice);
+  });
+  $$("[data-size-pick]").forEach(b => {
+    b.classList.toggle("selected", Number(b.dataset.sizePick) === State.examSize);
+  });
+  // If a set is already generated, render it
+  if (State.examSet) renderExamSet();
+  else $("#examSetContainer").innerHTML = "";
+}
+
+function generateExamSet() {
+  const cfg = EXAM_MAP[State.examChoice];
+  if (!cfg) return;
+  const pool = [];
+  cfg.sections.forEach(pos => {
+    const sec = State.sectionsByPos.get(pos);
+    if (sec) sec.problems.forEach(p => pool.push(p));
+  });
+  if (!pool.length) {
+    $("#examSetContainer").innerHTML = `<div class="error-state">
+      <h3>No problems available</h3>
+      <div>The matched sections don't have problems loaded yet.</div></div>`;
+    return;
+  }
+  const n = Math.min(State.examSize, pool.length);
+  State.examSet = shuffle(pool).slice(0, n);
+  $("#examReshuffle").style.display = "";
+  renderExamSet();
+}
+
+function renderExamSet() {
+  if (!State.examSet) return;
+  const cfg = EXAM_MAP[State.examChoice];
+  const set = State.examSet;
+  const html = `
+    <div class="section-head">
+      <div>
+        <div class="kicker">${escapeHtml(cfg.title)} · ${set.length} problems</div>
+        <h2>Your review set</h2>
+        <p>Drawn from sections ${cfg.sections.join(", ")}. Each problem opens in the full study view.</p>
+      </div>
+    </div>
+    <div class="prob-list">
+      ${set.map((p, i) => {
+        const st = getStatus(p.id);
+        return `
+        <button class="prob-row" data-problem-id="${escapeHtml(p.id)}">
+          <div class="prob-row-main">
+            <div class="prob-row-title">${String(i+1).padStart(2,'0')}. ${escapeHtml(p.title)}</div>
+            <div class="prob-row-sub">
+              <span>Section ${p.sectionPos}</span>
+              ${p.estimatedMinutes ? `<span>~${p.estimatedMinutes} min</span>` : ""}
+              ${(p.skills || []).slice(0, 2).map(s => `<span>${escapeHtml(s)}</span>`).join("")}
+            </div>
+          </div>
+          <div class="prob-row-right">
+            ${p.difficulty ? `<span class="pill ${classForDifficulty(p.difficulty)}">${escapeHtml(p.difficulty)}</span>` : ""}
+            ${st === "got" ? `<span class="pill status-got">Got it</span>` : ""}
+    
+          </div>
+        </button>`;
+      }).join("")}
+    </div>
+  `;
+  $("#examSetContainer").innerHTML = html;
+  typesetMath($("#examSetContainer"));
+}
+
+/* ============================================================
+   GLOBAL EVENT WIRING
+   ============================================================ */
+
+function wireGlobal() {
+  // Click delegation for [data-route]
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-route]");
+    if (t) {
+      e.preventDefault();
+      navigate(t.dataset.route);
+      return;
+    }
+    // Problem rows
+    const row = e.target.closest(".prob-row[data-problem-id]");
+    if (row) {
+      e.preventDefault();
+      navigate(`/problem/${row.dataset.problemId}`);
+      return;
+    }
+  });
+  // Keyboard activation for brand div (semantic but built as div for layout)
+  $(".brand").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/home"); }
+  });
+
+  // Mobile nav toggle
+  $("#navToggle").addEventListener("click", () => {
+    $("#topnav").classList.toggle("open");
+  });
+
+  // Exam tabs (topics view)
+  $("#examTabs").addEventListener("click", (e) => {
+    const b = e.target.closest(".exam-tab");
+    if (!b) return;
+    activeExamFilter = b.dataset.exam;
+    renderTopics();
+  });
+
+  // Section filters
+  $("#filterSearch").addEventListener("input", (e) => {
+    State.filters.search = e.target.value;
+    renderProblemList();
+  });
+  $("#filterDifficulty").addEventListener("change", (e) => {
+    State.filters.difficulty = e.target.value;
+    renderProblemList();
+  });
+  $("#filterStatus").addEventListener("change", (e) => {
+    State.filters.status = e.target.value;
+    renderProblemList();
+  });
+  $("#filterSort").addEventListener("change", (e) => {
+    State.filters.sort = e.target.value;
+    renderProblemList();
+  });
+  $("#randomBtn").addEventListener("click", () => {
+    const section = State.currentSection;
+    if (!section || !section.problems.length) return;
+    const p = section.problems[Math.floor(Math.random() * section.problems.length)];
+    navigate(`/problem/${p.id}`);
+  });
+
+  // Exam Mode controls
+  $("#examChoiceRow").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-exam-pick]");
+    if (!b) return;
+    State.examChoice = b.dataset.examPick;
+    State.examSet = null;
+    $("#examReshuffle").style.display = "none";
+    $("#examSetContainer").innerHTML = "";
+    renderExamSetup();
+  });
+  $("#examSizeRow").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-size-pick]");
+    if (!b) return;
+    State.examSize = Number(b.dataset.sizePick);
+    renderExamSetup();
+  });
+  $("#examGenerate").addEventListener("click", generateExamSet);
+  $("#examReshuffle").addEventListener("click", generateExamSet);
+
+  // Hash routing
+  window.addEventListener("hashchange", handleRoute);
+}
+
+/* ============================================================
+   STARTUP
+   ============================================================ */
+
+async function init() {
+  wireGlobal();
+
+  // Show first route immediately (home renders its own loading state)
+  if (!location.hash) navigate("/home", { replace: true });
+  handleRoute();
+
+  try {
+    await loadAllSections();
+  } catch (e) {
+    console.error("Failed loading sections:", e);
+  }
+
+  // Re-render the active view now that data is loaded
+  handleRoute();
+  updateStats();
+
+  // If any sections failed, show a polite banner under hero
+  if (State.loadErrors.length && State.loadErrors.length === SECTIONS.length) {
+    const hero = $(".hero");
+    const banner = document.createElement("div");
+    banner.className = "error-state";
+    banner.innerHTML = `
+      <h3>We couldn't load any problem files</h3>
+      <div>This site reads JSON files from the <code>/data</code> folder. Make sure those files exist in your repository and that GitHub Pages is enabled.</div>`;
+    hero.appendChild(banner);
+  } else if (State.loadErrors.length) {
+    console.warn("Some sections failed to load:", State.loadErrors);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+</body>
+</html>
