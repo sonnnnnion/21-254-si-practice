@@ -1,0 +1,459 @@
+{
+  "sectionId": "sec-06-diagonalization-projections-components-cross-product",
+  "sectionTitle": "Diagonalization, Projections, Components, and Cross Product",
+  "sectionPosition": 6,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice diagonalization, powers of diagonalizable matrices, eigenvector-based iteration, vector projections/components, cross products, planes, areas, and scalar triple products in the style of the Exam 2 material.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "diagprojcross-001",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "Diagonalize a Matrix and Compute a Power",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Find eigenvalues and eigenvectors",
+        "Build a diagonalization \\(A=PDP^{-1}\\)",
+        "Use diagonalization to compute a matrix power"
+      ],
+      "examFlavor": "Standard diagonalization problem with a matrix power follow-up",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}3&2\\\\0&1\\end{bmatrix}.\\]\n\n(a) Find a diagonalization \\(A=PDP^{-1}\\).\n\n(b) Use your diagonalization to compute \\(A^5\\).",
+      "thinkFirst": "Do not multiply the matrix by itself five times. Diagonalization is useful because powers of diagonal matrices are easy.",
+      "hints": [
+        "Since \\(A\\) is triangular, its eigenvalues are the diagonal entries.",
+        "Find one eigenvector for each eigenvalue, then use those eigenvectors as the columns of \\(P\\).",
+        "If \\(A=PDP^{-1}\\), then \\(A^5=PD^5P^{-1}\\)."
+      ],
+      "setupLatex": "The eigenvalues are \\(3\\) and \\(1\\). Since they are distinct, the matrix should be diagonalizable over \\(\\mathbb{R}\\).",
+      "solutionSteps": [
+        {
+          "label": "Find the eigenvectors",
+          "latex": "For \\(\\lambda=3\\),\n\\[A-3I=\\begin{bmatrix}0&2\\\\0&-2\\end{bmatrix},\\]\nso \\(y=0\\), and one eigenvector is\n\\[v_1=\\begin{bmatrix}1\\\\0\\end{bmatrix}.\\]\n\nFor \\(\\lambda=1\\),\n\\[A-I=\\begin{bmatrix}2&2\\\\0&0\\end{bmatrix},\\]\nso \\(x+y=0\\). One eigenvector is\n\\[v_2=\\begin{bmatrix}-1\\\\1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Build \\(P\\) and \\(D\\)",
+          "latex": "Use the eigenvectors as the columns of \\(P\\), in the same order as the eigenvalues in \\(D\\):\n\\[P=\\begin{bmatrix}1&-1\\\\0&1\\end{bmatrix},\\qquad D=\\begin{bmatrix}3&0\\\\0&1\\end{bmatrix}.\\]\nThen\n\\[A=PDP^{-1}.\\]"
+        },
+        {
+          "label": "Compute the fifth power",
+          "latex": "First,\n\\[D^5=\\begin{bmatrix}3^5&0\\\\0&1^5\\end{bmatrix}=\\begin{bmatrix}243&0\\\\0&1\\end{bmatrix}.\\]\nAlso,\n\\[P^{-1}=\\begin{bmatrix}1&1\\\\0&1\\end{bmatrix}.\\]\nSo\n\\[A^5=PD^5P^{-1}=\\begin{bmatrix}1&-1\\\\0&1\\end{bmatrix}\\begin{bmatrix}243&0\\\\0&1\\end{bmatrix}\\begin{bmatrix}1&1\\\\0&1\\end{bmatrix}\n=\\begin{bmatrix}243&242\\\\0&1\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[P=\\begin{bmatrix}1&-1\\\\0&1\\end{bmatrix},\\quad D=\\begin{bmatrix}3&0\\\\0&1\\end{bmatrix},\\quad A^5=\\begin{bmatrix}243&242\\\\0&1\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Putting the eigenvalues in a different order than the corresponding eigenvectors in \\(P\\).",
+        "Computing \\(P^5D^5(P^{-1})^5\\) instead of \\(PD^5P^{-1}\\).",
+        "Forgetting that a triangular matrix has eigenvalues on the diagonal."
+      ],
+      "similarProblemPrompt": "Try the same problem for \\(A=\\begin{bmatrix}4&3\\\\0&2\\end{bmatrix}\\), then compute \\(A^4\\)."
+    },
+    {
+      "id": "diagprojcross-002",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "A Repeated Eigenvalue That Still Diagonalizes",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Handle repeated eigenvalues",
+        "Compare eigenspace dimension with multiplicity",
+        "Construct a diagonalization in \\(\\mathbb{R}^3\\)"
+      ],
+      "examFlavor": "Conceptual diagonalization problem with a repeated eigenvalue",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}2&0&0\\\\0&3&1\\\\0&1&3\\end{bmatrix}.\\]\n\n(a) Find the eigenvalues of \\(A\\), including their algebraic multiplicities.\n\n(b) Find bases for the eigenspaces.\n\n(c) Decide whether \\(A\\) is diagonalizable. If it is, give matrices \\(P\\) and \\(D\\) such that \\(A=PDP^{-1}\\).",
+      "thinkFirst": "A repeated eigenvalue is not automatically bad. The key question is whether the repeated eigenvalue has enough independent eigenvectors.",
+      "hints": [
+        "The first coordinate is separated from the bottom-right \\(2\\times2\\) block.",
+        "For \\(\\lambda=2\\), solve \\((A-2I)x=0\\), not just one equation from the characteristic polynomial.",
+        "A \\(3\\times3\\) matrix is diagonalizable if you can find three linearly independent eigenvectors."
+      ],
+      "setupLatex": "Because \\(A\\) is block triangular, the characteristic polynomial can be read from the \\(1\\times1\\) block \\([2]\\) and the bottom-right block \\(\\begin{bmatrix}3&1\\\\1&3\\end{bmatrix}\\).",
+      "solutionSteps": [
+        {
+          "label": "Find the characteristic polynomial",
+          "latex": "Using \\(p_A(\\lambda)=\\det(\\lambda I-A)\\),\n\\[p_A(\\lambda)=(\\lambda-2)\\det\\begin{bmatrix}\\lambda-3&-1\\\\-1&\\lambda-3\\end{bmatrix}.\\]\nThus\n\\[p_A(\\lambda)=(\\lambda-2)((\\lambda-3)^2-1)=(\\lambda-2)^2(\\lambda-4).\\]\nSo \\(\\lambda=2\\) has algebraic multiplicity \\(2\\), and \\(\\lambda=4\\) has algebraic multiplicity \\(1\\)."
+        },
+        {
+          "label": "Find the eigenspace for \\(\\lambda=2\\)",
+          "latex": "For \\(\\lambda=2\\),\n\\[A-2I=\\begin{bmatrix}0&0&0\\\\0&1&1\\\\0&1&1\\end{bmatrix}.\\]\nThe equation is \\(y+z=0\\), while \\(x\\) is free. Therefore\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\-1\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Find the eigenspace for \\(\\lambda=4\\)",
+          "latex": "For \\(\\lambda=4\\),\n\\[A-4I=\\begin{bmatrix}-2&0&0\\\\0&-1&1\\\\0&1&-1\\end{bmatrix}.\\]\nThe equations give \\(x=0\\) and \\(y=z\\). Thus\n\\[E_4=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Diagonalize",
+          "latex": "The eigenspace for \\(\\lambda=2\\) has dimension \\(2\\), matching its algebraic multiplicity. Together with the eigenvector for \\(\\lambda=4\\), we have three independent eigenvectors.\n\nSo \\(A\\) is diagonalizable. One valid choice is\n\\[P=\\begin{bmatrix}1&0&0\\\\0&1&1\\\\0&-1&1\\end{bmatrix},\\qquad D=\\begin{bmatrix}2&0&0\\\\0&2&0\\\\0&0&4\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\-1\\end{bmatrix}\\right\\},\\quad E_4=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix}\\right\\}.\\] One diagonalization is \\(A=PDP^{-1}\\) with \\[P=\\begin{bmatrix}1&0&0\\\\0&1&1\\\\0&-1&1\\end{bmatrix},\\quad D=\\begin{bmatrix}2&0&0\\\\0&2&0\\\\0&0&4\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Assuming a repeated eigenvalue means the matrix is automatically not diagonalizable.",
+        "Forgetting that the order of columns in \\(P\\) must match the order of diagonal entries in \\(D\\).",
+        "Only finding one eigenvector for \\(\\lambda=2\\) and stopping too early."
+      ],
+      "similarProblemPrompt": "Try changing the bottom-right block to \\(\\begin{bmatrix}3&2\\\\0&3\\end{bmatrix}\\) and compare what happens to diagonalizability."
+    },
+    {
+      "id": "diagprojcross-003",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "A Repeated Eigenvalue That Does Not Diagonalize",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Find algebraic multiplicity",
+        "Find geometric multiplicity",
+        "Explain failure of diagonalization"
+      ],
+      "examFlavor": "Diagonalizability decision with a repeated eigenvalue",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}4&1&0\\\\0&4&0\\\\0&0&2\\end{bmatrix}.\\]\n\n(a) Find the eigenvalues and their algebraic multiplicities.\n\n(b) Find the dimension of each eigenspace.\n\n(c) Is \\(A\\) diagonalizable? Explain.",
+      "thinkFirst": "The diagonal entries tell you the eigenvalues, but diagonalizability depends on eigenspace dimensions, not just eigenvalue values.",
+      "hints": [
+        "Because \\(A\\) is triangular, the eigenvalues are on the diagonal.",
+        "For \\(\\lambda=4\\), solve \\((A-4I)x=0\\) and count the number of free variables.",
+        "A \\(3\\times3\\) matrix needs three linearly independent eigenvectors to be diagonalizable."
+      ],
+      "setupLatex": "The eigenvalue \\(4\\) is repeated. We need to compare its algebraic multiplicity with the dimension of its eigenspace.",
+      "solutionSteps": [
+        {
+          "label": "Use triangular form for the eigenvalues",
+          "latex": "Since \\(A\\) is upper triangular, its eigenvalues are the diagonal entries:\n\\[\\lambda=4,4,2.\\]\nSo \\(\\lambda=4\\) has algebraic multiplicity \\(2\\), and \\(\\lambda=2\\) has algebraic multiplicity \\(1\\)."
+        },
+        {
+          "label": "Find the eigenspace for \\(\\lambda=4\\)",
+          "latex": "For \\(\\lambda=4\\),\n\\[A-4I=\\begin{bmatrix}0&1&0\\\\0&0&0\\\\0&0&-2\\end{bmatrix}.\\]\nThe equations are \\(y=0\\) and \\(z=0\\), with \\(x\\) free. Therefore\n\\[E_4=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix}\\right\\},\\]\nso \\(\\dim(E_4)=1\\)."
+        },
+        {
+          "label": "Find the eigenspace for \\(\\lambda=2\\)",
+          "latex": "For \\(\\lambda=2\\),\n\\[A-2I=\\begin{bmatrix}2&1&0\\\\0&2&0\\\\0&0&0\\end{bmatrix}.\\]\nThe equations force \\(y=0\\), then \\(x=0\\), while \\(z\\) is free. Thus\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}\\right\\},\\]\nso \\(\\dim(E_2)=1\\)."
+        },
+        {
+          "label": "Decide diagonalizability",
+          "latex": "The total number of independent eigenvectors is\n\\[\\dim(E_4)+\\dim(E_2)=1+1=2.\\]\nA \\(3\\times3\\) matrix needs \\(3\\) linearly independent eigenvectors to be diagonalizable, so \\(A\\) is not diagonalizable."
+        }
+      ],
+      "finalAnswerLatex": "\\(A\\) is not diagonalizable because \\(\\lambda=4\\) has algebraic multiplicity \\(2\\) but geometric multiplicity \\(1\\).",
+      "commonMistakes": [
+        "Saying the matrix is diagonalizable just because all eigenvalues are visible on the diagonal.",
+        "Confusing algebraic multiplicity with geometric multiplicity.",
+        "Forgetting to count the total number of independent eigenvectors."
+      ],
+      "similarProblemPrompt": "Try replacing the entry \\(1\\) above the repeated \\(4\\) by \\(0\\). Does the matrix become diagonalizable?"
+    },
+    {
+      "id": "diagprojcross-004",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "Use Eigenvectors to Compute \\(A^n x_0\\)",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Use an eigenbasis without explicitly knowing \\(A\\)",
+        "Write a vector as a linear combination of eigenvectors",
+        "Compute repeated matrix multiplication using eigenvalues"
+      ],
+      "examFlavor": "Conceptual diagonalization/eigenbasis problem",
+      "problemLatex": "Suppose \\(A\\) is a \\(2\\times2\\) matrix with eigenvectors\n\\[u=\\begin{bmatrix}1\\\\1\\end{bmatrix},\\qquad v=\\begin{bmatrix}1\\\\-1\\end{bmatrix},\\]\nwhere \\(Au=5u\\) and \\(Av=-v\\). Let\n\\[x_0=\\begin{bmatrix}3\\\\1\\end{bmatrix}.\\]\n\n(a) Write \\(x_0\\) as a linear combination of \\(u\\) and \\(v\\).\n\n(b) Find a formula for \\(A^n x_0\\).\n\n(c) Compute \\(A^3x_0\\).",
+      "thinkFirst": "If a vector is written in an eigenbasis, applying \\(A\\) only scales each eigenvector component.",
+      "hints": [
+        "Solve \\(x_0=c_1u+c_2v\\).",
+        "If \\(Au=5u\\), then \\(A^nu=5^nu\\).",
+        "If \\(Av=-v\\), then \\(A^nv=(-1)^nv\\)."
+      ],
+      "setupLatex": "The vectors \\(u\\) and \\(v\\) are linearly independent, so they form a basis for \\(\\mathbb{R}^2\\).",
+      "solutionSteps": [
+        {
+          "label": "Write \\(x_0\\) in the eigenbasis",
+          "latex": "We want\n\\[\\begin{bmatrix}3\\\\1\\end{bmatrix}=c_1\\begin{bmatrix}1\\\\1\\end{bmatrix}+c_2\\begin{bmatrix}1\\\\-1\\end{bmatrix}.\\]\nThis gives\n\\[c_1+c_2=3,\\qquad c_1-c_2=1.\\]\nAdding the equations gives \\(2c_1=4\\), so \\(c_1=2\\). Then \\(c_2=1\\). Therefore\n\\[x_0=2u+v.\\]"
+        },
+        {
+          "label": "Apply \\(A^n\\)",
+          "latex": "Using the eigenvalue scaling rules,\n\\[A^nx_0=A^n(2u+v)=2A^nu+A^nv.\\]\nSo\n\\[A^nx_0=2\\cdot5^n u+(-1)^n v.\\]"
+        },
+        {
+          "label": "Evaluate at \\(n=3\\)",
+          "latex": "When \\(n=3\\),\n\\[A^3x_0=2\\cdot5^3\\begin{bmatrix}1\\\\1\\end{bmatrix}+(-1)^3\\begin{bmatrix}1\\\\-1\\end{bmatrix}.\\]\nThus\n\\[A^3x_0=250\\begin{bmatrix}1\\\\1\\end{bmatrix}-\\begin{bmatrix}1\\\\-1\\end{bmatrix}=\\begin{bmatrix}249\\\\251\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[x_0=2u+v,\\qquad A^nx_0=2\\cdot5^nu+(-1)^nv,\\qquad A^3x_0=\\begin{bmatrix}249\\\\251\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Trying to find the actual matrix \\(A\\) even though the eigenbasis information is enough.",
+        "Forgetting that the negative eigenvalue becomes \\((-1)^n\\).",
+        "Writing \\(A^n(2u+v)=2A^nu+A^nv\\) correctly but then forgetting the coefficients."
+      ],
+      "similarProblemPrompt": "Try the same question with eigenvalues \\(2\\) and \\(3\\), and initial vector \\(x_0=\\begin{bmatrix}5\\\\-1\\end{bmatrix}\\)."
+    },
+    {
+      "id": "diagprojcross-005",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "Projection Onto a Vector and Orthogonal Decomposition",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Compute a vector projection",
+        "Split a vector into parallel and perpendicular components",
+        "Check orthogonality with a dot product"
+      ],
+      "examFlavor": "Projection and component computation",
+      "problemLatex": "Let\n\\[a=\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix},\\qquad b=\\begin{bmatrix}5\\\\1\\\\0\\end{bmatrix}.\\]\n\n(a) Find \\(\\operatorname{proj}_a(b)\\), the projection of \\(b\\) onto the line spanned by \\(a\\).\n\n(b) Write \\(b=b_{\\parallel}+b_{\\perp}\\), where \\(b_{\\parallel}\\) is parallel to \\(a\\) and \\(b_{\\perp}\\) is perpendicular to \\(a\\).\n\n(c) Verify that your perpendicular component is actually perpendicular to \\(a\\).",
+      "thinkFirst": "Projection is the parallel part. The perpendicular part is what remains after subtracting the projection from the original vector.",
+      "hints": [
+        "Use \\(\\operatorname{proj}_a(b)=\\frac{b\\cdot a}{a\\cdot a}a\\).",
+        "After finding \\(b_{\\parallel}\\), compute \\(b_{\\perp}=b-b_{\\parallel}\\).",
+        "To verify perpendicularity, compute \\(a\\cdot b_{\\perp}\\)."
+      ],
+      "setupLatex": "We will compute the scalar factor \\(\\frac{b\\cdot a}{a\\cdot a}\\) first.",
+      "solutionSteps": [
+        {
+          "label": "Compute the needed dot products",
+          "latex": "We have\n\\[b\\cdot a=5(2)+1(-1)+0(2)=9,\\]\nand\n\\[a\\cdot a=2^2+(-1)^2+2^2=9.\\]"
+        },
+        {
+          "label": "Find the projection",
+          "latex": "Therefore\n\\[\\operatorname{proj}_a(b)=\\frac{b\\cdot a}{a\\cdot a}a=\\frac{9}{9}a=a=\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix}.\\]\nSo\n\\[b_{\\parallel}=\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Find the perpendicular component",
+          "latex": "Now subtract:\n\\[b_{\\perp}=b-b_{\\parallel}=\\begin{bmatrix}5\\\\1\\\\0\\end{bmatrix}-\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix}=\\begin{bmatrix}3\\\\2\\\\-2\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Check perpendicularity",
+          "latex": "Finally,\n\\[a\\cdot b_{\\perp}=\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix}\\cdot\\begin{bmatrix}3\\\\2\\\\-2\\end{bmatrix}=6-2-4=0.\\]\nSo \\(b_{\\perp}\\) is perpendicular to \\(a\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[b_{\\parallel}=\\operatorname{proj}_a(b)=\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix},\\qquad b_{\\perp}=\\begin{bmatrix}3\\\\2\\\\-2\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Using \\(b\\cdot b\\) in the denominator instead of \\(a\\cdot a\\).",
+        "Forgetting that the projection is a vector, not just a scalar.",
+        "Calling \\(b-b_{\\parallel}\\) parallel instead of perpendicular."
+      ],
+      "similarProblemPrompt": "Try projecting \\(b=\\begin{bmatrix}1\\\\4\\\\2\\end{bmatrix}\\) onto \\(a=\\begin{bmatrix}2\\\\0\\\\1\\end{bmatrix}\\)."
+    },
+    {
+      "id": "diagprojcross-006",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "Closest Point on a Line Through the Origin",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Project onto a line",
+        "Find a closest point",
+        "Compute distance using the perpendicular component"
+      ],
+      "examFlavor": "Projection-as-geometry problem",
+      "problemLatex": "Let \\(L\\) be the line through the origin spanned by\n\\[u=\\begin{bmatrix}1\\\\2\\\\2\\end{bmatrix}.\\]\nLet\n\\[p=\\begin{bmatrix}4\\\\1\\\\3\\end{bmatrix}.\\]\n\n(a) Find the point on \\(L\\) closest to \\(p\\).\n\n(b) Find the distance from \\(p\\) to \\(L\\).",
+      "thinkFirst": "The closest point on a line through the origin is the projection of the point vector onto the direction vector of the line.",
+      "hints": [
+        "The closest point is \\(\\operatorname{proj}_u(p)\\).",
+        "Use \\(\\operatorname{proj}_u(p)=\\frac{p\\cdot u}{u\\cdot u}u\\).",
+        "The distance is \\(\\|p-\\operatorname{proj}_u(p)\\|\\)."
+      ],
+      "setupLatex": "Because the line goes through the origin, the point on \\(L\\) closest to \\(p\\) is just the vector projection of \\(p\\) onto \\(u\\).",
+      "solutionSteps": [
+        {
+          "label": "Compute the projection coefficient",
+          "latex": "Compute\n\\[p\\cdot u=4(1)+1(2)+3(2)=12,\\]\nand\n\\[u\\cdot u=1^2+2^2+2^2=9.\\]\nTherefore the projection coefficient is\n\\[\\frac{p\\cdot u}{u\\cdot u}=\\frac{12}{9}=\\frac43.\\]"
+        },
+        {
+          "label": "Find the closest point",
+          "latex": "Thus\n\\[\\operatorname{proj}_u(p)=\\frac43\\begin{bmatrix}1\\\\2\\\\2\\end{bmatrix}=\\begin{bmatrix}4/3\\\\8/3\\\\8/3\\end{bmatrix}.\\]\nThis is the closest point on \\(L\\) to \\(p\\)."
+        },
+        {
+          "label": "Find the perpendicular vector",
+          "latex": "The vector from the closest point to \\(p\\) is\n\\[p-\\operatorname{proj}_u(p)=\\begin{bmatrix}4\\\\1\\\\3\\end{bmatrix}-\\begin{bmatrix}4/3\\\\8/3\\\\8/3\\end{bmatrix}=\\begin{bmatrix}8/3\\\\-5/3\\\\1/3\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute the distance",
+          "latex": "Therefore\n\\[\\operatorname{dist}(p,L)=\\left\\|\\begin{bmatrix}8/3\\\\-5/3\\\\1/3\\end{bmatrix}\\right\\|=\\frac13\\sqrt{64+25+1}=\\frac{\\sqrt{90}}3=\\sqrt{10}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "The closest point is \\(\\begin{bmatrix}4/3\\\\8/3\\\\8/3\\end{bmatrix}\\), and the distance is \\(\\sqrt{10}\\).",
+      "commonMistakes": [
+        "Using a point on the line other than the projection as the closest point.",
+        "Stopping after finding the projection and forgetting to compute the distance.",
+        "Using \\(\\|\\operatorname{proj}_u(p)\\|\\) as the distance instead of the perpendicular component length."
+      ],
+      "similarProblemPrompt": "Try finding the distance from \\(p=\\begin{bmatrix}2\\\\-1\\\\5\\end{bmatrix}\\) to the line spanned by \\(u=\\begin{bmatrix}0\\\\1\\\\2\\end{bmatrix}\\)."
+    },
+    {
+      "id": "diagprojcross-007",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "Scalar and Vector Components Along a Direction",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 7,
+      "skills": [
+        "Normalize a direction vector",
+        "Find a scalar component",
+        "Find vector components parallel and perpendicular to a direction"
+      ],
+      "examFlavor": "Components and projection interpretation problem",
+      "problemLatex": "A force vector is\n\\[F=\\begin{bmatrix}10\\\\0\\end{bmatrix}.\\]\nA direction is given by\n\\[d=\\begin{bmatrix}3\\\\4\\end{bmatrix}.\\]\n\n(a) Find the scalar component of \\(F\\) in the direction of \\(d\\).\n\n(b) Find the vector component of \\(F\\) parallel to \\(d\\).\n\n(c) Find the vector component of \\(F\\) perpendicular to \\(d\\).",
+      "thinkFirst": "Scalar component uses a unit direction vector. Vector component is the projection vector.",
+      "hints": [
+        "First compute \\(\\|d\\|\\), then form \\(\\hat d=d/\\|d\\|\\).",
+        "The scalar component is \\(F\\cdot \\hat d\\).",
+        "The parallel vector component is \\((F\\cdot \\hat d)\\hat d\\), and the perpendicular component is what is left over."
+      ],
+      "setupLatex": "Since \\(d=\\begin{bmatrix}3\\\\4\\end{bmatrix}\\), its length is \\(5\\), so the unit direction is \\(\\hat d=\\begin{bmatrix}3/5\\\\4/5\\end{bmatrix}\\).",
+      "solutionSteps": [
+        {
+          "label": "Find the scalar component",
+          "latex": "The scalar component is\n\\[F\\cdot \\hat d=\\begin{bmatrix}10\\\\0\\end{bmatrix}\\cdot\\begin{bmatrix}3/5\\\\4/5\\end{bmatrix}=6.\\]"
+        },
+        {
+          "label": "Find the parallel vector component",
+          "latex": "The vector component parallel to \\(d\\) is\n\\[(F\\cdot \\hat d)\\hat d=6\\begin{bmatrix}3/5\\\\4/5\\end{bmatrix}=\\begin{bmatrix}18/5\\\\24/5\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Find the perpendicular vector component",
+          "latex": "Subtract the parallel component from \\(F\\):\n\\[F_{\\perp}=F-F_{\\parallel}=\\begin{bmatrix}10\\\\0\\end{bmatrix}-\\begin{bmatrix}18/5\\\\24/5\\end{bmatrix}=\\begin{bmatrix}32/5\\\\-24/5\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Quick check",
+          "latex": "The perpendicular component should be perpendicular to \\(d\\):\n\\[\\begin{bmatrix}32/5\\\\-24/5\\end{bmatrix}\\cdot\\begin{bmatrix}3\\\\4\\end{bmatrix}=\\frac{96}{5}-\\frac{96}{5}=0.\\]"
+        }
+      ],
+      "finalAnswerLatex": "Scalar component: \\(6\\). Parallel component: \\(\\begin{bmatrix}18/5\\\\24/5\\end{bmatrix}\\). Perpendicular component: \\(\\begin{bmatrix}32/5\\\\-24/5\\end{bmatrix}\\).",
+      "commonMistakes": [
+        "Calling the scalar component a vector.",
+        "Forgetting to normalize the direction vector before computing the scalar component.",
+        "Subtracting in the wrong order when finding the perpendicular component."
+      ],
+      "similarProblemPrompt": "Try \\(F=\\begin{bmatrix}4\\\\7\\end{bmatrix}\\) and \\(d=\\begin{bmatrix}1\\\\2\\end{bmatrix}\\)."
+    },
+    {
+      "id": "diagprojcross-008",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "Cross Product, Orthogonality, and Area",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Compute a cross product",
+        "Use the cross product as a normal vector",
+        "Compute parallelogram and triangle area"
+      ],
+      "examFlavor": "Cross product calculation with geometric interpretation",
+      "problemLatex": "Let\n\\[u=\\begin{bmatrix}1\\\\2\\\\-1\\end{bmatrix},\\qquad v=\\begin{bmatrix}3\\\\0\\\\2\\end{bmatrix}.\\]\n\n(a) Compute \\(u\\times v\\).\n\n(b) Verify that your answer is perpendicular to both \\(u\\) and \\(v\\).\n\n(c) Find the area of the parallelogram spanned by \\(u\\) and \\(v\\), and the area of the triangle with sides \\(u\\) and \\(v\\).",
+      "thinkFirst": "The cross product gives a vector perpendicular to both input vectors. Its magnitude gives parallelogram area.",
+      "hints": [
+        "Use \\(u\\times v=\\begin{bmatrix}u_2v_3-u_3v_2\\\\u_3v_1-u_1v_3\\\\u_1v_2-u_2v_1\\end{bmatrix}\\).",
+        "To check perpendicularity, dot your cross product with \\(u\\) and with \\(v\\).",
+        "Triangle area is half of parallelogram area."
+      ],
+      "setupLatex": "We compute \\(u\\times v\\) component-by-component, then use its norm for area.",
+      "solutionSteps": [
+        {
+          "label": "Compute the cross product",
+          "latex": "We get\n\\[u\\times v=\\begin{bmatrix}2(2)-(-1)(0)\\\\(-1)(3)-1(2)\\\\1(0)-2(3)\\end{bmatrix}=\\begin{bmatrix}4\\\\-5\\\\-6\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Verify perpendicularity",
+          "latex": "Check with dot products:\n\\[u\\cdot(u\\times v)=1(4)+2(-5)+(-1)(-6)=4-10+6=0,\\]\nand\n\\[v\\cdot(u\\times v)=3(4)+0(-5)+2(-6)=12-12=0.\\]\nSo \\(u\\times v\\) is perpendicular to both \\(u\\) and \\(v\\)."
+        },
+        {
+          "label": "Compute areas",
+          "latex": "The parallelogram area is\n\\[\\|u\\times v\\|=\\sqrt{4^2+(-5)^2+(-6)^2}=\\sqrt{77}.\\]\nThe triangle area is half of that:\n\\[\\frac{\\sqrt{77}}{2}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[u\\times v=\\begin{bmatrix}4\\\\-5\\\\-6\\end{bmatrix},\\qquad \\text{parallelogram area}=\\sqrt{77},\\qquad \\text{triangle area}=\\frac{\\sqrt{77}}2.\\]",
+      "commonMistakes": [
+        "Swapping \\(u\times v\\) and \\(v\times u\\), which changes the sign.",
+        "Using the dot product instead of the cross product for area.",
+        "Forgetting to halve the parallelogram area for the triangle."
+      ],
+      "similarProblemPrompt": "Try computing \\(v\times u\\) and compare it to \\(u\times v\\)."
+    },
+    {
+      "id": "diagprojcross-009",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "Equation of a Plane Through Three Points",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Use two direction vectors in a plane",
+        "Find a normal vector with a cross product",
+        "Write a plane equation"
+      ],
+      "examFlavor": "Geometry problem using cross product",
+      "problemLatex": "Find an equation of the plane through the points\n\\[A=(1,0,2),\\qquad B=(3,-1,1),\\qquad C=(0,2,4).\\]",
+      "thinkFirst": "A plane equation needs a point and a normal vector. The normal vector can be found by crossing two vectors that lie in the plane.",
+      "hints": [
+        "Form \\(\\overrightarrow{AB}\\) and \\(\\overrightarrow{AC}\\).",
+        "Compute \\(\\overrightarrow{AB}\\times\\overrightarrow{AC}\\) to get a normal vector.",
+        "Use \\(n\\cdot((x,y,z)-A)=0\\)."
+      ],
+      "setupLatex": "Two vectors in the plane are\n\\[\\overrightarrow{AB}=B-A=\\begin{bmatrix}2\\\\-1\\\\-1\\end{bmatrix},\\qquad \\overrightarrow{AC}=C-A=\\begin{bmatrix}-1\\\\2\\\\2\\end{bmatrix}.\\]",
+      "solutionSteps": [
+        {
+          "label": "Find a normal vector",
+          "latex": "Compute\n\\[\\overrightarrow{AB}\\times\\overrightarrow{AC}=\\begin{bmatrix}2\\\\-1\\\\-1\\end{bmatrix}\\times\\begin{bmatrix}-1\\\\2\\\\2\\end{bmatrix}=\\begin{bmatrix}0\\\\-3\\\\3\\end{bmatrix}.\\]\nA simpler normal vector is\n\\[n=\\begin{bmatrix}0\\\\-1\\\\1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Use point-normal form",
+          "latex": "Using the point \\(A=(1,0,2)\\), the plane equation is\n\\[n\\cdot\\begin{bmatrix}x-1\\\\y-0\\\\z-2\\end{bmatrix}=0.\\]\nSo\n\\[0(x-1)-y+(z-2)=0.\\]"
+        },
+        {
+          "label": "Simplify",
+          "latex": "The equation becomes\n\\[-y+z-2=0,\\]\nor equivalently\n\\[z-y=2.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[z-y=2.\\]",
+      "commonMistakes": [
+        "Using the coordinates of the three points directly as a determinant without first forming direction vectors.",
+        "Forgetting that any nonzero scalar multiple of a normal vector gives the same plane.",
+        "Writing a normal vector but not using one of the given points."
+      ],
+      "similarProblemPrompt": "Try finding the plane through \\((0,1,1)\\), \\((2,0,3)\\), and \\((1,4,2)\\)."
+    },
+    {
+      "id": "diagprojcross-010",
+      "unit": "Diagonalization, Projections, Components, and Cross Product",
+      "title": "Scalar Triple Product and Volume",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Compute a scalar triple product",
+        "Interpret signed volume",
+        "Find parallelepiped volume"
+      ],
+      "examFlavor": "Cross product and determinant volume problem",
+      "problemLatex": "Let\n\\[u=\\begin{bmatrix}1\\\\2\\\\0\\end{bmatrix},\\qquad v=\\begin{bmatrix}-1\\\\1\\\\3\\end{bmatrix},\\qquad w=\\begin{bmatrix}2\\\\0\\\\1\\end{bmatrix}.\\]\n\n(a) Compute the scalar triple product \\(u\\cdot(v\\times w)\\).\n\n(b) Find the volume of the parallelepiped spanned by \\(u\\), \\(v\\), and \\(w\\).\n\n(c) Are the three vectors coplanar? Explain.",
+      "thinkFirst": "The scalar triple product gives signed volume. The actual geometric volume is its absolute value.",
+      "hints": [
+        "Compute \\(v\\times w\\) first, then dot with \\(u\\).",
+        "Volume is \\(|u\\cdot(v\\times w)|\\).",
+        "If the scalar triple product is nonzero, the vectors are not coplanar."
+      ],
+      "setupLatex": "We will use \\(u\\cdot(v\\times w)\\). Equivalently, this is the determinant of the matrix with columns \\(u,v,w\\).",
+      "solutionSteps": [
+        {
+          "label": "Compute \\(v\times w\\)",
+          "latex": "First,\n\\[v\\times w=\\begin{bmatrix}1(1)-3(0)\\\\3(2)-(-1)(1)\\\\(-1)(0)-1(2)\\end{bmatrix}=\\begin{bmatrix}1\\\\7\\\\-2\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Dot with \\(u\\)",
+          "latex": "Now\n\\[u\\cdot(v\\times w)=\\begin{bmatrix}1\\\\2\\\\0\\end{bmatrix}\\cdot\\begin{bmatrix}1\\\\7\\\\-2\\end{bmatrix}=1+14+0=15.\\]"
+        },
+        {
+          "label": "Interpret the result",
+          "latex": "The signed volume is \\(15\\), so the geometric volume is\n\\[|15|=15.\\]\nBecause the scalar triple product is nonzero, the vectors are not coplanar."
+        }
+      ],
+      "finalAnswerLatex": "\\[u\\cdot(v\\times w)=15,\\qquad \\text{volume}=15,\\qquad \\text{the vectors are not coplanar.}\\]",
+      "commonMistakes": [
+        "Forgetting the absolute value when reporting volume.",
+        "Confusing parallelogram area with parallelepiped volume.",
+        "Concluding the vectors are coplanar even though the scalar triple product is nonzero."
+      ],
+      "similarProblemPrompt": "Try changing \\(w\\) to \\(u+v\\). What happens to the scalar triple product?"
+    }
+  ]
+}

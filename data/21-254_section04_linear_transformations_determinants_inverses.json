@@ -1,0 +1,432 @@
+{
+  "sectionId": "sec-04-linear-transformations-determinants-inverses",
+  "sectionTitle": "Linear Transformations, Determinants, and Inverses",
+  "sectionPosition": 4,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice standard matrices for linear transformations, one-to-one and onto reasoning, determinant computations and properties, inverse matrices, and the invertibility connections that show up around the end of Exam 1 and start of Exam 2.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "transdet-001",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "Standard Matrix, Invertibility, and Solving \\(T(x)=b\\)",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Write the standard matrix of a transformation",
+        "Use determinant to test invertibility",
+        "Decide one-to-one and onto",
+        "Solve a transformation equation"
+      ],
+      "examFlavor": "Multi-part linear transformation problem",
+      "problemLatex": "Define \\(T:\\mathbb{R}^3\\to\\mathbb{R}^3\\) by\n\\[T(x,y,z)=\\begin{bmatrix}x-2y+z\\\\3x+y\\\\y-4z\\end{bmatrix}.\\]\n\n(a) Find the standard matrix \\(A\\) for \\(T\\).\n\n(b) Determine whether \\(T\\) is one-to-one and onto.\n\n(c) Find the unique vector \\(v\\) such that \\(T(v)=\\begin{bmatrix}1\\\\2\\\\-3\\end{bmatrix}\\), if it exists.",
+      "thinkFirst": "A transformation written by coordinate formulas is already telling you the columns of its standard matrix. The determinant will decide invertibility for a square matrix.",
+      "hints": [
+        "The first coordinate is \\(x-2y+z\\), so the first row of the standard matrix is \\([1,-2,1]\\).",
+        "For a \\(3\times 3\\) matrix, nonzero determinant means one-to-one and onto.",
+        "Solve \\(Av=b\\) after you know the matrix is invertible."
+      ],
+      "setupLatex": "The standard matrix is\n\\[A=\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix}.\\]\nCompute \\(\\det(A)\\) and then solve \\(Av=b\\).",
+      "solutionSteps": [
+        {
+          "label": "Write the standard matrix",
+          "latex": "\\[T(x,y,z)=\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix}\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}.\\]\nSo\n\\[A=\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute determinant",
+          "latex": "\\[\\det(A)=\\det\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix}=-25.\\]\nSince \\(\\det(A)\\neq 0\\), the matrix is invertible."
+        },
+        {
+          "label": "Decide one-to-one and onto",
+          "latex": "Because \\(A\\) is invertible, \\(T\\) is both one-to-one and onto as a map from \\(\\mathbb{R}^3\\) to \\(\\mathbb{R}^3\\)."
+        },
+        {
+          "label": "Solve \\(Av=b\\)",
+          "latex": "Solving\n\\[\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix}\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}=\\begin{bmatrix}1\\\\2\\\\-3\\end{bmatrix}\\]\ngives\n\\[v=\\begin{bmatrix}3/5\\\\1/5\\\\4/5\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[A=\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix},\\qquad \\det(A)=-25.\\]\nThus \\(T\\) is one-to-one and onto, and\n\\[v=\\begin{bmatrix}3/5\\\\1/5\\\\4/5\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Putting the coefficient rows in as columns incorrectly.",
+        "Saying one-to-one but not onto even though the matrix is square and invertible.",
+        "Solving \\(A^Tv=b\\) instead of \\(Av=b\\)."
+      ],
+      "similarProblemPrompt": "Change one coefficient so that the determinant becomes zero, then decide how the one-to-one/onto answer changes."
+    },
+    {
+      "id": "transdet-002",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "Find a Transformation from Its Values on Two Vectors",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Use linearity",
+        "Find a standard matrix from nonstandard input vectors",
+        "Use matrix equations \\(AP=Y\\)",
+        "Evaluate a transformation"
+      ],
+      "examFlavor": "Linear transformation from given images",
+      "problemLatex": "Let \\(T:\\mathbb{R}^2\\to\\mathbb{R}^2\\) be linear. Suppose\n\\[T\\!\\left(\\begin{bmatrix}1\\\\1\\end{bmatrix}\\right)=\\begin{bmatrix}4\\\\1\\end{bmatrix},\\qquad\nT\\!\\left(\\begin{bmatrix}2\\\\-1\\end{bmatrix}\\right)=\\begin{bmatrix}1\\\\5\\end{bmatrix}.\\]\n\n(a) Find the standard matrix \\(A\\) of \\(T\\).\n\n(b) Compute \\(T\\!\\left(\\begin{bmatrix}3\\\\2\\end{bmatrix}\\right)\\).",
+      "thinkFirst": "The given input vectors are not \\(e_1\\) and \\(e_2\\), so the output vectors are not directly the columns of \\(A\\). Put the input vectors into a matrix \\(P\\) and use \\(AP=Y\\).",
+      "hints": [
+        "Let \\(P\\) have the given input vectors as columns.",
+        "Let \\(Y\\) have the corresponding output vectors as columns.",
+        "Then \\(AP=Y\\), so \\(A=YP^{-1}\\)."
+      ],
+      "setupLatex": "Set\n\\[P=\\begin{bmatrix}1&2\\\\1&-1\\end{bmatrix},\\qquad Y=\\begin{bmatrix}4&1\\\\1&5\\end{bmatrix}.\\]\nSince the columns of \\(P\\) are independent, \\(P\\) is invertible.",
+      "solutionSteps": [
+        {
+          "label": "Set up the matrix equation",
+          "latex": "The equation \\(AP=Y\\) is\n\\[A\\begin{bmatrix}1&2\\\\1&-1\\end{bmatrix}=\\begin{bmatrix}4&1\\\\1&5\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Solve for \\(A\\)",
+          "latex": "\\[A=YP^{-1}=\\begin{bmatrix}4&1\\\\1&5\\end{bmatrix}\\begin{bmatrix}1&2\\\\1&-1\\end{bmatrix}^{-1}=\\begin{bmatrix}5/3&7/3\\\\2&-1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Evaluate the new vector",
+          "latex": "\\[T\\!\\left(\\begin{bmatrix}3\\\\2\\end{bmatrix}\\right)=A\\begin{bmatrix}3\\\\2\\end{bmatrix}=\\begin{bmatrix}5/3&7/3\\\\2&-1\\end{bmatrix}\\begin{bmatrix}3\\\\2\\end{bmatrix}=\\begin{bmatrix}29/3\\\\4\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[A=\\begin{bmatrix}5/3&7/3\\\\2&-1\\end{bmatrix},\\qquad T\\!\\left(\\begin{bmatrix}3\\\\2\\end{bmatrix}\\right)=\\begin{bmatrix}29/3\\\\4\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Treating the given output vectors as the columns of \\(A\\).",
+        "Forgetting to invert the input matrix \\(P\\).",
+        "Putting the input vectors as rows instead of columns."
+      ],
+      "similarProblemPrompt": "Try rewriting \\([3,2]^T\\) as a linear combination of the two given input vectors, then use linearity instead of finding \\(A\\)."
+    },
+    {
+      "id": "transdet-003",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "Determinant by Row Operations",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Compute a determinant efficiently",
+        "Use row replacement without changing determinant",
+        "Track row swaps and scaling",
+        "Connect determinant to invertibility"
+      ],
+      "examFlavor": "Determinant computation problem",
+      "problemLatex": "Compute the determinant of\n\\[A=\\begin{bmatrix}2&1&0\\\\4&3&1\\\\-2&1&5\\end{bmatrix}.\\]\nThen decide whether \\(A\\) is invertible.",
+      "thinkFirst": "Use row replacement operations to create zeros. Row replacement does not change the determinant, but row swaps and row scaling do.",
+      "hints": [
+        "You can expand along a row or use row operations.",
+        "Try \\(R_2\\leftarrow R_2-2R_1\\) and \\(R_3\\leftarrow R_3+R_1\\).",
+        "A square matrix is invertible exactly when its determinant is nonzero."
+      ],
+      "setupLatex": "Use row replacement to simplify:\n\\[\\begin{bmatrix}2&1&0\\\\4&3&1\\\\-2&1&5\\end{bmatrix}\\to\\begin{bmatrix}2&1&0\\\\0&1&1\\\\0&2&5\\end{bmatrix}.\\]",
+      "solutionSteps": [
+        {
+          "label": "Use determinant-preserving row replacements",
+          "latex": "Apply \\(R_2\\leftarrow R_2-2R_1\\) and \\(R_3\\leftarrow R_3+R_1\\):\n\\[\\det(A)=\\det\\begin{bmatrix}2&1&0\\\\0&1&1\\\\0&2&5\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Expand down the first column",
+          "latex": "\\[\\det(A)=2\\det\\begin{bmatrix}1&1\\\\2&5\\end{bmatrix}=2(5-2)=6.\\]"
+        },
+        {
+          "label": "Conclude invertibility",
+          "latex": "Since \\(\\det(A)=6\\neq 0\\), \\(A\\) is invertible."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\det(A)=6,\\]\nso \\(A\\) is invertible.",
+      "commonMistakes": [
+        "Changing the determinant after a row replacement.",
+        "Forgetting that row scaling changes determinant.",
+        "Stopping at triangular form but forgetting to multiply diagonal entries."
+      ],
+      "similarProblemPrompt": "Compute the determinant again by cofactor expansion along the first row and compare."
+    },
+    {
+      "id": "transdet-004",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "Inverse Matrix and a Linear System",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Compute a 3 by 3 inverse",
+        "Use determinant to confirm invertibility",
+        "Solve \\(Ax=b\\) using an inverse",
+        "Check a matrix equation solution"
+      ],
+      "examFlavor": "Inverse computation plus application",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}1&2&0\\\\0&1&3\\\\2&0&1\\end{bmatrix},\\qquad b=\\begin{bmatrix}5\\\\7\\\\4\\end{bmatrix}.\\]\n\n(a) Find \\(\\det(A)\\).\n\n(b) Find \\(A^{-1}\\).\n\n(c) Use your inverse to solve \\(Ax=b\\).",
+      "thinkFirst": "The determinant tells you whether the inverse exists. Once you have \\(A^{-1}\\), the solution is \\(x=A^{-1}b\\).",
+      "hints": [
+        "If row reducing \\([A\\mid I]\\), keep track of all three columns of the identity matrix.",
+        "You should get determinant \\(13\\), so fractions with denominator 13 are expected.",
+        "Multiply \\(A^{-1}b\\) carefully."
+      ],
+      "setupLatex": "The inverse exists because \\(\\det(A)=13\\). Row reducing \\([A\\mid I]\\) or using cofactors gives the same inverse.",
+      "solutionSteps": [
+        {
+          "label": "Compute determinant",
+          "latex": "\\[\\det(A)=\\det\\begin{bmatrix}1&2&0\\\\0&1&3\\\\2&0&1\\end{bmatrix}=13.\\]"
+        },
+        {
+          "label": "Find the inverse",
+          "latex": "\\[A^{-1}=\\frac1{13}\\begin{bmatrix}1&-2&6\\\\6&1&-3\\\\-2&4&1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Solve using the inverse",
+          "latex": "\\[x=A^{-1}b=\\frac1{13}\\begin{bmatrix}1&-2&6\\\\6&1&-3\\\\-2&4&1\\end{bmatrix}\\begin{bmatrix}5\\\\7\\\\4\\end{bmatrix}=\\frac1{13}\\begin{bmatrix}15\\\\25\\\\22\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Write the solution vector",
+          "latex": "\\[x=\\begin{bmatrix}15/13\\\\25/13\\\\22/13\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\det(A)=13,\\qquad A^{-1}=\\frac1{13}\\begin{bmatrix}1&-2&6\\\\6&1&-3\\\\-2&4&1\\end{bmatrix},\\qquad x=\\begin{bmatrix}15/13\\\\25/13\\\\22/13\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Trying to divide by \\(A\\) instead of multiplying by \\(A^{-1}\\).",
+        "Forgetting that every entry of the inverse is divided by 13.",
+        "Making arithmetic errors while multiplying \\(A^{-1}b\\)."
+      ],
+      "similarProblemPrompt": "Solve the same system by row reducing \\([A\\mid b]\\), then compare the result."
+    },
+    {
+      "id": "transdet-005",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "A Parameter That Controls Invertibility",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Compute a determinant with a parameter",
+        "Find values that make a matrix singular",
+        "Use determinant to decide invertibility",
+        "Connect singularity to solution behavior"
+      ],
+      "examFlavor": "Parameter determinant problem",
+      "problemLatex": "For\n\\[A_k=\\begin{bmatrix}1&2&k\\\\0&1&3\\\\2&0&1\\end{bmatrix},\\]\nfind all values of \\(k\\) for which \\(A_k\\) is invertible.",
+      "thinkFirst": "For a square matrix, invertibility is equivalent to nonzero determinant. Compute \\(\\det(A_k)\\) as an expression in \\(k\\).",
+      "hints": [
+        "Expand along the second row or first column if it feels easier.",
+        "The determinant should be linear in \\(k\\).",
+        "Invertible means determinant not equal to zero."
+      ],
+      "setupLatex": "Compute \\(\\det(A_k)\\), then solve the inequality \\(\\det(A_k)\\neq 0\\).",
+      "solutionSteps": [
+        {
+          "label": "Compute the determinant",
+          "latex": "\\[\\det(A_k)=\\det\\begin{bmatrix}1&2&k\\\\0&1&3\\\\2&0&1\\end{bmatrix}=13-2k.\\]"
+        },
+        {
+          "label": "Set the nonzero condition",
+          "latex": "The matrix is invertible exactly when\n\\[13-2k\\neq 0.\\]"
+        },
+        {
+          "label": "Solve for \\(k\\)",
+          "latex": "\\[13-2k=0\\quad\\Rightarrow\\quad k=\\frac{13}{2}.\\]\nTherefore \\(A_k\\) is invertible for every \\(k\\neq 13/2\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[A_k\\text{ is invertible for }k\\neq \\frac{13}{2}.\\]",
+      "commonMistakes": [
+        "Solving \\(\\det(A_k)=0\\) and reporting that as the invertible set.",
+        "Dropping the factor of 2 in \\(13-2k\\).",
+        "Assuming any parameter matrix is automatically invertible unless a row is visibly zero."
+      ],
+      "similarProblemPrompt": "At \\(k=13/2\\), row reduce the matrix to find a nonzero vector in its null space."
+    },
+    {
+      "id": "transdet-006",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "Area Scaling Under a Linear Map",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Use determinant as an area scale factor",
+        "Compute the sign and magnitude of a determinant",
+        "Interpret orientation",
+        "Apply a linear map to geometry"
+      ],
+      "examFlavor": "Geometric determinant problem",
+      "problemLatex": "Let \\(T:\\mathbb{R}^2\\to\\mathbb{R}^2\\) have standard matrix\n\\[A=\\begin{bmatrix}2&-1\\\\3&4\\end{bmatrix}.\\]\n\n(a) What factor does \\(T\\) multiply areas by?\n\n(b) Does \\(T\\) preserve or reverse orientation?\n\n(c) If a region \\(R\\) has area \\(7\\), what is the area of \\(T(R)\\)?",
+      "thinkFirst": "For a \\(2\times 2\\) linear map, \\(|\\det(A)|\\) is the area scale factor, while the sign of \\(\\det(A)\\) tracks orientation.",
+      "hints": [
+        "Compute \\(ad-bc\\).",
+        "Use absolute value for area.",
+        "Positive determinant preserves orientation."
+      ],
+      "setupLatex": "\\[\\det(A)=2(4)-(-1)(3).\\]",
+      "solutionSteps": [
+        {
+          "label": "Compute determinant",
+          "latex": "\\[\\det(A)=2(4)-(-1)(3)=8+3=11.\\]"
+        },
+        {
+          "label": "Interpret area scaling",
+          "latex": "The area scale factor is \\(|\\det(A)|=11\\). So every area is multiplied by 11."
+        },
+        {
+          "label": "Interpret orientation",
+          "latex": "Because \\(\\det(A)>0\\), the transformation preserves orientation."
+        },
+        {
+          "label": "Find the image area",
+          "latex": "If \\(\\operatorname{area}(R)=7\\), then\n\\[\\operatorname{area}(T(R))=11\\cdot 7=77.\\]"
+        }
+      ],
+      "finalAnswerLatex": "The area scale factor is \\(11\\), orientation is preserved, and \\(\\operatorname{area}(T(R))=77\\).",
+      "commonMistakes": [
+        "Using \\(\\det(A)\\) without absolute value for area.",
+        "Thinking positive determinant means lengths are preserved.",
+        "Using trace instead of determinant."
+      ],
+      "similarProblemPrompt": "Try a matrix with negative determinant and explain what changes geometrically."
+    },
+    {
+      "id": "transdet-007",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "Kernel and Image of a Linear Transformation",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Find the matrix of a transformation",
+        "Find kernel/null space",
+        "Find image/range",
+        "Decide one-to-one and onto for non-square transformations"
+      ],
+      "examFlavor": "Transformation subspaces problem",
+      "problemLatex": "Define \\(T:\\mathbb{R}^3\\to\\mathbb{R}^2\\) by\n\\[T(x,y,z)=\\begin{bmatrix}x+y\\\\y+z\\end{bmatrix}.\\]\n\n(a) Find the standard matrix \\(A\\) of \\(T\\).\n\n(b) Find a basis for \\(\\ker(T)\\).\n\n(c) Is \\(T\\) one-to-one? Is \\(T\\) onto \\(\\mathbb{R}^2\\)? Explain.",
+      "thinkFirst": "The kernel is the solution set to \\(T(x,y,z)=0\\). The image is the column space of the standard matrix.",
+      "hints": [
+        "Write the matrix first.",
+        "Solve \\(x+y=0\\) and \\(y+z=0\\).",
+        "A map from \\(\\mathbb{R}^3\\) to \\(\\mathbb{R}^2\\) cannot be one-to-one if its kernel is nontrivial."
+      ],
+      "setupLatex": "The standard matrix is\n\\[A=\\begin{bmatrix}1&1&0\\\\0&1&1\\end{bmatrix}.\\]\nNow solve \\(A\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}=0\\).",
+      "solutionSteps": [
+        {
+          "label": "Find the standard matrix",
+          "latex": "\\[T(x,y,z)=\\begin{bmatrix}1&1&0\\\\0&1&1\\end{bmatrix}\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}.\\]\nSo\n\\[A=\\begin{bmatrix}1&1&0\\\\0&1&1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Solve for the kernel",
+          "latex": "The kernel satisfies\n\\[x+y=0,\\qquad y+z=0.\\]\nLet \\(y=t\\). Then \\(x=-t\\) and \\(z=-t\\), so\n\\[\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}=t\\begin{bmatrix}-1\\\\1\\\\-1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Decide one-to-one",
+          "latex": "Since \\(\\ker(T)=\\operatorname{span}\\{[-1,1,-1]^T\\}\\) is nontrivial, \\(T\\) is not one-to-one."
+        },
+        {
+          "label": "Decide onto",
+          "latex": "The columns \\(\\begin{bmatrix}1\\\\0\\end{bmatrix}\\) and \\(\\begin{bmatrix}1\\\\1\\end{bmatrix}\\) are linearly independent in \\(\\mathbb{R}^2\\), so the column space is all of \\(\\mathbb{R}^2\\). Thus \\(T\\) is onto \\(\\mathbb{R}^2\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[A=\\begin{bmatrix}1&1&0\\\\0&1&1\\end{bmatrix},\\qquad \\ker(T)=\\operatorname{span}\\left\\{\\begin{bmatrix}-1\\\\1\\\\-1\\end{bmatrix}\\right\\}.\\]\nThe transformation is not one-to-one, but it is onto \\(\\mathbb{R}^2\\).",
+      "commonMistakes": [
+        "Forgetting that the kernel lives in the domain \\(\\mathbb{R}^3\\).",
+        "Saying not onto just because there are three input variables.",
+        "Confusing columns of the matrix with rows when finding the image."
+      ],
+      "similarProblemPrompt": "Modify the second component to \\(2x+2y\\) and decide whether the new map is onto."
+    },
+    {
+      "id": "transdet-008",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "Determinant Properties Without Expanding",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Use determinant product rules",
+        "Use determinant of a transpose",
+        "Use determinant of an inverse",
+        "Use scalar multiplication determinant rule"
+      ],
+      "examFlavor": "Conceptual determinant properties problem",
+      "problemLatex": "Let \\(A\\) and \\(B\\) be \\(3\\times 3\\) matrices with\n\\[\\det(A)=-2,\n\\qquad \\det(B)=5.\\]\n\nCompute:\n\n(a) \\(\\det(A^T)\\)\n\n(b) \\(\\det(B^{-1})\\)\n\n(c) \\(\\det(3A)\\)\n\n(d) \\(\\det(A^TB^{-1}A^2)\\)",
+      "thinkFirst": "Use determinant rules instead of trying to invent matrices. Remember that multiplying a \\(3\times 3\\) matrix by 3 scales the determinant by \\(3^3\\), not by 3.",
+      "hints": [
+        "\\(\\det(A^T)=\\det(A)\\).",
+        "\\(\\det(B^{-1})=1/\\det(B)\\).",
+        "\\(\\det(A^2)=\\det(A)^2\\).",
+        "\\(\\det(cA)=c^n\\det(A)\\) for \\(n\times n\\) matrices."
+      ],
+      "setupLatex": "Apply each determinant identity separately, then multiply the determinant factors in part (d).",
+      "solutionSteps": [
+        {
+          "label": "Transpose",
+          "latex": "\\[\\det(A^T)=\\det(A)=-2.\\]"
+        },
+        {
+          "label": "Inverse",
+          "latex": "\\[\\det(B^{-1})=\\frac{1}{\\det(B)}=\\frac15.\\]"
+        },
+        {
+          "label": "Scalar multiple",
+          "latex": "Since \\(A\\) is \\(3\\times 3\\),\n\\[\\det(3A)=3^3\\det(A)=27(-2)=-54.\\]"
+        },
+        {
+          "label": "Product expression",
+          "latex": "\\[\\det(A^TB^{-1}A^2)=\\det(A^T)\\det(B^{-1})\\det(A^2).\\]\nThus\n\\[\\det(A^TB^{-1}A^2)=(-2)\\left(\\frac15\\right)(-2)^2=-\\frac85.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\det(A^T)=-2,\\\\ \\det(B^{-1})=\\frac15,\\\\ \\det(3A)=-54,\n\\qquad \\det(A^TB^{-1}A^2)=-\\frac85.\\]",
+      "commonMistakes": [
+        "Using \\(\\det(3A)=3\\det(A)\\) instead of \\(3^3\\det(A)\\).",
+        "Forgetting that \\(\\det(A^2)=\\det(A)^2\\).",
+        "Changing the determinant when transposing."
+      ],
+      "similarProblemPrompt": "Repeat part (c) for a \\(2\times 2\\) matrix and compare the scalar exponent."
+    },
+    {
+      "id": "transdet-009",
+      "unit": "Linear Transformations, Determinants, and Inverses",
+      "title": "Invertibility Theorem Checkpoint",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Use equivalences for invertible matrices",
+        "Connect pivots, determinant, null space, and columns",
+        "Give concise justifications",
+        "Avoid common false converses"
+      ],
+      "examFlavor": "True/false conceptual problem",
+      "problemLatex": "Let \\(A\\) be a \\(4\\times 4\\) matrix. Decide whether each statement is true or false. Give a brief explanation.\n\n(a) If \\(A\\) has a pivot in every row, then \\(A\\) is invertible.\n\n(b) If \\(Ax=0\\) has only the trivial solution, then \\(\\det(A)\\neq 0\\).\n\n(c) If the columns of \\(A\\) span \\(\\mathbb{R}^4\\), then the columns of \\(A\\) are linearly independent.\n\n(d) If \\(A\\) is not invertible, then \\(Ax=b\\) has no solution for every \\(b\\in\\mathbb{R}^4\\).",
+      "thinkFirst": "For square matrices, many conditions are equivalent: full pivots, independent columns, spanning columns, trivial null space, nonzero determinant, and invertibility. Part (d) is the tricky one.",
+      "hints": [
+        "In a square matrix, a pivot in every row also means a pivot in every column.",
+        "Trivial null space is equivalent to invertibility for square matrices.",
+        "For \\(4\times 4\\), spanning four-dimensional space forces four independent columns.",
+        "Not invertible means at least one \\(b\\) fails, not every \\(b\\)."
+      ],
+      "setupLatex": "Use the invertible matrix theorem, but read each quantifier carefully.",
+      "solutionSteps": [
+        {
+          "label": "Part (a)",
+          "latex": "True. Since \\(A\\) is \\(4\\times 4\\), a pivot in every row means there are 4 pivots, so there is also a pivot in every column. Therefore \\(A\\) is invertible."
+        },
+        {
+          "label": "Part (b)",
+          "latex": "True. If \\(Ax=0\\) has only the trivial solution, then the columns are linearly independent, so \\(A\\) is invertible and \\(\\det(A)\\neq 0\\)."
+        },
+        {
+          "label": "Part (c)",
+          "latex": "True. Four columns that span \\(\\mathbb{R}^4\\) must have rank 4, so all four columns are pivot columns and are linearly independent."
+        },
+        {
+          "label": "Part (d)",
+          "latex": "False. If \\(A\\) is not invertible, then \\(Ax=b\\) is not consistent for every \\(b\\), but some choices of \\(b\\) may still work. For example, \\(b=0\\) always gives at least the solution \\(x=0\\)."
+        }
+      ],
+      "finalAnswerLatex": "(a) True. (b) True. (c) True. (d) False.",
+      "commonMistakes": [
+        "Forgetting the matrix is square.",
+        "Confusing \u201cnot every \\(b\\)\u201d with \u201cno \\(b\\).\u201d",
+        "Thinking \\(Ax=0\\) can ever be inconsistent."
+      ],
+      "similarProblemPrompt": "Write the same true/false list for a \\(3\times 5\\) matrix and notice which equivalences break."
+    }
+  ]
+}

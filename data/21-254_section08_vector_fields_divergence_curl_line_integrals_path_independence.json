@@ -1,0 +1,487 @@
+{
+  "sectionId": "sec-08-vector-fields-divergence-curl-line-integrals-path-independence",
+  "sectionTitle": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+  "sectionPosition": 8,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice the Exam 3 vector calculus topics: interpreting vector fields with divergence and curl, computing scalar and vector line integrals, recognizing conservative fields, finding potential functions, and using path independence when appropriate.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "vecfieldline-001",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Source/Sink and Spin from Divergence and Curl",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Compute two-dimensional divergence",
+        "Compute two-dimensional scalar curl",
+        "Interpret source/sink behavior and local rotation"
+      ],
+      "examFlavor": "Short interpretation problem for a planar vector field at a point",
+      "problemLatex": "Let\n\\[\\mathbf F(x,y)=\\langle x^2y+\\sin y,\\,3x+y^2\\rangle.\\]\n\n(a) Compute \\(\\operatorname{div}\\mathbf F\\) at the point \\((1,0)\\). Is the field acting like a source, sink, or neither at that point?\n\n(b) Compute the scalar curl \\(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\) at \\((1,0)\\). Does the field locally rotate counterclockwise, clockwise, or neither?",
+      "thinkFirst": "For a planar vector field \\(\\mathbf F=\\langle P,Q\\rangle\\), divergence measures local expansion/compression, while scalar curl measures local rotation.",
+      "hints": [
+        "Use \\(\\operatorname{div}\\mathbf F=P_x+Q_y\\).",
+        "Use scalar curl \\(Q_x-P_y\\).",
+        "Positive divergence means source-like; negative means sink-like.",
+        "Positive scalar curl corresponds to counterclockwise local rotation."
+      ],
+      "setupLatex": "Here \\(P=x^2y+\\sin y\\) and \\(Q=3x+y^2\\). Compute \\(P_x,Q_y,Q_x,\\) and \\(P_y\\), then plug in \\((1,0)\\).",
+      "solutionSteps": [
+        {
+          "label": "Compute divergence",
+          "latex": "\\[P_x=2xy,\\qquad Q_y=2y.\\]\nSo\n\\[\\operatorname{div}\\mathbf F=2xy+2y.\\]\nAt \\((1,0)\\),\n\\[\\operatorname{div}\\mathbf F(1,0)=2(1)(0)+2(0)=0.\\]"
+        },
+        {
+          "label": "Interpret divergence",
+          "latex": "Since the divergence is \\(0\\), the field is neither source-like nor sink-like at \\((1,0)\\). There is no net local expansion or compression there."
+        },
+        {
+          "label": "Compute scalar curl",
+          "latex": "\\[Q_x=3,\\qquad P_y=x^2+\\cos y.\\]\nTherefore\n\\[Q_x-P_y=3-(x^2+\\cos y).\\]\nAt \\((1,0)\\),\n\\[Q_x-P_y=3-(1+1)=1.\\]"
+        },
+        {
+          "label": "Interpret curl",
+          "latex": "The scalar curl is positive, so the field has counterclockwise local rotation at \\((1,0)\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\operatorname{div}\\mathbf F(1,0)=0,\\qquad (Q_x-P_y)(1,0)=1.\\]\nSo the field is neither a source nor a sink at \\((1,0)\\), and it rotates counterclockwise there.",
+      "commonMistakes": [
+        "Using \\(P_y+Q_x\\) for divergence instead of \\(P_x+Q_y\\).",
+        "Reversing the scalar curl as \\(P_y-Q_x\\).",
+        "Saying positive curl means clockwise rotation; for this course convention, positive scalar curl is counterclockwise."
+      ],
+      "similarProblemPrompt": "Try the same analysis for \\(\\mathbf F(x,y)=\\langle y^2+x,\\,xy+4y\\rangle\\) at \\((2,1)\\)."
+    },
+    {
+      "id": "vecfieldline-002",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Divergence and Curl of a Three-Dimensional Field",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Compute three-dimensional divergence",
+        "Compute three-dimensional curl",
+        "Evaluate vector calculus quantities at a point"
+      ],
+      "examFlavor": "Direct computation followed by a short interpretation",
+      "problemLatex": "Let\n\\[\\mathbf F(x,y,z)=\\langle xy,\\,yz,\\,zx\\rangle.\\]\n\n(a) Find \\(\\operatorname{div}\\mathbf F\\), then evaluate it at \\((1,-2,3)\\).\n\n(b) Find \\(\\operatorname{curl}\\mathbf F\\), then evaluate it at \\((1,-2,3)\\).",
+      "thinkFirst": "Divergence returns a scalar. Curl in \\(\\mathbb R^3\\) returns a vector.",
+      "hints": [
+        "For \\(\\mathbf F=\\langle P,Q,R\\rangle\\), divergence is \\(P_x+Q_y+R_z\\).",
+        "Curl is \\(\\langle R_y-Q_z,\\,P_z-R_x,\\,Q_x-P_y\\rangle\\).",
+        "Differentiate with respect to the indicated variable only."
+      ],
+      "setupLatex": "Use \\(P=xy\\), \\(Q=yz\\), and \\(R=zx\\). Then compute the required partial derivatives before plugging in the point.",
+      "solutionSteps": [
+        {
+          "label": "Compute divergence",
+          "latex": "\\[P_x=y,\\qquad Q_y=z,\\qquad R_z=x.\\]\nThus\n\\[\\operatorname{div}\\mathbf F=x+y+z.\\]\nAt \\((1,-2,3)\\),\n\\[\\operatorname{div}\\mathbf F=1-2+3=2.\\]"
+        },
+        {
+          "label": "Compute curl",
+          "latex": "\\[\\operatorname{curl}\\mathbf F=\\langle R_y-Q_z,\\,P_z-R_x,\\,Q_x-P_y\\rangle.\\]\nNow\n\\[R_y=0,\\quad Q_z=y,\\quad P_z=0,\\quad R_x=z,\\quad Q_x=0,\\quad P_y=x.\\]\nSo\n\\[\\operatorname{curl}\\mathbf F=\\langle -y,\\,-z,\\,-x\\rangle.\\]"
+        },
+        {
+          "label": "Evaluate the curl at the point",
+          "latex": "At \\((1,-2,3)\\),\n\\[\\operatorname{curl}\\mathbf F(1,-2,3)=\\langle 2,\\,-3,\\,-1\\rangle.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\operatorname{div}\\mathbf F=x+y+z,\\qquad \\operatorname{div}\\mathbf F(1,-2,3)=2.\\]\n\\[\\operatorname{curl}\\mathbf F=\\langle -y,-z,-x\\rangle,\\qquad \\operatorname{curl}\\mathbf F(1,-2,3)=\\langle 2,-3,-1\\rangle.\\]",
+      "commonMistakes": [
+        "Treating three-dimensional curl as a scalar.",
+        "Forgetting that \\(\\partial(xy)/\\partial x=y\\), not \\(x\\).",
+        "Mixing up the order of the components in the curl formula."
+      ],
+      "similarProblemPrompt": "Try computing divergence and curl for \\(\\mathbf F(x,y,z)=\\langle yz,\\,xz,\\,xy\\rangle\\)."
+    },
+    {
+      "id": "vecfieldline-003",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Conservative Field, Potential Function, and Path Independence",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Check whether a vector field is conservative",
+        "Find a potential function",
+        "Use the Fundamental Theorem of Line Integrals"
+      ],
+      "examFlavor": "Classic conservative vector field problem with an endpoint evaluation",
+      "problemLatex": "Let\n\\[\\mathbf F(x,y,z)=\\langle 2xy+3z,\\,x^2+4y,\\,3x+e^z\\rangle.\\]\n\n(a) Explain why \\(\\mathbf F\\) is conservative.\n\n(b) Find a potential function \\(f\\) such that \\(\\nabla f=\\mathbf F\\).\n\n(c) Let \\(C\\) be any smooth curve from \\((0,1,0)\\) to \\((2,-1,\\ln 2)\\). Evaluate\n\\[\\int_C \\mathbf F\\cdot d\\mathbf r.\\]",
+      "thinkFirst": "If a vector field is conservative, do not parametrize the curve unless you have to. Find a potential and use endpoint values.",
+      "hints": [
+        "For a smooth field on all of \\(\\mathbb R^3\\), zero curl implies conservative.",
+        "Start finding the potential by integrating the first component with respect to \\(x\\).",
+        "When integrating with respect to \\(x\\), the constant of integration can be a function of \\(y\\) and \\(z\\).",
+        "Use \\(\\int_C \\nabla f\\cdot d\\mathbf r=f(\\text{end})-f(\\text{start})\\)."
+      ],
+      "setupLatex": "First check that the cross-partials agree. Then solve\n\\[f_x=2xy+3z,\\qquad f_y=x^2+4y,\\qquad f_z=3x+e^z.\\]",
+      "solutionSteps": [
+        {
+          "label": "Check that the field is conservative",
+          "latex": "Let \\(P=2xy+3z\\), \\(Q=x^2+4y\\), and \\(R=3x+e^z\\). Check the cross-partials:\n\\[P_y=2x=Q_x,\\qquad P_z=3=R_x,\\qquad Q_z=0=R_y.\\]\nSince these agree on all of \\(\\mathbb R^3\\), the field is conservative."
+        },
+        {
+          "label": "Integrate the first component",
+          "latex": "Since \\(f_x=2xy+3z\\), integrate with respect to \\(x\\):\n\\[f(x,y,z)=x^2y+3xz+g(y,z).\\]"
+        },
+        {
+          "label": "Use the second component",
+          "latex": "Differentiate with respect to \\(y\\):\n\\[f_y=x^2+g_y(y,z).\\]\nWe need \\(f_y=x^2+4y\\), so\n\\[g_y=4y.\\]\nThus\n\\[g(y,z)=2y^2+h(z).\\]"
+        },
+        {
+          "label": "Use the third component",
+          "latex": "Now\n\\[f=x^2y+3xz+2y^2+h(z).\\]\nThen\n\\[f_z=3x+h'(z).\\]\nWe need \\(f_z=3x+e^z\\), so \\(h'(z)=e^z\\), meaning \\(h(z)=e^z\\) up to a constant. Therefore\n\\[f(x,y,z)=x^2y+3xz+2y^2+e^z.\\]"
+        },
+        {
+          "label": "Apply path independence",
+          "latex": "The integral is\n\\[f(2,-1,\\ln 2)-f(0,1,0).\\]\nCompute\n\\[f(2,-1,\\ln 2)=4(-1)+3(2)(\\ln 2)+2(1)+e^{\\ln 2}= -4+6\\ln2+2+2=6\\ln2.\\]\nAlso\n\\[f(0,1,0)=0+0+2+1=3.\\]\nThus\n\\[\\int_C \\mathbf F\\cdot d\\mathbf r=6\\ln2-3.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[f(x,y,z)=x^2y+3xz+2y^2+e^z+C,\\qquad \\int_C \\mathbf F\\cdot d\\mathbf r=6\\ln 2-3.\\]",
+      "commonMistakes": [
+        "Trying to parametrize an arbitrary curve even though the field is conservative.",
+        "Writing the integration constant as a number instead of a function of the other variables.",
+        "Using \\(f(\\text{start})-f(\\text{end})\\) instead of \\(f(\\text{end})-f(\\text{start})\\)."
+      ],
+      "similarProblemPrompt": "Try finding a potential for \\(\\langle yz+2x,\\,xz+3y^2,\\,xy+4z^3\\rangle\\) and evaluating a line integral using endpoints."
+    },
+    {
+      "id": "vecfieldline-004",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Choosing Parameters to Make a Field Conservative",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Use cross-partial conditions",
+        "Solve for parameters in a vector field",
+        "Find a potential function after choosing parameters"
+      ],
+      "examFlavor": "Parameter-selection conservative field problem",
+      "problemLatex": "Let\n\\[\\mathbf F(x,y,z)=\\langle ax y^2+y,\\,bx^2y+x+\\cos z,\\,-y\\sin z\\rangle,\\]\nwhere \\(a\\) and \\(b\\) are constants.\n\n(a) Find all relationships between \\(a\\) and \\(b\\) that make \\(\\mathbf F\\) conservative on \\(\\mathbb R^3\\).\n\n(b) When \\(a=b=2\\), find a potential function for \\(\\mathbf F\\).",
+      "thinkFirst": "A vector field in \\(\\mathbb R^3\\) is conservative when the matching cross-partials line up: \\(P_y=Q_x\\), \\(P_z=R_x\\), and \\(Q_z=R_y\\).",
+      "hints": [
+        "Let \\(P=ax y^2+y\\), \\(Q=bx^2y+x+\\cos z\\), and \\(R=-y\\sin z\\).",
+        "The condition \\(P_y=Q_x\\) is the only one involving \\(a\\) and \\(b\\).",
+        "For part (b), integrate \\(P=2xy^2+y\\) with respect to \\(x\\)."
+      ],
+      "setupLatex": "Compute\n\\[P_y,\\quad Q_x,\\quad P_z,\\quad R_x,\\quad Q_z,\\quad R_y.\\]\nThen compare the pairs required for a conservative field.",
+      "solutionSteps": [
+        {
+          "label": "Compare \\(P_y\\) and \\(Q_x\\)",
+          "latex": "\\[P_y=2axy+1,\\qquad Q_x=2bxy+1.\\]\nFor these to agree for all \\(x,y\\), we need\n\\[2a=2b,\\]\nso\n\\[a=b.\\]"
+        },
+        {
+          "label": "Check the other cross-partials",
+          "latex": "Also\n\\[P_z=0,\\qquad R_x=0,\\]\nso those match. Finally,\n\\[Q_z=-\\sin z,\\qquad R_y=-\\sin z,\\]\nso those match automatically. Therefore the field is conservative exactly when\n\\[a=b.\\]"
+        },
+        {
+          "label": "Find the potential when \\(a=b=2\\)",
+          "latex": "When \\(a=b=2\\),\n\\[\\mathbf F=\\langle 2xy^2+y,\\,2x^2y+x+\\cos z,\\,-y\\sin z\\rangle.\\]\nSince \\(f_x=2xy^2+y\\), integrate with respect to \\(x\\):\n\\[f=x^2y^2+xy+g(y,z).\\]"
+        },
+        {
+          "label": "Use the second component",
+          "latex": "Differentiate with respect to \\(y\\):\n\\[f_y=2x^2y+x+g_y(y,z).\\]\nWe need \\(f_y=2x^2y+x+\\cos z\\), so\n\\[g_y=\\cos z.\\]\nThus\n\\[g(y,z)=y\\cos z+h(z).\\]"
+        },
+        {
+          "label": "Use the third component",
+          "latex": "Now\n\\[f=x^2y^2+xy+y\\cos z+h(z).\\]\nThen\n\\[f_z=-y\\sin z+h'(z).\\]\nWe need \\(f_z=-y\\sin z\\), so \\(h'(z)=0\\). Therefore\n\\[f(x,y,z)=x^2y^2+xy+y\\cos z+C.\\]"
+        }
+      ],
+      "finalAnswerLatex": "The field is conservative exactly when\n\\[a=b.\\]\nFor \\(a=b=2\\), one potential function is\n\\[f(x,y,z)=x^2y^2+xy+y\\cos z+C.\\]",
+      "commonMistakes": [
+        "Only checking one pair of cross-partials and forgetting the others.",
+        "Thinking \\(a=b=2\\) is the only conservative case; actually any \\(a=b\\) works.",
+        "Forgetting that \\(\\frac{\\partial}{\\partial z}(\\cos z)=-\\sin z\\)."
+      ],
+      "similarProblemPrompt": "Try building a conservative field with parameters by starting from a potential function, then differentiating it."
+    },
+    {
+      "id": "vecfieldline-005",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Vector Line Integral Along a Parametrized Curve",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Parametrize a curve already given by \\(\\mathbf r(t)\\)",
+        "Compute \\(\\mathbf F(\\mathbf r(t))\\)",
+        "Evaluate a vector line integral"
+      ],
+      "examFlavor": "Direct \\(\\int_C \\mathbf F\\cdot d\\mathbf r\\) computation",
+      "problemLatex": "Let\n\\[\\mathbf F(x,y)=\\langle y,\\,x+2y\\rangle,\\]\nand let \\(C\\) be the curve\n\\[\\mathbf r(t)=\\langle t^2,t\\rangle,\\qquad 0\\le t\\le 2.\\]\nEvaluate\n\\[\\int_C \\mathbf F\\cdot d\\mathbf r.\\]",
+      "thinkFirst": "A vector line integral uses \\(\\mathbf F(\\mathbf r(t))\\cdot \\mathbf r'(t)\\), not \\(\\|\\mathbf r'(t)\\|\\).",
+      "hints": [
+        "First compute \\(\\mathbf r'(t)\\).",
+        "Substitute \\(x=t^2\\) and \\(y=t\\) into the vector field.",
+        "Take the dot product with \\(\\mathbf r'(t)\\), then integrate from \\(0\\) to \\(2\\)."
+      ],
+      "setupLatex": "Use\n\\[\\int_C \\mathbf F\\cdot d\\mathbf r=\\int_0^2 \\mathbf F(\\mathbf r(t))\\cdot \\mathbf r'(t)\\,dt.\\]",
+      "solutionSteps": [
+        {
+          "label": "Compute the derivative of the curve",
+          "latex": "\\[\\mathbf r'(t)=\\langle 2t,1\\rangle.\\]"
+        },
+        {
+          "label": "Substitute the curve into the vector field",
+          "latex": "Along the curve, \\(x=t^2\\) and \\(y=t\\). Thus\n\\[\\mathbf F(\\mathbf r(t))=\\langle t,\\,t^2+2t\\rangle.\\]"
+        },
+        {
+          "label": "Take the dot product",
+          "latex": "\\[\\mathbf F(\\mathbf r(t))\\cdot \\mathbf r'(t)=\\langle t,t^2+2t\\rangle\\cdot\\langle 2t,1\\rangle=2t^2+t^2+2t=3t^2+2t.\\]"
+        },
+        {
+          "label": "Integrate",
+          "latex": "\\[\\int_C \\mathbf F\\cdot d\\mathbf r=\\int_0^2(3t^2+2t)\\,dt=\\left[t^3+t^2\\right]_0^2=8+4=12.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\int_C \\mathbf F\\cdot d\\mathbf r=12.\\]",
+      "commonMistakes": [
+        "Using \\(ds=\\|\\mathbf r'(t)\\|dt\\), which belongs to scalar line integrals, not vector line integrals.",
+        "Substituting \\(x=t\\) instead of \\(x=t^2\\).",
+        "Forgetting the dot product with \\(\\mathbf r'(t)\\)."
+      ],
+      "similarProblemPrompt": "Try \\(\\mathbf F(x,y)=\\langle x-y,xy\\rangle\\) along \\(\\mathbf r(t)=\\langle t, t^2\\rangle\\), \\(0\\le t\\le1\\)."
+    },
+    {
+      "id": "vecfieldline-006",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Scalar Line Integral Over a Line Segment",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Parametrize a line segment",
+        "Compute speed along a curve",
+        "Evaluate a scalar line integral"
+      ],
+      "examFlavor": "Line-segment scalar line integral with a simple speed",
+      "problemLatex": "Let \\(C\\) be the line segment from \\(P=(1,0,2)\\) to \\(Q=(3,4,2)\\), and let\n\\[f(x,y,z)=x+2y-z.\\]\nEvaluate the scalar line integral\n\\[\\int_C f\\,ds.\\]",
+      "thinkFirst": "A scalar line integral uses \\(f(\\mathbf r(t))\\|\\mathbf r'(t)\\|\\), so speed matters.",
+      "hints": [
+        "Parametrize the line segment as \\(\\mathbf r(t)=P+t(Q-P)\\), \\(0\\le t\\le1\\).",
+        "Compute \\(\\|\\mathbf r'(t)\\|\\).",
+        "Substitute the parametrization into \\(f\\)."
+      ],
+      "setupLatex": "The vector from \\(P\\) to \\(Q\\) is\n\\[Q-P=\\langle 2,4,0\\rangle.\\]\nSo use\n\\[\\mathbf r(t)=\\langle 1+2t,4t,2\\rangle,\\qquad 0\\le t\\le1.\\]",
+      "solutionSteps": [
+        {
+          "label": "Parametrize the segment",
+          "latex": "A line segment from \\(P\\) to \\(Q\\) is\n\\[\\mathbf r(t)=P+t(Q-P).\\]\nThus\n\\[\\mathbf r(t)=\\langle 1+2t,4t,2\\rangle,\\qquad 0\\le t\\le1.\\]"
+        },
+        {
+          "label": "Compute speed",
+          "latex": "\\[\\mathbf r'(t)=\\langle 2,4,0\\rangle,\\qquad \\|\\mathbf r'(t)\\|=\\sqrt{2^2+4^2}=\\sqrt{20}=2\\sqrt5.\\]"
+        },
+        {
+          "label": "Substitute into \\(f\\)",
+          "latex": "\\[f(\\mathbf r(t))=(1+2t)+2(4t)-2=10t-1.\\]"
+        },
+        {
+          "label": "Integrate",
+          "latex": "\\[\\int_C f\\,ds=\\int_0^1(10t-1)(2\\sqrt5)\\,dt=2\\sqrt5\\left[5t^2-t\\right]_0^1=2\\sqrt5(4)=8\\sqrt5.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\int_C f\\,ds=8\\sqrt5.\\]",
+      "commonMistakes": [
+        "Using a vector line integral formula instead of a scalar line integral formula.",
+        "Forgetting to multiply by \\(\\|\\mathbf r'(t)\\|\\).",
+        "Using the wrong parameter interval for the line segment."
+      ],
+      "similarProblemPrompt": "Try \\(f(x,y,z)=2x-y+z\\) along the segment from \\((0,1,1)\\) to \\((2,1,5)\\)."
+    },
+    {
+      "id": "vecfieldline-007",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Avoiding Parametrization with the Fundamental Theorem",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Recognize a gradient field",
+        "Use the Fundamental Theorem of Line Integrals",
+        "Evaluate endpoint values"
+      ],
+      "examFlavor": "Path-independent line integral where direct parametrization would be unnecessary",
+      "problemLatex": "Let\n\\[\\mathbf F(x,y)=\\langle 2xe^{x^2+y},\\,e^{x^2+y}\\rangle.\\]\nLet \\(C\\) be any smooth curve from \\((0,0)\\) to \\((1,2)\\). Evaluate\n\\[\\int_C \\mathbf F\\cdot d\\mathbf r.\\]",
+      "thinkFirst": "The two components look like partial derivatives of the same function. Try finding the potential before choosing a path.",
+      "hints": [
+        "What function has \\(x\\)-derivative \\(2xe^{x^2+y}\\)?",
+        "Check whether \\(f(x,y)=e^{x^2+y}\\) works.",
+        "For a gradient field, the line integral only depends on endpoints."
+      ],
+      "setupLatex": "Notice that\n\\[\\nabla(e^{x^2+y})=\\langle 2xe^{x^2+y},e^{x^2+y}\\rangle.\\]",
+      "solutionSteps": [
+        {
+          "label": "Identify the potential",
+          "latex": "Let\n\\[f(x,y)=e^{x^2+y}.\\]\nThen\n\\[f_x=2xe^{x^2+y},\\qquad f_y=e^{x^2+y}.\\]\nSo \\(\\mathbf F=\\nabla f\\)."
+        },
+        {
+          "label": "Apply the Fundamental Theorem of Line Integrals",
+          "latex": "Since \\(\\mathbf F=\\nabla f\\),\n\\[\\int_C \\mathbf F\\cdot d\\mathbf r=f(1,2)-f(0,0).\\]"
+        },
+        {
+          "label": "Evaluate the endpoints",
+          "latex": "\\[f(1,2)=e^{1^2+2}=e^3,\\qquad f(0,0)=e^0=1.\\]\nTherefore\n\\[\\int_C \\mathbf F\\cdot d\\mathbf r=e^3-1.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\int_C \\mathbf F\\cdot d\\mathbf r=e^3-1.\\]",
+      "commonMistakes": [
+        "Choosing a random path and doing extra work even though the field is conservative.",
+        "Forgetting to subtract the starting value from the ending value.",
+        "Missing the chain rule factor \\(2x\\) when identifying the potential."
+      ],
+      "similarProblemPrompt": "Try \\(\\mathbf F=\\langle ye^{xy},xe^{xy}\\rangle\\) from \\((1,0)\\) to \\((2,3)\\)."
+    },
+    {
+      "id": "vecfieldline-008",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Closed-Curve Vector Line Integral Around a Circle",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Parametrize a circle with orientation",
+        "Compute a vector line integral around a closed curve",
+        "Connect curl with non-conservative behavior"
+      ],
+      "examFlavor": "Closed curve integral with a rotational vector field",
+      "problemLatex": "Let\n\\[\\mathbf F(x,y)=\\langle -y,x\\rangle.\\]\nLet \\(C\\) be the circle \\(x^2+y^2=9\\), oriented counterclockwise. Evaluate\n\\[\\oint_C \\mathbf F\\cdot d\\mathbf r.\\]",
+      "thinkFirst": "The orientation matters. Counterclockwise circle parametrization is \\(\\mathbf r(t)=\\langle 3\\cos t,3\\sin t\\rangle\\), \\(0\\le t\\le2\\pi\\).",
+      "hints": [
+        "Use \\(x=3\\cos t\\), \\(y=3\\sin t\\).",
+        "Compute \\(\\mathbf F(\\mathbf r(t))\\) and \\(\\mathbf r'(t)\\).",
+        "The dot product should simplify to a constant."
+      ],
+      "setupLatex": "Parametrize the circle by\n\\[\\mathbf r(t)=\\langle 3\\cos t,3\\sin t\\rangle,\\qquad 0\\le t\\le2\\pi.\\]",
+      "solutionSteps": [
+        {
+          "label": "Parametrize the circle",
+          "latex": "For counterclockwise orientation, use\n\\[\\mathbf r(t)=\\langle 3\\cos t,3\\sin t\\rangle,\\qquad 0\\le t\\le2\\pi.\\]\nThen\n\\[\\mathbf r'(t)=\\langle -3\\sin t,3\\cos t\\rangle.\\]"
+        },
+        {
+          "label": "Substitute into the vector field",
+          "latex": "Along the curve,\n\\[\\mathbf F(\\mathbf r(t))=\\langle -3\\sin t,3\\cos t\\rangle.\\]"
+        },
+        {
+          "label": "Take the dot product",
+          "latex": "\\[\\mathbf F(\\mathbf r(t))\\cdot \\mathbf r'(t)=\\langle -3\\sin t,3\\cos t\\rangle\\cdot\\langle -3\\sin t,3\\cos t\\rangle=9\\sin^2t+9\\cos^2t=9.\\]"
+        },
+        {
+          "label": "Integrate",
+          "latex": "\\[\\oint_C \\mathbf F\\cdot d\\mathbf r=\\int_0^{2\\pi}9\\,dt=18\\pi.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\oint_C \\mathbf F\\cdot d\\mathbf r=18\\pi.\\]",
+      "commonMistakes": [
+        "Parametrizing the circle clockwise, which would change the sign.",
+        "Using \\(ds\\) instead of \\(d\\mathbf r\\).",
+        "Assuming every closed line integral is zero; that is only guaranteed for conservative fields."
+      ],
+      "similarProblemPrompt": "Try the same field around the circle \\(x^2+y^2=4\\), but with clockwise orientation."
+    },
+    {
+      "id": "vecfieldline-009",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Same Endpoints, Different Paths",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Compute vector line integrals over piecewise paths",
+        "Compare path-dependent line integrals",
+        "Use curl to explain path dependence"
+      ],
+      "examFlavor": "Two-path comparison showing why path independence matters",
+      "problemLatex": "Let\n\\[\\mathbf F(x,y)=\\langle y,x^2\\rangle.\\]\nBoth curves below start at \\((0,0)\\) and end at \\((2,1)\\).\n\nCurve \\(C_1\\): first go from \\((0,0)\\) to \\((2,0)\\), then from \\((2,0)\\) to \\((2,1)\\).\n\nCurve \\(C_2\\): go straight from \\((0,0)\\) to \\((2,1)\\).\n\n(a) Compute \\(\\int_{C_1}\\mathbf F\\cdot d\\mathbf r\\).\n\n(b) Compute \\(\\int_{C_2}\\mathbf F\\cdot d\\mathbf r\\).\n\n(c) What do your answers tell you about whether \\(\\mathbf F\\) is conservative?",
+      "thinkFirst": "If a field is conservative, every path between the same endpoints gives the same vector line integral. Different answers prove the field is not conservative.",
+      "hints": [
+        "Break \\(C_1\\) into two segments and add the integrals.",
+        "For the horizontal segment, \\(y=0\\). For the vertical segment, \\(x=2\\).",
+        "For \\(C_2\\), use \\(\\mathbf r(s)=\\langle 2s,s\\rangle\\), \\(0\\le s\\le1\\).",
+        "You can also check scalar curl: \\(Q_x-P_y=2x-1\\)."
+      ],
+      "setupLatex": "Use the formula\n\\[\\int_C \\mathbf F\\cdot d\\mathbf r=\\int_a^b \\mathbf F(\\mathbf r(t))\\cdot \\mathbf r'(t)\\,dt.\\]\nFor \\(C_1\\), compute the two pieces separately.",
+      "solutionSteps": [
+        {
+          "label": "Compute the horizontal piece of \\(C_1\\)",
+          "latex": "Parametrize the horizontal segment by\n\\[\\mathbf r_1(t)=\\langle t,0\\rangle,\\qquad 0\\le t\\le2.\\]\nThen \\(\\mathbf r_1'(t)=\\langle 1,0\\rangle\\), and\n\\[\\mathbf F(\\mathbf r_1(t))=\\langle 0,t^2\\rangle.\\]\nSo\n\\[\\mathbf F(\\mathbf r_1(t))\\cdot \\mathbf r_1'(t)=0.\\]\nThe first piece contributes \\(0\\)."
+        },
+        {
+          "label": "Compute the vertical piece of \\(C_1\\)",
+          "latex": "Parametrize the vertical segment by\n\\[\\mathbf r_2(t)=\\langle 2,t\\rangle,\\qquad 0\\le t\\le1.\\]\nThen \\(\\mathbf r_2'(t)=\\langle 0,1\\rangle\\), and\n\\[\\mathbf F(\\mathbf r_2(t))=\\langle t,4\\rangle.\\]\nSo\n\\[\\mathbf F(\\mathbf r_2(t))\\cdot \\mathbf r_2'(t)=4.\\]\nThus\n\\[\\int_{C_1}\\mathbf F\\cdot d\\mathbf r=0+\\int_0^1 4\\,dt=4.\\]"
+        },
+        {
+          "label": "Compute the straight path \\(C_2\\)",
+          "latex": "Parametrize the straight path by\n\\[\\mathbf r(s)=\\langle 2s,s\\rangle,\\qquad 0\\le s\\le1.\\]\nThen \\(\\mathbf r'(s)=\\langle 2,1\\rangle\\), and\n\\[\\mathbf F(\\mathbf r(s))=\\langle s,4s^2\\rangle.\\]\nThe dot product is\n\\[\\langle s,4s^2\\rangle\\cdot\\langle 2,1\\rangle=2s+4s^2.\\]\nTherefore\n\\[\\int_{C_2}\\mathbf F\\cdot d\\mathbf r=\\int_0^1(2s+4s^2)\\,ds=1+\\frac43=\\frac73.\\]"
+        },
+        {
+          "label": "Conclude about conservativeness",
+          "latex": "The two paths have the same start and end points, but\n\\[4\\ne\\frac73.\\]\nSo \\(\\mathbf F\\) is not conservative. This also matches the scalar curl check:\n\\[Q_x-P_y=2x-1,\\]\nwhich is not zero everywhere."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\int_{C_1}\\mathbf F\\cdot d\\mathbf r=4,\\qquad \\int_{C_2}\\mathbf F\\cdot d\\mathbf r=\\frac73.\\]\nSince these are different for paths with the same endpoints, \\(\\mathbf F\\) is not conservative.",
+      "commonMistakes": [
+        "Forgetting to split the piecewise curve into separate integrals.",
+        "Using \\(x=2t\\), \\(y=t\\) for the piecewise path instead of the straight path.",
+        "Thinking same endpoints always imply same line integral. That is only true for conservative vector fields."
+      ],
+      "similarProblemPrompt": "Try comparing two paths for \\(\\mathbf F(x,y)=\\langle -y,x^2+y\\rangle\\) from \\((0,0)\\) to \\((1,2)\\)."
+    },
+    {
+      "id": "vecfieldline-010",
+      "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+      "title": "Concept Check: Conservative Fields and Line Integrals",
+      "difficulty": "Conceptual",
+      "estimatedMinutes": 11,
+      "skills": [
+        "Reason about conservative fields",
+        "Distinguish scalar and vector line integrals",
+        "Interpret path independence and closed curves"
+      ],
+      "examFlavor": "True/false reasoning similar to exam review conceptual prompts",
+      "problemLatex": "Decide whether each statement is true or false. Give a short explanation.\n\n(a) If \\(\\mathbf F=\\nabla f\\), then \\(\\operatorname{curl}\\mathbf F=\\mathbf 0\\).\n\n(b) If \\(\\operatorname{div}\\mathbf F=0\\), then \\(\\mathbf F\\) must be conservative.\n\n(c) If \\(\\mathbf F\\) is conservative, then \\(\\oint_C \\mathbf F\\cdot d\\mathbf r=0\\) for every closed curve \\(C\\) in its domain.\n\n(d) Reversing the orientation of a curve changes the sign of \\(\\int_C \\mathbf F\\cdot d\\mathbf r\\).\n\n(e) Reversing the orientation of a curve changes the sign of \\(\\int_C f\\,ds\\).",
+      "thinkFirst": "The easiest way to handle true/false is to connect each statement to a formula or to a quick counterexample.",
+      "hints": [
+        "Gradient fields are conservative fields.",
+        "Divergence measures source/sink behavior, not path independence.",
+        "Closed integrals of conservative fields are zero because the start and end points are the same.",
+        "Scalar line integrals use \\(ds\\), which is not orientation-sensitive."
+      ],
+      "setupLatex": "Recall:\n\\[\\int_C \\nabla f\\cdot d\\mathbf r=f(\\text{end})-f(\\text{start}),\\]\nand\n\\[\\int_C f\\,ds=\\int_a^b f(\\mathbf r(t))\\|\\mathbf r'(t)\\|\\,dt.\\]",
+      "solutionSteps": [
+        {
+          "label": "Part (a)",
+          "latex": "True. If \\(\\mathbf F=\\nabla f\\), then \\(\\mathbf F\\) is a gradient field. For sufficiently smooth \\(f\\), the curl of a gradient is zero:\n\\[\\operatorname{curl}(\\nabla f)=\\mathbf 0.\\]"
+        },
+        {
+          "label": "Part (b)",
+          "latex": "False. Divergence being zero does not imply conservative. For example,\n\\[\\mathbf F(x,y)=\\langle -y,x\\rangle\\]\nhas\n\\[\\operatorname{div}\\mathbf F=0+0=0,\\]\nbut scalar curl\n\\[Q_x-P_y=1-(-1)=2\\ne0.\\]\nSo it is not conservative."
+        },
+        {
+          "label": "Part (c)",
+          "latex": "True. If \\(\\mathbf F=\\nabla f\\), then for any closed curve, the start and end points are the same. Hence\n\\[\\oint_C \\mathbf F\\cdot d\\mathbf r=f(\\text{end})-f(\\text{start})=0.\\]"
+        },
+        {
+          "label": "Part (d)",
+          "latex": "True. A vector line integral depends on orientation. Reversing the curve changes \\(d\\mathbf r\\) to \\(-d\\mathbf r\\), so the integral changes sign."
+        },
+        {
+          "label": "Part (e)",
+          "latex": "False. A scalar line integral uses \\(ds\\), which measures distance along the curve. Reversing orientation does not change arc length, so \\(\\int_C f\\,ds\\) stays the same."
+        }
+      ],
+      "finalAnswerLatex": "\\[(a)\\ T,\\qquad (b)\\ F,\\qquad (c)\\ T,\\qquad (d)\\ T,\\qquad (e)\\ F.\\]",
+      "commonMistakes": [
+        "Confusing divergence with curl when checking whether a field is conservative.",
+        "Thinking every line integral changes sign when orientation reverses; this is true for vector line integrals, not scalar line integrals.",
+        "Forgetting that a closed curve has the same start and end point."
+      ],
+      "similarProblemPrompt": "Write your own true/false statement involving path independence, then try to prove it or find a counterexample."
+    }
+  ]
+}

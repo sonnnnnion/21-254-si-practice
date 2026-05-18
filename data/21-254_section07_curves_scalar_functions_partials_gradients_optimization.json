@@ -1,0 +1,467 @@
+{
+  "sectionId": "sec-07-curves-scalar-functions-partials-gradients-optimization",
+  "sectionTitle": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+  "sectionPosition": 7,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice the first multivariable calculus exam topics: parametrized curves, tangent vectors, arc length, scalar functions, level sets, partial derivatives, chain rule, gradients, directional derivatives, tangent planes, and optimization without Lagrange multipliers.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "curvgradopt-001",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Velocity, Speed, Unit Tangent, and Arc Length of a Helix",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Differentiate a vector-valued curve",
+        "Compute speed and unit tangent vectors",
+        "Compute arc length from speed"
+      ],
+      "examFlavor": "Direct curve computation with a constant-speed parametrization",
+      "problemLatex": "Consider the curve\n\\[\\mathbf r(t)=\\langle 3\\cos t,\\,3\\sin t,\\,4t\\rangle,\\qquad 0\\le t\\le \\pi.\\]\n\n(a) Find the velocity vector \\(\\mathbf r'(t)\\).\n\n(b) Find the speed \\(\\|\\mathbf r'(t)\\|\\).\n\n(c) Find the unit tangent vector \\(\\mathbf T(t)\\).\n\n(d) Find the arc length of the curve on \\(0\\le t\\le \\pi\\).",
+      "thinkFirst": "For arc length, the main object is the speed. If the speed turns out to be constant, the integral becomes very short.",
+      "hints": [
+        "Differentiate each component of \\(\\mathbf r(t)\\) separately.",
+        "The speed is \\(\\sqrt{(x')^2+(y')^2+(z')^2}\\).",
+        "The unit tangent is velocity divided by speed.",
+        "Arc length is \\(\\int_a^b \\|\\mathbf r'(t)\\|\\,dt\\)."
+      ],
+      "setupLatex": "Start with\n\\[\\mathbf r'(t)=\\langle -3\\sin t,\\,3\\cos t,\\,4\\rangle.\\]\nThen compute its magnitude before setting up the arc length integral.",
+      "solutionSteps": [
+        {
+          "label": "Differentiate the curve",
+          "latex": "Differentiate component by component:\n\\[\\mathbf r'(t)=\\langle -3\\sin t,\\,3\\cos t,\\,4\\rangle.\\]"
+        },
+        {
+          "label": "Compute speed",
+          "latex": "The speed is\n\\[\\|\\mathbf r'(t)\\|=\\sqrt{(-3\\sin t)^2+(3\\cos t)^2+4^2}.\\]\nUsing \\(\\sin^2 t+\\cos^2 t=1\\),\n\\[\\|\\mathbf r'(t)\\|=\\sqrt{9\\sin^2 t+9\\cos^2 t+16}=\\sqrt{25}=5.\\]"
+        },
+        {
+          "label": "Find the unit tangent vector",
+          "latex": "Divide velocity by speed:\n\\[\\mathbf T(t)=\\frac{\\mathbf r'(t)}{\\|\\mathbf r'(t)\\|}=\\left\\langle -\\frac{3}{5}\\sin t,\\,\\frac{3}{5}\\cos t,\\,\\frac45\\right\\rangle.\\]"
+        },
+        {
+          "label": "Compute arc length",
+          "latex": "Arc length is\n\\[L=\\int_0^\\pi \\|\\mathbf r'(t)\\|\\,dt=\\int_0^\\pi 5\\,dt=5\\pi.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\mathbf r'(t)=\\langle -3\\sin t,3\\cos t,4\\rangle,\\quad \\|\\mathbf r'(t)\\|=5,\\quad \\mathbf T(t)=\\left\\langle -\\frac35\\sin t,\\frac35\\cos t,\\frac45\\right\\rangle,\\quad L=5\\pi.\\]",
+      "commonMistakes": [
+        "Forgetting that speed is the magnitude of velocity, not the velocity vector itself.",
+        "Dropping the square root when computing speed.",
+        "Using position \\(\\mathbf r(t)\\) instead of velocity \\(\\mathbf r'(t)\\) in the arc length integral."
+      ],
+      "similarProblemPrompt": "Try the same questions for \\(\\mathbf r(t)=\\langle 5\\cos t,5\\sin t,12t\\rangle\\) on \\(0\\le t\\le 2\\pi\\)."
+    },
+    {
+      "id": "curvgradopt-002",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Parametrize an Intersection Curve",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Parametrize a circle in the xy-plane",
+        "Use a surface equation to determine the z-coordinate",
+        "Interpret orientation"
+      ],
+      "examFlavor": "Parametrization problem where a familiar xy-curve determines the rest of the curve",
+      "problemLatex": "Parametrize the curve of intersection of the cylinder\n\\[x^2+y^2=4\\]\nand the plane\n\\[z=x+1.\\]\nUse a counterclockwise orientation when viewed from above.",
+      "thinkFirst": "The equation \\(x^2+y^2=4\\) already tells you what the \\(x\\)- and \\(y\\)-coordinates should look like.",
+      "hints": [
+        "A counterclockwise parametrization of \\(x^2+y^2=4\\) is \\(x=2\\cos t,\\ y=2\\sin t\\).",
+        "Once \\(x(t)\\) is chosen, use \\(z=x+1\\) to get \\(z(t)\\).",
+        "A full trip around the circle uses \\(0\\le t\\le 2\\pi\\)."
+      ],
+      "setupLatex": "Start with the circular part:\n\\[x(t)=2\\cos t,\\qquad y(t)=2\\sin t.\\]",
+      "solutionSteps": [
+        {
+          "label": "Parametrize the cylinder",
+          "latex": "Because \\(x^2+y^2=4\\) is a circle of radius \\(2\\), a natural counterclockwise parametrization is\n\\[x=2\\cos t,\\qquad y=2\\sin t,\\qquad 0\\le t\\le 2\\pi.\\]"
+        },
+        {
+          "label": "Use the plane to find z",
+          "latex": "The plane says \\(z=x+1\\). Since \\(x=2\\cos t\\),\n\\[z(t)=2\\cos t+1.\\]"
+        },
+        {
+          "label": "Write the vector parametrization",
+          "latex": "Therefore\n\\[\\mathbf r(t)=\\langle 2\\cos t,\\,2\\sin t,\\,2\\cos t+1\\rangle,\\qquad 0\\le t\\le 2\\pi.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{\\mathbf r(t)=\\langle 2\\cos t,\\,2\\sin t,\\,2\\cos t+1\\rangle,\\quad 0\\le t\\le 2\\pi.}\\]",
+      "commonMistakes": [
+        "Using radius \\(4\\) instead of radius \\(2\\).",
+        "Forgetting to plug \\(x(t)\\) into \\(z=x+1\\).",
+        "Reversing the orientation by using \\(y=-2\\sin t\\)."
+      ],
+      "similarProblemPrompt": "Parametrize the intersection of \\(x^2+y^2=9\\) and \\(z=2-y\\), counterclockwise from above."
+    },
+    {
+      "id": "curvgradopt-003",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Level Sets and Domain of a Scalar Function",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Find the domain of a scalar function",
+        "Describe level curves",
+        "Interpret a scalar function geometrically"
+      ],
+      "examFlavor": "Conceptual scalar-function problem focused on domains and level curves",
+      "problemLatex": "Let\n\\[f(x,y)=\\ln(9-x^2-y^2).\\]\n\n(a) Find the domain of \\(f\\).\n\n(b) Describe the level curve \\(f(x,y)=0\\).\n\n(c) Describe the level curve \\(f(x,y)=\\ln 5\\).",
+      "thinkFirst": "The logarithm only accepts positive inputs, so begin by making the inside of the log positive.",
+      "hints": [
+        "For \\(\\ln(u)\\) to be defined, you need \\(u>0\\).",
+        "To solve \\(\\ln(9-x^2-y^2)=0\\), exponentiate both sides.",
+        "The equation \\(x^2+y^2=r^2\\) is a circle centered at the origin."
+      ],
+      "setupLatex": "The inside of the logarithm is \\(9-x^2-y^2\\). For the domain, solve\n\\[9-x^2-y^2>0.\\]",
+      "solutionSteps": [
+        {
+          "label": "Find the domain",
+          "latex": "We need\n\\[9-x^2-y^2>0.\\]\nEquivalently,\n\\[x^2+y^2<9.\\]\nSo the domain is the open disk of radius \\(3\\) centered at the origin."
+        },
+        {
+          "label": "Find the level curve for f=0",
+          "latex": "Set\n\\[\\ln(9-x^2-y^2)=0.\\]\nExponentiating gives\n\\[9-x^2-y^2=e^0=1.\\]\nThus\n\\[x^2+y^2=8.\\]\nThis is a circle centered at the origin with radius \\(\\sqrt8=2\\sqrt2\\)."
+        },
+        {
+          "label": "Find the level curve for f=ln 5",
+          "latex": "Set\n\\[\\ln(9-x^2-y^2)=\\ln 5.\\]\nThen\n\\[9-x^2-y^2=5,\\]\nso\n\\[x^2+y^2=4.\\]\nThis is a circle centered at the origin with radius \\(2\\)."
+        }
+      ],
+      "finalAnswerLatex": "Domain: \\(x^2+y^2<9\\). The level curve \\(f=0\\) is \\(x^2+y^2=8\\). The level curve \\(f=\\ln 5\\) is \\(x^2+y^2=4\\).",
+      "commonMistakes": [
+        "Allowing \\(9-x^2-y^2=0\\) in the domain. The logarithm needs a positive input, not a nonnegative one.",
+        "Thinking \\(\\ln(u)=0\\) means \\(u=0\\). It actually means \\(u=1\\).",
+        "Forgetting to describe level curves geometrically."
+      ],
+      "similarProblemPrompt": "Try \\(g(x,y)=\\sqrt{16-x^2-4y^2}\\): find the domain and describe \\(g(x,y)=2\\)."
+    },
+    {
+      "id": "curvgradopt-004",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "First and Mixed Partial Derivatives",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Compute first partial derivatives",
+        "Compute mixed partial derivatives",
+        "Evaluate partial derivatives at a point"
+      ],
+      "examFlavor": "Calculation-heavy partial derivative problem with product and chain rule components",
+      "problemLatex": "Let\n\\[f(x,y)=x^2e^{xy}+y\\sin x.\\]\n\n(a) Find \\(f_x\\) and \\(f_y\\).\n\n(b) Find \\(f_{xy}\\).\n\n(c) Evaluate \\(f_{xy}(0,2)\\).",
+      "thinkFirst": "When taking a partial derivative, treat the other variable as a constant. The term \\(e^{xy}\\) still needs a chain rule.",
+      "hints": [
+        "For \\(f_x\\), \\(y\\) is constant, so \\(\\frac{\\partial}{\\partial x}e^{xy}=ye^{xy}\\).",
+        "For \\(f_y\\), \\(x\\) is constant, so \\(\\frac{\\partial}{\\partial y}e^{xy}=xe^{xy}\\).",
+        "To find \\(f_{xy}\\), differentiate \\(f_x\\) with respect to \\(y\\)."
+      ],
+      "setupLatex": "Split the function into two pieces:\n\\[x^2e^{xy}\\quad\\text{and}\\quad y\\sin x.\\]\nThe first piece uses product rule and chain rule.",
+      "solutionSteps": [
+        {
+          "label": "Compute f_x",
+          "latex": "For \\(f_x\\), treat \\(y\\) as constant:\n\\[f_x=2xe^{xy}+x^2\\cdot ye^{xy}+y\\cos x.\\]\nSo\n\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x.\\]"
+        },
+        {
+          "label": "Compute f_y",
+          "latex": "For \\(f_y\\), treat \\(x\\) as constant:\n\\[f_y=x^2\\cdot xe^{xy}+\\sin x=x^3e^{xy}+\\sin x.\\]"
+        },
+        {
+          "label": "Compute f_xy",
+          "latex": "Differentiate \\(f_x\\) with respect to \\(y\\):\n\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x.\\]\nThen\n\\[f_{xy}=2x\\cdot xe^{xy}+x^2\\left(e^{xy}+xy e^{xy}\\right)+\\cos x.\\]\nThus\n\\[f_{xy}=2x^2e^{xy}+x^2e^{xy}+x^3ye^{xy}+\\cos x=3x^2e^{xy}+x^3ye^{xy}+\\cos x.\\]"
+        },
+        {
+          "label": "Evaluate at (0,2)",
+          "latex": "At \\((0,2)\\), all terms containing \\(x\\) vanish, and \\(\\cos 0=1\\). Therefore\n\\[f_{xy}(0,2)=1.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x,\\quad f_y=x^3e^{xy}+\\sin x,\\quad f_{xy}=3x^2e^{xy}+x^3ye^{xy}+\\cos x,\\quad f_{xy}(0,2)=1.\\]",
+      "commonMistakes": [
+        "Treating \\(y\\) as a variable while computing \\(f_x\\) or treating \\(x\\) as a variable while computing \\(f_y\\).",
+        "Forgetting the chain rule on \\(e^{xy}\\).",
+        "Mixing up \\(f_{xy}\\) and \\(f_{yx}\\) notation."
+      ],
+      "similarProblemPrompt": "Try the same tasks for \\(f(x,y)=y^2e^{x y}+x\\cos y\\)."
+    },
+    {
+      "id": "curvgradopt-005",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Multivariable Chain Rule with Two Parameters",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Apply the multivariable chain rule",
+        "Track intermediate variables",
+        "Evaluate derivatives at a parameter point"
+      ],
+      "examFlavor": "Chain rule problem where the function depends on intermediate variables depending on two parameters",
+      "problemLatex": "Let\n\\[z=f(x,y),\\qquad x=s^2+t,\\qquad y=st^2.\\]\nSuppose that at the point corresponding to \\((s,t)=(1,2)\\),\n\\[f_x(x,y)=3,\\qquad f_y(x,y)=-2.\\]\nFind \\(\\dfrac{\\partial z}{\\partial s}\\) and \\(\\dfrac{\\partial z}{\\partial t}\\) at \\((s,t)=(1,2)\\).",
+      "thinkFirst": "This problem is about the chain rule structure, not about knowing the formula for \\(f\\) itself.",
+      "hints": [
+        "Use \\(z_s=f_xx_s+f_yy_s\\).",
+        "Use \\(z_t=f_xx_t+f_yy_t\\).",
+        "Compute \\(x_s,x_t,y_s,y_t\\), then plug in \\((s,t)=(1,2)\\)."
+      ],
+      "setupLatex": "The multivariable chain rule gives\n\\[z_s=f_xx_s+f_yy_s,\\qquad z_t=f_xx_t+f_yy_t.\\]",
+      "solutionSteps": [
+        {
+          "label": "Compute derivatives of x and y",
+          "latex": "Since \\(x=s^2+t\\),\n\\[x_s=2s,\\qquad x_t=1.\\]\nSince \\(y=st^2\\),\n\\[y_s=t^2,\\qquad y_t=2st.\\]"
+        },
+        {
+          "label": "Evaluate these at (s,t)=(1,2)",
+          "latex": "At \\((1,2)\\),\n\\[x_s=2,\\qquad x_t=1,\\qquad y_s=4,\\qquad y_t=4.\\]"
+        },
+        {
+          "label": "Apply the chain rule for z_s",
+          "latex": "Using \\(f_x=3\\) and \\(f_y=-2\\),\n\\[z_s=f_xx_s+f_yy_s=3(2)+(-2)(4)=6-8=-2.\\]"
+        },
+        {
+          "label": "Apply the chain rule for z_t",
+          "latex": "Similarly,\n\\[z_t=f_xx_t+f_yy_t=3(1)+(-2)(4)=3-8=-5.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{z_s(1,2)=-2,\\qquad z_t(1,2)=-5.}\\]",
+      "commonMistakes": [
+        "Trying to find \\(f(x,y)\\) even though the problem gives enough derivative information already.",
+        "Forgetting to evaluate \\(x_s,x_t,y_s,y_t\\) at \\((s,t)=(1,2)\\).",
+        "Using only one chain rule term instead of both \\(f_x\\) and \\(f_y\\)."
+      ],
+      "similarProblemPrompt": "Try again with \\(x=st+1\\), \\(y=s^2-t\\), \\(f_x=4\\), \\(f_y=1\\), at \\((s,t)=(2,1)\\)."
+    },
+    {
+      "id": "curvgradopt-006",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Gradient and Directional Derivative in 3D",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Compute a gradient vector",
+        "Normalize a direction vector",
+        "Compute a directional derivative",
+        "Find the direction of maximum increase"
+      ],
+      "examFlavor": "Directional derivative problem where the direction is given by two points",
+      "problemLatex": "Let\n\\[f(x,y,z)=x^2y+yz^2.\\]\nAt the point \\(P=(1,2,-1)\\), find:\n\n(a) \\(\\nabla f(P)\\).\n\n(b) The directional derivative of \\(f\\) at \\(P\\) in the direction from \\(P\\) to \\(Q=(3,3,-1)\\).\n\n(c) The direction in which \\(f\\) increases fastest at \\(P\\).",
+      "thinkFirst": "A directional derivative requires a unit vector. If the direction is given using two points, first form the vector from the starting point to the ending point.",
+      "hints": [
+        "Compute \\(\\nabla f=\\langle f_x,f_y,f_z\\rangle\\).",
+        "The direction from \\(P\\) to \\(Q\\) is \\(Q-P\\).",
+        "Normalize the direction vector before taking the dot product with the gradient.",
+        "The direction of fastest increase is the gradient direction."
+      ],
+      "setupLatex": "First compute\n\\[\\nabla f=\\left\\langle 2xy,\\,x^2+z^2,\\,2yz\\right\\rangle.\\]",
+      "solutionSteps": [
+        {
+          "label": "Evaluate the gradient at P",
+          "latex": "At \\(P=(1,2,-1)\\),\n\\[\\nabla f(P)=\\langle 2(1)(2),\\,1^2+(-1)^2,\\,2(2)(-1)\\rangle=\\langle 4,2,-4\\rangle.\\]"
+        },
+        {
+          "label": "Find the unit direction vector",
+          "latex": "The direction from \\(P\\) to \\(Q\\) is\n\\[Q-P=\\langle 3-1,\\,3-2,\\,-1-(-1)\\rangle=\\langle 2,1,0\\rangle.\\]\nIts length is \\(\\sqrt{2^2+1^2}=\\sqrt5\\), so the unit direction is\n\\[\\mathbf u=\\left\\langle \\frac{2}{\\sqrt5},\\frac{1}{\\sqrt5},0\\right\\rangle.\\]"
+        },
+        {
+          "label": "Compute the directional derivative",
+          "latex": "The directional derivative is\n\\[D_{\\mathbf u}f(P)=\\nabla f(P)\\cdot \\mathbf u.\\]\nThus\n\\[D_{\\mathbf u}f(P)=\\langle 4,2,-4\\rangle\\cdot \\left\\langle \\frac{2}{\\sqrt5},\\frac{1}{\\sqrt5},0\\right\\rangle=\\frac{8}{\\sqrt5}+\\frac{2}{\\sqrt5}=\\frac{10}{\\sqrt5}=2\\sqrt5.\\]"
+        },
+        {
+          "label": "Find the fastest-increase direction",
+          "latex": "The direction of fastest increase is the direction of the gradient:\n\\[\\boxed{\\langle 4,2,-4\\rangle}\\]\nor, as a unit vector,\n\\[\\frac{1}{6}\\langle 4,2,-4\\rangle=\\left\\langle\\frac23,\\frac13,-\\frac23\\right\\rangle.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\nabla f(P)=\\langle4,2,-4\\rangle,\\qquad D_{\\mathbf u}f(P)=2\\sqrt5,\\qquad \\text{fastest increase direction }=\\left\\langle\\frac23,\\frac13,-\\frac23\\right\\rangle.\\]",
+      "commonMistakes": [
+        "Using \\(Q\\) itself as the direction instead of using \\(Q-P\\).",
+        "Forgetting to normalize the direction vector before taking the dot product.",
+        "Saying the maximum directional derivative direction is any positive vector, without specifying the gradient direction."
+      ],
+      "similarProblemPrompt": "Try \\(f(x,y,z)=xe^y+z^2x\\) at \\(P=(1,0,2)\\), in the direction toward \\(Q=(1,2,4)\\)."
+    },
+    {
+      "id": "curvgradopt-007",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Tangent Plane and Linear Approximation",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Compute partial derivatives",
+        "Find a tangent plane to a graph",
+        "Use linearization for approximation"
+      ],
+      "examFlavor": "Tangent plane problem with a small numerical approximation follow-up",
+      "problemLatex": "Let\n\\[f(x,y)=\\sqrt{10-x^2-y^2}.\\]\n\n(a) Find the tangent plane to \\(z=f(x,y)\\) at \\((x,y)=(1,2)\\).\n\n(b) Use the tangent plane to approximate \\(f(0.9,2.1)\\).",
+      "thinkFirst": "The tangent plane uses the function value and the two first partial derivatives at the base point.",
+      "hints": [
+        "First compute \\(f(1,2)\\).",
+        "Use \\(z=f(a,b)+f_x(a,b)(x-a)+f_y(a,b)(y-b)\\).",
+        "For the approximation, plug \\(x=0.9\\), \\(y=2.1\\) into the tangent plane."
+      ],
+      "setupLatex": "At \\((1,2)\\),\n\\[f(1,2)=\\sqrt{10-1-4}=\\sqrt5.\\]",
+      "solutionSteps": [
+        {
+          "label": "Compute partial derivatives",
+          "latex": "Since\n\\[f(x,y)=(10-x^2-y^2)^{1/2},\\]\nwe get\n\\[f_x=-\\frac{x}{\\sqrt{10-x^2-y^2}},\\qquad f_y=-\\frac{y}{\\sqrt{10-x^2-y^2}}.\\]"
+        },
+        {
+          "label": "Evaluate at (1,2)",
+          "latex": "At \\((1,2)\\),\n\\[f_x(1,2)=-\\frac1{\\sqrt5},\\qquad f_y(1,2)=-\\frac2{\\sqrt5}.\\]"
+        },
+        {
+          "label": "Write the tangent plane",
+          "latex": "The tangent plane is\n\\[z-\\sqrt5=-\\frac1{\\sqrt5}(x-1)-\\frac2{\\sqrt5}(y-2).\\]\nEquivalently,\n\\[z=\\sqrt5-\\frac{x-1}{\\sqrt5}-\\frac{2(y-2)}{\\sqrt5}.\\]"
+        },
+        {
+          "label": "Approximate f(0.9,2.1)",
+          "latex": "Using \\(x-1=-0.1\\) and \\(y-2=0.1\\),\n\\[f(0.9,2.1)\\approx \\sqrt5-\\frac{-0.1}{\\sqrt5}-\\frac{2(0.1)}{\\sqrt5}=\\sqrt5-\\frac{0.1}{\\sqrt5}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[z-\\sqrt5=-\\frac1{\\sqrt5}(x-1)-\\frac2{\\sqrt5}(y-2),\\qquad f(0.9,2.1)\\approx \\sqrt5-\\frac{0.1}{\\sqrt5}.\\]",
+      "commonMistakes": [
+        "Forgetting to compute the actual height \\(f(1,2)=\\sqrt5\\).",
+        "Dropping the negative signs in \\(f_x\\) and \\(f_y\\).",
+        "Plugging the approximation point into the original function instead of the tangent plane when asked to use linearization."
+      ],
+      "similarProblemPrompt": "Try \\(f(x,y)=\\sqrt{25-x^2-4y^2}\\) at \\((3,1)\\), then approximate \\(f(3.1,0.95)\\)."
+    },
+    {
+      "id": "curvgradopt-008",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Tangent Line to a Level Curve",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Use the gradient as a normal vector to a level curve",
+        "Find a tangent line",
+        "Connect gradients with level sets"
+      ],
+      "examFlavor": "Level-curve problem where the gradient gives the normal direction",
+      "problemLatex": "Let\n\\[f(x,y)=x^2+xy+y^2.\\]\nFind an equation for the tangent line to the level curve of \\(f\\) passing through \\((1,1)\\).",
+      "thinkFirst": "A level curve is \\(f(x,y)=c\\). Its tangent line is perpendicular to the gradient at the point.",
+      "hints": [
+        "First find which level curve passes through \\((1,1)\\).",
+        "Compute \\(\\nabla f(1,1)\\).",
+        "Use the gradient as a normal vector for the tangent line."
+      ],
+      "setupLatex": "At \\((1,1)\\),\n\\[f(1,1)=1+1+1=3.\\]\nSo the level curve is \\(x^2+xy+y^2=3\\).",
+      "solutionSteps": [
+        {
+          "label": "Compute the gradient",
+          "latex": "We have\n\\[\\nabla f(x,y)=\\langle 2x+y,\\,x+2y\\rangle.\\]\nAt \\((1,1)\\),\n\\[\\nabla f(1,1)=\\langle 3,3\\rangle.\\]"
+        },
+        {
+          "label": "Use the gradient as a normal vector",
+          "latex": "The tangent line has normal vector \\(\\langle3,3\\rangle\\), so\n\\[3(x-1)+3(y-1)=0.\\]"
+        },
+        {
+          "label": "Simplify",
+          "latex": "Divide by \\(3\\):\n\\[(x-1)+(y-1)=0.\\]\nTherefore\n\\[x+y=2.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{x+y=2.}\\]",
+      "commonMistakes": [
+        "Using the gradient as a tangent direction instead of a normal direction.",
+        "Forgetting to compute the level value \\(c=f(1,1)\\).",
+        "Writing the tangent line through the origin instead of through \\((1,1)\\)."
+      ],
+      "similarProblemPrompt": "Find the tangent line to the level curve of \\(g(x,y)=x^2+4y^2\\) through \\((2,1)\\)."
+    },
+    {
+      "id": "curvgradopt-009",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Classify Critical Points Using the Second Derivative Test",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Find critical points",
+        "Compute second partial derivatives",
+        "Use the two-variable second derivative test"
+      ],
+      "examFlavor": "Optimization classification problem with multiple critical points",
+      "problemLatex": "Find and classify all critical points of\n\\[f(x,y)=x^3-3x+y^2-4y.\\]",
+      "thinkFirst": "Critical points occur where both first partial derivatives are zero. Classification then uses the second derivative test.",
+      "hints": [
+        "Solve \\(f_x=0\\) and \\(f_y=0\\) at the same time.",
+        "The second derivative test uses \\(D=f_{xx}f_{yy}-(f_{xy})^2\\).",
+        "If \\(D<0\\), the critical point is a saddle point. If \\(D>0\\), use \\(f_{xx}\\) to distinguish min from max."
+      ],
+      "setupLatex": "The first derivatives are\n\\[f_x=3x^2-3,\\qquad f_y=2y-4.\\]",
+      "solutionSteps": [
+        {
+          "label": "Find critical points",
+          "latex": "Set the first derivatives equal to zero:\n\\[3x^2-3=0\\quad\\Rightarrow\\quad x^2=1\\quad\\Rightarrow\\quad x=\\pm1.\\]\nAlso,\n\\[2y-4=0\\quad\\Rightarrow\\quad y=2.\\]\nSo the critical points are\n\\[(1,2)\\quad\\text{and}\\quad (-1,2).\\]"
+        },
+        {
+          "label": "Compute second partial derivatives",
+          "latex": "We have\n\\[f_{xx}=6x,\\qquad f_{yy}=2,\\qquad f_{xy}=0.\\]\nThus\n\\[D=f_{xx}f_{yy}-(f_{xy})^2=(6x)(2)-0=12x.\\]"
+        },
+        {
+          "label": "Classify (1,2)",
+          "latex": "At \\((1,2)\\),\n\\[D=12>0\\quad\\text{and}\\quad f_{xx}=6>0.\\]\nSo \\((1,2)\\) is a local minimum."
+        },
+        {
+          "label": "Classify (-1,2)",
+          "latex": "At \\((-1,2)\\),\n\\[D=-12<0.\\]\nSo \\((-1,2)\\) is a saddle point."
+        }
+      ],
+      "finalAnswerLatex": "\\[(1,2)\\text{ is a local minimum, and }(-1,2)\\text{ is a saddle point.}\\]",
+      "commonMistakes": [
+        "Solving \\(f_x=0\\) but forgetting to also solve \\(f_y=0\\).",
+        "Using the one-variable second derivative test directly instead of the two-variable test.",
+        "Forgetting that \\(D<0\\) means saddle point."
+      ],
+      "similarProblemPrompt": "Classify the critical points of \\(g(x,y)=y^3-3y+x^2+2x\\)."
+    },
+    {
+      "id": "curvgradopt-010",
+      "unit": "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+      "title": "Absolute Extrema on a Rectangle",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Find interior critical points",
+        "Check boundary behavior on a closed rectangle",
+        "Compare values to find absolute extrema"
+      ],
+      "examFlavor": "Optimization on a bounded region without Lagrange multipliers",
+      "problemLatex": "Find the absolute maximum and absolute minimum of\n\\[f(x,y)=x^2-2x+y^2+4y\\]\non the rectangle\n\\[0\\le x\\le 3,\\qquad -3\\le y\\le 1.\\]",
+      "thinkFirst": "For a closed and bounded region, check interior critical points and the boundary. Since this function separates into an \\(x\\)-part and a \\(y\\)-part, the work is manageable.",
+      "hints": [
+        "Start by solving \\(f_x=0\\) and \\(f_y=0\\).",
+        "The critical point \\((1,-2)\\) lies inside the rectangle.",
+        "For the boundary, this quadratic is convex, so the maximum over the rectangle will occur at a corner.",
+        "Compare the interior value and the corner values."
+      ],
+      "setupLatex": "Compute\n\\[f_x=2x-2,\\qquad f_y=2y+4.\\]\nThe interior critical point is \\((1,-2)\\).",
+      "solutionSteps": [
+        {
+          "label": "Find the interior critical point",
+          "latex": "Set\n\\[2x-2=0\\quad\\Rightarrow\\quad x=1,\\]\nand\n\\[2y+4=0\\quad\\Rightarrow\\quad y=-2.\\]\nSince \\((1,-2)\\) lies inside the rectangle, we evaluate there:\n\\[f(1,-2)=1-2+4-8=-5.\\]"
+        },
+        {
+          "label": "Check the corners for the maximum",
+          "latex": "The function is a sum of upward-opening quadratic terms, so the interior critical point is the minimum. The absolute maximum on the rectangle occurs on the boundary; for this rectangular quadratic, it is enough to compare the farthest corner values. Evaluate all corners:\n\\[f(0,-3)=0+0+9-12=-3,\\]\n\\[f(0,1)=0+0+1+4=5,\\]\n\\[f(3,-3)=9-6+9-12=0,\\]\n\\[f(3,1)=9-6+1+4=8.\\]"
+        },
+        {
+          "label": "Choose absolute extrema",
+          "latex": "The smallest value found is \\(-5\\), at \\((1,-2)\\). The largest value found is \\(8\\), at \\((3,1)\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{\\text{Absolute minimum }=-5\\text{ at }(1,-2),\\qquad \\text{absolute maximum }=8\\text{ at }(3,1).}\\]",
+      "commonMistakes": [
+        "Finding the interior critical point and stopping without checking the boundary.",
+        "Assuming an interior critical point must be a maximum or minimum without checking the region.",
+        "Forgetting to compare actual function values at the end."
+      ],
+      "similarProblemPrompt": "Find the absolute extrema of \\(g(x,y)=x^2+2x+y^2-6y\\) on \\(-2\\le x\\le 2\\), \\(0\\le y\\le 4\\)."
+    }
+  ]
+}

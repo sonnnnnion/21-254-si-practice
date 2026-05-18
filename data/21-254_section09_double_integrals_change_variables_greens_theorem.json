@@ -1,0 +1,487 @@
+{
+  "sectionId": "sec-09-double-integrals-change-of-variables-greens-theorem",
+  "sectionTitle": "Double Integrals, Change of Variables, and Green's Theorem",
+  "sectionPosition": 9,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice the Exam 4 transition from double integrals to Green's Theorem: sketching regions, switching integration order, using polar coordinates, applying change of variables with Jacobians, and converting difficult boundary line integrals into double integrals.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "doublegreen-001",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "Switching Order on a Triangular Region",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Sketch a region from iterated-integral bounds",
+        "Switch the order of integration",
+        "Evaluate a double integral after changing bounds"
+      ],
+      "examFlavor": "Exam-style region sketch plus changing order and evaluating",
+      "problemLatex": "Consider the double integral\n\\[\n\\int_{0}^{3}\\int_{x}^{6-x}(2x+y)\\,dy\\,dx.\n\\]\n\n(a) Sketch the region of integration and label its boundary curves.\n\n(b) Rewrite the integral in the order \\(dx\\,dy\\).\n\n(c) Evaluate the integral using your new order.",
+      "thinkFirst": "The original bounds say that vertical slices start at \\(y=x\\) and end at \\(y=6-x\\), while \\(x\\) runs from \\(0\\) to \\(3\\). Before changing order, locate the three vertices of the region.",
+      "hints": [
+        "The curves \\(y=x\\) and \\(y=6-x\\) intersect at \\((3,3)\\).",
+        "At \\(x=0\\), the vertical slice runs from \\(y=0\\) to \\(y=6\\).",
+        "Horizontal slices change form at \\(y=3\\).",
+        "For \\(0\\le y\\le 3\\), the right boundary is \\(x=y\\). For \\(3\\le y\\le 6\\), the right boundary is \\(x=6-y\\)."
+      ],
+      "setupLatex": "The region is bounded by \\(x=0\\), \\(y=x\\), and \\(y=6-x\\). Since the horizontal right boundary changes at \\(y=3\\), the switched integral must be split into two pieces.",
+      "solutionSteps": [
+        {
+          "label": "Describe the region",
+          "latex": "The original integral has\n\\[0\\le x\\le 3,\\qquad x\\le y\\le 6-x.\\]\nThe boundary curves are \\(x=0\\), \\(y=x\\), and \\(y=6-x\\). The vertices are\n\\[(0,0),\\quad (0,6),\\quad (3,3).\\]"
+        },
+        {
+          "label": "Switch the order",
+          "latex": "For horizontal slices, \\(y\\) ranges from \\(0\\) to \\(6\\). The right edge is different below and above \\(y=3\\):\n\\[0\\le y\\le 3:\\quad 0\\le x\\le y,\\]\n\\[3\\le y\\le 6:\\quad 0\\le x\\le 6-y.\\]\nTherefore\n\\[\n\\int_{0}^{3}\\int_{x}^{6-x}(2x+y)\\,dy\\,dx\n=\\int_0^3\\int_0^y(2x+y)\\,dx\\,dy+\\int_3^6\\int_0^{6-y}(2x+y)\\,dx\\,dy.\n\\]"
+        },
+        {
+          "label": "Evaluate the first piece",
+          "latex": "For the first piece,\n\\[\n\\int_0^3\\int_0^y(2x+y)\\,dx\\,dy\n=\\int_0^3\\left[x^2+yx\\right]_{0}^{y}dy\n=\\int_0^3 2y^2\\,dy\n=18.\n\\]"
+        },
+        {
+          "label": "Evaluate the second piece",
+          "latex": "For the second piece,\n\\[\n\\int_3^6\\int_0^{6-y}(2x+y)\\,dx\\,dy\n=\\int_3^6\\left[x^2+yx\\right]_{0}^{6-y}dy.\n\\]\nNow\n\\[(6-y)^2+y(6-y)=36-6y,\\]\nso\n\\[\n\\int_3^6(36-6y)\\,dy=\\left[36y-3y^2\\right]_3^6=27.\n\\]"
+        },
+        {
+          "label": "Combine the pieces",
+          "latex": "Thus the value of the original double integral is\n\\[18+27=45.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\int_0^3\\int_x^{6-x}(2x+y)\\,dy\\,dx\n=\\int_0^3\\int_0^y(2x+y)\\,dx\\,dy+\\int_3^6\\int_0^{6-y}(2x+y)\\,dx\\,dy=45.\n\\]",
+      "commonMistakes": [
+        "Forgetting to split the switched integral at \\(y=3\\).",
+        "Using \\(0\\le x\\le y\\) for all \\(0\\le y\\le 6\\).",
+        "Sketching the line \\(y=6-x\\) with the wrong intercepts.",
+        "Changing the order but leaving the integrand as if \\(y\\) were integrated first."
+      ],
+      "similarProblemPrompt": "Try switching and evaluating \\(\\int_0^2\\int_{2x}^{8-2x}(x+y)\\,dy\\,dx\\)."
+    },
+    {
+      "id": "doublegreen-002",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "Setting Up Both Orders Between a Parabola and a Line",
+      "difficulty": "Core",
+      "estimatedMinutes": 11,
+      "skills": [
+        "Find intersection points of boundary curves",
+        "Set up a double integral in both orders",
+        "Decide when a region must be split"
+      ],
+      "examFlavor": "Set-up problem emphasizing region geometry rather than computation",
+      "problemLatex": "Let \\(D\\) be the region bounded by\n\\[y=x^2\\qquad\\text{and}\\qquad y=2-x.\\]\nSet up\n\\[\\iint_D f(x,y)\\,dA\\]\nin both orders of integration. Do not evaluate.",
+      "thinkFirst": "Start by finding where the two curves intersect. Then decide whether vertical slices or horizontal slices are simpler.",
+      "hints": [
+        "Solve \\(x^2=2-x\\) to find the intersection points.",
+        "For vertical slices, \\(x\\) goes from the left intersection to the right intersection.",
+        "For horizontal slices, solve the boundaries as \\(x=\\pm\\sqrt y\\) and \\(x=2-y\\).",
+        "The horizontal description must split because the right boundary changes."
+      ],
+      "setupLatex": "The intersections satisfy \\(x^2+x-2=0\\), so \\(x=-2\\) or \\(x=1\\). The corresponding \\(y\\)-values are \\(4\\) and \\(1\\).",
+      "solutionSteps": [
+        {
+          "label": "Find the intersection points",
+          "latex": "Set\n\\[x^2=2-x.\\]\nThen\n\\[x^2+x-2=0=(x+2)(x-1),\\]\nso \\(x=-2\\) or \\(x=1\\). The points are\n\\[(-2,4)\\quad\\text{and}\\quad (1,1).\\]"
+        },
+        {
+          "label": "Use vertical slices",
+          "latex": "For \\(-2\\le x\\le 1\\), the lower curve is \\(y=x^2\\) and the upper curve is \\(y=2-x\\). Therefore\n\\[\n\\iint_D f(x,y)\\,dA=\\int_{-2}^{1}\\int_{x^2}^{2-x} f(x,y)\\,dy\\,dx.\n\\]"
+        },
+        {
+          "label": "Analyze horizontal slices",
+          "latex": "The \\(y\\)-values run from \\(0\\) to \\(4\\), but the right boundary changes at \\(y=1\\).\n\nFor \\(0\\le y\\le 1\\), the region is inside the parabola, so\n\\[-\\sqrt y\\le x\\le \\sqrt y.\\]\n\nFor \\(1\\le y\\le 4\\), the left boundary is \\(x=-\\sqrt y\\), and the right boundary is the line \\(x=2-y\\)."
+        },
+        {
+          "label": "Write the horizontal-slice integral",
+          "latex": "Thus\n\\[\n\\iint_D f(x,y)\\,dA\n=\\int_0^1\\int_{-\\sqrt y}^{\\sqrt y}f(x,y)\\,dx\\,dy\n+\\int_1^4\\int_{-\\sqrt y}^{2-y}f(x,y)\\,dx\\,dy.\n\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\iint_D f(x,y)\\,dA=\\int_{-2}^{1}\\int_{x^2}^{2-x} f(x,y)\\,dy\\,dx\n\\]\nand\n\\[\n\\iint_D f(x,y)\\,dA\n=\\int_0^1\\int_{-\\sqrt y}^{\\sqrt y}f(x,y)\\,dx\\,dy\n+\\int_1^4\\int_{-\\sqrt y}^{2-y}f(x,y)\\,dx\\,dy.\n\\]",
+      "commonMistakes": [
+        "Assuming the horizontal-slice version does not need to be split.",
+        "Solving \\(y=x^2\\) as only \\(x=\\sqrt y\\) and forgetting the negative branch.",
+        "Putting the line above the parabola without checking the interval.",
+        "Using \\(0\\le y\\le 4\\) with a single right boundary."
+      ],
+      "similarProblemPrompt": "Set up both orders for the region bounded by \\(y=x^2-1\\) and \\(y=3-x\\)."
+    },
+    {
+      "id": "doublegreen-003",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "Evaluating Over a Curved Region",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Recognize a vertically simple region",
+        "Evaluate an iterated integral over a non-rectangular region",
+        "Use intersection points to determine bounds"
+      ],
+      "examFlavor": "Computation over a region bounded by two familiar curves",
+      "problemLatex": "Let \\(D\\) be the region bounded by\n\\[y=x^2\\qquad\\text{and}\\qquad y=2-x.\\]\nEvaluate\n\\[\n\\iint_D (x+y)\\,dA.\n\\]",
+      "thinkFirst": "Use vertical slices here: the lower curve is \\(y=x^2\\), the upper curve is \\(y=2-x\\), and the intersection points are \\(x=-2\\) and \\(x=1\\).",
+      "hints": [
+        "Use the same intersection equation \\(x^2=2-x\\).",
+        "Set up \\(\\int_{-2}^{1}\\int_{x^2}^{2-x}(x+y)\\,dy\\,dx\\).",
+        "When integrating with respect to \\(y\\), treat \\(x\\) as a constant.",
+        "The antiderivative in \\(y\\) is \\(xy+\\frac12 y^2\\)."
+      ],
+      "setupLatex": "The integral is\n\\[\n\\int_{-2}^{1}\\int_{x^2}^{2-x}(x+y)\\,dy\\,dx.\n\\]",
+      "solutionSteps": [
+        {
+          "label": "Set up the integral",
+          "latex": "Since the curves intersect at \\(x=-2\\) and \\(x=1\\), and \\(x^2\\le y\\le 2-x\\) on this interval,\n\\[\n\\iint_D(x+y)\\,dA=\\int_{-2}^{1}\\int_{x^2}^{2-x}(x+y)\\,dy\\,dx.\n\\]"
+        },
+        {
+          "label": "Integrate with respect to y",
+          "latex": "Compute\n\\[\n\\int(x+y)\\,dy=xy+\\frac12y^2.\n\\]\nSo the inner integral becomes\n\\[\n\\left[xy+\\frac12y^2\\right]_{y=x^2}^{y=2-x}.\n\\]"
+        },
+        {
+          "label": "Substitute the bounds",
+          "latex": "At \\(y=2-x\\),\n\\[x(2-x)+\\frac12(2-x)^2=2-\\frac12x^2.\\]\nAt \\(y=x^2\\),\n\\[x(x^2)+\\frac12x^4=x^3+\\frac12x^4.\\]\nThus the outer integral is\n\\[\n\\int_{-2}^{1}\\left(2-\\frac12x^2-x^3-\\frac12x^4\\right)dx.\n\\]"
+        },
+        {
+          "label": "Evaluate the outer integral",
+          "latex": "An antiderivative is\n\\[2x-\\frac{x^3}{6}-\\frac{x^4}{4}-\\frac{x^5}{10}.\\]\nEvaluating from \\(-2\\) to \\(1\\) gives\n\\[\n\\left(2-\\frac16-\\frac14-\\frac1{10}\\right)-\\left(-4+\\frac86-4+\\frac{16}{5}\\right)\n=\\frac{99}{20}.\n\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\iint_D(x+y)\\,dA=\\frac{99}{20}.\n\\]",
+      "commonMistakes": [
+        "Using the correct region but reversing the upper and lower curves.",
+        "Dropping the \\(\\frac12y^2\\) term when integrating \\(y\\).",
+        "Forgetting that \\(x\\) is constant during the inner \\(dy\\)-integration.",
+        "Making the horizontal setup harder than necessary."
+      ],
+      "similarProblemPrompt": "Evaluate \\(\\iint_D y\\,dA\\) over the same region \\(D\\)."
+    },
+    {
+      "id": "doublegreen-004",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "Polar Coordinates on an Annular Sector",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Describe a region in polar coordinates",
+        "Use \\(dA=r\\,dr\\,d\\theta\\)",
+        "Evaluate a polar double integral"
+      ],
+      "examFlavor": "Clean polar-coordinate evaluation over part of an annulus",
+      "problemLatex": "Let \\(D\\) be the part of the annulus\n\\[1\\le x^2+y^2\\le 4\\]\nin the second quadrant. Evaluate\n\\[\n\\iint_D (x^2+y^2)\\,dA.\n\\]",
+      "thinkFirst": "The expression \\(x^2+y^2\\) and the annular region are both asking for polar coordinates.",
+      "hints": [
+        "In polar coordinates, \\(x^2+y^2=r^2\\).",
+        "The annulus condition becomes \\(1\\le r\\le 2\\).",
+        "The second quadrant corresponds to \\(\\frac\\pi2\\le \\theta\\le \\pi\\).",
+        "Do not forget the extra factor \\(r\\) from \\(dA\\)."
+      ],
+      "setupLatex": "Use\n\\[x=r\\cos\\theta,\\qquad y=r\\sin\\theta,\\qquad dA=r\\,dr\\,d\\theta.\\]\nThen \\(1\\le r\\le 2\\) and \\(\\pi/2\\le\\theta\\le\\pi\\).",
+      "solutionSteps": [
+        {
+          "label": "Convert the integrand and region",
+          "latex": "Since \\(x^2+y^2=r^2\\), and \\(D\\) is the second-quadrant part of \\(1\\le r\\le 2\\),\n\\[\n\\iint_D(x^2+y^2)\\,dA=\\int_{\\pi/2}^{\\pi}\\int_1^2 r^2\\cdot r\\,dr\\,d\\theta.\n\\]"
+        },
+        {
+          "label": "Evaluate",
+          "latex": "So\n\\[\n\\int_{\\pi/2}^{\\pi}\\int_1^2 r^3\\,dr\\,d\\theta\n=\\int_{\\pi/2}^{\\pi}\\left[\\frac{r^4}{4}\\right]_1^2d\\theta\n=\\int_{\\pi/2}^{\\pi}\\frac{15}{4}\\,d\\theta.\n\\]"
+        },
+        {
+          "label": "Finish",
+          "latex": "The length of the \\(\\theta\\)-interval is \\(\\pi/2\\), so\n\\[\n\\frac{15}{4}\\cdot\\frac{\\pi}{2}=\\frac{15\\pi}{8}.\n\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\iint_D(x^2+y^2)\\,dA=\\frac{15\\pi}{8}.\n\\]",
+      "commonMistakes": [
+        "Using \\(0\\le\\theta\\le\\pi/2\\) instead of the second-quadrant bounds.",
+        "Using \\(1\\le r^2\\le4\\) as if the radial bounds were \\(1\\le r\\le4\\).",
+        "Forgetting the Jacobian factor \\(r\\).",
+        "Replacing \\(x^2+y^2\\) with \\(r\\) instead of \\(r^2\\)."
+      ],
+      "similarProblemPrompt": "Evaluate \\(\\iint_D y\\,dA\\) over the third-quadrant part of the same annulus."
+    },
+    {
+      "id": "doublegreen-005",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "Converting a Quarter-Disk Integral to Polar Coordinates",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Recognize a Cartesian quarter disk",
+        "Convert an iterated integral to polar coordinates",
+        "Evaluate an exponential polar integral"
+      ],
+      "examFlavor": "Convert-to-polar problem with a cleaner polar integrand",
+      "problemLatex": "Convert the integral\n\\[\n\\int_0^2\\int_0^{\\sqrt{4-x^2}} e^{x^2+y^2}\\,dy\\,dx\n\\]\nto polar coordinates and evaluate it.",
+      "thinkFirst": "The upper bound \\(y=\\sqrt{4-x^2}\\) is the top half of \\(x^2+y^2=4\\). With \\(x\\ge0\\) and \\(y\\ge0\\), this is the first-quarter disk of radius \\(2\\).",
+      "hints": [
+        "The region is \\(0\\le r\\le2\\), \\(0\\le\\theta\\le\\pi/2\\).",
+        "The integrand becomes \\(e^{r^2}\\).",
+        "The area element gives another factor of \\(r\\).",
+        "Use \\(u=r^2\\) to integrate \\(r e^{r^2}\\)."
+      ],
+      "setupLatex": "The polar form is\n\\[\n\\int_0^{\\pi/2}\\int_0^2 e^{r^2}r\\,dr\\,d\\theta.\n\\]",
+      "solutionSteps": [
+        {
+          "label": "Identify the region",
+          "latex": "The inequalities are\n\\[0\\le x\\le2,\\qquad 0\\le y\\le\\sqrt{4-x^2}.\\]\nThis is the first-quadrant part of the disk \\(x^2+y^2\\le4\\)."
+        },
+        {
+          "label": "Convert to polar",
+          "latex": "In polar coordinates,\n\\[x^2+y^2=r^2,\\qquad dA=r\\,dr\\,d\\theta.\\]\nSo the integral becomes\n\\[\n\\int_0^{\\pi/2}\\int_0^2 e^{r^2}r\\,dr\\,d\\theta.\n\\]"
+        },
+        {
+          "label": "Evaluate the radial integral",
+          "latex": "Use \\(u=r^2\\), so \\(du=2r\\,dr\\). Then\n\\[\n\\int_0^2 r e^{r^2}\\,dr=\\frac12\\int_0^4 e^u\\,du=\\frac12(e^4-1).\n\\]"
+        },
+        {
+          "label": "Finish the angular integral",
+          "latex": "Therefore\n\\[\n\\int_0^{\\pi/2}\\frac12(e^4-1)\\,d\\theta\n=\\frac{\\pi}{4}(e^4-1).\n\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\int_0^2\\int_0^{\\sqrt{4-x^2}} e^{x^2+y^2}\\,dy\\,dx\n=\\int_0^{\\pi/2}\\int_0^2 e^{r^2}r\\,dr\\,d\\theta\n=\\frac{\\pi}{4}(e^4-1).\n\\]",
+      "commonMistakes": [
+        "Using \\(0\\le\\theta\\le\\pi\\) for a first-quadrant region.",
+        "Forgetting the factor \\(r\\) in \\(dA\\).",
+        "Trying to integrate \\(e^{x^2+y^2}\\) directly in Cartesian coordinates.",
+        "Using \\(e^r\\) instead of \\(e^{r^2}\\)."
+      ],
+      "similarProblemPrompt": "Convert and evaluate \\(\\int_{-2}^0\\int_0^{\\sqrt{4-x^2}} e^{x^2+y^2}\\,dy\\,dx\\)."
+    },
+    {
+      "id": "doublegreen-006",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "A Linear Change of Variables on a Parallelogram",
+      "difficulty": "Core",
+      "estimatedMinutes": 11,
+      "skills": [
+        "Use a linear change of variables",
+        "Compute a Jacobian determinant",
+        "Transform a parallelogram into a rectangle"
+      ],
+      "examFlavor": "Change-of-variables problem where the new variables are suggested by the boundary lines",
+      "problemLatex": "Let \\(D\\) be the parallelogram in the \\(xy\\)-plane described by\n\\[0\\le x+y\\le2,\\qquad 1\\le x-y\\le3.\\]\nEvaluate\n\\[\n\\iint_D (x+y)\\,dA\n\\]\nusing the change of variables\n\\[u=x+y,\\qquad v=x-y.\\]",
+      "thinkFirst": "The bounds are already written in terms of \\(u=x+y\\) and \\(v=x-y\\), so the region becomes a rectangle in the \\(uv\\)-plane.",
+      "hints": [
+        "Solve for \\(x\\) and \\(y\\) in terms of \\(u\\) and \\(v\\).",
+        "You should get \\(x=(u+v)/2\\) and \\(y=(u-v)/2\\).",
+        "Compute \\(\\left|\\frac{\\partial(x,y)}{\\partial(u,v)}\\right|\\).",
+        "The integrand \\(x+y\\) is just \\(u\\)."
+      ],
+      "setupLatex": "The transformed region is\n\\[0\\le u\\le2,\\qquad 1\\le v\\le3.\\]\nAlso\n\\[x=\\frac{u+v}{2},\\qquad y=\\frac{u-v}{2}.\\]",
+      "solutionSteps": [
+        {
+          "label": "Solve for x and y",
+          "latex": "From\n\\[u=x+y,\\qquad v=x-y,\\]\nadd the equations to get \\(2x=u+v\\), so\n\\[x=\\frac{u+v}{2}.\\]\nSubtract to get \\(2y=u-v\\), so\n\\[y=\\frac{u-v}{2}.\\]"
+        },
+        {
+          "label": "Compute the Jacobian",
+          "latex": "The Jacobian is\n\\[\n\\frac{\\partial(x,y)}{\\partial(u,v)}\n=\\det\\begin{bmatrix}1/2&1/2\\\\1/2&-1/2\\end{bmatrix}\n=-\\frac14-\\frac14=-\\frac12.\n\\]\nTherefore\n\\[dA=\\left|-\\frac12\\right|du\\,dv=\\frac12du\\,dv.\\]"
+        },
+        {
+          "label": "Transform the integral",
+          "latex": "Since \\(x+y=u\\),\n\\[\n\\iint_D(x+y)\\,dA=\\int_0^2\\int_1^3 u\\cdot\\frac12\\,dv\\,du.\n\\]"
+        },
+        {
+          "label": "Evaluate",
+          "latex": "Now\n\\[\n\\int_0^2\\int_1^3\\frac{u}{2}\\,dv\\,du\n=\\int_0^2\\frac{u}{2}(3-1)\\,du\n=\\int_0^2u\\,du=2.\n\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\iint_D(x+y)\\,dA=2.\n\\]",
+      "commonMistakes": [
+        "Using \\(\\frac{\\partial(u,v)}{\\partial(x,y)}\\) when the integral needs \\(\\frac{\\partial(x,y)}{\\partial(u,v)}\\).",
+        "Forgetting to take the absolute value of the Jacobian determinant.",
+        "Keeping the parallelogram bounds instead of using the rectangular \\(uv\\)-bounds.",
+        "Not noticing that \\(x+y=u\\)."
+      ],
+      "similarProblemPrompt": "Use \\(u=2x+y\\), \\(v=x-y\\) for a region bounded by \\(0\\le2x+y\\le1\\) and \\(1\\le x-y\\le4\\)."
+    },
+    {
+      "id": "doublegreen-007",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "Scaling an Ellipse to a Disk",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Use a change of variables for an ellipse",
+        "Compute a Jacobian from scaled polar coordinates",
+        "Evaluate an integral over an elliptical region"
+      ],
+      "examFlavor": "Ellipse-to-circle change-of-variables problem",
+      "problemLatex": "Let \\(D\\) be the filled ellipse\n\\[\n\\frac{x^2}{4}+\\frac{y^2}{9}\\le1.\n\\]\nEvaluate\n\\[\n\\iint_D\\left(\\frac{x^2}{4}+\\frac{y^2}{9}\\right)dA.\n\\]\nUse the change of variables\n\\[x=2r\\cos\\theta,\\qquad y=3r\\sin\\theta.\\]",
+      "thinkFirst": "The change of variables turns the ellipse into \\(0\\le r\\le1\\), \\(0\\le\\theta\\le2\\pi\\). The main thing to compute carefully is the Jacobian.",
+      "hints": [
+        "Under this substitution, \\(x^2/4+y^2/9=r^2\\).",
+        "The transformed region is the unit disk in polar coordinates.",
+        "The Jacobian is \\(6r\\).",
+        "The integrand times the Jacobian becomes \\(6r^3\\)."
+      ],
+      "setupLatex": "With \\(x=2r\\cos\\theta\\) and \\(y=3r\\sin\\theta\\),\n\\[\n\\frac{x^2}{4}+\\frac{y^2}{9}=r^2,\\qquad dA=6r\\,dr\\,d\\theta.\n\\]",
+      "solutionSteps": [
+        {
+          "label": "Transform the region and integrand",
+          "latex": "The ellipse becomes\n\\[0\\le r\\le1,\\qquad 0\\le\\theta\\le2\\pi.\\]\nThe integrand becomes\n\\[\n\\frac{(2r\\cos\\theta)^2}{4}+\\frac{(3r\\sin\\theta)^2}{9}\n=r^2\\cos^2\\theta+r^2\\sin^2\\theta=r^2.\n\\]"
+        },
+        {
+          "label": "Compute the Jacobian",
+          "latex": "Compute\n\\[\n\\frac{\\partial(x,y)}{\\partial(r,\\theta)}\n=\\det\\begin{bmatrix}2\\cos\\theta&-2r\\sin\\theta\\\\3\\sin\\theta&3r\\cos\\theta\\end{bmatrix}.\n\\]\nThis equals\n\\[6r\\cos^2\\theta+6r\\sin^2\\theta=6r.\\]"
+        },
+        {
+          "label": "Set up and evaluate",
+          "latex": "Therefore\n\\[\n\\iint_D\\left(\\frac{x^2}{4}+\\frac{y^2}{9}\\right)dA\n=\\int_0^{2\\pi}\\int_0^1 r^2(6r)\\,dr\\,d\\theta.\n\\]\nSo\n\\[\n\\int_0^{2\\pi}\\int_0^1 6r^3\\,dr\\,d\\theta\n=\\int_0^{2\\pi}\\frac32\\,d\\theta=3\\pi.\n\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\iint_D\\left(\\frac{x^2}{4}+\\frac{y^2}{9}\\right)dA=3\\pi.\n\\]",
+      "commonMistakes": [
+        "Using the ordinary polar Jacobian \\(r\\) instead of the scaled Jacobian \\(6r\\).",
+        "Forgetting that \\(r\\) only goes to \\(1\\), not to \\(2\\) or \\(3\\).",
+        "Changing the integrand to \\(r\\) instead of \\(r^2\\).",
+        "Mixing up \\(x=2r\\cos\\theta\\) and \\(y=3r\\sin\\theta\\)."
+      ],
+      "similarProblemPrompt": "Evaluate \\(\\iint_D 1\\,dA\\) over the same ellipse using the same substitution."
+    },
+    {
+      "id": "doublegreen-008",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "Using Green's Theorem on a Rectangle",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Apply Green's Theorem",
+        "Compute \\(Q_x-P_y\\)",
+        "Evaluate a double integral over a rectangle"
+      ],
+      "examFlavor": "Boundary line integral made easier by Green's Theorem",
+      "problemLatex": "Let \\(C\\) be the positively oriented boundary of the rectangle\n\\[0\\le x\\le2,\\qquad 1\\le y\\le3.\\]\nUse Green's Theorem to evaluate\n\\[\n\\oint_C xy\\,dx+(x^2+y^2)\\,dy.\n\\]",
+      "thinkFirst": "A positively oriented simple closed curve means counterclockwise. Green's Theorem converts \\(\\oint_C P\\,dx+Q\\,dy\\) into \\(\\iint_D(Q_x-P_y)dA\\).",
+      "hints": [
+        "Here \\(P=xy\\) and \\(Q=x^2+y^2\\).",
+        "Compute \\(Q_x=2x\\) and \\(P_y=x\\).",
+        "So the Green's Theorem integrand is \\(x\\).",
+        "Integrate over the rectangle \\(0\\le x\\le2\\), \\(1\\le y\\le3\\)."
+      ],
+      "setupLatex": "By Green's Theorem,\n\\[\n\\oint_C P\\,dx+Q\\,dy=\\iint_D(Q_x-P_y)\\,dA.\n\\]",
+      "solutionSteps": [
+        {
+          "label": "Identify P and Q",
+          "latex": "Here\n\\[P(x,y)=xy,\\qquad Q(x,y)=x^2+y^2.\\]"
+        },
+        {
+          "label": "Compute the Green's Theorem integrand",
+          "latex": "Compute\n\\[Q_x=2x,\\qquad P_y=x.\\]\nTherefore\n\\[Q_x-P_y=2x-x=x.\\]"
+        },
+        {
+          "label": "Set up the double integral",
+          "latex": "The region \\(D\\) is the rectangle\n\\[0\\le x\\le2,\\qquad1\\le y\\le3.\\]\nSo\n\\[\n\\oint_C xy\\,dx+(x^2+y^2)\\,dy\n=\\int_0^2\\int_1^3 x\\,dy\\,dx.\n\\]"
+        },
+        {
+          "label": "Evaluate",
+          "latex": "Now\n\\[\n\\int_0^2\\int_1^3 x\\,dy\\,dx=\\int_0^2 2x\\,dx=4.\n\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\oint_C xy\\,dx+(x^2+y^2)\\,dy=4.\n\\]",
+      "commonMistakes": [
+        "Using \\(P_x+Q_y\\) instead of \\(Q_x-P_y\\).",
+        "Forgetting that positive orientation means counterclockwise.",
+        "Computing \\(P_y\\) as \\(y\\) instead of \\(x\\).",
+        "Trying to parameterize all four sides unnecessarily."
+      ],
+      "similarProblemPrompt": "Use Green's Theorem on the same rectangle for \\(\\oint_C y^2\\,dx+x^2y\\,dy\\)."
+    },
+    {
+      "id": "doublegreen-009",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "Green's Theorem with Clockwise Orientation",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Handle orientation in Green's Theorem",
+        "Compute a line integral around a circle without parameterizing",
+        "Relate constant curl to area"
+      ],
+      "examFlavor": "Short sign-sensitive Green's Theorem problem",
+      "problemLatex": "Let \\(C\\) be the circle \\(x^2+y^2=4\\), traversed clockwise. Use Green's Theorem to evaluate\n\\[\n\\oint_C y\\,dx-x\\,dy.\n\\]",
+      "thinkFirst": "Green's Theorem in the usual form assumes positive, counterclockwise orientation. Clockwise orientation changes the sign.",
+      "hints": [
+        "Here \\(P=y\\) and \\(Q=-x\\).",
+        "Compute \\(Q_x-P_y\\).",
+        "For counterclockwise orientation, the integral would be \\(\\iint_D -2\\,dA\\).",
+        "Because \\(C\\) is clockwise, multiply the counterclockwise result by \\(-1\\)."
+      ],
+      "setupLatex": "For counterclockwise orientation,\n\\[\n\\oint_C P\\,dx+Q\\,dy=\\iint_D(Q_x-P_y)\\,dA.\n\\]\nBut this \\(C\\) is clockwise, so the final sign is reversed.",
+      "solutionSteps": [
+        {
+          "label": "Compute the Green's Theorem integrand",
+          "latex": "Here\n\\[P=y,\\qquad Q=-x.\\]\nSo\n\\[Q_x=-1,\\qquad P_y=1,\\]\nand therefore\n\\[Q_x-P_y=-2.\\]"
+        },
+        {
+          "label": "Find the counterclockwise value",
+          "latex": "If the circle were traversed counterclockwise, Green's Theorem would give\n\\[\n\\iint_D -2\\,dA=-2\\cdot\\text{Area}(D).\n\\]\nThe disk has radius \\(2\\), so\n\\[\\text{Area}(D)=4\\pi.\\]\nThus the counterclockwise value is\n\\[-8\\pi.\\]"
+        },
+        {
+          "label": "Adjust for clockwise orientation",
+          "latex": "The actual orientation is clockwise, so the integral is the negative of the counterclockwise value:\n\\[\n-(-8\\pi)=8\\pi.\n\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\oint_C y\\,dx-x\\,dy=8\\pi\n\\]\nwhen \\(C\\) is traversed clockwise.",
+      "commonMistakes": [
+        "Forgetting that clockwise orientation reverses the sign.",
+        "Using the circumference \\(4\\pi\\) instead of the area \\(4\\pi\\) accidentally for the wrong reason.",
+        "Computing \\(Q_x-P_y\\) as \\(0\\) because both terms look linear.",
+        "Treating \\(C\\) as positively oriented even though the problem says clockwise."
+      ],
+      "similarProblemPrompt": "Evaluate \\(\\oint_C -y\\,dx+x\\,dy\\) around the same circle with counterclockwise orientation."
+    },
+    {
+      "id": "doublegreen-010",
+      "unit": "Double Integrals, Change of Variables, and Green's Theorem",
+      "title": "A Semicircle Line Integral Through Green's Theorem",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Use Green's Theorem to avoid direct line integration",
+        "Convert a resulting double integral to polar coordinates",
+        "Track orientation and boundary geometry"
+      ],
+      "examFlavor": "Mixed Green's Theorem and polar-coordinate problem over a semicircular region",
+      "problemLatex": "Let \\(D\\) be the upper half-disk\n\\[x^2+y^2\\le4,\\qquad y\\ge0,\\]\nand let \\(C=\\partial D\\) be oriented counterclockwise. Evaluate\n\\[\n\\oint_C -\\frac{y^2}{2}\\,dx.\n\\]",
+      "thinkFirst": "This is a closed boundary line integral, so Green's Theorem is likely easier than parameterizing the semicircle and the diameter separately.",
+      "hints": [
+        "Write the integral as \\(\\oint_C P\\,dx+Q\\,dy\\) with \\(P=-y^2/2\\) and \\(Q=0\\).",
+        "Then \\(Q_x-P_y=y\\).",
+        "So the line integral becomes \\(\\iint_D y\\,dA\\).",
+        "Use polar coordinates with \\(0\\le r\\le2\\), \\(0\\le\\theta\\le\\pi\\)."
+      ],
+      "setupLatex": "By Green's Theorem,\n\\[\n\\oint_C -\\frac{y^2}{2}\\,dx=\\iint_D y\\,dA.\n\\]\nThen evaluate this over the upper half-disk using polar coordinates.",
+      "solutionSteps": [
+        {
+          "label": "Apply Green's Theorem",
+          "latex": "Here\n\\[P=-\\frac{y^2}{2},\\qquad Q=0.\\]\nThen\n\\[Q_x=0,\\qquad P_y=-y.\\]\nSo\n\\[Q_x-P_y=0-(-y)=y.\\]\nSince \\(C\\) is counterclockwise,\n\\[\n\\oint_C -\\frac{y^2}{2}\\,dx=\\iint_D y\\,dA.\n\\]"
+        },
+        {
+          "label": "Convert the double integral to polar coordinates",
+          "latex": "On the upper half-disk,\n\\[0\\le r\\le2,\\qquad 0\\le\\theta\\le\\pi.\\]\nAlso \\(y=r\\sin\\theta\\) and \\(dA=r\\,dr\\,d\\theta\\). Therefore\n\\[\n\\iint_D y\\,dA=\\int_0^\\pi\\int_0^2 r\\sin\\theta\\cdot r\\,dr\\,d\\theta.\n\\]"
+        },
+        {
+          "label": "Evaluate",
+          "latex": "Separate the integral:\n\\[\n\\int_0^\\pi\\int_0^2 r^2\\sin\\theta\\,dr\\,d\\theta\n=\\left(\\int_0^2 r^2\\,dr\\right)\\left(\\int_0^\\pi\\sin\\theta\\,d\\theta\\right).\n\\]\nNow\n\\[\\int_0^2 r^2\\,dr=\\frac83,\\qquad \\int_0^\\pi\\sin\\theta\\,d\\theta=2.\\]\nThus the value is\n\\[\\frac83\\cdot2=\\frac{16}{3}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\n\\oint_C -\\frac{y^2}{2}\\,dx=\\frac{16}{3}.\n\\]",
+      "commonMistakes": [
+        "Trying to parameterize the semicircular arc and the diameter when Green's Theorem is much shorter.",
+        "Forgetting that \\(Q=0\\), not that the whole integral is automatically zero.",
+        "Dropping the polar Jacobian factor \\(r\\).",
+        "Using \\(0\\le\\theta\\le2\\pi\\) instead of the upper half-disk bounds."
+      ],
+      "similarProblemPrompt": "Use Green's Theorem to evaluate \\(\\oint_C x^2/2\\,dy\\) around the upper half-disk with counterclockwise orientation."
+    }
+  ]
+}

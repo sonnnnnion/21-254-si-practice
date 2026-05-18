@@ -1,0 +1,432 @@
+{
+  "sectionId": "sec-03-subspaces-span-li-bases-spaces",
+  "sectionTitle": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+  "sectionPosition": 3,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice subspace tests, span membership, linear independence, bases, dimension, column spaces, row spaces, and null spaces using the language of the first exam.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "basis-001",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "Build a Dependent Set, Then Build a Basis",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Recognize when a vector is in a span",
+        "Construct a linearly dependent set",
+        "Construct a linearly independent set",
+        "Use a determinant to justify a basis"
+      ],
+      "examFlavor": "Short-answer construction problem with explanation",
+      "problemLatex": "Let \\(v_1=\\begin{bmatrix}1\\\\-1\\\\2\\end{bmatrix}\\) and \\(v_2=\\begin{bmatrix}2\\\\0\\\\1\\end{bmatrix}\\).\n\n(a) Find a vector \\(u\\in\\mathbb{R}^3\\) such that \\(\\{v_1,v_2,u\\}\\) is linearly dependent. Explain why.\n\n(b) Find a vector \\(w\\in\\mathbb{R}^3\\) such that \\(\\{v_1,v_2,w\\}\\) is linearly independent. Explain why using a determinant.\n\n(c) Does your set \\(\\{v_1,v_2,w\\}\\) form a basis for \\(\\mathbb{R}^3\\)? Explain.",
+      "thinkFirst": "To make a dependent set, choose the third vector inside the span of the first two. To make an independent set in R^3, choose a third vector and verify that the determinant of the matrix with these vectors as columns is nonzero.",
+      "hints": [
+        "For part (a), any nontrivial linear combination of v1 and v2 will make the set dependent.",
+        "For part (b), try a simple standard-looking vector and test the determinant.",
+        "Three linearly independent vectors in R^3 automatically form a basis for R^3."
+      ],
+      "setupLatex": "A convenient dependent choice is \\(u=v_1+v_2\\). For an independent choice, try \\(w=\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}\\) and check the determinant of the matrix with columns \\(v_1,v_2,w\\).",
+      "solutionSteps": [
+        {
+          "label": "Choose a vector that forces dependence",
+          "latex": "Let\n\\[u=v_1+v_2=\\begin{bmatrix}1\\\\-1\\\\2\\end{bmatrix}+\\begin{bmatrix}2\\\\0\\\\1\\end{bmatrix}=\\begin{bmatrix}3\\\\-1\\\\3\\end{bmatrix}.\\]\nThen \\(u-v_1-v_2=0\\), so \\(\\{v_1,v_2,u\\}\\) is linearly dependent."
+        },
+        {
+          "label": "Choose a candidate third vector",
+          "latex": "Take\n\\[w=\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}.\\]\nNow test whether \\(v_1,v_2,w\\) are linearly independent by computing the determinant with these vectors as columns."
+        },
+        {
+          "label": "Use a determinant to verify independence",
+          "latex": "\\[\\det\\begin{bmatrix}1&2&0\\\\-1&0&0\\\\2&1&1\\end{bmatrix}=2\\neq 0.\\]\nTherefore \\(\\{v_1,v_2,w\\}\\) is linearly independent."
+        },
+        {
+          "label": "Conclude basis status",
+          "latex": "A set of 3 linearly independent vectors in \\(\\mathbb{R}^3\\) is a basis for \\(\\mathbb{R}^3\\)."
+        }
+      ],
+      "finalAnswerLatex": "One valid dependent choice is\n\\[u=\\begin{bmatrix}3\\\\-1\\\\3\\end{bmatrix}.\\]\nOne valid independent choice is\n\\[w=\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix},\\]\nbecause\n\\[\\det\\begin{bmatrix}1&2&0\\\\-1&0&0\\\\2&1&1\\end{bmatrix}=2\\neq 0.\\]\nThus \\(\\{v_1,v_2,w\\}\\) is a basis for \\(\\mathbb{R}^3\\).",
+      "commonMistakes": [
+        "Choosing \\(u=0\\) without explaining why that forces dependence.",
+        "Assuming a vector is outside the span without checking.",
+        "Forgetting that three independent vectors in \\(\\mathbb{R}^3\\) form a basis."
+      ],
+      "similarProblemPrompt": "Try the same construction with \\(v_1=(1,2,-1)\\) and \\(v_2=(0,1,3)\\)."
+    },
+    {
+      "id": "basis-002",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "A Parameter That Controls Dependence",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Set up a determinant test",
+        "Find parameter values causing linear dependence",
+        "Write one vector as a linear combination of others"
+      ],
+      "examFlavor": "Parameter value problem",
+      "problemLatex": "Let\n\\[v_1=\\begin{bmatrix}1\\\\0\\\\2\\end{bmatrix},\\qquad v_2=\\begin{bmatrix}0\\\\1\\\\-1\\end{bmatrix},\\qquad v_3=\\begin{bmatrix}3\\\\a\\\\4\\end{bmatrix}.\\]\n\n(a) For which values of \\(a\\) is \\(\\{v_1,v_2,v_3\\}\\) linearly independent?\n\n(b) For the value of \\(a\\) where the set is dependent, write \\(v_3\\) as a linear combination of \\(v_1\\) and \\(v_2\\).",
+      "thinkFirst": "In R^3, three vectors are linearly independent exactly when the determinant of the matrix with those vectors as columns is nonzero.",
+      "hints": [
+        "Put the vectors as columns of a 3 by 3 matrix.",
+        "The set is dependent when the determinant is zero.",
+        "When a=2, try solving v3=c1v1+c2v2 directly."
+      ],
+      "setupLatex": "Use the matrix\n\\[M=\\begin{bmatrix}1&0&3\\\\0&1&a\\\\2&-1&4\\end{bmatrix}.\\]\nThe determinant of \\(M\\) decides whether the columns are linearly independent.",
+      "solutionSteps": [
+        {
+          "label": "Compute the determinant",
+          "latex": "\\[\\det(M)=\\det\\begin{bmatrix}1&0&3\\\\0&1&a\\\\2&-1&4\\end{bmatrix}=a-2.\\]"
+        },
+        {
+          "label": "Interpret the determinant",
+          "latex": "The vectors are linearly independent when \\(\\det(M)\\neq 0\\), so they are independent when \\(a\\neq 2\\). They are dependent when \\(a=2\\)."
+        },
+        {
+          "label": "Find the dependence relation when a=2",
+          "latex": "When \\(a=2\\),\n\\[v_3=\\begin{bmatrix}3\\\\2\\\\4\\end{bmatrix}.\\]\nNow\n\\[3v_1+2v_2=3\\begin{bmatrix}1\\\\0\\\\2\\end{bmatrix}+2\\begin{bmatrix}0\\\\1\\\\-1\\end{bmatrix}=\\begin{bmatrix}3\\\\2\\\\4\\end{bmatrix}=v_3.\\]"
+        }
+      ],
+      "finalAnswerLatex": "The set \\(\\{v_1,v_2,v_3\\}\\) is linearly independent for \\(a\\neq 2\\) and linearly dependent for \\(a=2\\). When \\(a=2\\), \\(v_3=3v_1+2v_2\\).",
+      "commonMistakes": [
+        "Saying the set is dependent for all a because v3 contains a parameter.",
+        "Using the vectors as rows and then losing track of what the determinant represents.",
+        "Stopping at a=2 without giving the requested linear combination."
+      ],
+      "similarProblemPrompt": "Change the third vector to \\((2,a,5)^T\\) and repeat the determinant test."
+    },
+    {
+      "id": "basis-003",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "Which Sets Are Actually Subspaces?",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Check whether a set contains the zero vector",
+        "Test closure under addition and scalar multiplication",
+        "Recognize linear versus nonlinear constraints"
+      ],
+      "examFlavor": "Conceptual subspace classification",
+      "problemLatex": "Determine whether each subset of \\(\\mathbb{R}^3\\) is a subspace. Justify each answer.\n\n(a) \\(W_1=\\{(x,y,z):x-2y+z=0\\}\\)\n\n(b) \\(W_2=\\{(x,y,z):x+y+z=1\\}\\)\n\n(c) \\(W_3=\\{(x,y,z):z=xy\\}\\)",
+      "thinkFirst": "A subspace must contain the zero vector and must be closed under vector addition and scalar multiplication. Linear homogeneous equations usually define subspaces; shifted or nonlinear conditions usually do not.",
+      "hints": [
+        "For W1, the defining equation is linear and homogeneous.",
+        "For W2, check whether the zero vector is included.",
+        "For W3, look for two vectors in the set whose sum is not in the set."
+      ],
+      "setupLatex": "Check the zero vector first. Then, if needed, test closure. A single failed subspace property is enough to conclude a set is not a subspace.",
+      "solutionSteps": [
+        {
+          "label": "Analyze W1",
+          "latex": "For \\(W_1\\), the equation \\(x-2y+z=0\\) is homogeneous and linear. If two vectors satisfy this equation, then any linear combination also satisfies it. Thus \\(W_1\\) is a subspace."
+        },
+        {
+          "label": "Analyze W2",
+          "latex": "For \\(W_2\\), the zero vector gives \\(0+0+0=0\\), not \\(1\\). Since \\(0\\notin W_2\\), \\(W_2\\) is not a subspace."
+        },
+        {
+          "label": "Analyze W3",
+          "latex": "For \\(W_3\\), both \\((1,0,0)\\) and \\((0,1,0)\\) satisfy \\(z=xy\\), since \\(0=0\\). But their sum is \\((1,1,0)\\), and for this vector \\(xy=1\\) while \\(z=0\\). The sum is not in \\(W_3\\), so \\(W_3\\) is not closed under addition."
+        }
+      ],
+      "finalAnswerLatex": "\\(W_1\\) is a subspace. \\(W_2\\) is not a subspace because it does not contain the zero vector. \\(W_3\\) is not a subspace because it is not closed under addition.",
+      "commonMistakes": [
+        "Only checking whether the zero vector is included and forgetting closure.",
+        "Assuming every set written with an equation is a subspace.",
+        "Calling W3 a subspace because it contains the zero vector."
+      ],
+      "similarProblemPrompt": "Test \\(\\{(x,y,z):2x-y+3z=0\\}\\), \\(\\{(x,y,z):2x-y+3z=4\\}\\), and \\(\\{(x,y,z):x=z^2\\}\\)."
+    },
+    {
+      "id": "basis-004",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "Extract a Basis from a Spanning Set",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 11,
+      "skills": [
+        "Row reduce a matrix of vectors",
+        "Find pivot columns",
+        "Remove redundant vectors from a spanning set",
+        "Determine the dimension of a span"
+      ],
+      "examFlavor": "Span and basis computation",
+      "problemLatex": "Let\n\\[v_1=\\begin{bmatrix}1\\\\0\\\\2\\\\1\\end{bmatrix},\\quad v_2=\\begin{bmatrix}2\\\\1\\\\3\\\\0\\end{bmatrix},\\quad v_3=\\begin{bmatrix}3\\\\1\\\\5\\\\1\\end{bmatrix},\\quad v_4=\\begin{bmatrix}0\\\\1\\\\0\\\\1\\end{bmatrix}.\\]\n\n(a) Is the set \\(S=\\{v_1,v_2,v_3,v_4\\}\\) linearly independent?\n\n(b) Find a basis for \\(\\operatorname{span}(S)\\).\n\n(c) What is \\(\\dim(\\operatorname{span}(S))\\)?\n\n(d) Is \\(\\operatorname{span}(S)=\\mathbb{R}^4\\)?",
+      "thinkFirst": "Put the vectors as columns. Pivot columns tell you which original vectors form a basis for the span. A non-pivot column is redundant.",
+      "hints": [
+        "Notice that v3 looks like v1+v2.",
+        "Use the original pivot columns, not the columns of the RREF, as the basis for the span.",
+        "A subspace of R4 needs dimension 4 to equal all of R4."
+      ],
+      "setupLatex": "Form the matrix\n\\[A=\\begin{bmatrix}1&2&3&0\\\\0&1&1&1\\\\2&3&5&0\\\\1&0&1&1\\end{bmatrix}.\\]\nRow reducing this matrix reveals the pivot columns.",
+      "solutionSteps": [
+        {
+          "label": "Row reduce the matrix of vectors",
+          "latex": "\\[\\operatorname{rref}(A)=\\begin{bmatrix}1&0&1&0\\\\0&1&1&0\\\\0&0&0&1\\\\0&0&0&0\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Read the pivot columns",
+          "latex": "The pivot columns are columns 1, 2, and 4. Therefore \\(v_1,v_2,v_4\\) form a basis for \\(\\operatorname{span}(S)\\)."
+        },
+        {
+          "label": "Explain dependence",
+          "latex": "The third column is not a pivot column. In fact, \\(v_3=v_1+v_2\\). Therefore \\(S\\) is linearly dependent."
+        },
+        {
+          "label": "Find the dimension and compare to R4",
+          "latex": "Since the basis has 3 vectors, \\(\\dim(\\operatorname{span}(S))=3\\). A 3-dimensional subspace of \\(\\mathbb{R}^4\\) cannot equal all of \\(\\mathbb{R}^4\\)."
+        }
+      ],
+      "finalAnswerLatex": "The set \\(S\\) is linearly dependent. A basis for \\(\\operatorname{span}(S)\\) is\n\\[\\left\\{\\begin{bmatrix}1\\\\0\\\\2\\\\1\\end{bmatrix},\\begin{bmatrix}2\\\\1\\\\3\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]\nThus \\(\\dim(\\operatorname{span}(S))=3\\), so \\(\\operatorname{span}(S)\\neq\\mathbb{R}^4\\).",
+      "commonMistakes": [
+        "Using the nonzero columns of the RREF as the basis for the original span.",
+        "Saying four vectors in R4 automatically form a basis.",
+        "Forgetting that one redundant vector makes the whole set linearly dependent."
+      ],
+      "similarProblemPrompt": "Replace \\(v_4\\) with \\((0,0,1,0)^T\\) and repeat the basis extraction."
+    },
+    {
+      "id": "basis-005",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "Coordinates in a Nonstandard Basis",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Verify a basis using a determinant",
+        "Solve for coordinates in a basis",
+        "Distinguish a vector from its coordinate vector"
+      ],
+      "examFlavor": "Basis and coordinate vector computation",
+      "problemLatex": "Let\n\\[B=\\left\\{b_1=\\begin{bmatrix}1\\\\1\\\\0\\end{bmatrix},\\ b_2=\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix},\\ b_3=\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]\n\n(a) Show that \\(B\\) is a basis for \\(\\mathbb{R}^3\\).\n\n(b) Find the coordinate vector \\([x]_B\\) for \\(x=\\begin{bmatrix}3\\\\4\\\\5\\end{bmatrix}\\).",
+      "thinkFirst": "The coordinate vector [x]_B contains the coefficients in x=c1b1+c2b2+c3b3. It is not usually the same as x itself.",
+      "hints": [
+        "Put b1, b2, b3 as columns of a matrix.",
+        "If the determinant is nonzero, the columns form a basis for R3.",
+        "Solve P_B c=x; the solution vector c is [x]_B."
+      ],
+      "setupLatex": "Let\n\\[P_B=\\begin{bmatrix}1&0&1\\\\1&1&0\\\\0&1&1\\end{bmatrix}.\\]\nThen \\(P_Bc=x\\), where \\(c=[x]_B\\).",
+      "solutionSteps": [
+        {
+          "label": "Check that B is a basis",
+          "latex": "\\[\\det(P_B)=\\det\\begin{bmatrix}1&0&1\\\\1&1&0\\\\0&1&1\\end{bmatrix}=2\\neq 0.\\]\nSo the columns are linearly independent and span \\(\\mathbb{R}^3\\). Therefore \\(B\\) is a basis."
+        },
+        {
+          "label": "Set up the coordinate equation",
+          "latex": "We want\n\\[c_1\\begin{bmatrix}1\\\\1\\\\0\\end{bmatrix}+c_2\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix}+c_3\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix}=\\begin{bmatrix}3\\\\4\\\\5\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Solve for the coefficients",
+          "latex": "Solving \\(P_Bc=x\\) gives\n\\[c=\\begin{bmatrix}1\\\\3\\\\2\\end{bmatrix}.\\]\nIndeed, \\(b_1+3b_2+2b_3=(3,4,5)^T\\)."
+        }
+      ],
+      "finalAnswerLatex": "Since \\(\\det(P_B)=2\\neq 0\\), \\(B\\) is a basis for \\(\\mathbb{R}^3\\). The coordinate vector is\n\\[[x]_B=\\begin{bmatrix}1\\\\3\\\\2\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Returning x itself instead of the coordinate vector [x]_B.",
+        "Putting the basis vectors as rows and solving the wrong system.",
+        "Forgetting to show that B is actually a basis before using it as one."
+      ],
+      "similarProblemPrompt": "Use the same basis and find \\([y]_B\\) for \\(y=(2,1,3)^T\\)."
+    },
+    {
+      "id": "basis-006",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "A Subspace Defined by Two Equations",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Recognize a homogeneous solution set as a subspace",
+        "Parametrize a subspace",
+        "Find a basis and dimension",
+        "Check whether specific vectors lie in a subspace"
+      ],
+      "examFlavor": "Subspace basis and membership problem",
+      "problemLatex": "Let\n\\[W=\\left\\{x=\\begin{bmatrix}x_1\\\\x_2\\\\x_3\\\\x_4\\end{bmatrix}\\in\\mathbb{R}^4:x_1-2x_2+x_3=0,\\ x_2+x_4=0\\right\\}.\\]\n\n(a) Explain why \\(W\\) is a subspace of \\(\\mathbb{R}^4\\).\n\n(b) Find a basis for \\(W\\) and state \\(\\dim(W)\\).\n\n(c) Determine whether \\(q=\\begin{bmatrix}5\\\\2\\\\-1\\\\-2\\end{bmatrix}\\) and \\(r=\\begin{bmatrix}1\\\\0\\\\1\\\\0\\end{bmatrix}\\) are in \\(W\\).",
+      "thinkFirst": "The equations are homogeneous linear constraints, so W should be a subspace. To find a basis, solve the equations and write the general vector as a linear combination of free-variable vectors.",
+      "hints": [
+        "Let x2 and x3 be free variables.",
+        "From x2+x4=0, you get x4=-x2.",
+        "From x1-2x2+x3=0, you get x1=2x2-x3."
+      ],
+      "setupLatex": "Let \\(x_2=s\\) and \\(x_3=t\\). Then \\(x_4=-s\\) and \\(x_1=2s-t\\).",
+      "solutionSteps": [
+        {
+          "label": "Explain the subspace property",
+          "latex": "The set \\(W\\) is the solution set of homogeneous linear equations. Equivalently, \\(W=\\operatorname{Nul}(A)\\) for\n\\[A=\\begin{bmatrix}1&-2&1&0\\\\0&1&0&1\\end{bmatrix}.\\]\nNull spaces are subspaces."
+        },
+        {
+          "label": "Parametrize the solutions",
+          "latex": "Let \\(x_2=s\\) and \\(x_3=t\\). Then\n\\[x=\\begin{bmatrix}2s-t\\\\s\\\\t\\\\-s\\end{bmatrix}=s\\begin{bmatrix}2\\\\1\\\\0\\\\-1\\end{bmatrix}+t\\begin{bmatrix}-1\\\\0\\\\1\\\\0\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Read off a basis and dimension",
+          "latex": "A basis is\n\\[\\left\\{\\begin{bmatrix}2\\\\1\\\\0\\\\-1\\end{bmatrix},\\begin{bmatrix}-1\\\\0\\\\1\\\\0\\end{bmatrix}\\right\\}.\\]\nTherefore \\(\\dim(W)=2\\)."
+        },
+        {
+          "label": "Check q and r",
+          "latex": "For \\(q=(5,2,-1,-2)^T\\),\n\\[5-2(2)+(-1)=0,\\qquad 2+(-2)=0,\\]\nso \\(q\\in W\\). For \\(r=(1,0,1,0)^T\\),\n\\[1-2(0)+1=2\\neq 0,\\]\nso \\(r\\notin W\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\(W\\) is a subspace because it is the solution set of homogeneous linear equations. A basis is\n\\[\\left\\{\\begin{bmatrix}2\\\\1\\\\0\\\\-1\\end{bmatrix},\\begin{bmatrix}-1\\\\0\\\\1\\\\0\\end{bmatrix}\\right\\},\\]\nso \\(\\dim(W)=2\\). Also \\(q\\in W\\), but \\(r\\notin W\\).",
+      "commonMistakes": [
+        "Forgetting that homogeneous matters: equations equal to zero give a subspace, shifted equations usually do not.",
+        "Dropping one of the constraints while parametrizing.",
+        "Writing a spanning set but not checking that the vectors are independent."
+      ],
+      "similarProblemPrompt": "Find a basis for \\(\\{x\\in\\mathbb{R}^4:x_1+x_2-x_4=0,\\ x_3-2x_4=0\\}\\)."
+    },
+    {
+      "id": "basis-007",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "When Is a Parameter Vector in a Span?",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Check span membership",
+        "Use a normal vector to describe a plane",
+        "Solve for a parameter",
+        "Write a vector as a linear combination"
+      ],
+      "examFlavor": "Parameter and span membership problem",
+      "problemLatex": "Let\n\\[v_1=\\begin{bmatrix}1\\\\2\\\\1\\end{bmatrix},\\qquad v_2=\\begin{bmatrix}0\\\\1\\\\-1\\end{bmatrix},\\qquad b_h=\\begin{bmatrix}h\\\\4\\\\2-h\\end{bmatrix}.\\]\nFind all values of \\(h\\) such that \\(b_h\\in\\operatorname{span}\\{v_1,v_2\\}\\). For each such value of \\(h\\), write \\(b_h\\) as a linear combination of \\(v_1\\) and \\(v_2\\).",
+      "thinkFirst": "The span of two independent vectors in R^3 is a plane through the origin. A vector is in that plane exactly when it is perpendicular to a normal vector for the plane.",
+      "hints": [
+        "Compute v1 x v2 to get a normal vector to the span.",
+        "Set the dot product of that normal vector with b_h equal to zero.",
+        "After finding h, solve b_h=c1v1+c2v2."
+      ],
+      "setupLatex": "Compute\n\\[v_1\\times v_2=\\begin{bmatrix}-3\\\\1\\\\1\\end{bmatrix}.\\]\nSo \\(b_h\\in\\operatorname{span}\\{v_1,v_2\\}\\) exactly when \\((-3,1,1)\\cdot b_h=0\\).",
+      "solutionSteps": [
+        {
+          "label": "Use the normal vector condition",
+          "latex": "We require\n\\[\\begin{bmatrix}-3\\\\1\\\\1\\end{bmatrix}\\cdot\\begin{bmatrix}h\\\\4\\\\2-h\\end{bmatrix}=0.\\]"
+        },
+        {
+          "label": "Solve for h",
+          "latex": "The dot product is\n\\[-3h+4+(2-h)=6-4h.\\]\nThus \\(6-4h=0\\), so \\(h=\\frac{3}{2}\\)."
+        },
+        {
+          "label": "Write the linear combination",
+          "latex": "When \\(h=\\frac{3}{2}\\),\n\\[b_h=\\begin{bmatrix}3/2\\\\4\\\\1/2\\end{bmatrix}.\\]\nSolving \\(c_1v_1+c_2v_2=b_h\\) gives \\(c_1=\\frac{3}{2}\\) and \\(c_2=1\\). Therefore\n\\[b_{3/2}=\\frac{3}{2}v_1+v_2.\\]"
+        }
+      ],
+      "finalAnswerLatex": "The only value is \\(h=\\frac{3}{2}\\). For this value,\n\\[b_{3/2}=\\frac{3}{2}v_1+v_2.\\]",
+      "commonMistakes": [
+        "Checking only the first two coordinates and forgetting the third coordinate.",
+        "Finding h correctly but not writing the requested linear combination.",
+        "Thinking every vector in R3 is in the span of two nonzero vectors."
+      ],
+      "similarProblemPrompt": "Change \\(b_h\\) to \\((h,1,5-h)^T\\) and find the new condition."
+    },
+    {
+      "id": "basis-008",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "True or False: Span, Independence, and Bases",
+      "difficulty": "Conceptual",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Use dimension facts",
+        "Identify common misconceptions",
+        "Give counterexamples",
+        "Connect spanning and independence"
+      ],
+      "examFlavor": "True/false with explanations",
+      "problemLatex": "Decide whether each statement is true or false. Give a brief explanation or counterexample.\n\n(a) Any set of 4 vectors in \\(\\mathbb{R}^3\\) is linearly dependent.\n\n(b) If three vectors in \\(\\mathbb{R}^3\\) are not scalar multiples of each other, then they are linearly independent.\n\n(c) If \\(\\operatorname{span}\\{v_1,v_2,v_3\\}=\\mathbb{R}^3\\), then \\(\\{v_1,v_2,v_3\\}\\) is a basis for \\(\\mathbb{R}^3\\).\n\n(d) For every matrix \\(A\\) and vector \\(b\\), the solution set to \\(Ax=b\\) is a subspace.\n\n(e) If a set of vectors contains the zero vector, then the set is linearly dependent.",
+      "thinkFirst": "Most of these are dimension or definition checks. Be careful: not being scalar multiples only rules out dependence for a set of two vectors, not for larger sets.",
+      "hints": [
+        "A set with more vectors than the dimension of the ambient space is automatically dependent.",
+        "For part (b), look for three vectors in a plane.",
+        "A solution set to Ax=b is shifted unless b=0."
+      ],
+      "setupLatex": "For each statement, either apply a theorem directly or give a small counterexample using standard basis vectors.",
+      "solutionSteps": [
+        {
+          "label": "Part (a)",
+          "latex": "True. In \\(\\mathbb{R}^3\\), any set with more than 3 vectors must be linearly dependent."
+        },
+        {
+          "label": "Part (b)",
+          "latex": "False. For example, \\(e_1,e_2,e_1+e_2\\) are not scalar multiples of each other, but they are linearly dependent because \\((e_1+e_2)-e_1-e_2=0\\)."
+        },
+        {
+          "label": "Part (c)",
+          "latex": "True. Three vectors that span \\(\\mathbb{R}^3\\) must be linearly independent, so they form a basis for \\(\\mathbb{R}^3\\)."
+        },
+        {
+          "label": "Part (d)",
+          "latex": "False. The solution set to \\(Ax=0\\) is a subspace, but the solution set to \\(Ax=b\\) with \\(b\\neq 0\\) is generally shifted and does not contain the zero vector. For example, \\(x=1\\) in \\(\\mathbb{R}\\) is not a subspace."
+        },
+        {
+          "label": "Part (e)",
+          "latex": "True. If a set contains \\(0\\), then there is a nontrivial linear combination equal to zero: use coefficient 1 on the zero vector and coefficient 0 on all other vectors."
+        }
+      ],
+      "finalAnswerLatex": "(a) True. (b) False. (c) True. (d) False. (e) True.",
+      "commonMistakes": [
+        "Treating 'not scalar multiples' as the same thing as linear independence for three or more vectors.",
+        "Forgetting that a basis must both span and be independent.",
+        "Calling every solution set a subspace, even when the system is nonhomogeneous."
+      ],
+      "similarProblemPrompt": "Write your own true/false statement involving a set of 5 vectors in \\(\\mathbb{R}^4\\)."
+    },
+    {
+      "id": "basis-009",
+      "unit": "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+      "title": "Column Space, Row Space, and Null Space from RREF",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Use pivot columns to find a column space basis",
+        "Use RREF to find a null space basis",
+        "Find a row space basis",
+        "Connect rank, nullity, spanning, and independence"
+      ],
+      "examFlavor": "Multi-part matrix space problem",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}1&0&-2&0&3\\\\2&1&-3&0&2\\\\0&-1&-1&1&6\\\\1&2&0&0&-5\\end{bmatrix}\\]\nand suppose\n\\[\\operatorname{rref}(A)=\\begin{bmatrix}1&0&-2&0&3\\\\0&1&1&0&-4\\\\0&0&0&1&2\\\\0&0&0&0&0\\end{bmatrix}.\\]\n\n(a) Find a basis for \\(\\operatorname{Col}(A)\\).\n\n(b) Find a basis for \\(\\operatorname{Nul}(A)\\).\n\n(c) Find a basis for \\(\\operatorname{Row}(A)\\).\n\n(d) State \\(\\operatorname{rank}(A)\\) and \\(\\operatorname{nullity}(A)\\).\n\n(e) Do the columns of \\(A\\) span \\(\\mathbb{R}^4\\)? Are the columns of \\(A\\) linearly independent?",
+      "thinkFirst": "Pivot columns identify the original columns that form a basis for Col(A). For Nul(A), solve the homogeneous system from the RREF. For Row(A), use the nonzero rows of the RREF.",
+      "hints": [
+        "The pivot columns are columns 1, 2, and 4.",
+        "For the null space, let x3 and x5 be free variables.",
+        "The nonzero rows of rref(A) form a basis for the row space."
+      ],
+      "setupLatex": "The RREF has pivots in columns 1, 2, and 4. Therefore \\(x_3\\) and \\(x_5\\) are free variables when solving \\(Ax=0\\).",
+      "solutionSteps": [
+        {
+          "label": "Column space basis",
+          "latex": "Use the original pivot columns of \\(A\\), not the columns of the RREF. Thus a basis for \\(\\operatorname{Col}(A)\\) is\n\\[\\left\\{\\begin{bmatrix}1\\\\2\\\\0\\\\1\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\-1\\\\2\\end{bmatrix},\\begin{bmatrix}0\\\\0\\\\1\\\\0\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Set up the null space equations",
+          "latex": "From the RREF,\n\\[x_1-2x_3+3x_5=0,\\qquad x_2+x_3-4x_5=0,\\qquad x_4+2x_5=0.\\]\nLet \\(x_3=s\\) and \\(x_5=t\\)."
+        },
+        {
+          "label": "Solve for the null space",
+          "latex": "Then\n\\[x_1=2s-3t,\\qquad x_2=-s+4t,\\qquad x_4=-2t.\\]\nSo\n\\[x=s\\begin{bmatrix}2\\\\-1\\\\1\\\\0\\\\0\\end{bmatrix}+t\\begin{bmatrix}-3\\\\4\\\\0\\\\-2\\\\1\\end{bmatrix}.\\]\nA basis for \\(\\operatorname{Nul}(A)\\) is\n\\[\\left\\{\\begin{bmatrix}2\\\\-1\\\\1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}-3\\\\4\\\\0\\\\-2\\\\1\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Row space basis",
+          "latex": "The nonzero rows of the RREF form a basis for \\(\\operatorname{Row}(A)\\):\n\\[\\left\\{\\begin{bmatrix}1&0&-2&0&3\\end{bmatrix},\\begin{bmatrix}0&1&1&0&-4\\end{bmatrix},\\begin{bmatrix}0&0&0&1&2\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Rank, nullity, spanning, and independence",
+          "latex": "There are 3 pivot columns, so \\(\\operatorname{rank}(A)=3\\). Since \\(A\\) has 5 columns, \\(\\operatorname{nullity}(A)=5-3=2\\). The columns do not span \\(\\mathbb{R}^4\\) because the rank is less than 4. The columns are not linearly independent because there are non-pivot columns, equivalently because the null space is nontrivial."
+        }
+      ],
+      "finalAnswerLatex": "A basis for \\(\\operatorname{Col}(A)\\) is\n\\[\\left\\{\\begin{bmatrix}1\\\\2\\\\0\\\\1\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\-1\\\\2\\end{bmatrix},\\begin{bmatrix}0\\\\0\\\\1\\\\0\\end{bmatrix}\\right\\}.\\]\nA basis for \\(\\operatorname{Nul}(A)\\) is\n\\[\\left\\{\\begin{bmatrix}2\\\\-1\\\\1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}-3\\\\4\\\\0\\\\-2\\\\1\\end{bmatrix}\\right\\}.\\]\nA basis for \\(\\operatorname{Row}(A)\\) is the set of nonzero rows of \\(\\operatorname{rref}(A)\\). Also \\(\\operatorname{rank}(A)=3\\) and \\(\\operatorname{nullity}(A)=2\\). The columns do not span \\(\\mathbb{R}^4\\) and are not linearly independent.",
+      "commonMistakes": [
+        "Using columns of the RREF as a basis for Col(A) instead of the corresponding original columns of A.",
+        "Using original rows of A for Row(A) without checking independence.",
+        "Forgetting that a 4-dimensional ambient space requires rank 4 to span R4.",
+        "Forgetting that non-pivot columns mean the columns are dependent."
+      ],
+      "similarProblemPrompt": "Create a new 4 by 5 matrix with pivot columns 1, 3, and 5, then repeat the column/null/row space questions."
+    }
+  ]
+}

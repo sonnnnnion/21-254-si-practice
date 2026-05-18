@@ -1,0 +1,490 @@
+{
+  "sectionId": "sec-05-eigenvalues-eigenvectors-multiplicity-eigenbases-complex",
+  "sectionTitle": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+  "sectionPosition": 5,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice eigenvalues, eigenvectors, eigenspaces, algebraic and geometric multiplicity, eigenbases, core eigenvalue properties, and complex eigenvalues in the style of the Exam 2 linear algebra material.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "eig-001",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Characteristic Polynomial and Eigenspaces in \\(\\mathbb{R}^2\\)",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Compute a characteristic polynomial",
+        "Find eigenvalues",
+        "Find eigenspaces",
+        "Write eigenvectors in span notation"
+      ],
+      "examFlavor": "Standard eigenvalue/eigenvector computation",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}4&1\\\\2&3\\end{bmatrix}.\\]\n\n(a) Find the characteristic polynomial \\(p_A(\\lambda)=\\det(\\lambda I-A)\\).\n\n(b) Find all eigenvalues of \\(A\\).\n\n(c) Find a basis for each eigenspace.",
+      "thinkFirst": "Eigenvalues come from a determinant equation. Eigenvectors come from the null spaces of \\(A-\\lambda I\\), one eigenvalue at a time.",
+      "hints": [
+        "For a \\(2\\times2\\) matrix, compute \\(\\det(\\lambda I-A)\\) directly.",
+        "After finding an eigenvalue \\(\\lambda\\), row-reduce \\(A-\\lambda I\\).",
+        "A basis for an eigenspace should contain nonzero vectors only."
+      ],
+      "setupLatex": "Start with\n\\[\\lambda I-A=\\begin{bmatrix}\\lambda-4&-1\\\\-2&\\lambda-3\\end{bmatrix}.\\]\nThen solve \\(p_A(\\lambda)=0\\) and compute the null space of \\(A-\\lambda I\\) for each root.",
+      "solutionSteps": [
+        {
+          "label": "Compute the characteristic polynomial",
+          "latex": "\\[p_A(\\lambda)=\\det\\begin{bmatrix}\\lambda-4&-1\\\\-2&\\lambda-3\\end{bmatrix}=(\\lambda-4)(\\lambda-3)-2.\\]\nSo\n\\[p_A(\\lambda)=\\lambda^2-7\\lambda+10=(\\lambda-5)(\\lambda-2).\\]"
+        },
+        {
+          "label": "Find the eigenvalues",
+          "latex": "Set the characteristic polynomial equal to zero:\n\\[(\\lambda-5)(\\lambda-2)=0.\\]\nThus the eigenvalues are\n\\[\\lambda=5,\\qquad \\lambda=2.\\]"
+        },
+        {
+          "label": "Find the eigenspace for \\(\\lambda=5\\)",
+          "latex": "Solve \\((A-5I)x=0\\):\n\\[A-5I=\\begin{bmatrix}-1&1\\\\2&-2\\end{bmatrix}.\\]\nThe equation is \\(-x+y=0\\), so \\(y=x\\). Therefore\n\\[E_5=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\1\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Find the eigenspace for \\(\\lambda=2\\)",
+          "latex": "Solve \\((A-2I)x=0\\):\n\\[A-2I=\\begin{bmatrix}2&1\\\\2&1\\end{bmatrix}.\\]\nThe equation is \\(2x+y=0\\), so \\(y=-2x\\). Therefore\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\-2\\end{bmatrix}\\right\\}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[p_A(\\lambda)=\\lambda^2-7\\lambda+10=(\\lambda-5)(\\lambda-2).\\]\nThe eigenvalues are \\(5\\) and \\(2\\), with\n\\[E_5=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\1\\end{bmatrix}\\right\\},\\qquad E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\-2\\end{bmatrix}\\right\\}.\\]",
+      "commonMistakes": [
+        "Stopping after the eigenvalues and forgetting to compute eigenspaces.",
+        "Solving \\((\\lambda I-A)x=0\\) with \\(\\lambda\\) still unknown instead of substituting one eigenvalue at a time.",
+        "Using the zero vector as an eigenvector."
+      ],
+      "similarProblemPrompt": "Try the same steps for \\(\\begin{bmatrix}5&2\\\\1&4\\end{bmatrix}\\), then compare how the eigenspaces change."
+    },
+    {
+      "id": "eig-002",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Repeated Eigenvalue: Algebraic vs. Geometric Multiplicity",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Read eigenvalues from a triangular matrix",
+        "Compute eigenspace dimensions",
+        "Compare algebraic and geometric multiplicity",
+        "Decide whether an eigenbasis exists"
+      ],
+      "examFlavor": "Multiplicity classification problem",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}2&1&0\\\\0&2&0\\\\0&0&-1\\end{bmatrix}.\\]\n\n(a) Find the eigenvalues of \\(A\\) and their algebraic multiplicities.\n\n(b) Find the eigenspace for each eigenvalue and give the geometric multiplicity.\n\n(c) Does \\(A\\) have an eigenbasis for \\(\\mathbb{R}^3\\)? Explain.",
+      "thinkFirst": "A triangular matrix makes the eigenvalues quick, but it does not automatically tell you the eigenspace dimensions. A repeated eigenvalue still needs an eigenspace calculation.",
+      "hints": [
+        "For a triangular matrix, the eigenvalues are the diagonal entries.",
+        "The geometric multiplicity is the dimension of the eigenspace.",
+        "To have an eigenbasis for \\(\\mathbb{R}^3\\), you need three linearly independent eigenvectors total."
+      ],
+      "setupLatex": "The diagonal entries give \\(2,2,-1\\), so \\(2\\) has algebraic multiplicity \\(2\\) and \\(-1\\) has algebraic multiplicity \\(1\\). Now compute \\(\\operatorname{null}(A-2I)\\) and \\(\\operatorname{null}(A+I)\\).",
+      "solutionSteps": [
+        {
+          "label": "List eigenvalues and algebraic multiplicities",
+          "latex": "Because \\(A\\) is upper triangular,\n\\[p_A(\\lambda)=(\\lambda-2)^2(\\lambda+1).\\]\nSo \\(\\lambda=2\\) has algebraic multiplicity \\(2\\), and \\(\\lambda=-1\\) has algebraic multiplicity \\(1\\)."
+        },
+        {
+          "label": "Find the eigenspace for \\(\\lambda=2\\)",
+          "latex": "\\[A-2I=\\begin{bmatrix}0&1&0\\\\0&0&0\\\\0&0&-3\\end{bmatrix}.\\]\nThe equations are \\(y=0\\) and \\(z=0\\), with \\(x\\) free. Thus\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix}\\right\\}.\\]\nSo the geometric multiplicity of \\(2\\) is \\(1\\)."
+        },
+        {
+          "label": "Find the eigenspace for \\(\\lambda=-1\\)",
+          "latex": "\\[A+I=\\begin{bmatrix}3&1&0\\\\0&3&0\\\\0&0&0\\end{bmatrix}.\\]\nThe equations force \\(y=0\\) and then \\(x=0\\), with \\(z\\) free. Thus\n\\[E_{-1}=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]\nSo the geometric multiplicity of \\(-1\\) is \\(1\\)."
+        },
+        {
+          "label": "Decide whether an eigenbasis exists",
+          "latex": "The total number of linearly independent eigenvectors available is\n\\[\\dim(E_2)+\\dim(E_{-1})=1+1=2.\\]\nSince this is less than \\(3\\), there is no eigenbasis for \\(\\mathbb{R}^3\\)."
+        }
+      ],
+      "finalAnswerLatex": "Eigenvalues: \\(2\\) with algebraic multiplicity \\(2\\), and \\(-1\\) with algebraic multiplicity \\(1\\).\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix}\\right\\},\\qquad E_{-1}=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]\nThe geometric multiplicities are \\(1\\) and \\(1\\), so \\(A\\) does not have an eigenbasis for \\(\\mathbb{R}^3\\).",
+      "commonMistakes": [
+        "Assuming that algebraic multiplicity \\(2\\) automatically gives two eigenvectors.",
+        "Forgetting to calculate \\(A-\\lambda I\\) separately for each eigenvalue.",
+        "Saying the matrix has three eigenvalues because it is \\(3\\times3\\), even though one eigenvalue repeats."
+      ],
+      "similarProblemPrompt": "Change the \\(1\\) in the upper-right part of the \\(2\\times2\\) block to \\(0\\), then recompute the eigenspace for \\(\\lambda=2\\)."
+    },
+    {
+      "id": "eig-003",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Choose a Parameter to Force an Eigenvalue",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Use the characteristic equation",
+        "Solve for a parameter",
+        "Find an eigenvector after choosing the parameter"
+      ],
+      "examFlavor": "Parameter value from eigenvalue condition",
+      "problemLatex": "Let\n\\[A_a=\\begin{bmatrix}1&a\\\\2&3\\end{bmatrix}.\\]\n\n(a) Find the value of \\(a\\) that makes \\(5\\) an eigenvalue of \\(A_a\\).\n\n(b) For that value of \\(a\\), find an eigenvector corresponding to \\(\\lambda=5\\).",
+      "thinkFirst": "If \\(5\\) is an eigenvalue, then \\(A_a-5I\\) must have a nonzero null vector, so its determinant must be zero.",
+      "hints": [
+        "Use \\(\\det(A_a-5I)=0\\).",
+        "After finding \\(a\\), substitute it back into \\(A_a-5I\\).",
+        "An eigenvector is any nonzero solution to \\((A_a-5I)x=0\\)."
+      ],
+      "setupLatex": "Compute\n\\[A_a-5I=\\begin{bmatrix}-4&a\\\\2&-2\\end{bmatrix}.\\]\nThen force this matrix to be singular.",
+      "solutionSteps": [
+        {
+          "label": "Use the eigenvalue condition",
+          "latex": "For \\(5\\) to be an eigenvalue,\n\\[\\det(A_a-5I)=0.\\]\nNow\n\\[\\det\\begin{bmatrix}-4&a\\\\2&-2\\end{bmatrix}=(-4)(-2)-2a=8-2a.\\]\nSo\n\\[8-2a=0\\quad\\Longrightarrow\\quad a=4.\\]"
+        },
+        {
+          "label": "Find an eigenvector",
+          "latex": "When \\(a=4\\),\n\\[A_4-5I=\\begin{bmatrix}-4&4\\\\2&-2\\end{bmatrix}.\\]\nThe equation \\(-4x+4y=0\\) gives \\(x=y\\). Thus one eigenvector is\n\\[\\begin{bmatrix}1\\\\1\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "The required parameter is\n\\[a=4.\\]\nFor this value, one eigenvector for \\(\\lambda=5\\) is\n\\[\\begin{bmatrix}1\\\\1\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Plugging \\(5\\) into the matrix entries instead of subtracting \\(5I\\).",
+        "Forgetting that eigenvectors must be nonzero.",
+        "Finding \\(a\\) correctly but not substituting it back before solving for the eigenvector."
+      ],
+      "similarProblemPrompt": "Try changing the target eigenvalue from \\(5\\) to \\(0\\), then interpret your answer using invertibility."
+    },
+    {
+      "id": "eig-004",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Repeated Eigenvalue with Enough Eigenvectors",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Compute a characteristic polynomial for a block matrix",
+        "Find eigenspaces in \\(\\mathbb{R}^3\\)",
+        "Compare algebraic and geometric multiplicity",
+        "Determine whether an eigenbasis exists"
+      ],
+      "examFlavor": "Repeated eigenvalue that still gives an eigenbasis",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}1&0&0\\\\0&3&-2\\\\0&1&0\\end{bmatrix}.\\]\n\n(a) Find the characteristic polynomial and eigenvalues of \\(A\\).\n\n(b) Find a basis for each eigenspace.\n\n(c) Does \\(A\\) have an eigenbasis for \\(\\mathbb{R}^3\\)? Explain.",
+      "thinkFirst": "This matrix has a repeated eigenvalue, but repeated eigenvalues are not automatically bad. You need to check the dimension of the repeated eigenspace.",
+      "hints": [
+        "The first row and column make the determinant easier than a completely general \\(3\\times3\\) matrix.",
+        "For \\(\\lambda=1\\), expect more than one free variable if an eigenbasis might exist.",
+        "Add the dimensions of the eigenspaces to decide if you have enough eigenvectors."
+      ],
+      "setupLatex": "Using \\(p_A(\\lambda)=\\det(\\lambda I-A)\\), expand along the first row/column structure:\n\\[\\lambda I-A=\\begin{bmatrix}\\lambda-1&0&0\\\\0&\\lambda-3&2\\\\0&-1&\\lambda\\end{bmatrix}.\\]",
+      "solutionSteps": [
+        {
+          "label": "Compute the characteristic polynomial",
+          "latex": "\\[p_A(\\lambda)=(\\lambda-1)\\det\\begin{bmatrix}\\lambda-3&2\\\\-1&\\lambda\\end{bmatrix}.\\]\nThe \\(2\\times2\\) determinant is\n\\[(\\lambda-3)\\lambda+2=\\lambda^2-3\\lambda+2=(\\lambda-1)(\\lambda-2).\\]\nSo\n\\[p_A(\\lambda)=(\\lambda-1)^2(\\lambda-2).\\]"
+        },
+        {
+          "label": "List eigenvalues and algebraic multiplicities",
+          "latex": "The eigenvalues are\n\\[\\lambda=1\\quad\\text{with algebraic multiplicity }2,\\qquad \\lambda=2\\quad\\text{with algebraic multiplicity }1.\\]"
+        },
+        {
+          "label": "Find \\(E_1\\)",
+          "latex": "\\[A-I=\\begin{bmatrix}0&0&0\\\\0&2&-2\\\\0&1&-1\\end{bmatrix}.\\]\nThe equation is \\(y-z=0\\), so \\(y=z\\), and \\(x\\) is free. Thus\n\\[E_1=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix}\\right\\}.\\]\nSo the geometric multiplicity of \\(1\\) is \\(2\\)."
+        },
+        {
+          "label": "Find \\(E_2\\)",
+          "latex": "\\[A-2I=\\begin{bmatrix}-1&0&0\\\\0&1&-2\\\\0&1&-2\\end{bmatrix}.\\]\nThe equations give \\(x=0\\) and \\(y=2z\\). Thus\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\2\\\\1\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Decide whether an eigenbasis exists",
+          "latex": "The eigenspace dimensions add to\n\\[\\dim(E_1)+\\dim(E_2)=2+1=3.\\]\nSo we can form a basis of \\(\\mathbb{R}^3\\) entirely from eigenvectors."
+        }
+      ],
+      "finalAnswerLatex": "\\[p_A(\\lambda)=(\\lambda-1)^2(\\lambda-2).\\]\n\\[E_1=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix}\\right\\},\\qquad E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\2\\\\1\\end{bmatrix}\\right\\}.\\]\nYes, \\(A\\) has an eigenbasis for \\(\\mathbb{R}^3\\).",
+      "commonMistakes": [
+        "Assuming repeated eigenvalue means no eigenbasis.",
+        "Only finding one vector for \\(E_1\\) even though there are two free variables.",
+        "Mixing up algebraic multiplicity and geometric multiplicity."
+      ],
+      "similarProblemPrompt": "Replace the lower \\(2\\times2\\) block with a Jordan-type block and see how the dimension of \\(E_1\\) changes."
+    },
+    {
+      "id": "eig-005",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Eigenvalue Properties Without Row Reducing",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Use eigenvalues to compute determinant and trace",
+        "Find eigenvalues of matrix expressions",
+        "Reason about invertibility from eigenvalues"
+      ],
+      "examFlavor": "Conceptual computation using eigenvalue facts",
+      "problemLatex": "Suppose \\(A\\) is a \\(3\\times3\\) matrix with eigenvalues \\(2\\), \\(-1\\), and \\(5\\), counted with algebraic multiplicity.\n\n(a) Find \\(\\det(A)\\) and \\(\\operatorname{tr}(A)\\).\n\n(b) Is \\(A\\) invertible? Explain.\n\n(c) Find \\(\\det(A^{-1})\\).\n\n(d) Find the eigenvalues of \\(A^2-3I\\) and decide whether \\(A^2-3I\\) is invertible.",
+      "thinkFirst": "When a problem gives eigenvalues directly, it is usually asking you to use properties instead of row-reducing anything.",
+      "hints": [
+        "The determinant is the product of the eigenvalues.",
+        "The trace is the sum of the eigenvalues.",
+        "If \\(Av=\\lambda v\\), then \\((A^2-3I)v=(\\lambda^2-3)v\\)."
+      ],
+      "setupLatex": "Use the eigenvalue list \\(2,-1,5\\). For the expression \\(A^2-3I\\), apply the function \\(f(\\lambda)=\\lambda^2-3\\) to each eigenvalue.",
+      "solutionSteps": [
+        {
+          "label": "Compute determinant and trace",
+          "latex": "The determinant is the product of the eigenvalues:\n\\[\\det(A)=2(-1)(5)=-10.\\]\nThe trace is the sum of the eigenvalues:\n\\[\\operatorname{tr}(A)=2+(-1)+5=6.\\]"
+        },
+        {
+          "label": "Decide invertibility",
+          "latex": "A matrix is invertible exactly when \\(0\\) is not an eigenvalue. Since the eigenvalues are \\(2,-1,5\\), none is zero, so \\(A\\) is invertible."
+        },
+        {
+          "label": "Compute determinant of the inverse",
+          "latex": "Because \\(A\\) is invertible,\n\\[\\det(A^{-1})=\\frac{1}{\\det(A)}=-\\frac{1}{10}.\\]"
+        },
+        {
+          "label": "Find eigenvalues of \\(A^2-3I\\)",
+          "latex": "Apply \\(f(\\lambda)=\\lambda^2-3\\):\n\\[2^2-3=1,\\qquad (-1)^2-3=-2,\\qquad 5^2-3=22.\\]\nSo the eigenvalues of \\(A^2-3I\\) are \\(1,-2,22\\). None is zero, so \\(A^2-3I\\) is invertible."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\det(A)=-10,\\qquad \\operatorname{tr}(A)=6,\\qquad \\det(A^{-1})=-\\frac{1}{10}.\\]\nThe eigenvalues of \\(A^2-3I\\) are\n\\[1,\\ -2,\\ 22.\\]\nBoth \\(A\\) and \\(A^2-3I\\) are invertible.",
+      "commonMistakes": [
+        "Adding eigenvalues to get determinant or multiplying them to get trace.",
+        "Thinking \\(A^2-3I\\) has eigenvalues \\(\\lambda^2\\) and then subtracting \\(3\\) only once at the end.",
+        "Forgetting that one zero eigenvalue is enough to make a matrix non-invertible."
+      ],
+      "similarProblemPrompt": "Repeat the problem if the eigenvalues are \\(0,3,-4\\), and notice which parts change because of the zero eigenvalue."
+    },
+    {
+      "id": "eig-006",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Complex Eigenvalues and Eigenvectors",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Compute complex eigenvalues",
+        "Solve for complex eigenvectors",
+        "Explain why real eigenvectors do not exist for non-real eigenvalues"
+      ],
+      "examFlavor": "Complex eigenvalue problem similar to an Exam 2 style prompt",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}2&-5\\\\1&2\\end{bmatrix}.\\]\n\n(a) Find the eigenvalues of \\(A\\).\n\n(b) Find an eigenvector for each eigenvalue.\n\n(c) Does \\(A\\) have any real eigenvectors? Explain.",
+      "thinkFirst": "A real matrix can have complex eigenvalues. If the characteristic polynomial has no real roots, then there are no real eigenvectors.",
+      "hints": [
+        "The characteristic polynomial should look like \\((\\lambda-2)^2+5\\).",
+        "For \\(\\lambda=2+i\\sqrt5\\), solve \\((A-\\lambda I)x=0\\) over the complex numbers.",
+        "Complex conjugate eigenvalues of a real matrix have conjugate eigenvectors."
+      ],
+      "setupLatex": "Compute\n\\[p_A(\\lambda)=\\det(\\lambda I-A)=\\det\\begin{bmatrix}\\lambda-2&5\\\\-1&\\lambda-2\\end{bmatrix}.\\]",
+      "solutionSteps": [
+        {
+          "label": "Find the eigenvalues",
+          "latex": "\\[p_A(\\lambda)=(\\lambda-2)^2+5.\\]\nSet this equal to zero:\n\\[(\\lambda-2)^2=-5.\\]\nThus\n\\[\\lambda=2+i\\sqrt5,\\qquad \\lambda=2-i\\sqrt5.\\]"
+        },
+        {
+          "label": "Find an eigenvector for \\(2+i\\sqrt5\\)",
+          "latex": "For \\(\\lambda=2+i\\sqrt5\\),\n\\[A-\\lambda I=\\begin{bmatrix}-i\\sqrt5&-5\\\\1&-i\\sqrt5\\end{bmatrix}.\\]\nThe second row gives \\(x-i\\sqrt5 y=0\\), so \\(x=i\\sqrt5 y\\). Choose \\(y=1\\):\n\\[v_+=\\begin{bmatrix}i\\sqrt5\\\\1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Find an eigenvector for \\(2-i\\sqrt5\\)",
+          "latex": "By conjugation, an eigenvector for \\(\\lambda=2-i\\sqrt5\\) is\n\\[v_-=\\begin{bmatrix}-i\\sqrt5\\\\1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Explain the real eigenvector question",
+          "latex": "A real eigenvector would need to correspond to a real eigenvalue. Since both eigenvalues are non-real, \\(A\\) has no real eigenvectors."
+        }
+      ],
+      "finalAnswerLatex": "The eigenvalues are\n\\[2+i\\sqrt5,\\qquad 2-i\\sqrt5.\\]\nCorresponding eigenvectors are\n\\[\\begin{bmatrix}i\\sqrt5\\\\1\\end{bmatrix},\\qquad \\begin{bmatrix}-i\\sqrt5\\\\1\\end{bmatrix}.\\]\nThere are no real eigenvectors because there are no real eigenvalues.",
+      "commonMistakes": [
+        "Dropping the \\(i\\) when taking the square root of a negative number.",
+        "Trying to force real eigenvectors for non-real eigenvalues.",
+        "Forgetting that complex conjugate eigenvalues appear in pairs for real matrices."
+      ],
+      "similarProblemPrompt": "Try \\(\\begin{bmatrix}1&-4\\\\1&1\\end{bmatrix}\\), where the complex eigenvalues have imaginary part \\(2\\)."
+    },
+    {
+      "id": "eig-007",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Recognizing an Eigenbasis from Candidate Vectors",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Test whether a vector is an eigenvector",
+        "Find the associated eigenvalue",
+        "Check whether eigenvectors form a basis",
+        "Describe eigenspaces"
+      ],
+      "examFlavor": "Eigenbasis recognition problem",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}3&1&0\\\\1&3&0\\\\0&0&2\\end{bmatrix},\\qquad v_1=\\begin{bmatrix}1\\\\1\\\\0\\end{bmatrix},\\quad v_2=\\begin{bmatrix}1\\\\-1\\\\0\\end{bmatrix},\\quad v_3=\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}.\\]\n\n(a) Show that each \\(v_i\\) is an eigenvector of \\(A\\), and find the corresponding eigenvalue.\n\n(b) Do \\(v_1,v_2,v_3\\) form an eigenbasis for \\(\\mathbb{R}^3\\)? Explain.\n\n(c) Give bases for the eigenspaces of \\(A\\).",
+      "thinkFirst": "To test whether \\(v\\) is an eigenvector, compute \\(Av\\) and see whether it is a scalar multiple of \\(v\\).",
+      "hints": [
+        "Compute \\(Av_1\\), \\(Av_2\\), and \\(Av_3\\) directly.",
+        "A set of three vectors in \\(\\mathbb{R}^3\\) forms a basis if the vectors are linearly independent.",
+        "If two independent eigenvectors have the same eigenvalue, they belong to the same eigenspace."
+      ],
+      "setupLatex": "Directly multiply the matrix by each candidate vector. Then check whether the candidate vectors are independent.",
+      "solutionSteps": [
+        {
+          "label": "Test \\(v_1\\)",
+          "latex": "\\[Av_1=\\begin{bmatrix}3&1&0\\\\1&3&0\\\\0&0&2\\end{bmatrix}\\begin{bmatrix}1\\\\1\\\\0\\end{bmatrix}=\\begin{bmatrix}4\\\\4\\\\0\\end{bmatrix}=4v_1.\\]\nSo \\(v_1\\) is an eigenvector with eigenvalue \\(4\\)."
+        },
+        {
+          "label": "Test \\(v_2\\) and \\(v_3\\)",
+          "latex": "\\[Av_2=\\begin{bmatrix}2\\\\-2\\\\0\\end{bmatrix}=2v_2,\\qquad Av_3=\\begin{bmatrix}0\\\\0\\\\2\\end{bmatrix}=2v_3.\\]\nSo \\(v_2\\) and \\(v_3\\) are eigenvectors with eigenvalue \\(2\\)."
+        },
+        {
+          "label": "Check whether they form a basis",
+          "latex": "The matrix with these vectors as columns is\n\\[P=\\begin{bmatrix}1&1&0\\\\1&-1&0\\\\0&0&1\\end{bmatrix}.\\]\nIts determinant is \\(-2\\), so the columns are linearly independent. Therefore \\(v_1,v_2,v_3\\) form a basis of \\(\\mathbb{R}^3\\). Because all three are eigenvectors, they form an eigenbasis."
+        },
+        {
+          "label": "Write the eigenspaces",
+          "latex": "The \\(4\\)-eigenspace is\n\\[E_4=\\operatorname{span}\\{v_1\\}=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\1\\\\0\\end{bmatrix}\\right\\}.\\]\nThe \\(2\\)-eigenspace is\n\\[E_2=\\operatorname{span}\\{v_2,v_3\\}=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\-1\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[Av_1=4v_1,\\qquad Av_2=2v_2,\\qquad Av_3=2v_3.\\]\nThe vectors form a basis, so they form an eigenbasis.\n\\[E_4=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\1\\\\0\\end{bmatrix}\\right\\},\\qquad E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\-1\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]",
+      "commonMistakes": [
+        "Only checking that the vectors are independent, without checking they are eigenvectors.",
+        "Thinking repeated eigenvalue \\(2\\) can only have one eigenvector.",
+        "Writing each eigenvector as a separate eigenspace even when they have the same eigenvalue."
+      ],
+      "similarProblemPrompt": "Change the bottom-right entry from \\(2\\) to \\(4\\), then regroup the eigenspaces."
+    },
+    {
+      "id": "eig-008",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Eigenspaces from RREF Data",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 11,
+      "skills": [
+        "Use RREF to find eigenspaces",
+        "Read algebraic multiplicity from a characteristic polynomial",
+        "Read geometric multiplicity from nullity",
+        "Decide whether there are enough eigenvectors"
+      ],
+      "examFlavor": "Conceptual RREF/eigenspace problem",
+      "problemLatex": "Suppose \\(A\\) is a \\(3\\times3\\) matrix with\n\\[p_A(\\lambda)=(\\lambda-2)^2(\\lambda+1).\\]\nYou are also given\n\\[\\operatorname{rref}(A-2I)=\\begin{bmatrix}1&0&-2\\\\0&1&3\\\\0&0&0\\end{bmatrix},\\qquad \\operatorname{rref}(A+I)=\\begin{bmatrix}1&0&0\\\\0&1&0\\\\0&0&0\\end{bmatrix}.\\]\n\n(a) Find a basis for each eigenspace.\n\n(b) Find the algebraic and geometric multiplicity of each eigenvalue.\n\n(c) Does \\(A\\) have an eigenbasis for \\(\\mathbb{R}^3\\)?",
+      "thinkFirst": "The eigenspace for \\(\\lambda\\) is the null space of \\(A-\\lambda I\\). The RREF data is already giving you those null spaces.",
+      "hints": [
+        "For \\(\\lambda=2\\), solve the homogeneous system represented by the RREF of \\(A-2I\\).",
+        "For \\(\\lambda=-1\\), solve the homogeneous system represented by the RREF of \\(A+I\\).",
+        "Algebraic multiplicity comes from the exponent in the characteristic polynomial."
+      ],
+      "setupLatex": "For \\(\\lambda=2\\), solve\n\\[x-2z=0,\\qquad y+3z=0.\\]\nFor \\(\\lambda=-1\\), solve\n\\[x=0,\\qquad y=0.\\]",
+      "solutionSteps": [
+        {
+          "label": "Find \\(E_2\\)",
+          "latex": "From\n\\[\\operatorname{rref}(A-2I)=\\begin{bmatrix}1&0&-2\\\\0&1&3\\\\0&0&0\\end{bmatrix},\\]\nwe get\n\\[x-2z=0,\\qquad y+3z=0.\\]\nSo \\(x=2z\\), \\(y=-3z\\), and\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}2\\\\-3\\\\1\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Find \\(E_{-1}\\)",
+          "latex": "From\n\\[\\operatorname{rref}(A+I)=\\begin{bmatrix}1&0&0\\\\0&1&0\\\\0&0&0\\end{bmatrix},\\]\nwe get \\(x=0\\), \\(y=0\\), and \\(z\\) free. Thus\n\\[E_{-1}=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Compare multiplicities",
+          "latex": "From \\(p_A(\\lambda)=(\\lambda-2)^2(\\lambda+1)\\), the algebraic multiplicities are\n\\[\\operatorname{AM}(2)=2,\\qquad \\operatorname{AM}(-1)=1.\\]\nFrom the eigenspace dimensions,\n\\[\\operatorname{GM}(2)=1,\\qquad \\operatorname{GM}(-1)=1.\\]"
+        },
+        {
+          "label": "Decide if an eigenbasis exists",
+          "latex": "The total eigenspace dimension is\n\\[1+1=2<3.\\]\nSo there are not enough linearly independent eigenvectors to form an eigenbasis for \\(\\mathbb{R}^3\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}2\\\\-3\\\\1\\end{bmatrix}\\right\\},\\qquad E_{-1}=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]\n\\[\\operatorname{AM}(2)=2,\\quad \\operatorname{GM}(2)=1,\\qquad \\operatorname{AM}(-1)=1,\\quad \\operatorname{GM}(-1)=1.\\]\nNo, \\(A\\) does not have an eigenbasis for \\(\\mathbb{R}^3\\).",
+      "commonMistakes": [
+        "Using the RREF rows themselves as eigenvectors.",
+        "Getting algebraic multiplicity from the RREF instead of the characteristic polynomial.",
+        "Forgetting that geometric multiplicity is the number of free variables in \\((A-\\lambda I)x=0\\)."
+      ],
+      "similarProblemPrompt": "Modify the RREF of \\(A-2I\\) so it has two free variables, then decide how the eigenbasis answer changes."
+    },
+    {
+      "id": "eig-009",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Eigenvalue True/False with Explanations",
+      "difficulty": "Conceptual",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Use eigenvalue definitions",
+        "Recognize invertibility connections",
+        "Use matrix expression eigenvalue rules",
+        "Distinguish eigenvalues from eigenvectors"
+      ],
+      "examFlavor": "Short-answer conceptual explanations",
+      "problemLatex": "For each statement, decide whether it is true or false. Give a brief explanation.\n\n(a) If \\(0\\) is an eigenvalue of \\(A\\), then \\(A\\) is not invertible.\n\n(b) If \\(v\\) is an eigenvector of \\(A\\) with eigenvalue \\(2\\), then \\(v\\) is an eigenvector of \\(2A\\) with eigenvalue \\(4\\).\n\n(c) If an eigenvalue has algebraic multiplicity \\(3\\), then its geometric multiplicity must also be \\(3\\).\n\n(d) \\(A\\) and \\(A^T\\) have the same eigenvalues.\n\n(e) If \\(A\\) has three distinct eigenvalues, then \\(A\\) has an eigenbasis for \\(\\mathbb{R}^3\\).",
+      "thinkFirst": "These are definition and theorem checks. A short reason is more important than a long computation.",
+      "hints": [
+        "Use \\(Av=\\lambda v\\) for parts involving matrix expressions.",
+        "Remember \\(0\\) as an eigenvalue means \\(Ax=0\\) has a nonzero solution.",
+        "Distinct eigenvalues have linearly independent eigenvectors."
+      ],
+      "setupLatex": "Use the eigenvector equation \\(Av=\\lambda v\\), the invertible matrix theorem, and the fact that \\(A\\) and \\(A^T\\) have the same characteristic polynomial.",
+      "solutionSteps": [
+        {
+          "label": "Part (a)",
+          "latex": "True. If \\(0\\) is an eigenvalue, then there is a nonzero vector \\(v\\) such that \\(Av=0v=0\\). So \\(Ax=0\\) has a nontrivial solution, meaning \\(A\\) is not invertible."
+        },
+        {
+          "label": "Part (b)",
+          "latex": "True. If \\(Av=2v\\), then\n\\[(2A)v=2(Av)=2(2v)=4v.\\]\nSo \\(v\\) is an eigenvector of \\(2A\\) with eigenvalue \\(4\\)."
+        },
+        {
+          "label": "Part (c)",
+          "latex": "False. The geometric multiplicity is at least \\(1\\) and at most the algebraic multiplicity, but it does not have to equal it. For example, a repeated eigenvalue can have only one independent eigenvector."
+        },
+        {
+          "label": "Part (d)",
+          "latex": "True. \\(A\\) and \\(A^T\\) have the same characteristic polynomial because\n\\[\\det(\\lambda I-A^T)=\\det((\\lambda I-A)^T)=\\det(\\lambda I-A).\\]\nSo they have the same eigenvalues."
+        },
+        {
+          "label": "Part (e)",
+          "latex": "True for a \\(3\\times3\\) matrix. Eigenvectors corresponding to distinct eigenvalues are linearly independent, so three distinct eigenvalues give three linearly independent eigenvectors in \\(\\mathbb{R}^3\\), which form an eigenbasis."
+        }
+      ],
+      "finalAnswerLatex": "(a) True. (b) True. (c) False. (d) True. (e) True for a \\(3\\times3\\) matrix.",
+      "commonMistakes": [
+        "Thinking algebraic and geometric multiplicity are always equal.",
+        "Assuming \\(A\\) and \\(A^T\\) always have the same eigenvectors; they have the same eigenvalues, not necessarily the same eigenvectors.",
+        "Forgetting that eigenvectors must be nonzero."
+      ],
+      "similarProblemPrompt": "Write your own true/false statement involving \\(A^{-1}\\), then test it using \\(Av=\\lambda v\\)."
+    },
+    {
+      "id": "eig-010",
+      "unit": "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+      "title": "Finding an Eigenbasis for a Coordinate-Swapping Matrix",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Compute a characteristic polynomial",
+        "Factor a cubic polynomial",
+        "Find eigenspaces",
+        "Assemble an eigenbasis"
+      ],
+      "examFlavor": "Multi-part eigenbasis problem with simple structure",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}0&0&1\\\\0&2&0\\\\1&0&0\\end{bmatrix}.\\]\nThis matrix swaps the first and third coordinates and doubles the second coordinate.\n\n(a) Find the characteristic polynomial and eigenvalues of \\(A\\).\n\n(b) Find a basis for each eigenspace.\n\n(c) Give an eigenbasis for \\(\\mathbb{R}^3\\).",
+      "thinkFirst": "The action of the matrix gives intuition: vectors with first and third coordinates equal behave differently from vectors with first and third coordinates opposite.",
+      "hints": [
+        "Compute \\(p_A(\\lambda)=\\det(\\lambda I-A)\\), then factor by grouping.",
+        "For \\(\\lambda=1\\), expect vectors where the first and third coordinates match.",
+        "For \\(\\lambda=-1\\), expect vectors where the first and third coordinates are opposites."
+      ],
+      "setupLatex": "Start from\n\\[\\lambda I-A=\\begin{bmatrix}\\lambda&0&-1\\\\0&\\lambda-2&0\\\\-1&0&\\lambda\\end{bmatrix}.\\]",
+      "solutionSteps": [
+        {
+          "label": "Compute the characteristic polynomial",
+          "latex": "Expanding along the middle row/column structure,\n\\[p_A(\\lambda)=(\\lambda-2)\\det\\begin{bmatrix}\\lambda&-1\\\\-1&\\lambda\\end{bmatrix}.\\]\nThus\n\\[p_A(\\lambda)=(\\lambda-2)(\\lambda^2-1)=(\\lambda-2)(\\lambda-1)(\\lambda+1).\\]"
+        },
+        {
+          "label": "Find the eigenvalues",
+          "latex": "The eigenvalues are\n\\[\\lambda=2,\\qquad \\lambda=1,\\qquad \\lambda=-1.\\]"
+        },
+        {
+          "label": "Find \\(E_2\\)",
+          "latex": "For \\(\\lambda=2\\), solve \\((A-2I)x=0\\). Since the matrix doubles the second coordinate,\n\\[A\\begin{bmatrix}0\\\\1\\\\0\\end{bmatrix}=2\\begin{bmatrix}0\\\\1\\\\0\\end{bmatrix}.\\]\nSo\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\1\\\\0\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Find \\(E_1\\) and \\(E_{-1}\\)",
+          "latex": "For \\(\\lambda=1\\), vectors with first and third coordinates equal satisfy\n\\[A\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix}=\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix},\\]\nso\n\\[E_1=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]\nFor \\(\\lambda=-1\\), vectors with first and third coordinates opposite satisfy\n\\[A\\begin{bmatrix}-1\\\\0\\\\1\\end{bmatrix}=\\begin{bmatrix}1\\\\0\\\\-1\\end{bmatrix}=-\\begin{bmatrix}-1\\\\0\\\\1\\end{bmatrix},\\]\nso\n\\[E_{-1}=\\operatorname{span}\\left\\{\\begin{bmatrix}-1\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]"
+        },
+        {
+          "label": "Assemble an eigenbasis",
+          "latex": "There are three distinct eigenvalues, so eigenvectors from the three eigenspaces are linearly independent. One eigenbasis is\n\\[\\left\\{\\begin{bmatrix}0\\\\1\\\\0\\end{bmatrix},\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix},\\begin{bmatrix}-1\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[p_A(\\lambda)=(\\lambda-2)(\\lambda-1)(\\lambda+1).\\]\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\1\\\\0\\end{bmatrix}\\right\\},\\quad E_1=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix}\\right\\},\\quad E_{-1}=\\operatorname{span}\\left\\{\\begin{bmatrix}-1\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]\nOne eigenbasis is\n\\[\\left\\{\\begin{bmatrix}0\\\\1\\\\0\\end{bmatrix},\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix},\\begin{bmatrix}-1\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]",
+      "commonMistakes": [
+        "Missing the negative eigenvalue from the coordinate swap.",
+        "Thinking the standard basis vectors \\(e_1\\) and \\(e_3\\) are eigenvectors; they are swapped, not scaled.",
+        "Forgetting that distinct eigenvalues automatically give independent eigenvectors."
+      ],
+      "similarProblemPrompt": "Try the matrix that swaps the first two coordinates and triples the third coordinate. Predict the eigenvalues before computing the determinant."
+    }
+  ]
+}

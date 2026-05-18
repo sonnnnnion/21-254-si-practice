@@ -1,0 +1,425 @@
+{
+  "sectionId": "sec-01-vectors-matrices-transposes",
+  "sectionTitle": "Vectors, Matrices, Transposes, and Basic Operations",
+  "sectionPosition": 1,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice the first course tools: vector arithmetic, dot products, magnitudes, angles, matrix arithmetic, matrix multiplication, powers, transposes, and special matrices.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "vecmat-001",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "Vector Arithmetic, Orthogonality, and Distance",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Add and scale vectors",
+        "Compute dot products",
+        "Find magnitudes and distances",
+        "Recognize perpendicular vectors"
+      ],
+      "examFlavor": "Short computational problem with a geometry interpretation",
+      "problemLatex": "Let\n\\[a=\\begin{bmatrix}2\\\\-1\\\\3\\end{bmatrix},\\qquad b=\\begin{bmatrix}-1\\\\4\\\\2\\end{bmatrix}.\\]\n\n(a) Compute \\(2a-3b\\).\n\n(b) Compute \\(a\\cdot b\\). What does this say about the angle between \\(a\\) and \\(b\\)?\n\n(c) Find \\(\\|a\\|\\), \\(\\|b\\|\\), and \\(\\|a-b\\|\\).",
+      "thinkFirst": "Do the arithmetic component-by-component. For the angle question, remember that a zero dot product means perpendicular nonzero vectors.",
+      "hints": [
+        "Scalar multiplication happens before vector subtraction.",
+        "Use \\(a\\cdot b=a_1b_1+a_2b_2+a_3b_3\\).",
+        "Distance between vector tips is \\(\\|a-b\\|\\)."
+      ],
+      "setupLatex": "Compute each part directly from the definitions. No row reduction or advanced linear algebra is needed here.",
+      "solutionSteps": [
+        {
+          "label": "Compute the linear combination",
+          "latex": "\\[2a=\\begin{bmatrix}4\\\\-2\\\\6\\end{bmatrix},\\qquad 3b=\\begin{bmatrix}-3\\\\12\\\\6\\end{bmatrix}.\\]\nTherefore\n\\[2a-3b=\\begin{bmatrix}4\\\\-2\\\\6\\end{bmatrix}-\\begin{bmatrix}-3\\\\12\\\\6\\end{bmatrix}=\\begin{bmatrix}7\\\\-14\\\\0\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute the dot product",
+          "latex": "\\[a\\cdot b=2(-1)+(-1)(4)+3(2)=-2-4+6=0.\\]\nSince both vectors are nonzero and their dot product is zero, the angle between them is \\(\\pi/2\\)."
+        },
+        {
+          "label": "Compute the magnitudes",
+          "latex": "\\[\\|a\\|=\\sqrt{2^2+(-1)^2+3^2}=\\sqrt{14},\\qquad \\|b\\|=\\sqrt{(-1)^2+4^2+2^2}=\\sqrt{21}.\\]"
+        },
+        {
+          "label": "Compute the distance",
+          "latex": "\\[a-b=\\begin{bmatrix}3\\\\-5\\\\1\\end{bmatrix},\\qquad \\|a-b\\|=\\sqrt{3^2+(-5)^2+1^2}=\\sqrt{35}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[2a-3b=\\begin{bmatrix}7\\\\-14\\\\0\\end{bmatrix},\\qquad a\\cdot b=0,\\qquad \\theta=\\frac{\\pi}{2}.\\]\n\\[\\|a\\|=\\sqrt{14},\\quad \\|b\\|=\\sqrt{21},\\quad \\|a-b\\|=\\sqrt{35}.\\]",
+      "commonMistakes": [
+        "Forgetting the minus sign in \\(2a-3b\\).",
+        "Using \\(\\|a+b\\|\\) instead of \\(\\|a-b\\|\\) for distance.",
+        "Saying the vectors are parallel when the dot product is zero."
+      ],
+      "similarProblemPrompt": "Try changing one component of \\(b\\) so that \\(a\\cdot b\neq 0\\), then find the angle using the cosine formula."
+    },
+    {
+      "id": "vecmat-002",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "Choose a Parameter to Make Vectors Perpendicular",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 6,
+      "skills": [
+        "Use the dot product to impose perpendicularity",
+        "Solve a simple parameter equation",
+        "Interpret a geometric condition algebraically"
+      ],
+      "examFlavor": "Parameter value problem",
+      "problemLatex": "Let\n\\[u=\\begin{bmatrix}1\\\\k\\\\2\\end{bmatrix},\\qquad v=\\begin{bmatrix}3\\\\-1\\\\4\\end{bmatrix}.\\]\nFind all values of \\(k\\) such that \\(u\\) and \\(v\\) are perpendicular.",
+      "thinkFirst": "Perpendicular vectors have dot product zero, so turn the geometry condition into one equation involving \\(k\\).",
+      "hints": [
+        "Set \\(u\\cdot v=0\\).",
+        "Only the middle component contains \\(k\\).",
+        "Check the final value by substituting it back into the dot product."
+      ],
+      "setupLatex": "Use \\(u\\cdot v=0\\), not \\(\\|u\\|=\\|v\\|\\). Perpendicularity is about the dot product.",
+      "solutionSteps": [
+        {
+          "label": "Set up the dot product equation",
+          "latex": "\\[u\\cdot v=1(3)+k(-1)+2(4)=3-k+8=11-k.\\]"
+        },
+        {
+          "label": "Force perpendicularity",
+          "latex": "For perpendicular vectors, \\(u\\cdot v=0\\), so\n\\[11-k=0.\\]"
+        },
+        {
+          "label": "Solve and check",
+          "latex": "Thus \\(k=11\\). Checking:\n\\[\\begin{bmatrix}1\\\\11\\\\2\\end{bmatrix}\\cdot\\begin{bmatrix}3\\\\-1\\\\4\\end{bmatrix}=3-11+8=0.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[k=11.\\]",
+      "commonMistakes": [
+        "Setting the magnitudes equal instead of setting the dot product equal to zero.",
+        "Dropping the negative sign from the second component of \\(v\\)."
+      ],
+      "similarProblemPrompt": "Try making \\(u\\) and \\(v\\) form an acute angle instead; what inequality should \\(k\\) satisfy?"
+    },
+    {
+      "id": "vecmat-003",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "Matrix Arithmetic and Matrix-Vector Style Products",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Add and scale matrices",
+        "Check product dimensions",
+        "Multiply rectangular matrices",
+        "Interpret entries of a product"
+      ],
+      "examFlavor": "Basic matrix operations problem",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}1&-2&0\\\\3&1&4\\end{bmatrix},\\quad\nB=\\begin{bmatrix}2&0&-1\\\\1&3&2\\end{bmatrix},\\quad\nC=\\begin{bmatrix}0&1\\\\2&-1\\\\1&3\\end{bmatrix}.\\]\n\n(a) Compute \\(A+2B\\).\n\n(b) Compute \\(AC\\).\n\n(c) Is \\(CA\\) defined? If so, what is its size?",
+      "thinkFirst": "Always check sizes before multiplying. Here \\(A\\) is \\(2\times 3\\), \\(B\\) is \\(2\times 3\\), and \\(C\\) is \\(3\times 2\\).",
+      "hints": [
+        "Matrix addition requires equal sizes.",
+        "\\(AC\\) is defined because the inner dimensions are both 3.",
+        "\\(CA\\) is also defined, but it has a different size from \\(AC\\)."
+      ],
+      "setupLatex": "For multiplication, \\((AC)_{ij}\\) is row \\(i\\) of \\(A\\) dotted with column \\(j\\) of \\(C\\).",
+      "solutionSteps": [
+        {
+          "label": "Compute \\(A+2B\\)",
+          "latex": "\\[2B=\\begin{bmatrix}4&0&-2\\\\2&6&4\\end{bmatrix},\\]\nso\n\\[A+2B=\\begin{bmatrix}1&-2&0\\\\3&1&4\\end{bmatrix}+\\begin{bmatrix}4&0&-2\\\\2&6&4\\end{bmatrix}=\\begin{bmatrix}5&-2&-2\\\\5&7&8\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute \\(AC\\)",
+          "latex": "\\[AC=\\begin{bmatrix}1&-2&0\\\\3&1&4\\end{bmatrix}\\begin{bmatrix}0&1\\\\2&-1\\\\1&3\\end{bmatrix}=\\begin{bmatrix}-4&3\\\\6&14\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Check \\(CA\\)",
+          "latex": "\\(C\\) is \\(3\\times 2\\) and \\(A\\) is \\(2\\times 3\\), so \\(CA\\) is defined and has size \\(3\\times 3\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[A+2B=\\begin{bmatrix}5&-2&-2\\\\5&7&8\\end{bmatrix},\\qquad AC=\\begin{bmatrix}-4&3\\\\6&14\\end{bmatrix}.\\]\nThe product \\(CA\\) is defined and is \\(3\\times 3\\).",
+      "commonMistakes": [
+        "Trying to multiply entry-by-entry instead of row-by-column.",
+        "Assuming \\(AC\\) and \\(CA\\) must have the same size.",
+        "Forgetting to double every entry of \\(B\\)."
+      ],
+      "similarProblemPrompt": "Try computing \\(CA\\), then compare its size and entries to \\(AC\\)."
+    },
+    {
+      "id": "vecmat-004",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "Matrix Multiplication Is Not Commutative",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Multiply 2 by 2 matrices",
+        "Compare \\(AB\\) and \\(BA\\)",
+        "Recognize noncommutativity",
+        "Compute a matrix power"
+      ],
+      "examFlavor": "Concept check with computation",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix},\\qquad B=\\begin{bmatrix}3&0\\\\4&1\\end{bmatrix}.\\]\n\n(a) Compute \\(AB\\) and \\(BA\\).\n\n(b) Are \\(AB\\) and \\(BA\\) equal?\n\n(c) Compute \\(A^2\\).",
+      "thinkFirst": "Even when both products are defined, matrix multiplication usually does not commute.",
+      "hints": [
+        "Compute \\(AB\\) and \\(BA\\) separately.",
+        "Do not reuse entries from \\(AB\\) when finding \\(BA\\).",
+        "\\(A^2\\) means \\(AA\\), not squaring each entry."
+      ],
+      "setupLatex": "Use the row-by-column rule for both products. Then multiply \\(A\\) by itself for \\(A^2\\).",
+      "solutionSteps": [
+        {
+          "label": "Compute \\(AB\\)",
+          "latex": "\\[AB=\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix}\\begin{bmatrix}3&0\\\\4&1\\end{bmatrix}=\\begin{bmatrix}11&2\\\\-4&-1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute \\(BA\\)",
+          "latex": "\\[BA=\\begin{bmatrix}3&0\\\\4&1\\end{bmatrix}\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix}=\\begin{bmatrix}3&6\\\\4&7\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compare the products",
+          "latex": "Since\n\\[\\begin{bmatrix}11&2\\\\-4&-1\\end{bmatrix}\\neq \\begin{bmatrix}3&6\\\\4&7\\end{bmatrix},\\]\nwe have \\(AB\\neq BA\\)."
+        },
+        {
+          "label": "Compute the power",
+          "latex": "\\[A^2=AA=\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix}\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix}=\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[AB=\\begin{bmatrix}11&2\\\\-4&-1\\end{bmatrix},\\qquad BA=\\begin{bmatrix}3&6\\\\4&7\\end{bmatrix},\\qquad A^2=I_2.\\]\nThus \\(AB\\neq BA\\).",
+      "commonMistakes": [
+        "Squaring each entry to find \\(A^2\\).",
+        "Assuming \\(AB=BA\\) because ordinary numbers commute.",
+        "Mixing up row-by-column order."
+      ],
+      "similarProblemPrompt": "Find another non-identity matrix \\(A\\) such that \\(A^2=I\\)."
+    },
+    {
+      "id": "vecmat-005",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "Transpose Rules in Action",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Compute transposes",
+        "Use \\((AB)^T=B^TA^T\\)",
+        "Track matrix dimensions",
+        "Recognize defined and undefined products"
+      ],
+      "examFlavor": "Transpose identity verification",
+      "problemLatex": "Let\n\\[A=\\begin{bmatrix}1&-2&0\\\\3&1&4\\end{bmatrix},\\qquad C=\\begin{bmatrix}0&1\\\\2&-1\\\\1&3\\end{bmatrix}.\\]\n\n(a) Compute \\((AC)^T\\).\n\n(b) Compute \\(C^TA^T\\).\n\n(c) Explain why your answers should agree without recomputing every entry.",
+      "thinkFirst": "This is a concrete check of the transpose product rule. The order reverses when you transpose a product.",
+      "hints": [
+        "First compute \\(AC\\), then transpose it.",
+        "For \\(C^TA^T\\), notice \\(C^T\\) is \\(2\times 3\\) and \\(A^T\\) is \\(3\times 2\\).",
+        "The rule is \\((AC)^T=C^TA^T\\), not \\(A^TC^T\\)."
+      ],
+      "setupLatex": "From the earlier multiplication, \\(AC=\\begin{bmatrix}-4&3\\\\6&14\\end{bmatrix}\\). Now transpose this matrix and compare it with \\(C^TA^T\\).",
+      "solutionSteps": [
+        {
+          "label": "Transpose \\(AC\\)",
+          "latex": "Since\n\\[AC=\\begin{bmatrix}-4&3\\\\6&14\\end{bmatrix},\\]\nwe get\n\\[(AC)^T=\\begin{bmatrix}-4&6\\\\3&14\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute \\(C^TA^T\\)",
+          "latex": "\\[C^T=\\begin{bmatrix}0&2&1\\\\1&-1&3\\end{bmatrix},\\qquad A^T=\\begin{bmatrix}1&3\\\\-2&1\\\\0&4\\end{bmatrix}.\\]\nTherefore\n\\[C^TA^T=\\begin{bmatrix}0&2&1\\\\1&-1&3\\end{bmatrix}\\begin{bmatrix}1&3\\\\-2&1\\\\0&4\\end{bmatrix}=\\begin{bmatrix}-4&6\\\\3&14\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Explain the agreement",
+          "latex": "The answers agree because the transpose of a product reverses the order:\n\\[(AC)^T=C^TA^T.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[(AC)^T=C^TA^T=\\begin{bmatrix}-4&6\\\\3&14\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Using \\((AC)^T=A^TC^T\\) instead of reversing the order.",
+        "Changing signs while transposing; transpose only swaps rows and columns.",
+        "Forgetting to check dimensions."
+      ],
+      "similarProblemPrompt": "Try the same identity with a \\(3\times 1\\) vector as the second factor."
+    },
+    {
+      "id": "vecmat-006",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "When Is a Matrix Symmetric?",
+      "difficulty": "Core",
+      "estimatedMinutes": 7,
+      "skills": [
+        "Use the definition of a symmetric matrix",
+        "Compare entries across the diagonal",
+        "Understand \\(M^T=M\\)",
+        "Recognize a condition on a parameter"
+      ],
+      "examFlavor": "Special matrix parameter problem",
+      "problemLatex": "Let\n\\[M=\\begin{bmatrix}2&k&0\\\\1&3&4\\\\0&4&-1\\end{bmatrix}.\\]\n\n(a) Find the value of \\(k\\) that makes \\(M\\) symmetric.\n\n(b) For this value of \\(k\\), write \\(M^T\\).\n\n(c) Is \\(M+M^T\\) symmetric when \\(k\\neq 1\\)? Explain.",
+      "thinkFirst": "A matrix is symmetric when entries mirror across the main diagonal. Compare \\(m_{12}\\) with \\(m_{21}\\), \\(m_{13}\\) with \\(m_{31}\\), and \\(m_{23}\\) with \\(m_{32}\\).",
+      "hints": [
+        "The diagonal entries do not create restrictions.",
+        "The only unmatched pair is \\(m_{12}\\) and \\(m_{21}\\).",
+        "\\((M+M^T)^T=M^T+M\\)."
+      ],
+      "setupLatex": "Use \\(M^T=M\\). The off-diagonal entries must match in mirrored positions.",
+      "solutionSteps": [
+        {
+          "label": "Compare mirrored entries",
+          "latex": "For symmetry, we need \\(m_{12}=m_{21}\\). Here \\(m_{12}=k\\) and \\(m_{21}=1\\), so \\(k=1\\). The other off-diagonal pairs already match: \\(0=0\\) and \\(4=4\\)."
+        },
+        {
+          "label": "Write the transpose when \\(k=1\\)",
+          "latex": "When \\(k=1\\),\n\\[M=\\begin{bmatrix}2&1&0\\\\1&3&4\\\\0&4&-1\\end{bmatrix},\\]\nand therefore\n\\[M^T=\\begin{bmatrix}2&1&0\\\\1&3&4\\\\0&4&-1\\end{bmatrix}=M.\\]"
+        },
+        {
+          "label": "Check \\(M+M^T\\)",
+          "latex": "For any square matrix \\(M\\),\n\\[(M+M^T)^T=M^T+(M^T)^T=M^T+M=M+M^T.\\]\nSo \\(M+M^T\\) is symmetric even when \\(k\\neq 1\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[k=1.\\]\nFor \\(k=1\\), \\(M^T=M\\). Also, \\(M+M^T\\) is symmetric for every value of \\(k\\).",
+      "commonMistakes": [
+        "Comparing entries in the same row instead of mirrored positions.",
+        "Thinking diagonal entries must be equal to each other.",
+        "Assuming \\(M+M^T\\) is symmetric only if \\(M\\) is symmetric."
+      ],
+      "similarProblemPrompt": "Try finding the value of \\(k\\) that makes a similar matrix skew-symmetric instead."
+    },
+    {
+      "id": "vecmat-007",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "A Nilpotent Matrix Power Pattern",
+      "difficulty": "Core",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Compute matrix powers",
+        "Recognize patterns in powers",
+        "Evaluate a polynomial in a matrix",
+        "Use the identity matrix in matrix expressions"
+      ],
+      "examFlavor": "Matrix powers problem",
+      "problemLatex": "Let\n\\[N=\\begin{bmatrix}0&1&0\\\\0&0&1\\\\0&0&0\\end{bmatrix}.\\]\n\n(a) Compute \\(N^2\\) and \\(N^3\\).\n\n(b) Compute \\(I+2N-N^2\\).\n\n(c) Explain why every power \\(N^m\\) with \\(m\\geq 3\\) is the zero matrix.",
+      "thinkFirst": "This matrix shifts entries upward when it multiplies a vector. Repeated multiplication eventually kills everything.",
+      "hints": [
+        "Compute \\(N^2=NN\\) directly.",
+        "Once \\(N^3=0\\), multiplying by more copies of \\(N\\) keeps the zero matrix.",
+        "Do not square each entry to find \\(N^2\\)."
+      ],
+      "setupLatex": "Use row-by-column multiplication. The identity matrix in part (b) is \\(3\\times 3\\).",
+      "solutionSteps": [
+        {
+          "label": "Compute \\(N^2\\)",
+          "latex": "\\[N^2=\\begin{bmatrix}0&1&0\\\\0&0&1\\\\0&0&0\\end{bmatrix}\\begin{bmatrix}0&1&0\\\\0&0&1\\\\0&0&0\\end{bmatrix}=\\begin{bmatrix}0&0&1\\\\0&0&0\\\\0&0&0\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute \\(N^3\\)",
+          "latex": "\\[N^3=N^2N=\\begin{bmatrix}0&0&1\\\\0&0&0\\\\0&0&0\\end{bmatrix}\\begin{bmatrix}0&1&0\\\\0&0&1\\\\0&0&0\\end{bmatrix}=\\begin{bmatrix}0&0&0\\\\0&0&0\\\\0&0&0\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Evaluate the matrix expression",
+          "latex": "\\[I+2N-N^2=\\begin{bmatrix}1&0&0\\\\0&1&0\\\\0&0&1\\end{bmatrix}+\\begin{bmatrix}0&2&0\\\\0&0&2\\\\0&0&0\\end{bmatrix}-\\begin{bmatrix}0&0&1\\\\0&0&0\\\\0&0&0\\end{bmatrix}=\\begin{bmatrix}1&2&-1\\\\0&1&2\\\\0&0&1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Explain the pattern",
+          "latex": "Since \\(N^3=0\\), for any \\(m\\geq 3\\),\n\\[N^m=N^3N^{m-3}=0\\cdot N^{m-3}=0.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[N^2=\\begin{bmatrix}0&0&1\\\\0&0&0\\\\0&0&0\\end{bmatrix},\\qquad N^3=0,\\qquad I+2N-N^2=\\begin{bmatrix}1&2&-1\\\\0&1&2\\\\0&0&1\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Squaring entries instead of multiplying matrices.",
+        "Forgetting that \\(I\\) must be the same size as \\(N\\).",
+        "Thinking \\(N^3=0\\) means \\(N=0\\)."
+      ],
+      "similarProblemPrompt": "Try the same problem for a \\(4\times 4\\) matrix with 1s on the superdiagonal."
+    },
+    {
+      "id": "vecmat-008",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "True or False: Early Matrix Rules",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Use transpose identities",
+        "Recognize noncommutativity",
+        "Check dimensions",
+        "Reason with special matrices"
+      ],
+      "examFlavor": "Conceptual true/false problem",
+      "problemLatex": "Decide whether each statement is true or false. If false, give a brief reason.\n\n(a) If \\(A\\) and \\(B\\) are square matrices of the same size, then \\((A+B)^T=A^T+B^T\\).\n\n(b) If \\(AB\\) is defined, then \\(BA\\) is also defined.\n\n(c) If \\(A\\) is symmetric, then \\(A^T=A\\).\n\n(d) If \\(A\\) and \\(B\\) are square matrices of the same size, then \\((AB)^T=A^TB^T\\).\n\n(e) If \\(A\\) is \\(2\\times 3\\), then \\(A^T A\\) is \\(3\\times 3\\).",
+      "thinkFirst": "For conceptual problems, one counterexample is enough to disprove a universal claim. Pay special attention to dimensions and transpose order.",
+      "hints": [
+        "Transpose distributes over addition.",
+        "A product can be defined in one order but not the other.",
+        "The transpose of a product reverses the order.",
+        "Track sizes carefully in part (e)."
+      ],
+      "setupLatex": "Use definitions and basic identities. Avoid trying to invent large examples unless a statement is false because of dimensions or order.",
+      "solutionSteps": [
+        {
+          "label": "Part (a)",
+          "latex": "True. Transpose distributes over addition: \\((A+B)^T=A^T+B^T\\)."
+        },
+        {
+          "label": "Part (b)",
+          "latex": "False. For example, if \\(A\\) is \\(2\\times 3\\) and \\(B\\) is \\(3\\times 4\\), then \\(AB\\) is defined, but \\(BA\\) is not."
+        },
+        {
+          "label": "Part (c)",
+          "latex": "True. This is exactly the definition of a symmetric matrix."
+        },
+        {
+          "label": "Part (d)",
+          "latex": "False. The correct rule is\n\\[(AB)^T=B^TA^T.\\]\nThe order reverses."
+        },
+        {
+          "label": "Part (e)",
+          "latex": "True. If \\(A\\) is \\(2\\times 3\\), then \\(A^T\\) is \\(3\\times 2\\), so \\(A^TA\\) is \\((3\\times 2)(2\\times 3)=3\\times 3\\)."
+        }
+      ],
+      "finalAnswerLatex": "(a) True. (b) False. (c) True. (d) False. (e) True.",
+      "commonMistakes": [
+        "Forgetting that transpose reverses product order.",
+        "Assuming all products are square.",
+        "Confusing \\(AA^T\\) and \\(A^TA\\)."
+      ],
+      "similarProblemPrompt": "Create your own false matrix statement and find a specific counterexample."
+    },
+    {
+      "id": "vecmat-009",
+      "unit": "Vectors, Matrices, Transposes, and Basic Operations",
+      "title": "Dimensions First, Then Entries",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Determine whether products are defined",
+        "Find matrix product sizes",
+        "Compute a specific product entry",
+        "Use dimensions to avoid unnecessary arithmetic"
+      ],
+      "examFlavor": "Exam-style dimensions and entry problem",
+      "problemLatex": "Suppose \\(A\\) is \\(3\\times 2\\), \\(B\\) is \\(2\\times 4\\), and \\(C\\) is \\(4\\times 3\\).\n\n(a) Which of the products \\(AB\\), \\(BA\\), \\(BC\\), \\(CB\\), \\(ABC\\), and \\(CBA\\) are defined? Give the size of each product that is defined.\n\n(b) Now let\n\\[A=\\begin{bmatrix}1&0\\\\-2&3\\\\4&1\\end{bmatrix},\\qquad B=\\begin{bmatrix}2&-1&0&3\\\\1&4&5&-2\\end{bmatrix}.\\]\nCompute the \\((3,4)\\)-entry of \\(AB\\) without computing the whole matrix.",
+      "thinkFirst": "Before doing any multiplication, use the inner dimensions test. For an entry of \\(AB\\), use row 3 of \\(A\\) and column 4 of \\(B\\).",
+      "hints": [
+        "\\((m\\times n)(n\\times p)\\) gives an \\(m\\times p\\) matrix.",
+        "For part (b), row 3 of \\(A\\) is \\([4,1]\\).",
+        "Column 4 of \\(B\\) is \\([3,-2]^T\\)."
+      ],
+      "setupLatex": "This problem is mostly about avoiding wasted work. Sizes determine what is possible before any arithmetic begins.",
+      "solutionSteps": [
+        {
+          "label": "Check two-factor products",
+          "latex": "\\(AB\\) is \\((3\\times 2)(2\\times 4)\\), so it is defined and is \\(3\\times 4\\).\\n\\n\\(BA\\) is \\((2\\times 4)(3\\times 2)\\), so it is not defined because \\(4\\neq 3\\).\\n\\n\\(BC\\) is \\((2\\times 4)(4\\times 3)\\), so it is defined and is \\(2\\times 3\\).\\n\\n\\(CB\\) is \\((4\\times 3)(2\\times 4)\\), so it is not defined because \\(3\\neq 2\\)."
+        },
+        {
+          "label": "Check three-factor products",
+          "latex": "\\(ABC\\) is defined because \\(AB\\) is \\(3\\times 4\\), and then \\((AB)C\\) is \\((3\\times 4)(4\\times 3)\\), so \\(ABC\\) is \\(3\\times 3\\).\\n\\n\\(CBA\\) is not defined because \\(CB\\) is not defined."
+        },
+        {
+          "label": "Compute one entry",
+          "latex": "The \\((3,4)\\)-entry of \\(AB\\) is row 3 of \\(A\\) dotted with column 4 of \\(B\\):\n\\[[4,1]\\cdot\\begin{bmatrix}3\\\\-2\\end{bmatrix}=4(3)+1(-2)=10.\\]"
+        }
+      ],
+      "finalAnswerLatex": "Defined products: \\(AB\\) is \\(3\\times 4\\), \\(BC\\) is \\(2\\times 3\\), and \\(ABC\\) is \\(3\\times 3\\). The products \\(BA\\), \\(CB\\), and \\(CBA\\) are not defined. The \\((3,4)\\)-entry of \\(AB\\) is \\(10\\).",
+      "commonMistakes": [
+        "Checking outer dimensions instead of inner dimensions.",
+        "Saying \\(CBA\\) is defined because \\(BA\\) would have the right size, even though \\(BA\\) is not defined.",
+        "Using column 3 instead of column 4 for the requested entry."
+      ],
+      "similarProblemPrompt": "Try listing the sizes of \\(A^T\\), \\(B^T\\), and \\(C^T\\), then decide whether \\(B^TA^T\\) is defined."
+    }
+  ]
+}

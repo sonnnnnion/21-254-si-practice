@@ -1,0 +1,420 @@
+{
+  "sectionId": "sec-02-linear-systems-rref-rank-nullspace",
+  "sectionTitle": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+  "sectionPosition": 2,
+  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
+  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
+  "studentFacingDescription": "Practice setting up and solving linear systems, using Gaussian elimination and RREF, reading solution sets, finding rank/nullity, and interpreting null spaces.",
+  "siteBehavior": {
+    "mode": "guided_solution_library",
+    "recommendedFlow": [
+      "Read the problem and try it on paper first.",
+      "Reveal hints one at a time.",
+      "Reveal the setup before the full solution.",
+      "Reveal the full worked solution and common mistakes."
+    ]
+  },
+  "problems": [
+    {
+      "id": "rref-001",
+      "unit": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+      "title": "One Matrix, Many System Questions",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Row reduce an augmented matrix",
+        "Solve Ax=b with a free variable",
+        "Find rank and nullity",
+        "Find a basis for the null space",
+        "Use rank to reason about solution counts"
+      ],
+      "examFlavor": "Multi-part matrix interpretation problem",
+      "problemLatex": "Let \\(A=\\begin{bmatrix}1&2&0&-4\\\\-1&1&1&-5\\\\2&0&1&4\\end{bmatrix}\\) and \\(b=\\begin{bmatrix}0\\\\1\\\\8\\end{bmatrix}\\).\\n\\n(a) Find \\(\\operatorname{rref}([A\\mid b])\\).\\n\\n(b) Find all solutions to \\(Ax=b\\).\\n\\n(c) Find \\(\\operatorname{rank}(A)\\) and \\(\\dim(\\operatorname{Nul}(A))\\).\\n\\n(d) Find a basis for \\(\\operatorname{Nul}(A)\\).\\n\\n(e) Are the columns of \\(A\\) linearly independent? If not, give one dependence relation.\\n\\n(f) If \\(z\\in\\mathbb{R}^3\\), how many solutions can \\(Ax=z\\) have?",
+      "thinkFirst": "Before doing any algebra, notice that A has 3 rows and 4 columns. If A has full row rank, then Ax=z will be consistent for every z in R^3, but it still cannot have a unique solution because there are more variables than pivot rows.",
+      "hints": [
+        "Row reduce the augmented matrix, not A and b separately.",
+        "A free variable appears because there are 4 variables but only 3 pivot columns.",
+        "For a 3 by 4 matrix, rank-nullity says rank(A)+dim(Nul(A))=4.",
+        "Column dependence relations can be read from the RREF because the same linear relations among columns are preserved."
+      ],
+      "setupLatex": "Start with \\[A\\mid b]=\\left[\\begin{array}{rrrr|r}1&2&0&-4&0\\\\-1&1&1&-5&1\\\\2&0&1&4&8\\end{array}\\right].\\] Row reducing gives pivot columns 1, 2, and 3, so \\(x_4\\) will be free.",
+      "solutionSteps": [
+        {
+          "label": "Row reduce the augmented matrix",
+          "latex": "\\operatorname{rref}([A\\mid b])=\\left[\\begin{array}{rrrr|r}1&0&0&2&2\\\\0&1&0&-3&-1\\\\0&0&1&0&4\\end{array}\\right]."
+        },
+        {
+          "label": "Translate the RREF into equations",
+          "latex": "x_1+2x_4=2,\\qquad x_2-3x_4=-1,\\qquad x_3=4."
+        },
+        {
+          "label": "Introduce the free variable",
+          "latex": "Let \\(x_4=t\\). Then \\(x_1=2-2t\\), \\(x_2=-1+3t\\), and \\(x_3=4\\)."
+        },
+        {
+          "label": "Write the solution set in vector form",
+          "latex": "x=\\begin{bmatrix}2\\\\-1\\\\4\\\\0\\end{bmatrix}+t\\begin{bmatrix}-2\\\\3\\\\0\\\\1\\end{bmatrix},\\qquad t\\in\\mathbb{R}."
+        },
+        {
+          "label": "Rank, nullity, and null space",
+          "latex": "There are 3 pivot columns, so \\(\\operatorname{rank}(A)=3\\). Since A has 4 columns, \\(\\dim(\\operatorname{Nul}(A))=4-3=1\\). A basis for the null space is \\(\\left\\{\\begin{bmatrix}-2\\\\3\\\\0\\\\1\\end{bmatrix}\\right\\}\\)."
+        },
+        {
+          "label": "Column dependence",
+          "latex": "The fourth column of the RREF is \\(\\begin{bmatrix}2\\\\-3\\\\0\\end{bmatrix}\\), so \\(c_4=2c_1-3c_2\\). Equivalently, \\(-2c_1+3c_2+c_4=0\\). Thus the columns are not linearly independent."
+        },
+        {
+          "label": "Possible solution counts for Ax=z",
+          "latex": "Because \\(\\operatorname{rank}(A)=3\\), the columns span \\(\\mathbb{R}^3\\), so \\(Ax=z\\) is consistent for every \\(z\\in\\mathbb{R}^3\\). Since \\(\\operatorname{Nul}(A)\\) is nontrivial, every consistent system has infinitely many solutions."
+        }
+      ],
+      "finalAnswerLatex": "\\operatorname{rref}([A\\mid b])=\\left[\\begin{array}{rrrr|r}1&0&0&2&2\\\\0&1&0&-3&-1\\\\0&0&1&0&4\\end{array}\\right],\\quad x=\\begin{bmatrix}2\\\\-1\\\\4\\\\0\\end{bmatrix}+t\\begin{bmatrix}-2\\\\3\\\\0\\\\1\\end{bmatrix}.\\n\\n\\operatorname{rank}(A)=3,\\quad \\dim(\\operatorname{Nul}(A))=1,\\quad \\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}-2\\\\3\\\\0\\\\1\\end{bmatrix}\\right\\}.\\n\\nThe columns are dependent, for example \\(c_4=2c_1-3c_2\\). For every \\(z\\in\\mathbb{R}^3\\), \\(Ax=z\\) has infinitely many solutions.",
+      "commonMistakes": [
+        "Forgetting that the free variable belongs in the solution vector.",
+        "Using the number of rows instead of the number of columns for rank-nullity.",
+        "Saying the columns are independent just because there is no zero column.",
+        "Saying Ax=z has a unique solution even though there is a nontrivial null space."
+      ],
+      "similarProblemPrompt": "Try changing the fourth column of A so that the RREF has fourth column [1, 1, -2]^T, then repeat the rank/nullity and dependence questions."
+    },
+    {
+      "id": "rref-002",
+      "unit": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+      "title": "Reading Rank, Nullity, and Dependencies from RREF",
+      "difficulty": "Core",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Identify pivot and free variables",
+        "Find a null space basis from RREF",
+        "Use column relations from RREF",
+        "Apply rank-nullity"
+      ],
+      "examFlavor": "RREF interpretation without doing row reduction",
+      "problemLatex": "Suppose \\(A\\) is a \\(3\\times5\\) matrix and\\n\\[\\operatorname{rref}(A)=\\begin{bmatrix}1&0&2&0&-1\\\\0&1&-3&0&4\\\\0&0&0&1&2\\end{bmatrix}.\\]\\n\\n(a) Find \\(\\operatorname{rank}(A)\\) and \\(\\dim(\\operatorname{Nul}(A))\\).\\n\\n(b) Find a basis for \\(\\operatorname{Nul}(A)\\).\\n\\n(c) Which columns of \\(A\\) are pivot columns?\\n\\n(d) Give dependence relations for columns 3 and 5 of \\(A\\) in terms of the pivot columns.",
+      "thinkFirst": "Do not solve five separate systems. The RREF already tells you which variables are free and which columns are pivots.",
+      "hints": [
+        "Pivot columns are columns 1, 2, and 4.",
+        "The free variables are x3 and x5.",
+        "Set x3=s and x5=t, then solve for x1, x2, and x4.",
+        "The non-pivot columns of the RREF show the same linear combinations of pivot columns as the original matrix A."
+      ],
+      "setupLatex": "The homogeneous system \\(Ax=0\\) has the same solution set as \\(\\operatorname{rref}(A)x=0\\). So solve\\n\\[\\begin{bmatrix}1&0&2&0&-1\\\\0&1&-3&0&4\\\\0&0&0&1&2\\end{bmatrix}\\begin{bmatrix}x_1\\\\x_2\\\\x_3\\\\x_4\\\\x_5\\end{bmatrix}=0.\\]",
+      "solutionSteps": [
+        {
+          "label": "Identify rank and nullity",
+          "latex": "There are pivots in columns 1, 2, and 4, so \\(\\operatorname{rank}(A)=3\\). Since A has 5 columns, \\(\\dim(\\operatorname{Nul}(A))=5-3=2\\)."
+        },
+        {
+          "label": "Solve the homogeneous equations",
+          "latex": "The equations are \\(x_1+2x_3-x_5=0\\), \\(x_2-3x_3+4x_5=0\\), and \\(x_4+2x_5=0\\)."
+        },
+        {
+          "label": "Parametrize with free variables",
+          "latex": "Let \\(x_3=s\\) and \\(x_5=t\\). Then \\(x_1=-2s+t\\), \\(x_2=3s-4t\\), and \\(x_4=-2t\\)."
+        },
+        {
+          "label": "Write a basis for the null space",
+          "latex": "x=s\\begin{bmatrix}-2\\\\3\\\\1\\\\0\\\\0\\end{bmatrix}+t\\begin{bmatrix}1\\\\-4\\\\0\\\\-2\\\\1\\end{bmatrix}.\\nTherefore a basis is \\(\\left\\{\\begin{bmatrix}-2\\\\3\\\\1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}1\\\\-4\\\\0\\\\-2\\\\1\\end{bmatrix}\\right\\}\\)."
+        },
+        {
+          "label": "Read column relations",
+          "latex": "Column 3 of the RREF is \\(\\begin{bmatrix}2\\\\-3\\\\0\\end{bmatrix}=2e_1-3e_2\\), so \\(c_3=2c_1-3c_2\\). Column 5 is \\(\\begin{bmatrix}-1\\\\4\\\\2\\end{bmatrix}=-e_1+4e_2+2e_4\\), so \\(c_5=-c_1+4c_2+2c_4\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\operatorname{rank}(A)=3,\\quad \\dim(\\operatorname{Nul}(A))=2.\\n\\n\\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}-2\\\\3\\\\1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}1\\\\-4\\\\0\\\\-2\\\\1\\end{bmatrix}\\right\\}.\\n\\nPivot columns: 1, 2, and 4. Column relations: \\(c_3=2c_1-3c_2\\) and \\(c_5=-c_1+4c_2+2c_4\\).",
+      "commonMistakes": [
+        "Calling columns 3 and 5 pivot columns because they contain nonzero entries.",
+        "Forgetting that nullity uses the number of columns, not rows.",
+        "Writing a null-space basis with vectors in R^3 instead of R^5.",
+        "Treating row relations and column relations as the same thing."
+      ],
+      "similarProblemPrompt": "Change the fifth column of the RREF to [3, 0, -1]^T and find the new column relation and null-space basis."
+    },
+    {
+      "id": "rref-003",
+      "unit": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+      "title": "A Parameter That Decides Consistency",
+      "difficulty": "Core",
+      "estimatedMinutes": 7,
+      "skills": [
+        "Recognize an inconsistent row",
+        "Find parameter values for consistency",
+        "Solve a system with a free variable"
+      ],
+      "examFlavor": "Parameter in an augmented matrix",
+      "problemLatex": "A system with variables \\(x_1,x_2,x_3\\) has augmented matrix whose RREF is\\n\\[\\left[\\begin{array}{ccc|c}1&0&-5&k+1\\\\0&1&3&2k-4\\\\0&0&0&k-3\\end{array}\\right].\\]\\n\\n(a) For which value(s) of \\(k\\) is the system consistent?\\n\\n(b) For those value(s), find all solutions.\\n\\n(c) What happens for all other values of \\(k\\)?",
+      "thinkFirst": "The last row is the whole problem. A row that says 0=k-3 is only acceptable when k-3=0.",
+      "hints": [
+        "A row of the form [0 0 0 | nonzero] means no solution.",
+        "Set k-3 equal to zero.",
+        "After finding k, substitute it back into the first two rows and let the free variable be t."
+      ],
+      "setupLatex": "The last row represents \\(0=k-3\\). For consistency, that equation must be true.",
+      "solutionSteps": [
+        {
+          "label": "Use the zero row condition",
+          "latex": "The system is consistent exactly when \\(k-3=0\\), so \\(k=3\\)."
+        },
+        {
+          "label": "Substitute k=3",
+          "latex": "When \\(k=3\\), the RREF becomes \\[\\left[\\begin{array}{ccc|c}1&0&-5&4\\\\0&1&3&2\\\\0&0&0&0\\end{array}\\right].\\]"
+        },
+        {
+          "label": "Solve the equations",
+          "latex": "The equations are \\(x_1-5x_3=4\\) and \\(x_2+3x_3=2\\). Let \\(x_3=t\\). Then \\(x_1=4+5t\\) and \\(x_2=2-3t\\)."
+        },
+        {
+          "label": "Write vector form",
+          "latex": "x=\\begin{bmatrix}4\\\\2\\\\0\\end{bmatrix}+t\\begin{bmatrix}5\\\\-3\\\\1\\end{bmatrix},\\qquad t\\in\\mathbb{R}."
+        },
+        {
+          "label": "Describe other k values",
+          "latex": "If \\(k\\ne3\\), the last row says \\(0=k-3\\), where \\(k-3\\ne0\\). That is impossible, so there are no solutions."
+        }
+      ],
+      "finalAnswerLatex": "The system is consistent only for \\(k=3\\). For \\(k=3\\),\\n\\[x=\\begin{bmatrix}4\\\\2\\\\0\\end{bmatrix}+t\\begin{bmatrix}5\\\\-3\\\\1\\end{bmatrix},\\qquad t\\in\\mathbb{R}.\\]\\nFor \\(k\\ne3\\), the system is inconsistent.",
+      "commonMistakes": [
+        "Setting the entire last row equal to zero instead of reading it as 0=k-3.",
+        "Forgetting to substitute k=3 before solving the first two rows.",
+        "Saying there is a unique solution even though x3 is free."
+      ],
+      "similarProblemPrompt": "Replace the last entry k-3 with 2k+1 and solve the same consistency question."
+    },
+    {
+      "id": "rref-004",
+      "unit": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+      "title": "When Does Ax=z Have Solutions?",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 9,
+      "skills": [
+        "Identify the column space",
+        "Use rank to reason about consistency",
+        "Find solution counts without fully solving",
+        "Find a null-space basis"
+      ],
+      "examFlavor": "Conceptual solution-count problem",
+      "problemLatex": "Let\\n\\[A=\\begin{bmatrix}1&0&2&-1\\\\0&1&3&4\\\\1&1&5&3\\end{bmatrix}.\\]\\n\\n(a) Describe all vectors \\(z=\\begin{bmatrix}a\\\\b\\\\c\\end{bmatrix}\\in\\mathbb{R}^3\\) for which \\(Ax=z\\) is consistent.\\n\\n(b) For those vectors \\(z\\), how many solutions does \\(Ax=z\\) have?\\n\\n(c) Find a basis for \\(\\operatorname{Nul}(A)\\).",
+      "thinkFirst": "Look at the rows: the third row of A is the sum of the first two rows. That same relationship must hold in z if Ax=z is going to be consistent.",
+      "hints": [
+        "Row 3 of A equals row 1 plus row 2.",
+        "If Ax=z, then the third component of Ax must equal the first component plus the second component.",
+        "Since A has 4 columns and rank 2, the nullity is 2.",
+        "Use the RREF of A to find the null-space basis."
+      ],
+      "setupLatex": "The RREF is\\n\\[\\operatorname{rref}(A)=\\begin{bmatrix}1&0&2&-1\\\\0&1&3&4\\\\0&0&0&0\\end{bmatrix}.\\]\\nSo \\(\\operatorname{rank}(A)=2\\), and the column space is a plane in \\(\\mathbb{R}^3\\).",
+      "solutionSteps": [
+        {
+          "label": "Find the consistency condition",
+          "latex": "For any vector x, the third entry of \\(Ax\\) equals the first entry plus the second entry because row 3 of A equals row 1 plus row 2. Therefore \\(Ax=z\\) can be consistent only if \\(c=a+b\\)."
+        },
+        {
+          "label": "Show the condition is enough",
+          "latex": "The first two columns of A are \\(\\begin{bmatrix}1\\\\0\\\\1\\end{bmatrix}\\) and \\(\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix}\\). Their span is exactly \\(\\left\\{\\begin{bmatrix}a\\\\b\\\\a+b\\end{bmatrix}:a,b\\in\\mathbb{R}\\right\\}\\). So \\(Ax=z\\) is consistent exactly when \\(c=a+b\\)."
+        },
+        {
+          "label": "Use nullity for number of solutions",
+          "latex": "Since \\(\\operatorname{rank}(A)=2\\) and A has 4 columns, \\(\\dim(\\operatorname{Nul}(A))=2\\). Therefore every consistent system \\(Ax=z\\) has infinitely many solutions."
+        },
+        {
+          "label": "Find the null space",
+          "latex": "From the RREF, \\(x_1+2x_3-x_4=0\\) and \\(x_2+3x_3+4x_4=0\\). Let \\(x_3=s\\), \\(x_4=t\\). Then \\(x_1=-2s+t\\), \\(x_2=-3s-4t\\)."
+        },
+        {
+          "label": "Write a null-space basis",
+          "latex": "x=s\\begin{bmatrix}-2\\\\-3\\\\1\\\\0\\end{bmatrix}+t\\begin{bmatrix}1\\\\-4\\\\0\\\\1\\end{bmatrix}.\\nSo a basis is \\(\\left\\{\\begin{bmatrix}-2\\\\-3\\\\1\\\\0\\end{bmatrix},\\begin{bmatrix}1\\\\-4\\\\0\\\\1\\end{bmatrix}\\right\\}\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\(Ax=z\\) is consistent exactly for vectors \\(z=\\begin{bmatrix}a\\\\b\\\\c\\end{bmatrix}\\) satisfying \\(c=a+b\\). For every such \\(z\\), there are infinitely many solutions.\\n\\nA basis for \\(\\operatorname{Nul}(A)\\) is\\n\\[\\left\\{\\begin{bmatrix}-2\\\\-3\\\\1\\\\0\\end{bmatrix},\\begin{bmatrix}1\\\\-4\\\\0\\\\1\\end{bmatrix}\\right\\}.\\]",
+      "commonMistakes": [
+        "Saying no solutions because A has a zero row in RREF. A zero row only blocks consistency if the augmented entry is nonzero.",
+        "Saying unique solution because there are pivot columns. There are also free variables.",
+        "Forgetting that z must satisfy the same row relationship as Ax."
+      ],
+      "similarProblemPrompt": "Make a new matrix whose third row is twice the first row minus the second row, then find the condition on z."
+    },
+    {
+      "id": "rref-005",
+      "unit": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+      "title": "Two Particular Solutions Reveal the Null Space",
+      "difficulty": "Conceptual",
+      "estimatedMinutes": 6,
+      "skills": [
+        "Connect Ax=b and Ax=0",
+        "Use differences of solutions",
+        "Describe a full solution set from one solution and the null space"
+      ],
+      "examFlavor": "Short reasoning problem",
+      "problemLatex": "Suppose \\(A\\) is a matrix with 4 columns. Two solutions to \\(Ax=b\\) are\\n\\[u=\\begin{bmatrix}1\\\\-2\\\\0\\\\3\\end{bmatrix},\\qquad v=\\begin{bmatrix}-1\\\\0\\\\4\\\\1\\end{bmatrix}.\\]\\nAssume \\(\\dim(\\operatorname{Nul}(A))=1\\).\\n\\n(a) Find a nonzero vector in \\(\\operatorname{Nul}(A)\\).\\n\\n(b) Find all solutions to \\(Ax=b\\).",
+      "thinkFirst": "If two vectors solve the same nonhomogeneous system, their difference solves the associated homogeneous system.",
+      "hints": [
+        "Compute A(u-v).",
+        "Since Au=b and Av=b, subtract the two equations.",
+        "If the null space is one-dimensional, any nonzero null vector spans it."
+      ],
+      "setupLatex": "Because \\(Au=b\\) and \\(Av=b\\), subtracting gives \\(A(u-v)=Au-Av=b-b=0\\). So \\(u-v\\in\\operatorname{Nul}(A)\\).",
+      "solutionSteps": [
+        {
+          "label": "Subtract the two solutions",
+          "latex": "u-v=\\begin{bmatrix}1\\\\-2\\\\0\\\\3\\end{bmatrix}-\\begin{bmatrix}-1\\\\0\\\\4\\\\1\\end{bmatrix}=\\begin{bmatrix}2\\\\-2\\\\-4\\\\2\\end{bmatrix}=2\\begin{bmatrix}1\\\\-1\\\\-2\\\\1\\end{bmatrix}."
+        },
+        {
+          "label": "Identify the null-space direction",
+          "latex": "Therefore \\(\\begin{bmatrix}1\\\\-1\\\\-2\\\\1\\end{bmatrix}\\in\\operatorname{Nul}(A)\\). Since the null space is one-dimensional, it spans the whole null space."
+        },
+        {
+          "label": "Write the general solution",
+          "latex": "Every solution to \\(Ax=b\\) is one particular solution plus a vector in \\(\\operatorname{Nul}(A)\\). Using u as the particular solution,\\n\\[x=\\begin{bmatrix}1\\\\-2\\\\0\\\\3\\end{bmatrix}+t\\begin{bmatrix}1\\\\-1\\\\-2\\\\1\\end{bmatrix},\\qquad t\\in\\mathbb{R}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "A nonzero null vector is \\(\\begin{bmatrix}1\\\\-1\\\\-2\\\\1\\end{bmatrix}\\). Since the null space is one-dimensional,\\n\\[x=\\begin{bmatrix}1\\\\-2\\\\0\\\\3\\end{bmatrix}+t\\begin{bmatrix}1\\\\-1\\\\-2\\\\1\\end{bmatrix},\\qquad t\\in\\mathbb{R}.\\]",
+      "commonMistakes": [
+        "Adding the two solutions instead of subtracting them.",
+        "Thinking u-v solves Ax=b instead of Ax=0.",
+        "Forgetting to include a particular solution in the final answer."
+      ],
+      "similarProblemPrompt": "Pick two different particular solutions in R^5 and assume nullity is 1. Use their difference to write the whole solution set."
+    },
+    {
+      "id": "rref-006",
+      "unit": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+      "title": "Homogeneous System, Row Dependence, and Column Dependence",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Solve Ax=0",
+        "Find rank and nullity",
+        "Determine row independence",
+        "Determine column independence",
+        "Give dependence relations"
+      ],
+      "examFlavor": "Full interpretation of a homogeneous system",
+      "problemLatex": "Let\\n\\[A=\\begin{bmatrix}1&2&-1&0\\\\2&4&-2&0\\\\0&1&3&2\\end{bmatrix}.\\]\\n\\n(a) Find \\(\\operatorname{rref}(A)\\).\\n\\n(b) Solve \\(Ax=0\\).\\n\\n(c) Find \\(\\operatorname{rank}(A)\\) and \\(\\dim(\\operatorname{Nul}(A))\\).\\n\\n(d) Are the rows of \\(A\\) linearly independent? Are the columns of \\(A\\) linearly independent? Explain.",
+      "thinkFirst": "Because row 2 is exactly twice row 1, the rows cannot all be independent. That should match the rank you find after row reduction.",
+      "hints": [
+        "Use row 2 - 2 row 1 to create a zero row.",
+        "The free variables are x3 and x4.",
+        "Rows are independent only if the rank equals the number of rows.",
+        "Columns are independent only if the rank equals the number of columns."
+      ],
+      "setupLatex": "Row reducing gives pivot columns 1 and 2. The variables \\(x_3\\) and \\(x_4\\) are free.",
+      "solutionSteps": [
+        {
+          "label": "Row reduce A",
+          "latex": "\\operatorname{rref}(A)=\\begin{bmatrix}1&0&-7&-4\\\\0&1&3&2\\\\0&0&0&0\\end{bmatrix}."
+        },
+        {
+          "label": "Translate to equations",
+          "latex": "The homogeneous equations are \\(x_1-7x_3-4x_4=0\\) and \\(x_2+3x_3+2x_4=0\\)."
+        },
+        {
+          "label": "Parametrize",
+          "latex": "Let \\(x_3=s\\) and \\(x_4=t\\). Then \\(x_1=7s+4t\\) and \\(x_2=-3s-2t\\)."
+        },
+        {
+          "label": "Write null-space basis",
+          "latex": "x=s\\begin{bmatrix}7\\\\-3\\\\1\\\\0\\end{bmatrix}+t\\begin{bmatrix}4\\\\-2\\\\0\\\\1\\end{bmatrix}.\\nSo \\(\\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}7\\\\-3\\\\1\\\\0\\end{bmatrix},\\begin{bmatrix}4\\\\-2\\\\0\\\\1\\end{bmatrix}\\right\\}.\\)"
+        },
+        {
+          "label": "Rank and nullity",
+          "latex": "There are 2 pivot columns, so \\(\\operatorname{rank}(A)=2\\). Since A has 4 columns, \\(\\dim(\\operatorname{Nul}(A))=4-2=2\\)."
+        },
+        {
+          "label": "Row and column independence",
+          "latex": "The rows are not linearly independent because \\(r_2=2r_1\\). The columns are not linearly independent because there are 4 columns but rank only 2. For example, \\(7c_1-3c_2+c_3=0\\) and \\(4c_1-2c_2+c_4=0\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\operatorname{rref}(A)=\\begin{bmatrix}1&0&-7&-4\\\\0&1&3&2\\\\0&0&0&0\\end{bmatrix}.\\n\\n\\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}7\\\\-3\\\\1\\\\0\\end{bmatrix},\\begin{bmatrix}4\\\\-2\\\\0\\\\1\\end{bmatrix}\\right\\}.\\n\\n\\operatorname{rank}(A)=2,\\quad \\dim(\\operatorname{Nul}(A))=2. The rows and columns are both linearly dependent.",
+      "commonMistakes": [
+        "Concluding the columns are independent because none of them is the zero vector.",
+        "Forgetting that a zero row in RREF means row dependence in the original rows.",
+        "Putting the null-space basis vectors in R^3 instead of R^4.",
+        "Dropping signs when solving x1-7x3-4x4=0."
+      ],
+      "similarProblemPrompt": "Change the second row so it is not a multiple of the first, then see whether the rank changes."
+    },
+    {
+      "id": "rref-007",
+      "unit": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+      "title": "Augmented RREF with Two Free Variables",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 6,
+      "skills": [
+        "Read an augmented RREF",
+        "Identify free variables",
+        "Write a parametric vector solution"
+      ],
+      "examFlavor": "Eyeball the solution from RREF",
+      "problemLatex": "Suppose the augmented matrix for a system with variables \\(x_1,x_2,x_3,x_4,x_5\\) has RREF\\n\\[\\left[\\begin{array}{rrrrr|r}1&0&-2&0&5&-1\\\\0&1&3&0&-4&6\\\\0&0&0&1&2&0\\\\0&0&0&0&0&0\\end{array}\\right].\\]\\nFind all solutions.",
+      "thinkFirst": "The pivot variables are x1, x2, and x4. The free variables are x3 and x5.",
+      "hints": [
+        "Let x3=s and x5=t.",
+        "Solve each pivot row for its pivot variable.",
+        "Your final vectors should live in R^5."
+      ],
+      "setupLatex": "The equations are \\(x_1-2x_3+5x_5=-1\\), \\(x_2+3x_3-4x_5=6\\), and \\(x_4+2x_5=0\\).",
+      "solutionSteps": [
+        {
+          "label": "Set free variables",
+          "latex": "Let \\(x_3=s\\) and \\(x_5=t\\)."
+        },
+        {
+          "label": "Solve pivot variables",
+          "latex": "Then \\(x_1=-1+2s-5t\\), \\(x_2=6-3s+4t\\), and \\(x_4=-2t\\)."
+        },
+        {
+          "label": "Write vector form",
+          "latex": "x=\\begin{bmatrix}-1\\\\6\\\\0\\\\0\\\\0\\end{bmatrix}+s\\begin{bmatrix}2\\\\-3\\\\1\\\\0\\\\0\\end{bmatrix}+t\\begin{bmatrix}-5\\\\4\\\\0\\\\-2\\\\1\\end{bmatrix},\\qquad s,t\\in\\mathbb{R}."
+        }
+      ],
+      "finalAnswerLatex": "\\[x=\\begin{bmatrix}-1\\\\6\\\\0\\\\0\\\\0\\end{bmatrix}+s\\begin{bmatrix}2\\\\-3\\\\1\\\\0\\\\0\\end{bmatrix}+t\\begin{bmatrix}-5\\\\4\\\\0\\\\-2\\\\1\\end{bmatrix},\\qquad s,t\\in\\mathbb{R}.\\]",
+      "commonMistakes": [
+        "Forgetting that x4 is a pivot variable even though it appears after a zero column.",
+        "Using x4 as a free variable instead of x5.",
+        "Writing only the homogeneous part and forgetting the particular solution."
+      ],
+      "similarProblemPrompt": "Make the augmented entry in the last row equal to 3 instead of 0. How does the answer change?"
+    },
+    {
+      "id": "rref-008",
+      "unit": "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+      "title": "Quick Consistency Drill from Augmented Matrices",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 5,
+      "skills": [
+        "Identify no solution, unique solution, or infinitely many solutions",
+        "Read pivot and free variables",
+        "Recognize inconsistent rows"
+      ],
+      "examFlavor": "Fast RREF interpretation drill",
+      "problemLatex": "For each augmented RREF below, determine whether the system has no solution, one solution, or infinitely many solutions. If there is a unique solution, give it.\\n\\n(a) \\[\\left[\\begin{array}{rrr|r}1&0&2&3\\\\0&1&-1&4\\end{array}\\right]\\]\\n\\n(b) \\[\\left[\\begin{array}{rrr|r}1&0&0&2\\\\0&1&0&-1\\\\0&0&1&5\\end{array}\\right]\\]\\n\\n(c) \\[\\left[\\begin{array}{rrr|r}1&0&-2&0\\\\0&0&0&1\\end{array}\\right]\\]",
+      "thinkFirst": "A free variable means infinitely many solutions only if the system is consistent. An inconsistent row beats everything else.",
+      "hints": [
+        "Look for a row of the form [0 0 0 | nonzero].",
+        "If every variable is a pivot variable and the system is consistent, the solution is unique.",
+        "If there is at least one free variable and no inconsistent row, there are infinitely many solutions."
+      ],
+      "setupLatex": "Check consistency first, then count free variables.",
+      "solutionSteps": [
+        {
+          "label": "Part (a)",
+          "latex": "There is no inconsistent row, and \\(x_3\\) is free. Therefore there are infinitely many solutions. In fact, \\(x_1=3-2t\\), \\(x_2=4+t\\), \\(x_3=t\\)."
+        },
+        {
+          "label": "Part (b)",
+          "latex": "Every variable is a pivot variable and there is no inconsistent row. Therefore there is one solution: \\(x=\\begin{bmatrix}2\\\\-1\\\\5\\end{bmatrix}\\)."
+        },
+        {
+          "label": "Part (c)",
+          "latex": "The second row says \\(0=1\\), which is impossible. Therefore there is no solution."
+        }
+      ],
+      "finalAnswerLatex": "(a) Infinitely many solutions: \\(x=\\begin{bmatrix}3\\\\4\\\\0\\end{bmatrix}+t\\begin{bmatrix}-2\\\\1\\\\1\\end{bmatrix}\\).\\n\\n(b) One solution: \\(x=\\begin{bmatrix}2\\\\-1\\\\5\\end{bmatrix}\\).\\n\\n(c) No solution.",
+      "commonMistakes": [
+        "Calling part (a) unique because there are two pivot rows.",
+        "Missing the inconsistent row in part (c).",
+        "Thinking a zero row always means no solution. It only means no solution if the augmented entry is nonzero."
+      ],
+      "similarProblemPrompt": "Create three new RREF augmented matrices: one with no solution, one with one solution, and one with infinitely many solutions."
+    }
+  ]
+}
