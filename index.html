@@ -2054,6 +2054,964 @@
     display: none;
   }
   @media (min-width: 900px) { .hero-decor { display: block; } }
+
+  /* ============================================================
+     WALKTHROUGHS — SI leader mode
+     Hidden by default. Reveals after quick-access unlock.
+     ============================================================ */
+
+  /* Quick-access mini-input in footer. Deliberately understated. */
+  .quick-access {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .quick-access label {
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  .quick-access input {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink-soft);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    width: 150px;
+    transition: border-color .15s var(--ease), background .15s var(--ease);
+  }
+  .quick-access input:focus {
+    outline: none;
+    border-color: var(--border-strong);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .quick-access input::placeholder { color: var(--ink-faint); }
+
+  /* Walkthroughs nav link — hidden unless body.walk-unlocked */
+  .nav-link.nav-walk { display: none; }
+  body.walk-unlocked .nav-link.nav-walk { display: inline-flex; }
+  .nav-walk-dot {
+    display: inline-block;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold);
+    margin-right: 6px;
+    vertical-align: 1px;
+  }
+
+  /* ----- Dashboard ----- */
+  .walk-head {
+    margin: 8px 0 28px;
+    display: grid;
+    gap: 6px;
+    max-width: 720px;
+  }
+  .walk-kicker {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .walk-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.1;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .walk-title em { font-style: italic; color: var(--red); font-weight: 500; }
+  .walk-sub {
+    font-size: 16px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .walk-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--ink-mute);
+    width: fit-content;
+    font-weight: 500;
+  }
+  .walk-note::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .walk-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 0 0 22px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+  }
+  .walk-toolbar input,
+  .walk-toolbar select {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+  }
+  .walk-toolbar input:focus,
+  .walk-toolbar select:focus {
+    outline: none;
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px var(--red-tint);
+  }
+  .walk-toolbar input { flex: 1 1 220px; }
+  .walk-toolbar select { flex: 0 0 auto; }
+  .walk-toolbar-spacer { flex: 1; }
+  .walk-toolbar-count {
+    font-size: 12px;
+    color: var(--ink-mute);
+    letter-spacing: 0.04em;
+  }
+
+  .walk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .walk-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 18px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    text-align: left;
+    cursor: pointer;
+    transition: transform .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease);
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .walk-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+    box-shadow: 0 6px 20px -10px rgba(31, 41, 51, 0.18);
+  }
+  .walk-card.dim { opacity: 0.42; }
+  .walk-card.error { border-color: #E8C0C5; background: #FFF7F8; }
+  .walk-card-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .walk-card-num {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--red);
+    letter-spacing: 0.04em;
+  }
+  .walk-card-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .walk-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    color: var(--ink-soft);
+  }
+  .walk-tag.gen { background: var(--bg-subtle); color: var(--ink-soft); }
+  .walk-tag.exam { background: var(--red-soft); color: var(--red-deep); border-color: #F2C6CD; }
+  .walk-tag.sec { background: #F0EBDF; color: #6A5A2A; border-color: #E2D7BD; }
+  .walk-card h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .walk-card-goal {
+    font-size: 13px;
+    color: var(--ink-mute);
+    line-height: 1.45;
+    margin: 0;
+    /* clamp to keep cards even */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .walk-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+  }
+  .walk-card-dur {
+    font-size: 12px;
+    color: var(--ink-mute);
+  }
+  .walk-card-open {
+    font-size: 13px;
+    color: var(--red);
+    font-weight: 600;
+  }
+  .walk-card-open::after { content: " →"; }
+
+  .walk-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ink-mute);
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--r-md);
+    grid-column: 1 / -1;
+  }
+
+  /* Per-session load-failure banner on dashboard */
+  .walk-load-warn {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #FFF7E6;
+    border: 1px solid #F0D89A;
+    color: #7A5A18;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .walk-load-warn strong { color: #5A4310; }
+
+  /* ----- Session detail layout ----- */
+  .walk-detail-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+    align-items: center;
+  }
+  .walk-detail-bar button,
+  .walk-detail-bar a.btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-soft);
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background .15s var(--ease), color .15s var(--ease), border-color .15s var(--ease);
+  }
+  .walk-detail-bar button:hover,
+  .walk-detail-bar a.btn:hover {
+    background: var(--bg-subtle);
+    color: var(--ink);
+    border-color: var(--border-strong);
+  }
+  .walk-detail-bar button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .walk-bar-spacer { flex: 1; }
+
+  .walk-detail-head {
+    margin-bottom: 24px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .walk-detail-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .walk-detail-title {
+    font-family: var(--font-display);
+    font-size: clamp(26px, 3.5vw, 36px);
+    line-height: 1.15;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+  .walk-detail-goal {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 780px;
+  }
+
+  /* Generic walkthrough section blocks */
+  .walk-section {
+    margin: 0 0 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+  .walk-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .walk-section-head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .walk-section-head h2 .wsh-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.04em;
+    background: var(--red-tint);
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .walk-section-body {
+    padding: 16px 18px;
+  }
+  .walk-section ul.walk-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+  .walk-section ul.walk-list li {
+    padding: 6px 0 6px 22px;
+    position: relative;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .walk-section ul.walk-list li::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 14px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+
+  /* Board plan items */
+  .walk-board-item {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .walk-board-item:last-child { border-bottom: 0; }
+  .walk-board-time {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--red);
+    padding-top: 2px;
+    font-weight: 600;
+  }
+  .walk-board-body { display: grid; gap: 6px; }
+  .walk-board-title {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 14px;
+  }
+  .walk-board-write {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .walk-board-write ul { margin: 0; padding-left: 18px; }
+  .walk-board-write li { margin: 2px 0; }
+  .walk-board-say {
+    font-size: 13px;
+    color: var(--ink-mute);
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .walk-board-say::before {
+    content: "Say: ";
+    font-style: normal;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  /* Key formulas */
+  .walk-formulas { display: grid; gap: 10px; }
+  .walk-formula {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 14px;
+    padding: 10px 12px;
+    background: var(--bg-subtle);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    align-items: start;
+  }
+  .walk-formula-name {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 13px;
+  }
+  .walk-formula-latex {
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+  .walk-formula-plain {
+    grid-column: 1 / -1;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-style: italic;
+  }
+  @media (max-width: 600px) {
+    .walk-formula { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  /* Notation warnings */
+  .walk-notation {
+    display: grid;
+    gap: 10px;
+  }
+  .walk-notation-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .walk-notation-cell {
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .walk-notation-bad {
+    background: #FFF6F7;
+    border-right: 1px solid var(--border);
+  }
+  .walk-notation-good { background: #F6FAF7; }
+  .walk-notation-bad::before {
+    content: "✗ Bad notation";
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #B0322C;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .walk-notation-good::before {
+    content: "✓ Good notation";
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2F7A4A;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .walk-notation-reason {
+    grid-column: 1 / -1;
+    background: var(--bg-subtle);
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--ink-mute);
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+  @media (max-width: 600px) {
+    .walk-notation-item { grid-template-columns: 1fr; }
+    .walk-notation-bad { border-right: 0; border-bottom: 1px solid var(--border); }
+  }
+
+  /* Problem cards inside session */
+  .walk-problem {
+    margin: 0 0 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+  .walk-problem-head {
+    padding: 16px 18px;
+    background: linear-gradient(to bottom, #FFFCF6, var(--surface));
+    border-bottom: 1px solid var(--border);
+  }
+  .walk-problem-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .walk-problem-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .walk-problem-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .walk-problem h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+  }
+  .walk-problem-skills {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--ink-mute);
+  }
+  .walk-problem-skills strong {
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .walk-problem-body {
+    padding: 16px 18px;
+    display: grid;
+    gap: 14px;
+  }
+  .walk-prompt {
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    /* prevent ligature substitutions like (c) -> © in problem text */
+    font-variant-ligatures: none;
+  }
+  .walk-saybefore {
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding: 8px 12px;
+    background: #FBF8EC;
+    border: 1px dashed #E8DEBE;
+    border-radius: 8px;
+    line-height: 1.5;
+  }
+  .walk-saybefore::before {
+    content: "What to say before:";
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 2px;
+  }
+
+  /* Visual spec panel */
+  .visual-spec {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .vs-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .vs-kicker {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .vs-purpose {
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-style: italic;
+  }
+  .vs-sketch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .vs-sketch svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  .vs-caption {
+    font-size: 11px;
+    color: var(--ink-mute);
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+  .vs-data {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+  }
+  .vs-data-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 12px;
+    padding: 6px 10px;
+    background: var(--surface);
+    border-radius: 6px;
+    align-items: start;
+    border: 1px solid var(--border);
+  }
+  .vs-data-label {
+    color: var(--ink-mute);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+  .vs-data-value {
+    color: var(--ink);
+    word-break: break-word;
+    line-height: 1.5;
+  }
+  .vs-data-value code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--bg-subtle);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  @media (max-width: 600px) {
+    .vs-data-row { grid-template-columns: 1fr; gap: 2px; }
+  }
+
+  .vs-instr {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .vs-instr-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-mute);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .vs-instr ol {
+    margin: 0;
+    padding-left: 22px;
+    display: grid;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .vs-instr li { padding-left: 4px; }
+
+  /* Reveal collapsible inside problem */
+  .walk-reveal {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .walk-reveal + .walk-reveal { margin-top: 8px; }
+  .walk-reveal-btn {
+    width: 100%;
+    text-align: left;
+    background: var(--surface-2);
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    transition: background .15s var(--ease);
+  }
+  .walk-reveal-btn:hover { background: #F0EBE0; }
+  .walk-reveal-btn .wr-icon {
+    width: 14px; height: 14px;
+    transition: transform .2s var(--ease);
+    flex-shrink: 0;
+    color: var(--ink-mute);
+  }
+  .walk-reveal.open .walk-reveal-btn { border-bottom-color: var(--border); }
+  .walk-reveal.open .walk-reveal-btn .wr-icon { transform: rotate(90deg); }
+  .walk-reveal-body {
+    padding: 14px;
+    display: none;
+    line-height: 1.6;
+  }
+  .walk-reveal.open .walk-reveal-body { display: block; }
+
+  .walk-steps { display: grid; gap: 10px; }
+  .walk-step {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+  .walk-step-n {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--red-tint);
+    color: var(--red);
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+  }
+  .walk-step-body { display: grid; gap: 4px; }
+  .walk-step-label { font-weight: 600; color: var(--ink); font-size: 14px; }
+  .walk-step-latex {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+  .walk-step-say {
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .walk-step-say::before {
+    content: "Say: ";
+    font-style: normal;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  .walk-final {
+    padding: 12px 14px;
+    background: #F4F9F5;
+    border: 1px solid #C8E0CE;
+    border-left: 3px solid var(--green);
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .walk-final::before {
+    content: "Final answer";
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+
+  .walk-mistakes { padding-left: 22px; margin: 0; }
+  .walk-mistakes li { padding: 3px 0; line-height: 1.5; color: var(--ink-soft); font-size: 14px; }
+
+  .walk-pl-pointer {
+    padding: 10px 14px;
+    background: var(--red-tint);
+    border: 1px solid #F2C6CD;
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .walk-pl-pointer strong { color: var(--red-deep); font-weight: 600; }
+  .walk-pl-pointer a {
+    color: var(--red);
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .walk-pl-pointer a:hover { text-decoration: underline; }
+
+  .walk-wrap-list, .walk-links-list, .walk-qc-list {
+    margin: 0; padding-left: 22px;
+    display: grid; gap: 6px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .walk-links-list a { color: var(--red); font-weight: 500; text-decoration: none; }
+  .walk-links-list a:hover { text-decoration: underline; }
+  .walk-links-list .link-desc {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-style: italic;
+  }
+
+  /* QC notes block — collapsed by default */
+  .walk-qc {
+    margin-top: 14px;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--r-md);
+    background: var(--bg-subtle);
+  }
+  .walk-qc summary {
+    cursor: pointer;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    user-select: none;
+  }
+  .walk-qc[open] summary { border-bottom: 1px solid var(--border); }
+  .walk-qc-inner { padding: 12px 16px 14px; }
+
+  /* SVG renderer styles inside walkthroughs */
+  .wv-axis { stroke: var(--ink-mute); stroke-width: 1; }
+  .wv-axis-label { fill: var(--ink-mute); font-family: var(--font-mono); font-size: 11px; }
+  .wv-grid { stroke: var(--border); stroke-width: 0.5; opacity: 0.7; }
+  .wv-vec { stroke-width: 2; fill: none; }
+  .wv-vec-u { stroke: var(--red); }
+  .wv-vec-v { stroke: var(--ink); }
+  .wv-vec-w { stroke: var(--gold); }
+  .wv-vec-dash { stroke-dasharray: 4 4; }
+  .wv-label {
+    fill: var(--ink);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .wv-note {
+    fill: var(--ink-mute);
+    font-family: var(--font-sans);
+    font-size: 11px;
+  }
+  .wv-region-fill { fill: var(--red-tint); stroke: var(--red); stroke-width: 1.5; }
+  .wv-region-fill-alt { fill: #FBF6E0; stroke: var(--gold); stroke-width: 1.5; }
+  .wv-orient { stroke: var(--red); stroke-width: 1.5; fill: var(--red); }
+  .wv-normal { stroke: var(--gold); stroke-width: 2; fill: none; }
+  .wv-rightangle { stroke: var(--ink-mute); stroke-width: 1; fill: none; }
+
+  /* Matrix-display SVG */
+  .wv-bracket { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+  .wv-entry { fill: var(--ink); font-family: var(--font-mono); font-size: 13px; }
+  .wv-entry-pivot { fill: var(--red); font-weight: 700; }
+  .wv-entry-free { fill: var(--gold); font-weight: 700; }
+  .wv-augbar { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 3 3; }
+
+  /* ----- Print styles ----- */
+  @media print {
+    body { background: #fff; color: #000; }
+    /* hide all chrome */
+    header.nav, footer, .walk-detail-bar, .walk-toolbar,
+    .nav-toggle, .quick-access, .toast-container {
+      display: none !important;
+    }
+    /* hide other views */
+    .view { display: none !important; }
+    .view.active { display: block !important; }
+
+    main { padding-top: 0 !important; }
+    .container { max-width: 100% !important; padding: 0 0.5in !important; }
+
+    /* open every collapse */
+    .walk-reveal-body { display: block !important; }
+    .walk-qc[open] summary { border-bottom: 0; }
+    .walk-qc summary { display: none; }
+    .walk-qc-inner { padding: 0; }
+    .walk-qc {
+      border: 0; background: transparent; padding: 0;
+      margin-top: 12px;
+    }
+
+    .walk-section, .walk-problem {
+      box-shadow: none;
+      page-break-inside: avoid;
+      border: 1px solid #ddd;
+    }
+    .walk-section-head, .walk-problem-head {
+      background: #fafafa !important;
+    }
+    .walk-detail-title, .walk-section-head h2, .walk-problem h3 {
+      color: #000;
+    }
+    a { color: #000; text-decoration: underline; }
+    .walk-card-meta, .walk-problem-tags { color: #333; }
+  }
 </style>
 </head>
 
@@ -2077,6 +3035,7 @@
       <button class="nav-link" data-route="/topics">Practice</button>
       <button class="nav-link" data-route="/exam">Exam Mode</button>
       <button class="nav-link" data-route="/review">Need Review <span class="nav-badge" id="navReviewBadge" hidden>0</span></button>
+      <button class="nav-link nav-walk" data-route="/walkthroughs" title="SI Leader Walkthroughs"><span class="nav-walk-dot"></span>Walkthroughs</button>
     </nav>
   </div>
 </header>
@@ -2366,12 +3325,62 @@
       <div id="reviewContent"></div>
     </section>
 
+    <!-- ============================================================
+         VIEW: SI WALKTHROUGHS — Dashboard
+         ============================================================ -->
+    <section class="view" id="view-walkthroughs">
+      <div class="walk-head">
+        <div class="walk-kicker">SI Leader Mode</div>
+        <h1 class="walk-title">SI <em>Walkthroughs</em></h1>
+        <p class="walk-sub">Whiteboard-ready teaching guides for 21-254 Practice Lab.</p>
+        <div class="walk-note">Leader-facing teaching guides. Not student worksheets.</div>
+      </div>
+
+      <div id="walkLoadStatus"></div>
+
+      <div class="walk-toolbar">
+        <input type="search" id="walkSearch" placeholder="Search sessions…" autocomplete="off"/>
+        <select id="walkType">
+          <option value="">All sessions</option>
+          <option value="general">General sessions</option>
+          <option value="exam-review">Exam reviews</option>
+        </select>
+        <select id="walkSection">
+          <option value="">All Practice Lab sections</option>
+        </select>
+        <select id="walkSort">
+          <option value="number">Sort: Session #</option>
+          <option value="duration">Sort: Duration</option>
+          <option value="section">Sort: First section</option>
+        </select>
+        <div class="walk-toolbar-spacer"></div>
+        <div class="walk-toolbar-count" id="walkCount"></div>
+      </div>
+
+      <div class="walk-grid" id="walkGrid">
+        <div class="walk-empty">Loading walkthroughs…</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW: SI WALKTHROUGHS — Single Session Detail
+         ============================================================ -->
+    <section class="view" id="view-walkthrough">
+      <div id="walkDetail">
+        <div class="walk-empty">Loading session…</div>
+      </div>
+    </section>
+
   </div>
 </main>
 
 <footer>
   <div class="foot-brand"><span class="num">21-254</span> Practice Lab</div>
   <div>Original SI-style practice problems. Not official course materials.</div>
+  <form class="quick-access" id="quickAccessForm" autocomplete="off">
+    <label for="quickAccess">Quick access</label>
+    <input id="quickAccess" name="quickAccess" type="text" placeholder="Type a mode…" autocomplete="off" spellcheck="false"/>
+  </form>
 </footer>
 
 <!-- ================================================================
@@ -2455,6 +3464,9 @@ const LS = {
   SCRATCH: "pl254:scratch",      // { [problemId]: string }
   LAST_SECTION: "pl254:lastSection",
   LAST_PROBLEM: "pl254:lastProblem", // last problem id viewed
+  WALK_UNLOCKED: "pl254:walkUnlocked",  // "1" once unlocked in this browser
+  WALK_LAST: "pl254:walkLast",          // last walkthrough session id viewed
+  WALK_OPEN: "pl254:walkOpen",          // { [sessionId+":"+blockId]: 1 } collapse state
 };
 
 /* ============================================================
@@ -2723,6 +3735,17 @@ function handleRoute() {
   }
   else if (head === "exam")    { $("#view-exam").classList.add("active"); markNav("/exam"); renderExamSetup(); }
   else if (head === "review")  { $("#view-review").classList.add("active"); markNav("/review"); renderReview(); }
+  else if (head === "walkthroughs" && !parts[1]) {
+    // Visiting #/walkthroughs marks the SI leader as unlocked for this browser session
+    setWalkUnlocked(true);
+    $("#view-walkthroughs").classList.add("active"); markNav("/walkthroughs");
+    renderWalkthroughs();
+  }
+  else if (head === "walkthroughs" && parts[1]) {
+    setWalkUnlocked(true);
+    $("#view-walkthrough").classList.add("active"); markNav("/walkthroughs");
+    renderWalkthroughDetail(parts[1]);
+  }
   else { navigate("/home", { replace: true }); }
 
   // Scroll to top on every route change
@@ -4836,6 +5859,33 @@ function wireGlobal() {
 
   // Hash routing
   window.addEventListener("hashchange", handleRoute);
+
+  // Quick-access input (footer) — hidden shortcut to SI Walkthroughs.
+  // Typing "Walkthroughs" (case-insensitive) and pressing Enter opens
+  // #/walkthroughs in a new tab AND unlocks the nav in this tab.
+  // This is not authentication; the site is public.
+  const qa = $("#quickAccessForm");
+  if (qa) {
+    qa.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = $("#quickAccess");
+      const v = (input.value || "").trim().toLowerCase();
+      if (v === "walkthroughs" || v === "walkthrough" || v === "si") {
+        setWalkUnlocked(true);
+        // Open in new tab so the student-facing Practice Lab can remain open
+        try { window.open("#/walkthroughs", "_blank"); } catch (_) {}
+        // Also reveal the nav in this tab
+        document.body.classList.add("walk-unlocked");
+        input.value = "";
+        showToast("SI Walkthroughs unlocked", "got", 2400);
+      } else if (v.length > 0) {
+        // Quiet hint that doesn't reveal what mode names exist
+        input.classList.add("qa-shake");
+        setTimeout(() => input.classList.remove("qa-shake"), 250);
+        showToast("Mode not recognized", "neutral", 1400);
+      }
+    });
+  }
 }
 
 function handleGlobalKey(e) {
@@ -4980,6 +6030,11 @@ function toggleShortcutsHelp() {
 async function init() {
   wireGlobal();
 
+  // Apply Walkthroughs unlock state from a previous session in this browser
+  if (lsGet(LS.WALK_UNLOCKED, "") === "1") {
+    document.body.classList.add("walk-unlocked");
+  }
+
   // Show first route immediately (home renders its own loading state)
   if (!location.hash) navigate("/home", { replace: true });
   handleRoute();
@@ -5007,6 +6062,1801 @@ async function init() {
   } else if (State.loadErrors.length) {
     console.warn("Some sections failed to load:", State.loadErrors);
   }
+}
+
+/* ============================================================
+   WALKTHROUGHS — SI LEADER MODE
+   ============================================================
+   Adds a hidden teacher-facing mode that loads /walkthroughs/*.json
+   and presents whiteboard-ready teaching guides. Accessed by
+   typing "Walkthroughs" into the footer quick-access box or by
+   visiting #/walkthroughs directly. None of this changes any
+   existing student-facing behavior.
+
+   Architecture:
+   - WalkState: module-local state (sessions, index, load errors)
+   - WALK_FALLBACK_FILES: hardcoded list, used if walkthroughs_index.json
+     is missing or fails to load. Keeps the site working even if the
+     deploy forgets the index file.
+   - loadAllWalkthroughs(): tries the index, falls back, then fetches
+     each session file; failures are non-blocking (per spec).
+   - renderWalkthroughs(): dashboard with filters/search/cards
+   - renderWalkthroughDetail(id): single session with collapsibles
+   - renderVisualSpec(spec): dispatcher -> category-specific SVG +
+     a data block (exact values) + a board-sketch instructions list.
+============================================================ */
+
+const WALK_INDEX_URL = "walkthroughs/walkthroughs_index.json";
+
+// Fallback list used if the index file is missing. Order = session number.
+const WALK_FALLBACK_FILES = [
+  "walkthroughs/si_session_01_vectors_dot_products_walkthrough_reviewed.json",
+  "walkthroughs/si_session_02_matrices_transposes_multiplication_walkthrough.json",
+  "walkthroughs/si_session_03_linear_systems_rref_walkthrough.json",
+  "walkthroughs/si_session_04_rank_consistency_nullspace_walkthrough.json",
+  "walkthroughs/si_session_05_subspaces_span_linear_independence_walkthrough.json",
+  "walkthroughs/si_session_06_bases_dimension_colspace_nullspace_walkthrough.json",
+  "walkthroughs/si_session_07_linear_transformations_standard_matrices_walkthrough.json",
+  "walkthroughs/si_session_08_determinants_invertibility_walkthrough.json",
+  "walkthroughs/si_session_09_exam1_review_walkthrough.json",
+  "walkthroughs/si_session_10_matrix_inverses_determinant_properties_walkthrough.json",
+  "walkthroughs/si_session_11_eigenvalues_eigenvectors_walkthrough.json",
+  "walkthroughs/si_session_12_multiplicity_eigenspaces_eigenbases_walkthrough.json",
+  "walkthroughs/si_session_13_diagonalization_matrix_powers_walkthrough.json",
+  "walkthroughs/si_session_14_projections_components_cross_product_walkthrough.json",
+  "walkthroughs/si_session_15_exam2_review_walkthrough.json",
+  "walkthroughs/si_session_16_curves_tangent_vectors_arc_length_walkthrough.json",
+  "walkthroughs/si_session_17_scalar_functions_partials_gradients_tangent_planes_walkthrough_FIXED.json",
+  "walkthroughs/si_session_18_optimization_vector_fields_divergence_curl_walkthrough.json",
+  "walkthroughs/si_session_19_line_integrals_conservative_fields_path_independence_walkthrough.json",
+  "walkthroughs/si_session_20_exam3_review_walkthrough.json",
+  "walkthroughs/si_session_21_double_integrals_change_variables_greens_theorem_walkthrough.json",
+  "walkthroughs/si_session_22_exam4_review_walkthrough_FIXED.json",
+];
+
+const WalkState = {
+  sessions: [],
+  byId: new Map(),
+  loaded: false,
+  loading: false,
+  indexFromFile: false,
+  loadErrors: [],
+  filters: { search: "", type: "", section: "", sort: "number" },
+};
+
+function setWalkUnlocked(on) {
+  if (on) {
+    lsSet(LS.WALK_UNLOCKED, "1");
+    document.body.classList.add("walk-unlocked");
+  } else {
+    lsSet(LS.WALK_UNLOCKED, "0");
+    document.body.classList.remove("walk-unlocked");
+  }
+}
+
+async function loadWalkthroughIndex() {
+  try {
+    const res = await fetch(WALK_INDEX_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("Index not found (" + res.status + ")");
+    const idx = await res.json();
+    if (!idx || !Array.isArray(idx.sessions)) throw new Error("Bad index shape");
+    WalkState.indexFromFile = true;
+    return idx.sessions.slice().sort((a, b) => (a.sessionNumber || 0) - (b.sessionNumber || 0));
+  } catch (e) {
+    WalkState.indexFromFile = false;
+    return WALK_FALLBACK_FILES.map((file, i) => ({ file, sessionNumber: i + 1 }));
+  }
+}
+
+async function loadAllWalkthroughs() {
+  if (WalkState.loaded || WalkState.loading) return;
+  WalkState.loading = true;
+  WalkState.loadErrors = [];
+
+  const entries = await loadWalkthroughIndex();
+
+  const fetches = entries.map(async (entry) => {
+    try {
+      const res = await fetch(entry.file, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      return { ok: true, data, file: entry.file, indexEntry: entry };
+    } catch (e) {
+      return { ok: false, error: String(e && e.message || e), file: entry.file, indexEntry: entry };
+    }
+  });
+
+  const results = await Promise.all(fetches);
+
+  WalkState.sessions = [];
+  WalkState.byId = new Map();
+  results.forEach((r) => {
+    if (r.ok) {
+      const s = r.data;
+      s._file = r.file;
+      WalkState.sessions.push(s);
+      if (s.sessionId) WalkState.byId.set(s.sessionId, s);
+    } else {
+      WalkState.loadErrors.push({ file: r.file, error: r.error });
+    }
+  });
+
+  WalkState.sessions.sort((a, b) => (a.sessionNumber || 0) - (b.sessionNumber || 0));
+  WalkState.loaded = true;
+  WalkState.loading = false;
+}
+
+/* ---------- Dashboard render ---------- */
+
+async function renderWalkthroughs() {
+  const grid = $("#walkGrid");
+  const status = $("#walkLoadStatus");
+  if (!WalkState.loaded) {
+    grid.innerHTML = '<div class="walk-empty">Loading walkthroughs&hellip;</div>';
+    status.innerHTML = "";
+    await loadAllWalkthroughs();
+  }
+
+  const secSel = $("#walkSection");
+  if (secSel && secSel.options.length <= 1) {
+    const secs = new Set();
+    WalkState.sessions.forEach(s => (s.practiceLabSections || []).forEach(n => secs.add(n)));
+    [...secs].sort((a,b) => a - b).forEach(n => {
+      const opt = document.createElement("option");
+      opt.value = String(n);
+      opt.textContent = "Practice Lab \u00a7" + n;
+      secSel.appendChild(opt);
+    });
+  }
+
+  if (secSel && !secSel.dataset.wired) {
+    secSel.dataset.wired = "1";
+    $("#walkSearch").addEventListener("input", (e) => { WalkState.filters.search = e.target.value; paintWalkGrid(); });
+    $("#walkType").addEventListener("change", (e) => { WalkState.filters.type = e.target.value; paintWalkGrid(); });
+    secSel.addEventListener("change", (e) => { WalkState.filters.section = e.target.value; paintWalkGrid(); });
+    $("#walkSort").addEventListener("change", (e) => { WalkState.filters.sort = e.target.value; paintWalkGrid(); });
+  }
+
+  if (WalkState.loadErrors.length) {
+    const names = WalkState.loadErrors.map(e => "<code>" + escapeHtml(e.file.split("/").pop()) + "</code>").join(", ");
+    const total = WalkState.loadErrors.length + WalkState.sessions.length;
+    status.innerHTML =
+      '<div class="walk-load-warn"><strong>Could not load ' +
+      WalkState.loadErrors.length + ' of ' + total + ' sessions:</strong> ' +
+      names + '. The remaining sessions are shown below.</div>';
+  } else {
+    status.innerHTML = "";
+  }
+
+  paintWalkGrid();
+}
+
+function paintWalkGrid() {
+  const grid = $("#walkGrid");
+  const count = $("#walkCount");
+  const { search, type, section, sort } = WalkState.filters;
+  const q = (search || "").trim().toLowerCase();
+
+  let filtered = WalkState.sessions.slice().filter(s => {
+    if (type && s.sessionType !== type) return false;
+    if (section && !(s.practiceLabSections || []).includes(Number(section))) return false;
+    if (q) {
+      const hay = [
+        s.title, s.sessionId, "session " + s.sessionNumber,
+        s.sessionGoal, (s.practiceLabSections || []).map(n => "section " + n).join(" "),
+      ].filter(Boolean).join(" ").toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (sort === "duration") {
+    filtered.sort((a,b) => (a.estimatedDurationMinutes || 0) - (b.estimatedDurationMinutes || 0));
+  } else if (sort === "section") {
+    filtered.sort((a,b) => {
+      const sa = (a.practiceLabSections || [99])[0];
+      const sb = (b.practiceLabSections || [99])[0];
+      if (sa !== sb) return sa - sb;
+      return (a.sessionNumber || 0) - (b.sessionNumber || 0);
+    });
+  } else {
+    filtered.sort((a,b) => (a.sessionNumber || 0) - (b.sessionNumber || 0));
+  }
+
+  const totalN = WalkState.sessions.length;
+  count.textContent = filtered.length + " of " + totalN + " session" + (totalN === 1 ? "" : "s");
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="walk-empty">No sessions match those filters.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(s => walkCardHtml(s)).join("");
+}
+
+function walkCardHtml(s) {
+  const num = String(s.sessionNumber || "?").padStart(2, "0");
+  const isExam = s.sessionType === "exam-review";
+  const typeTag = isExam
+    ? '<span class="walk-tag exam">Exam Review</span>'
+    : '<span class="walk-tag gen">General</span>';
+  const secs = (s.practiceLabSections || []).map(n => '<span class="walk-tag sec">\u00a7' + n + '</span>').join("");
+  const dur = s.estimatedDurationMinutes ? '~' + s.estimatedDurationMinutes + ' min' : "";
+  const goal = escapeHtml(s.sessionGoal || "");
+  const id = escapeHtml(s.sessionId || ("s" + s.sessionNumber));
+  return (
+    '<button class="walk-card" data-route="/walkthroughs/' + id + '">' +
+      '<div class="walk-card-top">' +
+        '<span class="walk-card-num">Session ' + num + '</span>' +
+        '<div class="walk-card-meta">' + typeTag + secs + '</div>' +
+      '</div>' +
+      '<h3>' + escapeHtml(s.title || "Untitled session") + '</h3>' +
+      '<p class="walk-card-goal">' + goal + '</p>' +
+      '<div class="walk-card-foot">' +
+        '<span class="walk-card-dur">' + dur + '</span>' +
+        '<span class="walk-card-open">Open Walkthrough</span>' +
+      '</div>' +
+    '</button>'
+  );
+}
+/* ---------- Session detail render ---------- */
+
+async function renderWalkthroughDetail(sessionId) {
+  const root = $("#walkDetail");
+  root.innerHTML = '<div class="walk-empty">Loading session&hellip;</div>';
+  if (!WalkState.loaded) {
+    await loadAllWalkthroughs();
+  }
+
+  const s = WalkState.byId.get(sessionId);
+  if (!s) {
+    const missingHint = WalkState.loadErrors.find(e => e.file.indexOf(sessionId) >= 0)
+      ? "It failed to load &mdash; check that the JSON file is present and valid."
+      : "Try the dashboard to pick one.";
+    root.innerHTML =
+      '<div class="walk-detail-bar">' +
+        '<button data-route="/walkthroughs">&larr; All Walkthroughs</button>' +
+        '<a class="btn" href="#/home" data-route="/home">Back to Practice Lab</a>' +
+      '</div>' +
+      '<div class="walk-empty">We could not find a walkthrough with id <code>' +
+        escapeHtml(sessionId) + '</code>. ' + missingHint + '</div>';
+    return;
+  }
+
+  lsSet(LS.WALK_LAST, s.sessionId);
+
+  const list = WalkState.sessions;
+  const idx = list.findIndex(x => x.sessionId === s.sessionId);
+  const prev = idx > 0 ? list[idx - 1] : null;
+  const next = idx >= 0 && idx < list.length - 1 ? list[idx + 1] : null;
+
+  const isExam = s.sessionType === "exam-review";
+  const num = String(s.sessionNumber || "?").padStart(2, "0");
+  const secs = (s.practiceLabSections || []).map(n => '<span class="walk-tag sec">\u00a7' + n + '</span>').join("");
+  const typeTag = isExam
+    ? '<span class="walk-tag exam">Exam Review</span>'
+    : '<span class="walk-tag gen">General</span>';
+  const durTag = s.estimatedDurationMinutes
+    ? '<span class="walk-tag">~' + s.estimatedDurationMinutes + ' min</span>' : "";
+
+  const parts = [];
+
+  parts.push(
+    '<div class="walk-detail-bar no-print">' +
+      '<a class="btn" href="#/home" data-route="/home">&larr; Back to Practice Lab</a>' +
+      '<button data-route="/walkthroughs">All Walkthroughs</button>' +
+      '<div class="walk-bar-spacer"></div>' +
+      '<button ' + (prev ? 'data-route="/walkthroughs/' + escapeHtml(prev.sessionId) + '"' : "disabled") + '>&larr; Prev</button>' +
+      '<button ' + (next ? 'data-route="/walkthroughs/' + escapeHtml(next.sessionId) + '"' : "disabled") + '>Next &rarr;</button>' +
+      '<button id="walkPrintBtn" title="Print or save as PDF">Print / PDF</button>' +
+    '</div>'
+  );
+
+  parts.push(
+    '<div class="walk-detail-head">' +
+      '<div class="walk-detail-meta">' +
+        '<span class="walk-tag" style="background:var(--red-tint);color:var(--red-deep);border-color:#F2C6CD">Session ' + num + '</span>' +
+        typeTag + secs + durTag +
+      '</div>' +
+      '<h1 class="walk-detail-title">' + escapeHtml(s.title || "") + '</h1>' +
+      (s.sessionGoal ? '<p class="walk-detail-goal">' + escapeHtml(s.sessionGoal) + '</p>' : "") +
+    '</div>'
+  );
+
+  parts.push(walkBulletSection("01", "Quick Start If Unprepared", s.quickStartIfUnprepared));
+  parts.push(walkBulletSection("02", "Say This First", s.sayThisFirst));
+
+  if (Array.isArray(s.boardPlan) && s.boardPlan.length) {
+    const items = s.boardPlan.map(b => {
+      const writes = Array.isArray(b.whatToWrite)
+        ? '<div class="walk-board-write"><ul>' + b.whatToWrite.map(w => '<li>' + escapeHtml(w) + '</li>').join("") + '</ul></div>'
+        : (b.whatToWrite ? '<div class="walk-board-write">' + escapeHtml(b.whatToWrite) + '</div>' : "");
+      const say = b.whatToSay ? '<div class="walk-board-say">' + escapeHtml(b.whatToSay) + '</div>' : "";
+      const t = (b.timeMinutes != null) ? (b.timeMinutes + " min") : "";
+      return (
+        '<div class="walk-board-item">' +
+          '<div class="walk-board-time">' + t + '</div>' +
+          '<div class="walk-board-body">' +
+            '<div class="walk-board-title">' + escapeHtml(b.boardTitle || "") + '</div>' +
+            writes + say +
+          '</div>' +
+        '</div>'
+      );
+    }).join("");
+    parts.push(walkSection("03", "Board Plan", items));
+  }
+
+  if (Array.isArray(s.keyFormulas) && s.keyFormulas.length) {
+    const items = s.keyFormulas.map(f =>
+      '<div class="walk-formula">' +
+        '<div class="walk-formula-name">' + escapeHtml(f.name || "") + '</div>' +
+        '<div class="walk-formula-latex">\\(' + (f.latex || "") + '\\)</div>' +
+        (f.plainEnglish ? '<div class="walk-formula-plain">' + escapeHtml(f.plainEnglish) + '</div>' : "") +
+      '</div>'
+    ).join("");
+    parts.push(walkSection("04", "Key Formulas", '<div class="walk-formulas">' + items + '</div>'));
+  }
+
+  parts.push(walkBulletSection("05", "Common Mistakes", s.commonMistakes));
+
+  if (Array.isArray(s.notationWarnings) && s.notationWarnings.length) {
+    const items = s.notationWarnings.map(n =>
+      '<div class="walk-notation-item">' +
+        '<div class="walk-notation-cell walk-notation-bad">\\(' + (n.bad || "") + '\\)</div>' +
+        '<div class="walk-notation-cell walk-notation-good">\\(' + (n.good || "") + '\\)</div>' +
+        (n.reason ? '<div class="walk-notation-reason">' + escapeHtml(n.reason) + '</div>' : "") +
+      '</div>'
+    ).join("");
+    parts.push(walkSection("06", "Notation Warnings", '<div class="walk-notation">' + items + '</div>'));
+  }
+
+  if (Array.isArray(s.problems) && s.problems.length) {
+    const probs = s.problems.map((p, i) => renderWalkProblem(p, i, s.problems.length, s.sessionId)).join("");
+    parts.push(
+      '<section class="walk-section">' +
+        '<div class="walk-section-head"><h2><span class="wsh-num">07</span>Problems</h2>' +
+          '<span class="walk-card-dur">' + s.problems.length + ' total</span></div>' +
+        '<div class="walk-section-body" style="background:var(--bg-subtle); padding:18px 14px;">' +
+          probs +
+        '</div>' +
+      '</section>'
+    );
+  }
+
+  if (Array.isArray(s.wrapUpQuestions) && s.wrapUpQuestions.length) {
+    const items = s.wrapUpQuestions.map(q => '<li>' + escapeHtml(q) + '</li>').join("");
+    parts.push(walkSection("08", "Wrap-up Questions", '<ol class="walk-wrap-list">' + items + '</ol>'));
+  }
+
+  if (Array.isArray(s.linksToWebsite) && s.linksToWebsite.length) {
+    const items = s.linksToWebsite.map(l => {
+      const route = l.route && l.route.indexOf("#/") === 0 ? l.route.slice(1) : (l.route || "");
+      const href = l.route || "#/home";
+      const desc = l.description ? '<span class="link-desc">' + escapeHtml(l.description) + '</span>' : "";
+      return '<li><a href="' + escapeHtml(href) + '"' +
+        (route ? ' data-route="' + escapeHtml(route) + '"' : "") + '>' +
+        escapeHtml(l.label || href) + '</a>' + desc + '</li>';
+    }).join("");
+    parts.push(walkSection("09", "Links to Practice Lab", '<ul class="walk-links-list">' + items + '</ul>'));
+  }
+
+  if (Array.isArray(s.qualityControlNotes) && s.qualityControlNotes.length) {
+    const items = s.qualityControlNotes.map(q => '<li>' + escapeHtml(q) + '</li>').join("");
+    const status = s.reviewStatus ? ' &middot; <em>' + escapeHtml(s.reviewStatus) + '</em>' : "";
+    const summary = (Array.isArray(s.reviewSummary) && s.reviewSummary.length)
+      ? '<ul class="walk-qc-list" style="margin-top:8px">' +
+        s.reviewSummary.map(q => '<li>' + escapeHtml(q) + '</li>').join("") + '</ul>' : "";
+    parts.push(
+      '<details class="walk-qc">' +
+        '<summary>Quality-control notes (' + s.qualityControlNotes.length + ')' + status + '</summary>' +
+        '<div class="walk-qc-inner">' +
+          '<ul class="walk-qc-list">' + items + '</ul>' +
+          (summary ? '<div style="margin-top:10px"><strong style="font-size:12px;color:var(--ink-mute)">Review summary:</strong>' + summary + '</div>' : "") +
+        '</div>' +
+      '</details>'
+    );
+  }
+
+  root.innerHTML = parts.join("");
+
+  root.querySelectorAll(".walk-reveal-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const wrap = btn.closest(".walk-reveal");
+      wrap.classList.toggle("open");
+      const key = wrap.dataset.openKey;
+      if (key) {
+        const open = lsGet(LS.WALK_OPEN, {});
+        if (wrap.classList.contains("open")) open[key] = 1; else delete open[key];
+        lsSet(LS.WALK_OPEN, open);
+      }
+    });
+  });
+
+  const open = lsGet(LS.WALK_OPEN, {});
+  root.querySelectorAll(".walk-reveal[data-open-key]").forEach(w => {
+    if (open[w.dataset.openKey]) w.classList.add("open");
+  });
+
+  const printBtn = $("#walkPrintBtn");
+  if (printBtn) printBtn.addEventListener("click", () => window.print());
+
+  typesetMath(root);
+}
+
+function walkSection(num, heading, innerHtml) {
+  return (
+    '<section class="walk-section">' +
+      '<div class="walk-section-head"><h2><span class="wsh-num">' + num + '</span>' +
+      escapeHtml(heading) + '</h2></div>' +
+      '<div class="walk-section-body">' + innerHtml + '</div>' +
+    '</section>'
+  );
+}
+
+function walkBulletSection(num, heading, items) {
+  if (!Array.isArray(items) || !items.length) return "";
+  const li = items.map(t => '<li>' + escapeHtml(t) + '</li>').join("");
+  return walkSection(num, heading, '<ul class="walk-list">' + li + '</ul>');
+}
+
+/* ---------- Problem block inside a session ---------- */
+
+function renderWalkProblem(p, i, total, sessionId) {
+  const num = "Problem " + (i + 1) + " of " + total;
+  const skills = Array.isArray(p.skills) && p.skills.length
+    ? '<div class="walk-problem-skills"><strong>Skills:</strong> ' + p.skills.map(escapeHtml).join(" &middot; ") + '</div>' : "";
+  const diff = p.difficulty ? '<span class="walk-tag">' + escapeHtml(p.difficulty) + '</span>' : "";
+  const mins = (p.estimatedMinutes != null) ? '<span class="walk-tag">~' + p.estimatedMinutes + ' min</span>' : "";
+
+  const saybefore = p.whatToSayBefore
+    ? '<div class="walk-saybefore">' + escapeHtml(p.whatToSayBefore) + '</div>' : "";
+
+  const visual = p.visualSpec ? renderVisualSpec(p.visualSpec) : "";
+
+  const stepsHtml = Array.isArray(p.walkthrough) && p.walkthrough.length
+    ? walkReveal(
+        "Walkthrough steps (" + p.walkthrough.length + ")",
+        '<div class="walk-steps">' + p.walkthrough.map((st, k) => {
+          const lbl = st.label
+            ? '<div class="walk-step-label"><span class="tex2jax_process">' + st.label + '</span></div>'
+            : "";
+          const lat = st.latex
+            ? '<div class="walk-step-latex">\\(' + st.latex + '\\)</div>'
+            : "";
+          const say = st.sayOutLoud
+            ? '<div class="walk-step-say">' + escapeHtml(st.sayOutLoud) + '</div>'
+            : "";
+          return '<div class="walk-step"><div class="walk-step-n">' + (k+1) + '</div>' +
+                 '<div class="walk-step-body">' + lbl + lat + say + '</div></div>';
+        }).join("") + '</div>',
+        sessionId + ":" + p.problemId + ":steps"
+      )
+    : "";
+
+  const finalHtml = p.finalAnswerLatex
+    ? walkReveal("Final answer", '<div class="walk-final">\\(' + p.finalAnswerLatex + '\\)</div>',
+        sessionId + ":" + p.problemId + ":final")
+    : "";
+
+  const mistakesHtml = Array.isArray(p.commonMistakes) && p.commonMistakes.length
+    ? walkReveal("Common mistakes",
+        '<ul class="walk-mistakes">' + p.commonMistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join("") + '</ul>',
+        sessionId + ":" + p.problemId + ":mistakes")
+    : "";
+
+  const pl = p.practiceLabPointer;
+  const plHtml = pl
+    ? '<div class="walk-pl-pointer">' +
+        '<div><strong>Practice Lab \u00a7' + escapeHtml(String(pl.section)) + ':</strong> ' +
+        escapeHtml(pl.message || "More practice in this section.") + '</div>' +
+        '<a href="#/section/' + escapeHtml(String(pl.section)) + '" data-route="/section/' + escapeHtml(String(pl.section)) + '">Open \u00a7' + escapeHtml(String(pl.section)) + ' &rarr;</a>' +
+      '</div>'
+    : "";
+
+  const prompt = p.studentPromptLatex
+    ? '<div class="walk-prompt"><span class="tex2jax_process">' + p.studentPromptLatex + '</span></div>'
+    : "";
+
+  return (
+    '<div class="walk-problem">' +
+      '<div class="walk-problem-head">' +
+        '<div class="walk-problem-top">' +
+          '<span class="walk-problem-num">' + num + '</span>' +
+          '<div class="walk-problem-tags">' + diff + mins + '</div>' +
+        '</div>' +
+        '<h3>' + escapeHtml(p.title || "Problem") + '</h3>' +
+        skills +
+      '</div>' +
+      '<div class="walk-problem-body">' +
+        prompt + saybefore + visual + stepsHtml + finalHtml + mistakesHtml + plHtml +
+      '</div>' +
+    '</div>'
+  );
+}
+
+function walkReveal(label, bodyHtml, openKey) {
+  return (
+    '<div class="walk-reveal" data-open-key="' + escapeHtml(openKey || "") + '">' +
+      '<button class="walk-reveal-btn" type="button">' +
+        '<span>' + escapeHtml(label) + '</span>' +
+        '<svg class="wr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>' +
+      '</button>' +
+      '<div class="walk-reveal-body">' + bodyHtml + '</div>' +
+    '</div>'
+  );
+}
+/* ============================================================
+   VISUAL SPEC DISPATCHER
+   ============================================================
+   Every visualSpec.type maps to one of ~10 geometric categories.
+   For each problem we render:
+   1. A specialized SVG sketch (when the type has a geometric match)
+   2. A data block listing the spec's exact values (always)
+   3. The boardSketchInstructions / drawInstructions as a checklist
+   The caption switches between "Board sketch - not to scale" (for
+   inexact concept sketches) and "Exact values shown" (for pure data
+   displays like matrices, RREF, tables).
+
+   The data block is the safety net: even if my SVG is rough, the SI
+   leader always sees the exact values the spec specifies.
+============================================================ */
+
+const VS_CAT = {
+  perpendicular_vectors_2d_exact: "vectors2d",
+  projection_2d_exact: "vectors2d",
+  cross_product_area: "vectors2d_pgram",
+  vector_arithmetic_dot_angle: "vectors2d",
+  linear_transform_area_scaling_2d: "vectors2d_inout",
+  linear_transformation_standard_matrix_2d: "vectors2d_inout",
+
+  point_to_vector_3d: "vectors3d",
+  line_segment_3d: "vectors3d",
+  point_to_line_distance_3d: "vectors3d_perp",
+  projection_3d_concept: "vectors3d",
+  plane_through_three_points: "plane3d",
+  subspace_plane_through_origin: "plane3d",
+  three_vectors_span_r3: "vectors3d",
+  basis_coordinate_system_3d: "vectors3d",
+
+  component_table: "matrix",
+  matrix_multiplication_dimensions_and_row_column_highlight: "matrix_pair",
+  transpose_product_order_reversal: "matrix_pair",
+  matrix_power_pattern: "matrix_pair",
+  rref_pivot_free_variable_highlight: "matrix",
+  gaussian_elimination_augmented_matrix_steps: "matrix",
+  parameter_consistency_last_row_focus: "matrix",
+  rref_rank_nullity_highlight: "matrix",
+  augmented_matrix_consistency_rank_highlight: "matrix",
+  affine_solution_set_particular_plus_nullspace: "matrix",
+  rref_pivot_columns_and_nullspace: "matrix",
+  kernel_range_map_r3_to_r2: "matrix",
+  determinant_3x3_expansion: "matrix",
+  determinant_row_operation_tracker: "matrix",
+  determinant_rule_stack: "matrix",
+  determinant_volume_parameter: "matrix",
+  parameter_determinant_invertibility: "matrix",
+  parameter_invertibility_exam_review: "matrix",
+  parameter_determinant_zero: "matrix",
+  inverse_undoes_matrix: "matrix",
+  matrix_inverse_flow: "matrix",
+  rref_augmented_solution_set: "matrix",
+  span_membership_and_dependence: "matrix",
+  linearity_from_known_vectors: "matrix",
+  subspace_from_homogeneous_equations: "matrix",
+
+  eigen_directions_triangular: "eigen",
+  eigenvector_invariant_directions: "eigen",
+  eigenvector_invariant_direction: "eigen",
+  given_vector_eigen_test: "matrix",
+  multiplicity_gap: "matrix",
+  eigenspace_table: "matrix",
+  eigenbasis_count: "matrix",
+  eigenbasis_decomposition: "matrix",
+  eigenbasis_power_vector: "matrix",
+  diagonalization_flow: "matrix",
+  diagonalization_3x3_distinct: "matrix",
+
+  greens_theorem_rectangle: "region_rect",
+  greens_triangle_clockwise: "region_tri",
+  polar_half_disk: "region_polar",
+  double_integral_region_switch_order: "region_general",
+  rectangle_optimization: "region_rect",
+
+  flux_graph_upward_paraboloid: "surface_para",
+  stokes_disk_upward: "surface_disk",
+  scalar_surface_integral_graph: "surface_para",
+  tangent_plane_graph: "surface_tangent",
+  cylindrical_triple_integral: "surface_cyl",
+
+  parametric_curve_tangent_exact_point: "curve3d",
+  helix_arc_length: "curve_helix",
+  scalar_line_integral_segment: "curve3d",
+  vector_line_integral_curve: "curve3d",
+  conservative_field_endpoints: "curve3d",
+
+  vector_field_div_curl_2d: "field2d",
+  vector_field_div_curl_3d: "field3d",
+
+  gradient_directional_derivative: "gradient2d",
+  gradient_tangent_plane_combo: "gradient2d",
+  critical_point_classification: "critical2d",
+};
+
+const VS_EXACT_TYPES = new Set([
+  "component_table","matrix_multiplication_dimensions_and_row_column_highlight",
+  "transpose_product_order_reversal","matrix_power_pattern","rref_pivot_free_variable_highlight",
+  "gaussian_elimination_augmented_matrix_steps","parameter_consistency_last_row_focus",
+  "rref_rank_nullity_highlight","augmented_matrix_consistency_rank_highlight",
+  "affine_solution_set_particular_plus_nullspace","rref_pivot_columns_and_nullspace",
+  "kernel_range_map_r3_to_r2","determinant_3x3_expansion","determinant_row_operation_tracker",
+  "determinant_rule_stack","determinant_volume_parameter","parameter_determinant_invertibility",
+  "parameter_invertibility_exam_review","parameter_determinant_zero","inverse_undoes_matrix",
+  "matrix_inverse_flow","rref_augmented_solution_set","span_membership_and_dependence",
+  "linearity_from_known_vectors","subspace_from_homogeneous_equations",
+  "given_vector_eigen_test","multiplicity_gap","eigenspace_table","eigenbasis_count",
+  "eigenbasis_decomposition","eigenbasis_power_vector","diagonalization_flow",
+  "diagonalization_3x3_distinct","perpendicular_vectors_2d_exact","projection_2d_exact",
+]);
+
+function renderVisualSpec(spec) {
+  if (!spec || typeof spec !== "object") return "";
+  const t = spec.type || "";
+  const cat = VS_CAT[t] || "";
+  const exact = VS_EXACT_TYPES.has(t);
+
+  let svg = "";
+  try {
+    switch (cat) {
+      case "vectors2d":         svg = svgVectors2D(spec); break;
+      case "vectors2d_pgram":   svg = svgVectors2DParallelogram(spec); break;
+      case "vectors2d_inout":   svg = svgVectors2DInOut(spec); break;
+      case "vectors3d":         svg = svgVectors3D(spec); break;
+      case "vectors3d_perp":    svg = svgVectors3DPerp(spec); break;
+      case "plane3d":           svg = svgPlane3D(spec); break;
+      case "matrix":            svg = svgMatrixGroup(spec); break;
+      case "matrix_pair":       svg = svgMatrixPair(spec); break;
+      case "eigen":             svg = svgEigenDirections(spec); break;
+      case "region_rect":       svg = svgRegionRect(spec); break;
+      case "region_tri":        svg = svgRegionTri(spec); break;
+      case "region_polar":      svg = svgRegionPolar(spec); break;
+      case "region_general":    svg = svgRegionGeneral(spec); break;
+      case "surface_para":      svg = svgSurfaceParaboloid(spec); break;
+      case "surface_disk":      svg = svgSurfaceDisk(spec); break;
+      case "surface_tangent":   svg = svgSurfaceTangent(spec); break;
+      case "surface_cyl":       svg = svgSurfaceCylinder(spec); break;
+      case "curve3d":           svg = svgCurve3D(spec); break;
+      case "curve_helix":       svg = svgCurveHelix(spec); break;
+      case "field2d":           svg = svgField2D(spec); break;
+      case "field3d":           svg = svgField3D(spec); break;
+      case "gradient2d":        svg = svgGradient2D(spec); break;
+      case "critical2d":        svg = svgCritical2D(spec); break;
+    }
+  } catch (e) {
+    console.warn("Visual render error for", t, e);
+    svg = "";
+  }
+
+  const dataBlock = renderVisualDataBlock(spec);
+  const instructions = renderVisualInstructions(spec);
+
+  const purpose = spec.purpose ? '<div class="vs-purpose">' + escapeHtml(spec.purpose) + '</div>' : "";
+  const caption = exact
+    ? '<div class="vs-caption">Exact values shown</div>'
+    : '<div class="vs-caption">Board sketch &mdash; not to scale</div>';
+
+  return (
+    '<div class="visual-spec">' +
+      '<div class="vs-head">' +
+        '<div class="vs-kicker">Visual &middot; ' + escapeHtml(prettyTypeName(t)) + '</div>' +
+        purpose +
+      '</div>' +
+      (svg ? '<div class="vs-sketch">' + svg + caption + '</div>' : "") +
+      dataBlock +
+      instructions +
+    '</div>'
+  );
+}
+
+function prettyTypeName(t) {
+  return (t || "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/* ---------- Data block (always shown, never invented) ---------- */
+
+const VS_SKIP_KEYS = new Set([
+  "type","purpose","boardSketchInstructions","drawInstructions","accuracyNote",
+  "coordinateSystem","ambientSpace","ambientDimension"
+]);
+
+function renderVisualDataBlock(spec) {
+  const rows = [];
+  Object.keys(spec).forEach(k => {
+    if (VS_SKIP_KEYS.has(k)) return;
+    const v = spec[k];
+    if (v == null) return;
+    const label = prettyKeyName(k);
+    const value = formatSpecValue(k, v);
+    if (value) rows.push(
+      '<div class="vs-data-row"><div class="vs-data-label">' + escapeHtml(label) +
+      '</div><div class="vs-data-value">' + value + '</div></div>'
+    );
+  });
+  if (!rows.length) return "";
+  return '<div class="vs-data">' + rows.join("") + '</div>';
+}
+
+function prettyKeyName(k) {
+  return k.replace(/([A-Z])/g, " $1").replace(/^./, c => c.toUpperCase()).replace(/_/g, " ");
+}
+
+function formatSpecValue(key, v) {
+  if (typeof v === "string") {
+    if (/\\\(|\\\[|\\\\|\^|_/.test(v)) {
+      return '<span class="tex2jax_process">\\(' + v + '\\)</span>';
+    }
+    return escapeHtml(v);
+  }
+  if (typeof v === "number" || typeof v === "boolean") {
+    return '<code>' + escapeHtml(String(v)) + '</code>';
+  }
+  if (Array.isArray(v)) {
+    if (v.length && v.every(x => typeof x === "number")) {
+      return '<span class="tex2jax_process">\\(\\langle ' + v.map(numTex).join(",") + '\\rangle\\)</span>';
+    }
+    if (v.length && v.every(x => Array.isArray(x) && x.every(y => typeof y === "number"))) {
+      return matrixToLatex(v);
+    }
+    if (!v.length) return "<em>(none)</em>";
+    return '<ul style="margin:0;padding-left:18px">' +
+      v.map(x => '<li>' + formatSpecValue(key, x) + '</li>').join("") + '</ul>';
+  }
+  if (typeof v === "object") {
+    const sub = Object.keys(v).map(k => {
+      const label = prettyKeyName(k);
+      const val = formatSpecValue(k, v[k]);
+      return '<div style="display:grid;grid-template-columns:120px 1fr;gap:8px;padding:2px 0">' +
+        '<span style="color:var(--ink-mute);font-size:12px;font-weight:600">' + escapeHtml(label) + '</span>' +
+        '<span>' + val + '</span></div>';
+    }).join("");
+    return '<div style="display:grid;gap:2px">' + sub + '</div>';
+  }
+  return escapeHtml(String(v));
+}
+
+function numTex(n) {
+  if (Number.isInteger(n)) return String(n);
+  const r = Math.round(n * 10000) / 10000;
+  return String(r);
+}
+
+function matrixToLatex(m) {
+  if (!Array.isArray(m) || !m.length) return "";
+  const rows = m.map(r => r.map(numTex).join(" & ")).join(" \\\\ ");
+  return '<span class="tex2jax_process">\\(\\begin{bmatrix}' + rows + '\\end{bmatrix}\\)</span>';
+}
+
+function renderVisualInstructions(spec) {
+  const list = spec.boardSketchInstructions || spec.drawInstructions;
+  if (!Array.isArray(list) || !list.length) return "";
+  // If text contains LaTeX delimiters, render through MathJax inside a span
+  const items = list.map(t => {
+    if (/\\\(|\\\[/.test(t)) {
+      return '<li><span class="tex2jax_process">' + t + '</span></li>';
+    }
+    return '<li>' + escapeHtml(t) + '</li>';
+  }).join("");
+  return (
+    '<div class="vs-instr">' +
+      '<div class="vs-instr-title">Board sketch instructions</div>' +
+      '<ol>' + items + '</ol>' +
+    '</div>'
+  );
+}
+/* ============================================================
+   SVG RENDERERS
+   ============================================================
+   All SVGs use a 360x240-ish viewBox with origin offset and a
+   scale factor derived from the spec's actual values. We never
+   invent geometry: vectors come from spec.vectors, points from
+   spec.points, eigenvectors from spec.eigenvectors, etc. When the
+   spec is purely data (matrices, RREF, eigenvalues), we render a
+   bracket-style matrix display.
+============================================================ */
+
+function wvFrame(inner, w, h, viewBox) {
+  if (w == null) w = 360;
+  if (h == null) h = 240;
+  const vb = viewBox || ("0 0 " + w + " " + h);
+  return (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vb +
+      '" width="100%" style="max-width:' + w + 'px" role="img" aria-label="Board sketch">' +
+      '<defs>' +
+        '<marker id="wvArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">' +
+          '<path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>' +
+        '</marker>' +
+        '<marker id="wvArrSmall" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">' +
+          '<path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>' +
+        '</marker>' +
+      '</defs>' +
+      inner +
+    '</svg>'
+  );
+}
+
+function wv2DScale(vectors) {
+  let maxAbs = 1;
+  Object.values(vectors || {}).forEach(v => {
+    if (Array.isArray(v) && v.length >= 2) {
+      maxAbs = Math.max(maxAbs, Math.abs(v[0]), Math.abs(v[1]));
+    }
+  });
+  return 95 / maxAbs;
+}
+
+function wvAxes2D(cx, cy, halfW, halfH) {
+  halfW = halfW || 140; halfH = halfH || 90;
+  return (
+    '<line x1="' + (cx - halfW) + '" y1="' + cy + '" x2="' + (cx + halfW) + '" y2="' + cy +
+      '" stroke="var(--ink-mute)" stroke-width="1" marker-end="url(#wvArrSmall)"/>' +
+    '<line x1="' + cx + '" y1="' + (cy + halfH) + '" x2="' + cx + '" y2="' + (cy - halfH) +
+      '" stroke="var(--ink-mute)" stroke-width="1" marker-end="url(#wvArrSmall)"/>' +
+    '<text class="wv-axis-label" x="' + (cx + halfW + 4) + '" y="' + (cy + 4) + '">x</text>' +
+    '<text class="wv-axis-label" x="' + (cx + 4) + '" y="' + (cy - halfH - 2) + '">y</text>'
+  );
+}
+
+function wv2DArrow(cx, cy, vx, vy, scale, label, colorVar, opts) {
+  opts = opts || {};
+  const x2 = cx + vx * scale;
+  const y2 = cy - vy * scale;
+  const dash = opts.dashed ? 'stroke-dasharray="4 3"' : "";
+  const labelDx = opts.labelDx != null ? opts.labelDx : 6;
+  const labelDy = opts.labelDy != null ? opts.labelDy : -6;
+  const labelHtml = label
+    ? '<text class="wv-label" x="' + (x2 + labelDx) + '" y="' + (y2 + labelDy) +
+      '" fill="' + colorVar + '">' + escapeHtml(label) + '</text>'
+    : "";
+  return (
+    '<line x1="' + cx + '" y1="' + cy + '" x2="' + x2 + '" y2="' + y2 +
+      '" stroke="' + colorVar + '" stroke-width="2" marker-end="url(#wvArr)" ' + dash +
+      ' color="' + colorVar + '"/>' + labelHtml
+  );
+}
+
+/* ---------- 2D vector renderers ---------- */
+
+function svgVectors2D(spec) {
+  const vecs = spec.vectors || {};
+  const keys = Object.keys(vecs).filter(k => Array.isArray(vecs[k]) && vecs[k].length >= 2);
+  if (!keys.length) return "";
+  const cx = 180, cy = 120;
+  const scale = wv2DScale(vecs);
+  const cols = ["var(--red)","var(--ink)","var(--gold)","#5A6F8E"];
+  const arrows = keys.slice(0, 4).map((k, i) => {
+    const v = vecs[k];
+    return wv2DArrow(cx, cy, v[0], v[1], scale, k, cols[i % cols.length]);
+  }).join("");
+
+  let perp = "";
+  if (keys.length === 2) {
+    const a = vecs[keys[0]], b = vecs[keys[1]];
+    const dot = a[0]*b[0] + a[1]*b[1];
+    if (Math.abs(dot) < 1e-6) {
+      // small right-angle marker at origin in the quadrant between the two vectors
+      const sgnA = [a[0] >= 0 ? 1 : -1, a[1] >= 0 ? 1 : -1];
+      const sgnB = [b[0] >= 0 ? 1 : -1, b[1] >= 0 ? 1 : -1];
+      const sx = (sgnA[0] || sgnB[0]) * 10;
+      const sy = -(sgnA[1] || sgnB[1]) * 10;
+      perp = '<path d="M ' + (cx + sx) + ' ' + cy + ' L ' + (cx + sx) + ' ' + (cy + sy) +
+             ' L ' + cx + ' ' + (cy + sy) + '" fill="none" stroke="var(--ink-mute)" stroke-width="1"/>';
+    }
+  }
+
+  // Projection visual: dashed perpendicular from u tip to projection tip
+  const projKey = keys.find(k => /^proj/i.test(k));
+  let projExtras = "";
+  if (projKey && vecs[projKey] && vecs.u) {
+    const u = vecs.u, p = vecs[projKey];
+    const ux = cx + u[0]*scale, uy = cy - u[1]*scale;
+    const px = cx + p[0]*scale, py = cy - p[1]*scale;
+    projExtras = '<line x1="' + ux + '" y1="' + uy + '" x2="' + px + '" y2="' + py +
+                 '" stroke="var(--ink-mute)" stroke-width="1" stroke-dasharray="3 3"/>';
+  }
+
+  return wvFrame(wvAxes2D(cx, cy, 150, 100) + arrows + projExtras + perp);
+}
+
+function svgVectors2DParallelogram(spec) {
+  const vecs = spec.vectors || {};
+  const keys = Object.keys(vecs).filter(k => Array.isArray(vecs[k]) && vecs[k].length >= 2);
+  if (keys.length < 2) return svgVectors2D(spec);
+  const a = vecs[keys[0]].slice(0, 2);
+  const b = vecs[keys[1]].slice(0, 2);
+  const cx = 180, cy = 120;
+  const sc = wv2DScale({ a: a, b: b });
+  const ax = cx + a[0]*sc, ay = cy - a[1]*sc;
+  const bx = cx + b[0]*sc, by = cy - b[1]*sc;
+  const cxp = ax + b[0]*sc, cyp = ay - b[1]*sc;
+  return wvFrame(
+    wvAxes2D(cx, cy, 150, 100) +
+    '<polygon points="' + cx + ',' + cy + ' ' + ax + ',' + ay + ' ' +
+      cxp + ',' + cyp + ' ' + bx + ',' + by +
+      '" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1" opacity="0.7"/>' +
+    wv2DArrow(cx, cy, a[0], a[1], sc, keys[0], "var(--red)") +
+    wv2DArrow(cx, cy, b[0], b[1], sc, keys[1], "var(--ink)") +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + 60) +
+      '" text-anchor="middle">parallelogram area = \u2016a \u00d7 b\u2016</text>'
+  );
+}
+
+function svgVectors2DInOut(spec) {
+  const v = spec.vectors || {};
+  const inp = spec.inputVector || v.input || v.u || v.x;
+  const out = spec.outputVector || v.output || v.Tu || v.Tx;
+  if (!Array.isArray(inp) || !Array.isArray(out)) {
+    if (Object.keys(v).length) return svgVectors2D({ vectors: v });
+    return "";
+  }
+  const cx = 180, cy = 120;
+  const sc = wv2DScale({ inp: inp, out: out });
+  return wvFrame(
+    wvAxes2D(cx, cy, 150, 100) +
+    wv2DArrow(cx, cy, inp[0], inp[1], sc, "input", "var(--ink)") +
+    wv2DArrow(cx, cy, out[0], out[1], sc, "T(input)", "var(--red)") +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + 60) +
+      '" text-anchor="middle">linear transformation</text>'
+  );
+}
+/* ---------- 3D concept sketches ---------- */
+
+function wv3DProject(p) {
+  const x = p[0] || 0, y = p[1] || 0, z = p[2] || 0;
+  const X = x * 1.0 - y * 0.5;
+  const Y = -z * 1.0 + y * 0.3;
+  return [X, Y];
+}
+
+function wv3DScale(things) {
+  let maxAbs = 1;
+  things.forEach(t => {
+    if (!Array.isArray(t)) return;
+    t.forEach(n => { if (typeof n === "number") maxAbs = Math.max(maxAbs, Math.abs(n)); });
+  });
+  return 55 / maxAbs;
+}
+
+/* Normalize a vector-list value that may be:
+   - array of vectors: [[1,2,3], [4,5,6]] -> [{label:"1", v:[1,2,3]}, ...]
+   - object: {name: [1,2,3], other: [...]} -> [{label:"name", v:[...]}, ...]
+   - anything else -> []
+*/
+function vsListVectors(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) {
+    return val.filter(x => Array.isArray(x)).map((x, i) => ({label: String(i+1), v: x}));
+  }
+  if (typeof val === "object") {
+    return Object.keys(val)
+      .filter(k => Array.isArray(val[k]))
+      .map(k => ({label: k, v: val[k]}));
+  }
+  return [];
+}
+
+function wvAxes3D(cx, cy, scale) {
+  scale = scale || 60;
+  const ax = function(p) { const xy = wv3DProject(p); return [cx + xy[0]*scale, cy + xy[1]*scale]; };
+  const a1 = ax([1.5, 0, 0]);
+  const a2 = ax([0, 1.5, 0]);
+  const a3 = ax([0, 0, 1.5]);
+  return (
+    '<line x1="' + cx + '" y1="' + cy + '" x2="' + a1[0] + '" y2="' + a1[1] +
+      '" stroke="var(--ink-mute)" marker-end="url(#wvArrSmall)"/>' +
+    '<line x1="' + cx + '" y1="' + cy + '" x2="' + a2[0] + '" y2="' + a2[1] +
+      '" stroke="var(--ink-mute)" marker-end="url(#wvArrSmall)"/>' +
+    '<line x1="' + cx + '" y1="' + cy + '" x2="' + a3[0] + '" y2="' + a3[1] +
+      '" stroke="var(--ink-mute)" marker-end="url(#wvArrSmall)"/>' +
+    '<text class="wv-axis-label" x="' + (a1[0]+4) + '" y="' + (a1[1]+4) + '">x</text>' +
+    '<text class="wv-axis-label" x="' + (a2[0]+4) + '" y="' + (a2[1]+8) + '">y</text>' +
+    '<text class="wv-axis-label" x="' + (a3[0]-4) + '" y="' + (a3[1]-4) + '">z</text>'
+  );
+}
+
+function svgVectors3D(spec) {
+  const cx = 180, cy = 140;
+  const things = [];
+  const pts = (spec.points && typeof spec.points === "object" && !Array.isArray(spec.points)) ? spec.points : {};
+  const vecs = (spec.vectors && typeof spec.vectors === "object" && !Array.isArray(spec.vectors)) ? spec.vectors : {};
+  Object.values(pts).forEach(p => things.push(p));
+  Object.values(vecs).forEach(v => things.push(v));
+  const basisList  = vsListVectors(spec.basisVectors);
+  const columnList = vsListVectors(spec.columnVectors);
+  basisList.forEach(x => things.push(x.v));
+  columnList.forEach(x => things.push(x.v));
+  if (Array.isArray(spec.targetVector)) things.push(spec.targetVector);
+  if (Array.isArray(spec.direction)) things.push(spec.direction);
+  const scale = wv3DScale(things);
+
+  let dots = "";
+  Object.keys(pts).forEach(name => {
+    const p = pts[name]; if (!Array.isArray(p)) return;
+    const xy = wv3DProject(p);
+    const x = cx + xy[0]*scale, y = cy + xy[1]*scale;
+    dots += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="var(--ink)"/>' +
+            '<text class="wv-label" x="' + (x + 6) + '" y="' + (y - 6) + '">' + escapeHtml(name) + '</text>';
+  });
+
+  const cols = ["var(--red)","var(--ink)","var(--gold)","#5A6F8E"];
+  let i = 0;
+  let arrows = "";
+
+  Object.keys(vecs).forEach(name => {
+    const v = vecs[name]; if (!Array.isArray(v)) return;
+    const m = /^([A-Z])([A-Z])$/.exec(name);
+    let sx, sy, ex, ey;
+    if (m && pts[m[1]] && pts[m[2]]) {
+      const S = wv3DProject(pts[m[1]]);
+      const E = wv3DProject(pts[m[2]]);
+      sx = cx + S[0]*scale; sy = cy + S[1]*scale;
+      ex = cx + E[0]*scale; ey = cy + E[1]*scale;
+    } else {
+      const E = wv3DProject(v);
+      sx = cx; sy = cy; ex = cx + E[0]*scale; ey = cy + E[1]*scale;
+    }
+    const col = cols[i++ % cols.length];
+    arrows += '<line x1="' + sx + '" y1="' + sy + '" x2="' + ex + '" y2="' + ey +
+              '" stroke="' + col + '" stroke-width="2" marker-end="url(#wvArr)" color="' + col + '"/>' +
+              '<text class="wv-label" x="' + (ex + 5) + '" y="' + (ey - 4) + '" fill="' + col + '">' +
+              escapeHtml(name) + '</text>';
+  });
+
+  // Basis & column vectors (each may be an array or named dict)
+  const extraSets = [
+    { items: basisList,  defaultName: "basis", color: "var(--ink)" },
+    { items: columnList, defaultName: "col",   color: "var(--gold)" },
+  ];
+  extraSets.forEach(s => {
+    s.items.forEach((entry, k) => {
+      const v = entry.v;
+      if (!Array.isArray(v)) return;
+      const E = wv3DProject(v);
+      const ex = cx + E[0]*scale, ey = cy + E[1]*scale;
+      const lab = entry.label || (s.defaultName + (s.items.length > 1 ? (k+1) : ""));
+      arrows += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ex + '" y2="' + ey +
+                '" stroke="' + s.color + '" stroke-width="2" marker-end="url(#wvArr)" color="' + s.color + '"/>' +
+                '<text class="wv-label" x="' + (ex + 5) + '" y="' + (ey - 4) +
+                '" fill="' + s.color + '">' + escapeHtml(lab) + '</text>';
+    });
+  });
+
+  // Target vector (single) and direction
+  if (Array.isArray(spec.targetVector)) {
+    const E = wv3DProject(spec.targetVector);
+    const ex = cx + E[0]*scale, ey = cy + E[1]*scale;
+    arrows += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ex + '" y2="' + ey +
+              '" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>' +
+              '<text class="wv-label" x="' + (ex + 5) + '" y="' + (ey - 4) + '" fill="var(--red)">v</text>';
+  }
+  if (Array.isArray(spec.direction)) {
+    const E = wv3DProject(spec.direction);
+    const ex = cx + E[0]*scale, ey = cy + E[1]*scale;
+    arrows += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ex + '" y2="' + ey +
+              '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
+              '<text class="wv-label" x="' + (ex + 5) + '" y="' + (ey - 4) + '" fill="var(--gold)">d</text>';
+  }
+
+  return wvFrame(wvAxes3D(cx, cy, scale) + dots + arrows, 360, 260);
+}
+
+function svgVectors3DPerp(spec) {
+  const cx = 180, cy = 140;
+  const pt = spec.point;
+  const dir = spec.direction;
+  const proj = spec.projection;
+  if (!Array.isArray(pt) || !Array.isArray(dir)) return svgVectors3D(spec);
+  const things = [pt, dir, proj].filter(Array.isArray);
+  const scale = wv3DScale(things);
+  const project = function(p) { const xy = wv3DProject(p); return [cx + xy[0]*scale, cy + xy[1]*scale]; };
+  const P = project(pt);
+  const D1 = project(dir.map(c => c * 1.4));
+  const D2 = project(dir.map(c => -c * 0.4));
+  let foot = "";
+  if (Array.isArray(proj)) {
+    const F = project(proj);
+    foot += '<line x1="' + P[0] + '" y1="' + P[1] + '" x2="' + F[0] + '" y2="' + F[1] +
+            '" stroke="var(--ink-mute)" stroke-width="1.5" stroke-dasharray="4 3"/>' +
+            '<circle cx="' + F[0] + '" cy="' + F[1] + '" r="2.5" fill="var(--gold)"/>' +
+            '<text class="wv-label" x="' + (F[0]+6) + '" y="' + (F[1]+14) + '">proj</text>';
+  }
+  return wvFrame(
+    wvAxes3D(cx, cy, scale) +
+    '<line x1="' + D2[0] + '" y1="' + D2[1] + '" x2="' + D1[0] + '" y2="' + D1[1] +
+      '" stroke="var(--ink)" stroke-width="2"/>' +
+    '<text class="wv-label" x="' + (D1[0]+4) + '" y="' + (D1[1]-4) + '">line</text>' +
+    '<circle cx="' + P[0] + '" cy="' + P[1] + '" r="3" fill="var(--red)"/>' +
+    '<text class="wv-label" x="' + (P[0]+6) + '" y="' + (P[1]-6) + '" fill="var(--red)">P</text>' +
+    foot,
+    360, 260
+  );
+}
+
+function svgPlane3D(spec) {
+  const cx = 180, cy = 140;
+  const things = [];
+  // basis vectors: list or named dict
+  let basisItems = vsListVectors(spec.basisVectors);
+  if (!basisItems.length && spec.vectors && spec.vectors.u && spec.vectors.v) {
+    basisItems = [{label:"v\u2081", v: spec.vectors.u}, {label:"v\u2082", v: spec.vectors.v}];
+  }
+  basisItems.forEach(b => Array.isArray(b.v) && things.push(b.v));
+  if (Array.isArray(spec.normalVector)) things.push(spec.normalVector);
+  if (spec.points && typeof spec.points === "object") {
+    Object.values(spec.points).forEach(p => Array.isArray(p) && things.push(p));
+  }
+  const scale = wv3DScale(things);
+  const project = function(p) { const xy = wv3DProject(p); return [cx + xy[0]*scale, cy + xy[1]*scale]; };
+
+  let patch = "";
+  if (basisItems.length >= 2) {
+    const u = basisItems[0].v, v = basisItems[1].v;
+    const labU = basisItems[0].label || "v\u2081";
+    const labV = basisItems[1].label || "v\u2082";
+    const O = project([0,0,0]);
+    const U = project(u);
+    const V = project(v);
+    const UV = project([(u[0]||0)+(v[0]||0), (u[1]||0)+(v[1]||0), (u[2]||0)+(v[2]||0)]);
+    patch =
+      '<polygon points="' + O[0] + ',' + O[1] + ' ' + U[0] + ',' + U[1] + ' ' +
+        UV[0] + ',' + UV[1] + ' ' + V[0] + ',' + V[1] +
+        '" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.5" opacity="0.7"/>' +
+      '<line x1="' + O[0] + '" y1="' + O[1] + '" x2="' + U[0] + '" y2="' + U[1] +
+        '" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>' +
+      '<line x1="' + O[0] + '" y1="' + O[1] + '" x2="' + V[0] + '" y2="' + V[1] +
+        '" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>' +
+      '<text class="wv-label" x="' + (U[0]+4) + '" y="' + (U[1]-4) + '" fill="var(--red)">' + escapeHtml(labU) + '</text>' +
+      '<text class="wv-label" x="' + (V[0]+4) + '" y="' + (V[1]+10) + '" fill="var(--red)">' + escapeHtml(labV) + '</text>';
+  }
+
+  let normal = "";
+  if (Array.isArray(spec.normalVector)) {
+    const O = project([0,0,0]);
+    const N = project(spec.normalVector);
+    normal =
+      '<line x1="' + O[0] + '" y1="' + O[1] + '" x2="' + N[0] + '" y2="' + N[1] +
+        '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
+      '<text class="wv-label" x="' + (N[0]+4) + '" y="' + (N[1]-4) + '" fill="var(--gold)">n</text>';
+  }
+
+  let pts = "";
+  if (spec.points && typeof spec.points === "object") {
+    Object.keys(spec.points).forEach(name => {
+      const p = spec.points[name];
+      if (!Array.isArray(p)) return;
+      const xy = project(p);
+      pts += '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="3" fill="var(--ink)"/>' +
+             '<text class="wv-label" x="' + (xy[0]+5) + '" y="' + (xy[1]-6) + '">' + escapeHtml(name) + '</text>';
+    });
+  }
+
+  return wvFrame(wvAxes3D(cx, cy, scale) + patch + pts + normal, 360, 260);
+}
+
+/* ---------- Matrix SVG (bracket-delimited grid) ---------- */
+
+function svgMatrixGroup(spec) {
+  const candidates = [
+    spec.matrix, spec.matrixA, spec.matrixWithParameter, spec.rrefA,
+    spec.standardMatrix, spec.finalRREF, spec.initialAugmentedMatrix,
+    spec.D, spec.P, spec.hessian, spec.rrefAugmented
+  ];
+  let M = candidates.find(c => Array.isArray(c) && c.length && Array.isArray(c[0]) && typeof c[0][0] !== "object");
+  if (!M) {
+    for (const k of Object.keys(spec)) {
+      const v = spec[k];
+      if (Array.isArray(v) && v.length && Array.isArray(v[0]) && typeof v[0][0] === "number") { M = v; break; }
+    }
+  }
+  if (!M) return "";
+
+  const pivotRaw = spec.pivotColumns || spec.pivotColumnsOneIndexed || [];
+  const pivots = new Set(pivotRaw.map(n => Number(n) - (spec.pivotColumnsOneIndexed ? 1 : 0)));
+  const frees = new Set();
+  if (Array.isArray(spec.freeVariables)) {
+    spec.freeVariables.forEach(f => {
+      const m = /(\d+)$/.exec(String(f));
+      if (m) frees.add(Number(m[1]) - 1);
+    });
+  }
+
+  const cell = 36;
+  const rows = M.length;
+  const cols = M[0].length;
+  const padX = 16, padY = 22;
+  const w = padX*2 + cols*cell + 12;
+  const h = padY*2 + rows*cell;
+
+  const cells = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const tx = padX + 6 + c*cell + cell/2;
+      const ty = padY + r*cell + cell/2 + 4;
+      const isPivot = pivots.has(c);
+      const isFree  = frees.has(c) && !isPivot;
+      const cls = isPivot ? "wv-entry wv-entry-pivot" :
+                  isFree  ? "wv-entry wv-entry-free"  : "wv-entry";
+      const val = (typeof M[r][c] === "number") ? numTex(M[r][c]) : String(M[r][c]);
+      cells.push('<text class="' + cls + '" x="' + tx + '" y="' + ty + '" text-anchor="middle">' + escapeHtml(val) + '</text>');
+    }
+  }
+
+  const left = padX + 6;
+  const right = padX + 6 + cols*cell;
+  const top = padY;
+  const bot = padY + rows*cell;
+  const brackets =
+    '<path class="wv-bracket" d="M ' + (left - 8) + ' ' + (top - 4) + ' L ' + (left - 12) + ' ' + (top - 4) +
+      ' L ' + (left - 12) + ' ' + (bot + 4) + ' L ' + (left - 8) + ' ' + (bot + 4) + '"/>' +
+    '<path class="wv-bracket" d="M ' + (right + 8) + ' ' + (top - 4) + ' L ' + (right + 12) + ' ' + (top - 4) +
+      ' L ' + (right + 12) + ' ' + (bot + 4) + ' L ' + (right + 8) + ' ' + (bot + 4) + '"/>';
+
+  let bands = "";
+  pivots.forEach(c => {
+    const x = padX + 6 + c*cell;
+    bands += '<rect x="' + x + '" y="' + (top - 2) + '" width="' + cell + '" height="' +
+             (bot - top + 4) + '" fill="var(--red-tint)" opacity="0.55" rx="3"/>';
+  });
+  frees.forEach(c => {
+    if (pivots.has(c)) return;
+    const x = padX + 6 + c*cell;
+    bands += '<rect x="' + x + '" y="' + (top - 2) + '" width="' + cell + '" height="' +
+             (bot - top + 4) + '" fill="#FBF6E0" opacity="0.6" rx="3"/>';
+  });
+
+  let legend = "";
+  if (pivots.size || frees.size) {
+    legend = '<g transform="translate(' + padX + ',' + (h + 12) + ')">' +
+      (pivots.size ? '<rect x="0" y="0" width="10" height="10" fill="var(--red-tint)" stroke="var(--red)"/><text class="wv-note" x="14" y="9">pivot col</text>' : "") +
+      (frees.size  ? '<rect x="' + (pivots.size ? 80 : 0) + '" y="0" width="10" height="10" fill="#FBF6E0" stroke="var(--gold)"/><text class="wv-note" x="' + ((pivots.size ? 80 : 0) + 14) + '" y="9">free var</text>' : "") +
+    '</g>';
+  }
+
+  // Augmented bar before last column for augmented matrices
+  let aug = "";
+  if (spec.rrefAugmented || spec.initialAugmentedMatrix) {
+    const c = cols - 1;
+    const x = padX + 6 + c*cell;
+    aug = '<line x1="' + x + '" y1="' + (top - 2) + '" x2="' + x + '" y2="' + (bot + 2) +
+          '" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3"/>';
+  }
+
+  return wvFrame(bands + brackets + aug + cells.join("") + legend, w + 8, h + (legend ? 30 : 8));
+}
+
+function svgMatrixPair(spec) {
+  const ms = spec.matrices || {};
+  const keys = Object.keys(ms).filter(k => Array.isArray(ms[k]) && Array.isArray(ms[k][0]));
+  if (keys.length < 2) {
+    if (keys.length === 1) return svgMatrixGroup({ matrix: ms[keys[0]] });
+    return "";
+  }
+  const renderOne = function(M, name) {
+    const cell = 30;
+    const rows = M.length, cols = M[0].length;
+    const padX = 14, padY = 18;
+    const w = padX*2 + cols*cell + 24;
+    const h = padY*2 + rows*cell + 22;
+    const cells = [];
+    for (let r=0;r<rows;r++) for (let c=0;c<cols;c++) {
+      const tx = padX + 6 + c*cell + cell/2;
+      const ty = padY + 8 + r*cell + cell/2;
+      cells.push('<text class="wv-entry" x="' + tx + '" y="' + ty + '" text-anchor="middle">' +
+                 escapeHtml(numTex(M[r][c])) + '</text>');
+    }
+    const left = padX + 6, right = padX + 6 + cols*cell;
+    const top = padY + 8, bot = padY + 8 + rows*cell;
+    return (
+      '<text class="wv-label" x="' + ((left+right)/2) + '" y="' + padY + '" text-anchor="middle">' + escapeHtml(name) + '</text>' +
+      '<path class="wv-bracket" d="M ' + (left - 8) + ' ' + (top - 4) + ' L ' + (left - 12) + ' ' + (top - 4) +
+        ' L ' + (left - 12) + ' ' + (bot + 4) + ' L ' + (left - 8) + ' ' + (bot + 4) + '"/>' +
+      '<path class="wv-bracket" d="M ' + (right + 8) + ' ' + (top - 4) + ' L ' + (right + 12) + ' ' + (top - 4) +
+        ' L ' + (right + 12) + ' ' + (bot + 4) + ' L ' + (right + 8) + ' ' + (bot + 4) + '"/>' +
+      cells.join("")
+    );
+  };
+  const A = ms[keys[0]], B = ms[keys[1]];
+  const aW = 14*2 + A[0].length*30 + 24;
+  const aH = 18*2 + A.length*30 + 22;
+  const bH = 18*2 + B.length*30 + 22;
+  const bW = 14*2 + B[0].length*30 + 24;
+  const totalH = Math.max(aH, bH);
+  const totalW = aW + 40 + bW;
+  return wvFrame(
+    '<g>' + renderOne(A, keys[0]) + '</g>' +
+    '<g transform="translate(' + (aW + 40) + ', 0)">' + renderOne(B, keys[1]) + '</g>' +
+    '<text class="wv-label" x="' + (aW + 20) + '" y="' + (totalH/2 + 4) + '" text-anchor="middle">\u00d7</text>',
+    totalW, totalH
+  );
+}
+
+function svgEigenDirections(spec) {
+  // Normalize eigenvectors which may be a list-of-lists OR a name->vector dict
+  // (e.g. { "lambda5": [2,1], "lambda2": [1,-1] }). When given as a dict,
+  // we use the keys as labels (they encode the eigenvalue).
+  const list = vsListVectors(spec.eigenvectors).slice();
+  if (!list.length && Array.isArray(spec.vector)) list.push({label: "v", v: spec.vector});
+  if (!list.length) return "";
+
+  const dim = list[0].v.length;
+  if (dim >= 3) {
+    const vecs = {};
+    list.forEach((x, i) => { vecs[x.label || ("v" + (i+1))] = x.v; });
+    return svgVectors3D({ vectors: vecs });
+  }
+
+  // eigenvalues may be a list (parallel to eigenvectors) or a dict (name -> scalar)
+  let lamLookup = null;
+  if (Array.isArray(spec.eigenvalues)) {
+    lamLookup = (i, label) => (spec.eigenvalues[i] != null ? spec.eigenvalues[i] : null);
+  } else if (spec.eigenvalues && typeof spec.eigenvalues === "object") {
+    lamLookup = (i, label) => (label && spec.eigenvalues[label] != null ? spec.eigenvalues[label] : null);
+  }
+
+  const cx = 180, cy = 120;
+  let maxAbs = 1;
+  list.forEach(x => x.v.forEach(n => { if (typeof n === "number") maxAbs = Math.max(maxAbs, Math.abs(n)); }));
+  const sc = 70 / maxAbs;
+  const cols = ["var(--red)","var(--ink)","var(--gold)"];
+  let lines = "";
+  list.forEach((x, i) => {
+    const v = x.v;
+    if (!Array.isArray(v) || v.length < 2) return;
+    const col = cols[i % cols.length];
+    const x2 = cx + v[0]*sc, y2 = cy - v[1]*sc;
+    const x1 = cx - v[0]*sc*0.6, y1 = cy + v[1]*sc*0.6;
+    lines += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 +
+             '" stroke="' + col + '" stroke-width="2" marker-end="url(#wvArr)" color="' + col + '"/>';
+    // Derive a readable label: if the dict key looks like "lambda5", show "\u03bb=5"
+    let lab = x.label || ("v" + (i+1));
+    const m = /^lambda[_\s]*(-?\d+\.?\d*)$/i.exec(lab);
+    if (m) lab = "\u03bb=" + m[1];
+    else {
+      const lv = lamLookup ? lamLookup(i, x.label) : null;
+      if (lv != null) lab = "\u03bb" + (i+1) + "=" + lv;
+    }
+    lines += '<text class="wv-label" x="' + (x2 + 6) + '" y="' + (y2 - 6) + '" fill="' + col + '">' +
+             escapeHtml(String(lab)) + '</text>';
+  });
+  return wvFrame(wvAxes2D(cx, cy, 150, 100) + lines);
+}
+/* ---------- 2D region renderers ---------- */
+
+function svgRegionRect(spec) {
+  const r = spec.region || spec || {};
+  let xMin = -1, xMax = 1, yMin = -1, yMax = 1;
+  if (Array.isArray(r.xBounds)) { xMin = r.xBounds[0]; xMax = r.xBounds[1]; }
+  else if (Array.isArray(r.x))  { xMin = r.x[0]; xMax = r.x[1]; }
+  if (Array.isArray(r.yBounds)) { yMin = r.yBounds[0]; yMax = r.yBounds[1]; }
+  else if (Array.isArray(r.y))  { yMin = r.y[0]; yMax = r.y[1]; }
+  if (typeof r.xMin === "number") { xMin = r.xMin; xMax = r.xMax; }
+  if (typeof r.yMin === "number") { yMin = r.yMin; yMax = r.yMax; }
+  // Sometimes the region/optimization spec uses arrays-of-pairs
+  if (typeof xMax !== "number") xMax = 1;
+  if (typeof yMax !== "number") yMax = 1;
+
+  const cx = 180, cy = 130;
+  const w = Math.max(0.001, xMax - xMin);
+  const h = Math.max(0.001, yMax - yMin);
+  const sc = Math.min(120 / w, 80 / h);
+  const x0 = cx - (xMax + xMin)/2 * sc;
+  const y0 = cy + (yMax + yMin)/2 * sc;
+  const rx1 = x0 + xMin * sc, rx2 = x0 + xMax * sc;
+  const ry1 = y0 - yMin * sc, ry2 = y0 - yMax * sc;
+  const rect = '<rect x="' + rx1 + '" y="' + ry2 + '" width="' + (rx2 - rx1) +
+               '" height="' + (ry1 - ry2) + '" class="wv-region-fill" rx="2"/>';
+
+  const orient = (spec.orientation || "ccw").toLowerCase();
+  const ccw = !(orient.indexOf("clock") >= 0 || orient.indexOf("cw") >= 0);
+  const arrows = ccw
+    ? [
+        '<line x1="' + ((rx1+rx2)/2 - 14) + '" y1="' + ry1 + '" x2="' + ((rx1+rx2)/2 + 14) + '" y2="' + ry1 + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
+        '<line x1="' + rx2 + '" y1="' + ((ry1+ry2)/2 + 10) + '" x2="' + rx2 + '" y2="' + ((ry1+ry2)/2 - 10) + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
+        '<line x1="' + ((rx1+rx2)/2 + 14) + '" y1="' + ry2 + '" x2="' + ((rx1+rx2)/2 - 14) + '" y2="' + ry2 + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
+        '<line x1="' + rx1 + '" y1="' + ((ry1+ry2)/2 - 10) + '" x2="' + rx1 + '" y2="' + ((ry1+ry2)/2 + 10) + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>'
+      ]
+    : [
+        '<line x1="' + ((rx1+rx2)/2 + 14) + '" y1="' + ry1 + '" x2="' + ((rx1+rx2)/2 - 14) + '" y2="' + ry1 + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
+        '<line x1="' + rx1 + '" y1="' + ((ry1+ry2)/2 + 10) + '" x2="' + rx1 + '" y2="' + ((ry1+ry2)/2 - 10) + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
+        '<line x1="' + ((rx1+rx2)/2 - 14) + '" y1="' + ry2 + '" x2="' + ((rx1+rx2)/2 + 14) + '" y2="' + ry2 + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
+        '<line x1="' + rx2 + '" y1="' + ((ry1+ry2)/2 - 10) + '" x2="' + rx2 + '" y2="' + ((ry1+ry2)/2 + 10) + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>'
+      ];
+  return wvFrame(
+    wvAxes2D(cx, cy, 140, 90) + rect + arrows.join("") +
+    '<text class="wv-label" x="' + cx + '" y="' + ((ry1+ry2)/2 + 5) + '" text-anchor="middle">R</text>' +
+    '<text class="wv-note" x="' + cx + '" y="' + (ry1 + 22) + '" text-anchor="middle">' +
+      (ccw ? "CCW boundary" : "CW boundary") + '</text>'
+  );
+}
+
+function svgRegionTri(spec) {
+  const verts = spec.vertices || [];
+  if (!Array.isArray(verts) || verts.length < 3) return svgRegionGeneral(spec);
+  const cx = 180, cy = 130;
+  const xs = verts.map(v => v[0]), ys = verts.map(v => v[1]);
+  const xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
+  const yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys);
+  const sc = Math.min(120 / Math.max(1, xMax - xMin), 80 / Math.max(1, yMax - yMin));
+  const px = function(p) { return [cx + (p[0] - (xMin+xMax)/2) * sc, cy - (p[1] - (yMin+yMax)/2) * sc]; };
+  const P = verts.map(px);
+  const poly = '<polygon points="' + P.map(p => p.join(",")).join(" ") + '" class="wv-region-fill"/>';
+  const orient = (spec.orientation || "clockwise").toLowerCase();
+  const cw = orient.indexOf("clock") >= 0 || orient === "cw";
+  let arrows = "";
+  // If CW orientation requested, draw arrows in vertex order (cw); else reverse
+  const seq = cw ? P : P.slice().reverse();
+  for (let i = 0; i < seq.length; i++) {
+    const a = seq[i], b = seq[(i+1) % seq.length];
+    const mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2;
+    const dx = b[0]-a[0], dy = b[1]-a[1];
+    const len = Math.max(0.001, Math.hypot(dx, dy));
+    const ux = dx/len*10, uy = dy/len*10;
+    arrows += '<line x1="' + (mx - ux) + '" y1="' + (my - uy) +
+              '" x2="' + (mx + ux) + '" y2="' + (my + uy) +
+              '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>';
+  }
+  // Vertex dots
+  let dots = "";
+  P.forEach((p, i) => {
+    dots += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="2.5" fill="var(--ink)"/>';
+    const v = verts[i];
+    dots += '<text class="wv-note" x="' + (p[0] + 5) + '" y="' + (p[1] - 4) + '">(' +
+            numTex(v[0]) + ',' + numTex(v[1]) + ')</text>';
+  });
+  return wvFrame(
+    wvAxes2D(cx, cy, 140, 90) + poly + arrows + dots +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy - 80) + '" text-anchor="middle">' +
+      (cw ? "CW boundary" : "CCW boundary") + '</text>'
+  );
+}
+
+function svgRegionPolar(spec) {
+  const cx = 180, cy = 130;
+  const rad = 70;
+  let thStart = 0, thEnd = Math.PI;
+  if (spec.region && Array.isArray(spec.region.thetaBounds)) {
+    thStart = spec.region.thetaBounds[0]; thEnd = spec.region.thetaBounds[1];
+  } else if (spec.bounds && Array.isArray(spec.bounds.theta)) {
+    thStart = spec.bounds.theta[0]; thEnd = spec.bounds.theta[1];
+  }
+  const x1 = cx + rad * Math.cos(thStart);
+  const y1 = cy - rad * Math.sin(thStart);
+  const x2 = cx + rad * Math.cos(thEnd);
+  const y2 = cy - rad * Math.sin(thEnd);
+  const largeArc = Math.abs(thEnd - thStart) > Math.PI ? 1 : 0;
+  const arc = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 +
+              ' A ' + rad + ' ' + rad + ' 0 ' + largeArc + ' 0 ' + x2 + ' ' + y2 + ' Z';
+  return wvFrame(
+    wvAxes2D(cx, cy, 130, 80) +
+    '<path d="' + arc + '" class="wv-region-fill"/>' +
+    '<text class="wv-label" x="' + (cx + 8) + '" y="' + (cy - 8) + '">R</text>' +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + rad + 22) + '" text-anchor="middle">polar region</text>'
+  );
+}
+
+function svgRegionGeneral(spec) {
+  const cx = 180, cy = 130;
+  return wvFrame(
+    wvAxes2D(cx, cy, 140, 90) +
+    '<path d="M ' + (cx-60) + ' ' + (cy-30) +
+           ' C ' + (cx-30) + ' ' + (cy-55) + ', ' + (cx+30) + ' ' + (cy-50) + ', ' + (cx+60) + ' ' + (cy-25) +
+           ' C ' + (cx+70) + ' ' + (cy+10) + ', ' + (cx+30) + ' ' + (cy+40) + ', ' + (cx-15) + ' ' + (cy+38) +
+           ' C ' + (cx-60) + ' ' + (cy+30) + ', ' + (cx-80) + ' ' + (cy+5)  + ', ' + (cx-60) + ' ' + (cy-30) + ' Z" ' +
+      'class="wv-region-fill"/>' +
+    '<text class="wv-label" x="' + (cx + 6) + '" y="' + (cy + 4) + '">R</text>'
+  );
+}
+/* ---------- 3D surface concept sketches ---------- */
+
+function svgSurfaceParaboloid(spec) {
+  const cx = 180, cy = 130;
+  const bowl =
+    '<ellipse cx="' + cx + '" cy="' + (cy + 40) + '" rx="80" ry="18" fill="none" stroke="var(--ink)" stroke-width="1.5"/>' +
+    '<path d="M ' + (cx - 80) + ' ' + (cy + 40) +
+           ' C ' + (cx - 80) + ' ' + (cy - 40) + ', ' + (cx + 80) + ' ' + (cy - 40) + ', ' + (cx + 80) + ' ' + (cy + 40) +
+           '" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.5" opacity="0.6"/>' +
+    '<ellipse cx="' + cx + '" cy="' + (cy - 30) + '" rx="80" ry="14" fill="none" stroke="var(--ink-mute)" stroke-width="1" stroke-dasharray="3 3"/>';
+  const normal =
+    '<line x1="' + cx + '" y1="' + (cy - 30) + '" x2="' + cx + '" y2="' + (cy - 80) +
+      '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
+    '<text class="wv-label" x="' + (cx + 8) + '" y="' + (cy - 70) + '" fill="var(--gold)">n (upward)</text>';
+  const baseRegion =
+    '<ellipse cx="' + cx + '" cy="' + (cy + 40) + '" rx="80" ry="18" fill="#F0EBDF" opacity="0.7"/>' +
+    '<text class="wv-note" x="' + (cx + 88) + '" y="' + (cy + 44) + '">base region D</text>';
+  return wvFrame(
+    baseRegion + bowl + normal +
+    '<text class="wv-label" x="' + (cx - 100) + '" y="' + (cy + 4) + '">S</text>',
+    360, 220
+  );
+}
+
+function svgSurfaceDisk(spec) {
+  const cx = 180, cy = 130;
+  const orient = (spec.boundaryOrientation || "ccw").toLowerCase();
+  const ccw = !(orient.indexOf("clock") >= 0 || orient === "cw");
+  return wvFrame(
+    '<ellipse cx="' + cx + '" cy="' + (cy + 20) + '" rx="80" ry="22" class="wv-region-fill"/>' +
+    '<line x1="' + cx + '" y1="' + (cy + 20) + '" x2="' + cx + '" y2="' + (cy - 50) +
+      '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
+    '<text class="wv-label" x="' + (cx + 8) + '" y="' + (cy - 40) + '" fill="var(--gold)">n (upward)</text>' +
+    (ccw
+      ? '<line x1="' + (cx + 70) + '" y1="' + (cy + 24) + '" x2="' + (cx + 70) + '" y2="' + (cy + 8) + '" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>'
+      : '<line x1="' + (cx + 70) + '" y1="' + (cy + 8)  + '" x2="' + (cx + 70) + '" y2="' + (cy + 24) + '" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>') +
+    '<text class="wv-label" x="' + (cx + 75) + '" y="' + (cy + 18) + '" fill="var(--red)">\u2202S</text>' +
+    '<text class="wv-label" x="' + (cx - 60) + '" y="' + (cy + 24) + '">S (disk)</text>' +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + 60) + '" text-anchor="middle">right-hand rule: n + ' +
+      (ccw ? "CCW" : "CW") + ' boundary</text>',
+    360, 220
+  );
+}
+
+function svgSurfaceTangent(spec) {
+  const cx = 180, cy = 130;
+  // Sheet of surface + tangent plane patch + small normal
+  return wvFrame(
+    '<path d="M ' + (cx - 80) + ' ' + (cy + 30) +
+           ' Q ' + (cx - 40) + ' ' + (cy - 30) + ', ' + cx + ' ' + (cy - 10) +
+           ' Q ' + (cx + 40) + ' ' + (cy + 10) + ', ' + (cx + 80) + ' ' + (cy - 20) +
+           '" fill="none" stroke="var(--ink)" stroke-width="1.5"/>' +
+    // tangent plane (parallelogram)
+    '<polygon points="' + (cx - 50) + ',' + (cy + 20) + ' ' +
+                         (cx + 50) + ',' + (cy + 0)  + ' ' +
+                         (cx + 60) + ',' + (cy - 30) + ' ' +
+                         (cx - 40) + ',' + (cy - 10) +
+      '" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.5" opacity="0.7"/>' +
+    '<circle cx="' + cx + '" cy="' + (cy - 5) + '" r="3" fill="var(--ink)"/>' +
+    '<text class="wv-label" x="' + (cx + 6) + '" y="' + (cy + 8) + '">(a,b)</text>' +
+    '<line x1="' + cx + '" y1="' + (cy - 5) + '" x2="' + cx + '" y2="' + (cy - 55) +
+      '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
+    '<text class="wv-label" x="' + (cx + 8) + '" y="' + (cy - 45) + '" fill="var(--gold)">\u2207f</text>' +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + 60) + '" text-anchor="middle">tangent plane at (a,b)</text>',
+    360, 220
+  );
+}
+
+function svgSurfaceCylinder(spec) {
+  const cx = 180, cy = 130;
+  // Cylindrical solid: two ellipses + side lines + dashed centerline (z axis)
+  return wvFrame(
+    '<ellipse cx="' + cx + '" cy="' + (cy + 50) + '" rx="60" ry="14" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.5"/>' +
+    '<ellipse cx="' + cx + '" cy="' + (cy - 30) + '" rx="60" ry="14" fill="var(--surface)" stroke="var(--red)" stroke-width="1.5"/>' +
+    '<line x1="' + (cx - 60) + '" y1="' + (cy + 50) + '" x2="' + (cx - 60) + '" y2="' + (cy - 30) + '" stroke="var(--red)" stroke-width="1.5"/>' +
+    '<line x1="' + (cx + 60) + '" y1="' + (cy + 50) + '" x2="' + (cx + 60) + '" y2="' + (cy - 30) + '" stroke="var(--red)" stroke-width="1.5"/>' +
+    '<line x1="' + cx + '" y1="' + (cy + 50) + '" x2="' + cx + '" y2="' + (cy - 60) +
+      '" stroke="var(--ink-mute)" stroke-width="1" stroke-dasharray="3 3"/>' +
+    '<text class="wv-axis-label" x="' + (cx + 4) + '" y="' + (cy - 56) + '">z</text>' +
+    '<text class="wv-label" x="' + (cx - 88) + '" y="' + cy + '">cylinder</text>' +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + 80) + '" text-anchor="middle">use cylindrical coords (r, \u03b8, z)</text>',
+    360, 220
+  );
+}
+
+/* ---------- 3D curve concept sketches ---------- */
+
+function svgCurve3D(spec) {
+  const cx = 180, cy = 140;
+  // Use endpoints (start, end) if present, plus a smooth curve between them
+  const start = spec.start || (spec.points && spec.points.start) || null;
+  const end   = spec.end   || (spec.points && spec.points.end)   || null;
+  const things = [];
+  if (Array.isArray(start)) things.push(start);
+  if (Array.isArray(end))   things.push(end);
+  const scale = wv3DScale(things.length ? things : [[1,1,1]]);
+  const project = function(p) {
+    const xy = wv3DProject(p);
+    return [cx + xy[0]*scale, cy + xy[1]*scale];
+  };
+
+  let curve = "";
+  if (Array.isArray(start) && Array.isArray(end)) {
+    const A = project(start), B = project(end);
+    const mid = [(A[0]+B[0])/2 + 14, (A[1]+B[1])/2 - 24];
+    curve =
+      '<path d="M ' + A[0] + ' ' + A[1] + ' Q ' + mid[0] + ' ' + mid[1] + ', ' + B[0] + ' ' + B[1] +
+        '" fill="none" stroke="var(--red)" stroke-width="2"/>' +
+      // arrow midway
+      '<polygon points="' + (mid[0]) + ',' + (mid[1]) + ' ' + (mid[0]-6) + ',' + (mid[1]+4) + ' ' + (mid[0]-6) + ',' + (mid[1]-4) + '" fill="var(--red)"/>' +
+      '<circle cx="' + A[0] + '" cy="' + A[1] + '" r="3" fill="var(--ink)"/>' +
+      '<text class="wv-label" x="' + (A[0]-6) + '" y="' + (A[1]+14) + '">start</text>' +
+      '<circle cx="' + B[0] + '" cy="' + B[1] + '" r="3" fill="var(--ink)"/>' +
+      '<text class="wv-label" x="' + (B[0]+6) + '" y="' + (B[1]-6) + '">end</text>';
+  } else if (Array.isArray(spec.curve) && spec.curve.length) {
+    // Generic squiggle
+    const A = project([0,0,0]);
+    const B = project([1.2, 0.7, 1.0]);
+    curve =
+      '<path d="M ' + A[0] + ' ' + A[1] + ' C ' + (A[0]+30) + ' ' + (A[1]-20) + ', ' + (B[0]-20) + ' ' + (B[1]+10) + ', ' + B[0] + ' ' + B[1] +
+        '" fill="none" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>';
+  } else {
+    const A = project([-0.6, -0.4, -0.2]);
+    const B = project([1.2, 0.5, 1.0]);
+    curve =
+      '<path d="M ' + A[0] + ' ' + A[1] + ' C ' + (A[0]+30) + ' ' + (A[1]-20) + ', ' + (B[0]-20) + ' ' + (B[1]+10) + ', ' + B[0] + ' ' + B[1] +
+        '" fill="none" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>';
+  }
+
+  // Tangent vector at start if velocity/tangent specified
+  let tan = "";
+  if (Array.isArray(spec.velocity) || Array.isArray(spec.unitTangent)) {
+    const v = spec.velocity || spec.unitTangent;
+    const base = Array.isArray(spec.point) ? spec.point : (Array.isArray(start) ? start : [0,0,0]);
+    const A = project(base);
+    const T = project(base.map((c, i) => (c||0) + (v[i]||0) * 0.6));
+    tan =
+      '<line x1="' + A[0] + '" y1="' + A[1] + '" x2="' + T[0] + '" y2="' + T[1] +
+        '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
+      '<text class="wv-label" x="' + (T[0]+4) + '" y="' + (T[1]-4) + '" fill="var(--gold)">T</text>';
+  }
+
+  return wvFrame(wvAxes3D(cx, cy, scale) + curve + tan, 360, 260);
+}
+
+function svgCurveHelix(spec) {
+  const cx = 180, cy = 140;
+  // stylized helix
+  let path = "";
+  const turns = 2.4, samples = 80, r = 30, dz = 60;
+  let prev = null;
+  for (let i = 0; i <= samples; i++) {
+    const t = i / samples;
+    const ang = t * turns * 2 * Math.PI;
+    const x = Math.cos(ang) * r;
+    const y = Math.sin(ang) * r * 0.35; // squash for axonometric look
+    const z = -dz/2 + t * dz;
+    const px = cx + x - z * 0.5;
+    const py = cy - z + y;
+    path += (i === 0 ? "M " : " L ") + px + " " + py;
+  }
+  return wvFrame(
+    wvAxes3D(cx, cy, 50) +
+    '<path d="' + path + '" fill="none" stroke="var(--red)" stroke-width="2"/>' +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + 80) + '" text-anchor="middle">helix curve</text>',
+    360, 240
+  );
+}
+
+/* ---------- Vector field renderers ---------- */
+
+function svgField2D(spec) {
+  const cx = 180, cy = 120;
+  // Sample a grid of arrows. If a field formula is given, we'll just draw a
+  // stylized swirly grid (we don't parse arbitrary expressions). If point/
+  // curl/divergence are given, label them.
+  const grid = [];
+  const N = 5;
+  const span = 60;
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      const x = cx - span + (i / (N-1)) * 2*span;
+      const y = cy - span*0.7 + (j / (N-1)) * 2*span*0.7;
+      // Simple rotational field for visualization
+      const dx = -(y - cy)*0.15;
+      const dy = (x - cx)*0.15;
+      const len = Math.hypot(dx, dy);
+      const ux = (dx/len)*10, uy = (dy/len)*10;
+      grid.push('<line x1="' + (x - ux) + '" y1="' + (y - uy) + '" x2="' + (x + ux) + '" y2="' + (y + uy) +
+                '" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#wvArr)" color="var(--ink-soft)" opacity="0.7"/>');
+    }
+  }
+  let pt = "";
+  if (Array.isArray(spec.point)) {
+    const sc = wv2DScale({p: spec.point});
+    const px = cx + spec.point[0] * sc;
+    const py = cy - spec.point[1] * sc;
+    pt = '<circle cx="' + px + '" cy="' + py + '" r="4" fill="var(--red)"/>' +
+         '<text class="wv-label" x="' + (px + 6) + '" y="' + (py - 6) + '" fill="var(--red)">P</text>';
+  }
+  return wvFrame(wvAxes2D(cx, cy, 130, 90) + grid.join("") + pt);
+}
+
+function svgField3D(spec) {
+  const cx = 180, cy = 140;
+  // Stylized 3D field: a few arrows splayed around origin
+  const arrows = [];
+  const dirs = [[1,0,0],[0,1,0],[0,0,1],[1,1,0],[0,1,1],[1,0,1]];
+  dirs.forEach((d, i) => {
+    const E = wv3DProject(d.map(c => c*0.9));
+    const ex = cx + E[0]*55, ey = cy + E[1]*55;
+    arrows.push('<line x1="' + cx + '" y1="' + cy + '" x2="' + ex + '" y2="' + ey +
+                '" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#wvArr)" color="var(--ink-soft)" opacity="0.7"/>');
+  });
+  let pt = "";
+  if (Array.isArray(spec.point)) {
+    const E = wv3DProject(spec.point);
+    const px = cx + E[0]*45, py = cy + E[1]*45;
+    pt = '<circle cx="' + px + '" cy="' + py + '" r="4" fill="var(--red)"/>' +
+         '<text class="wv-label" x="' + (px + 6) + '" y="' + (py - 6) + '" fill="var(--red)">P</text>';
+  }
+  return wvFrame(wvAxes3D(cx, cy, 50) + arrows.join("") + pt, 360, 240);
+}
+
+/* ---------- Gradient / critical-point sketches ---------- */
+
+function svgGradient2D(spec) {
+  const cx = 180, cy = 120;
+  // Stylized level curves (concentric ellipses) + gradient arrow + direction arrow
+  let levels = "";
+  for (let k = 1; k <= 4; k++) {
+    levels += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (25*k) + '" ry="' + (16*k) +
+              '" fill="none" stroke="var(--ink-mute)" stroke-width="0.8" stroke-dasharray="3 3" opacity="' + (0.7 - k*0.12) + '"/>';
+  }
+  // Base point
+  const base = Array.isArray(spec.point) ? spec.point : (Array.isArray(spec.basePoint) ? spec.basePoint : null);
+  let pt = "";
+  let grad = "";
+  let dir = "";
+  if (Array.isArray(base) && base.length >= 2) {
+    const sc = 22;
+    const px = cx + base[0]*sc, py = cy - base[1]*sc;
+    pt = '<circle cx="' + px + '" cy="' + py + '" r="3.5" fill="var(--red)"/>' +
+         '<text class="wv-label" x="' + (px + 6) + '" y="' + (py + 14) + '" fill="var(--red)">P</text>';
+    const g = spec.gradient || spec.gradientAtBase;
+    if (Array.isArray(g) && g.length >= 2) {
+      const gs = 24 / Math.max(0.1, Math.max(Math.abs(g[0]), Math.abs(g[1])));
+      const gx = px + g[0]*gs, gy = py - g[1]*gs;
+      grad = '<line x1="' + px + '" y1="' + py + '" x2="' + gx + '" y2="' + gy +
+             '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
+             '<text class="wv-label" x="' + (gx + 4) + '" y="' + (gy - 4) + '" fill="var(--gold)">\u2207f</text>';
+    }
+    const u = spec.unitDirection || spec.directionVector;
+    if (Array.isArray(u) && u.length >= 2) {
+      const dx = px + u[0]*30, dy = py - u[1]*30;
+      dir = '<line x1="' + px + '" y1="' + py + '" x2="' + dx + '" y2="' + dy +
+            '" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>' +
+            '<text class="wv-label" x="' + (dx + 4) + '" y="' + (dy + 12) + '" fill="var(--red)">u</text>';
+    }
+  }
+  return wvFrame(
+    wvAxes2D(cx, cy, 140, 90) +
+    levels +
+    pt + grad + dir +
+    '<text class="wv-note" x="' + (cx - 80) + '" y="' + (cy - 80) + '">level curves of f</text>'
+  );
+}
+
+function svgCritical2D(spec) {
+  const cx = 180, cy = 120;
+  // Show concentric closed curves around the critical point with classification label
+  const cls = (spec.classification || "").toLowerCase();
+  const cp = Array.isArray(spec.criticalPoint) ? spec.criticalPoint : [0,0];
+  const sc = 22;
+  const px = cx + cp[0]*sc, py = cy - cp[1]*sc;
+  // Saddle: hyperbolic levels; min/max: nested ellipses
+  let levels = "";
+  if (cls.indexOf("saddle") >= 0) {
+    // Pairs of hyperbolas
+    for (let k = 1; k <= 3; k++) {
+      const s = k * 14;
+      levels += '<path d="M ' + (px - 50) + ' ' + (py - s) +
+                ' Q ' + px + ' ' + (py + 2) + ', ' + (px + 50) + ' ' + (py - s) +
+                '" fill="none" stroke="var(--ink-mute)" stroke-width="0.9" stroke-dasharray="3 3"/>';
+      levels += '<path d="M ' + (px - 50) + ' ' + (py + s) +
+                ' Q ' + px + ' ' + (py - 2) + ', ' + (px + 50) + ' ' + (py + s) +
+                '" fill="none" stroke="var(--ink-mute)" stroke-width="0.9" stroke-dasharray="3 3"/>';
+    }
+  } else {
+    for (let k = 1; k <= 4; k++) {
+      levels += '<ellipse cx="' + px + '" cy="' + py + '" rx="' + (16*k) + '" ry="' + (12*k) +
+                '" fill="none" stroke="var(--ink-mute)" stroke-width="0.9" stroke-dasharray="3 3" opacity="' + (0.75 - k*0.14) + '"/>';
+    }
+  }
+  return wvFrame(
+    wvAxes2D(cx, cy, 140, 90) +
+    levels +
+    '<circle cx="' + px + '" cy="' + py + '" r="4" fill="var(--red)"/>' +
+    '<text class="wv-label" x="' + (px + 6) + '" y="' + (py - 6) + '" fill="var(--red)">critical pt</text>' +
+    (cls
+      ? '<text class="wv-note" x="' + cx + '" y="' + (cy + 80) + '" text-anchor="middle">' + escapeHtml(cls) + '</text>'
+      : "")
+  );
 }
 
 document.addEventListener("DOMContentLoaded", init);
