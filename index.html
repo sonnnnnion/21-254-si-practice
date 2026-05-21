@@ -6417,7 +6417,7 @@ async function renderWalkthroughDetail(sessionId) {
         return (
           '<div class="walk-formula">' +
             '<div class="walk-formula-name">' + escapeHtml(f.name || "") + '</div>' +
-            '<div class="walk-formula-latex">' + (f.latex ? '\\(' + f.latex + '\\)' : "") + '</div>' +
+            '<div class="walk-formula-latex">' + (f.latex ? texInline(f.latex) : "") + '</div>' +
             (f.plainEnglish ? '<div class="walk-formula-plain">' + escapeHtml(f.plainEnglish) + '</div>' : "") +
           '</div>'
         );
@@ -6441,8 +6441,8 @@ async function renderWalkthroughDetail(sessionId) {
         const explain = n.reason || n.why || "";
         return (
           '<div class="walk-notation-item">' +
-            '<div class="walk-notation-cell walk-notation-bad">' + (n.bad ? '\\(' + n.bad + '\\)' : "") + '</div>' +
-            '<div class="walk-notation-cell walk-notation-good">' + (n.good ? '\\(' + n.good + '\\)' : "") + '</div>' +
+            '<div class="walk-notation-cell walk-notation-bad">' + (n.bad ? texInline(n.bad) : "") + '</div>' +
+            '<div class="walk-notation-cell walk-notation-good">' + (n.good ? texInline(n.good) : "") + '</div>' +
             (explain ? '<div class="walk-notation-reason">' + escapeHtml(explain) + '</div>' : "") +
           '</div>'
         );
@@ -6536,6 +6536,37 @@ async function renderWalkthroughDetail(sessionId) {
         <a,b,c>-style angle-bracket vectors gets wrapped in \(...\) with
         literal angle brackets converted to \langle/\rangle. Prose tokens
         pass through escapeHtml unchanged. */
+/* Math wrappers that detect existing LaTeX delimiters in the source string
+   and avoid double-wrapping. The walkthrough JSONs are inconsistent:
+   - Some fields contain pure expressions like "u\\cdot v=-8"            (need \(...\))
+   - Some contain expressions with their own \[...\] or \(...\) framing  (already self-delimited)
+   - Some are mixed prose+math like "The triangle has base \(2\) and ..." (already self-delimited)
+   Wrapping the self-delimited cases in extra \(...\) breaks rendering. */
+function texInline(s) {
+  if (s == null) return "";
+  const str = String(s).trim();
+  if (!str) return "";
+  // Has explicit math delimiters (\( or \[ — and by extension their closing
+  // partners somewhere later) -> pass through; MathJax processes the delimiters
+  if (/\\[\(\[]/.test(str)) {
+    return '<span class="tex2jax_process">' + str + '</span>';
+  }
+  // Pure expression -> wrap as inline math
+  return '<span class="tex2jax_process">\\(' + str + '\\)</span>';
+}
+
+function texBlock(s) {
+  if (s == null) return "";
+  const str = String(s).trim();
+  if (!str) return "";
+  // Already has delimiters (inline or display) -> pass through
+  if (/\\[\(\[]/.test(str)) {
+    return '<span class="tex2jax_process">' + str + '</span>';
+  }
+  // Pure expression -> wrap as display math
+  return '<span class="tex2jax_process">\\[' + str + '\\]</span>';
+}
+
 function renderTextOrLatex(s) {
   if (s == null) return "";
   const str = String(s);
@@ -6624,13 +6655,13 @@ function renderWalkProblem(p, i, total, sessionId) {
         "Walkthrough steps (" + p.walkthrough.length + ")",
         '<div class="walk-steps">' + p.walkthrough.map((st, k) => {
           const lbl = st.label
-            ? '<div class="walk-step-label"><span class="tex2jax_process">' + st.label + '</span></div>'
+            ? '<div class="walk-step-label">' + renderTextOrLatex(st.label) + '</div>'
             : "";
           const lat = st.latex
-            ? '<div class="walk-step-latex">\\(' + st.latex + '\\)</div>'
+            ? '<div class="walk-step-latex">' + texBlock(st.latex) + '</div>'
             : "";
           const say = st.sayOutLoud
-            ? '<div class="walk-step-say">' + escapeHtml(st.sayOutLoud) + '</div>'
+            ? '<div class="walk-step-say">' + renderTextOrLatex(st.sayOutLoud) + '</div>'
             : "";
           return '<div class="walk-step"><div class="walk-step-n">' + (k+1) + '</div>' +
                  '<div class="walk-step-body">' + lbl + lat + say + '</div></div>';
@@ -6640,13 +6671,13 @@ function renderWalkProblem(p, i, total, sessionId) {
     : "";
 
   const finalHtml = p.finalAnswerLatex
-    ? walkReveal("Final answer", '<div class="walk-final">\\(' + p.finalAnswerLatex + '\\)</div>',
+    ? walkReveal("Final answer", '<div class="walk-final">' + texBlock(p.finalAnswerLatex) + '</div>',
         sessionId + ":" + p.problemId + ":final")
     : "";
 
   const mistakesHtml = Array.isArray(p.commonMistakes) && p.commonMistakes.length
     ? walkReveal("Common mistakes",
-        '<ul class="walk-mistakes">' + p.commonMistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join("") + '</ul>',
+        '<ul class="walk-mistakes">' + p.commonMistakes.map(m => '<li>' + renderTextOrLatex(m) + '</li>').join("") + '</ul>',
         sessionId + ":" + p.problemId + ":mistakes")
     : "";
 
@@ -6897,10 +6928,9 @@ function prettyKeyName(k) {
 
 function formatSpecValue(key, v) {
   if (typeof v === "string") {
-    if (/\\\(|\\\[|\\\\|\^|_/.test(v)) {
-      return '<span class="tex2jax_process">\\(' + v + '\\)</span>';
-    }
-    return escapeHtml(v);
+    // Defer to renderTextOrLatex which handles \(...\) delimited LaTeX,
+    // bare backslash commands, AND implicit math (f_x, <a,b,c>, x^2)
+    return renderTextOrLatex(v);
   }
   if (typeof v === "number" || typeof v === "boolean") {
     return '<code>' + escapeHtml(String(v)) + '</code>';
@@ -6999,15 +7029,29 @@ function wv2DScale(vectors) {
   return 95 / maxAbs;
 }
 
+/* Parse an orientation string ("clockwise", "ccw", "counter-clockwise", "CW", etc.)
+   to a boolean: true=CW, false=CCW. Checks "counter" BEFORE "clock" so we don't
+   mis-treat "counterclockwise" as clockwise just because the substring "clock" matches. */
+function parseOrientCW(orient, defaultCW) {
+  const s = String(orient || "").toLowerCase();
+  if (s.indexOf("counter") >= 0 || s.indexOf("anti") >= 0 || s === "ccw") return false;
+  if (s.indexOf("clock") >= 0 || s === "cw") return true;
+  return defaultCW;
+}
+
 function wvAxes2D(cx, cy, halfW, halfH) {
   halfW = halfW || 140; halfH = halfH || 90;
+  // Axis lines stop a few pixels short of the label so the arrowhead and label
+  // don't crowd each other.
+  const xTip = cx + halfW;
+  const yTip = cy - halfH;
   return (
-    '<line x1="' + (cx - halfW) + '" y1="' + cy + '" x2="' + (cx + halfW) + '" y2="' + cy +
+    '<line x1="' + (cx - halfW) + '" y1="' + cy + '" x2="' + xTip + '" y2="' + cy +
       '" stroke="var(--ink-mute)" stroke-width="1" marker-end="url(#wvArrSmall)"/>' +
-    '<line x1="' + cx + '" y1="' + (cy + halfH) + '" x2="' + cx + '" y2="' + (cy - halfH) +
+    '<line x1="' + cx + '" y1="' + (cy + halfH) + '" x2="' + cx + '" y2="' + yTip +
       '" stroke="var(--ink-mute)" stroke-width="1" marker-end="url(#wvArrSmall)"/>' +
-    '<text class="wv-axis-label" x="' + (cx + halfW + 4) + '" y="' + (cy + 4) + '">x</text>' +
-    '<text class="wv-axis-label" x="' + (cx + 4) + '" y="' + (cy - halfH - 2) + '">y</text>'
+    '<text class="wv-axis-label" x="' + (xTip + 10) + '" y="' + (cy + 4) + '">x</text>' +
+    '<text class="wv-axis-label" x="' + (cx + 8) + '" y="' + (yTip - 6) + '">y</text>'
   );
 }
 
@@ -7364,14 +7408,38 @@ function svgMatrixGroup(spec) {
   }
   if (!M) return "";
 
+  // Parse a column reference into a zero-based column index.
+  // Accepts: numbers ("0", "1", 2), 1-indexed numeric strings,
+  // standard variable names ("x"->0, "y"->1, "z"->2, "w"->3),
+  // and subscripted names ("x_1"->0, "x_3"->2).
+  function colIndex(ref, oneIndexed) {
+    if (ref == null) return -1;
+    if (typeof ref === "number") {
+      return oneIndexed ? ref - 1 : ref;
+    }
+    const s = String(ref).trim();
+    // x_N or x_{N} -> N-1
+    const sub = /[a-zA-Z]_\{?(\d+)\}?$/.exec(s);
+    if (sub) return parseInt(sub[1], 10) - 1;
+    // Plain integer string
+    if (/^\d+$/.test(s)) {
+      const n = parseInt(s, 10);
+      return oneIndexed ? n - 1 : n;
+    }
+    // Single variable letter: x,y,z,w -> 0,1,2,3
+    const map = { x: 0, y: 1, z: 2, w: 3 };
+    if (s.length === 1 && map[s.toLowerCase()] != null) return map[s.toLowerCase()];
+    return -1;
+  }
+
   const pivotRaw = spec.pivotColumns || spec.pivotColumnsOneIndexed || [];
-  const pivots = new Set(pivotRaw.map(n => Number(n) - (spec.pivotColumnsOneIndexed ? 1 : 0)));
+  const pivotsOneIdx = !!spec.pivotColumnsOneIndexed;
+  const pivots = new Set();
+  pivotRaw.forEach(p => { const i = colIndex(p, pivotsOneIdx); if (i >= 0) pivots.add(i); });
+
   const frees = new Set();
   if (Array.isArray(spec.freeVariables)) {
-    spec.freeVariables.forEach(f => {
-      const m = /(\d+)$/.exec(String(f));
-      if (m) frees.add(Number(m[1]) - 1);
-    });
+    spec.freeVariables.forEach(f => { const i = colIndex(f, false); if (i >= 0) frees.add(i); });
   }
 
   const cell = 36;
@@ -7545,107 +7613,289 @@ function svgRegionRect(spec) {
   else if (Array.isArray(r.y))  { yMin = r.y[0]; yMax = r.y[1]; }
   if (typeof r.xMin === "number") { xMin = r.xMin; xMax = r.xMax; }
   if (typeof r.yMin === "number") { yMin = r.yMin; yMax = r.yMax; }
-  // Sometimes the region/optimization spec uses arrays-of-pairs
   if (typeof xMax !== "number") xMax = 1;
   if (typeof yMax !== "number") yMax = 1;
 
-  const cx = 180, cy = 130;
-  const w = Math.max(0.001, xMax - xMin);
-  const h = Math.max(0.001, yMax - yMin);
-  const sc = Math.min(120 / w, 80 / h);
-  const x0 = cx - (xMax + xMin)/2 * sc;
-  const y0 = cy + (yMax + yMin)/2 * sc;
-  const rx1 = x0 + xMin * sc, rx2 = x0 + xMax * sc;
-  const ry1 = y0 - yMin * sc, ry2 = y0 - yMax * sc;
-  const rect = '<rect x="' + rx1 + '" y="' + ry2 + '" width="' + (rx2 - rx1) +
-               '" height="' + (ry1 - ry2) + '" class="wv-region-fill" rx="2"/>';
+  // Layout — same approach as svgRegionTri: axes through data origin (0,0)
+  const W = 360, H = 240, margin = 38;
+  // Include the origin so axes always pass through (0,0)
+  const xLo = Math.min(0, xMin), xHi = Math.max(0, xMax);
+  const yLo = Math.min(0, yMin), yHi = Math.max(0, yMax);
+  const xRange = Math.max(0.001, xHi - xLo);
+  const yRange = Math.max(0.001, yHi - yLo);
+  const sc = Math.min((W - 2*margin) / xRange, (H - 2*margin) / yRange);
+  const originX = margin - xLo * sc;
+  const originY = margin + yHi * sc;
 
-  const orient = (spec.orientation || "ccw").toLowerCase();
-  const ccw = !(orient.indexOf("clock") >= 0 || orient.indexOf("cw") >= 0);
+  const rx1 = originX + xMin * sc, rx2 = originX + xMax * sc;
+  const ry1 = originY - yMin * sc, ry2 = originY - yMax * sc;
+  const rect = '<rect x="' + Math.min(rx1, rx2) + '" y="' + Math.min(ry1, ry2) +
+               '" width="' + Math.abs(rx2 - rx1) + '" height="' + Math.abs(ry1 - ry2) +
+               '" class="wv-region-fill" rx="2"/>';
+
+  // Axes through the data origin
+  const xAxisL = Math.min(originX - 10, margin - 18);
+  const xAxisR = Math.max(originX + 10, W - margin + 18);
+  const yAxisT = Math.min(originY - 10, margin - 18);
+  const yAxisB = Math.max(originY + 10, H - margin + 18);
+  const axes =
+    '<line x1="' + xAxisL + '" y1="' + originY + '" x2="' + xAxisR + '" y2="' + originY +
+      '" stroke="var(--ink-mute)" stroke-width="1" marker-end="url(#wvArrSmall)"/>' +
+    '<line x1="' + originX + '" y1="' + yAxisB + '" x2="' + originX + '" y2="' + yAxisT +
+      '" stroke="var(--ink-mute)" stroke-width="1" marker-end="url(#wvArrSmall)"/>' +
+    '<text class="wv-axis-label" x="' + (xAxisR + 8) + '" y="' + (originY + 4) + '">x</text>' +
+    '<text class="wv-axis-label" x="' + (originX + 8) + '" y="' + (yAxisT - 4) + '">y</text>';
+
+  const ccw = !parseOrientCW(spec.orientation, false);
+  // Boundary orientation arrows at midpoints of each edge
+  const midTop = [(rx1+rx2)/2, ry2], midBot = [(rx1+rx2)/2, ry1];
+  const midLeft = [rx1, (ry1+ry2)/2], midRight = [rx2, (ry1+ry2)/2];
+  const mkArrow = (mx, my, dx, dy) =>
+    '<line x1="' + (mx - dx) + '" y1="' + (my - dy) + '" x2="' + (mx + dx) + '" y2="' + (my + dy) +
+    '" stroke="var(--red)" stroke-width="1.6" marker-end="url(#wvArr)" color="var(--red)"/>';
   const arrows = ccw
     ? [
-        '<line x1="' + ((rx1+rx2)/2 - 14) + '" y1="' + ry1 + '" x2="' + ((rx1+rx2)/2 + 14) + '" y2="' + ry1 + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
-        '<line x1="' + rx2 + '" y1="' + ((ry1+ry2)/2 + 10) + '" x2="' + rx2 + '" y2="' + ((ry1+ry2)/2 - 10) + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
-        '<line x1="' + ((rx1+rx2)/2 + 14) + '" y1="' + ry2 + '" x2="' + ((rx1+rx2)/2 - 14) + '" y2="' + ry2 + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
-        '<line x1="' + rx1 + '" y1="' + ((ry1+ry2)/2 - 10) + '" x2="' + rx1 + '" y2="' + ((ry1+ry2)/2 + 10) + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>'
-      ]
+        mkArrow(midBot[0],   midBot[1],   10, 0),   // bottom: left -> right
+        mkArrow(midRight[0], midRight[1], 0, -10),  // right: bottom -> top
+        mkArrow(midTop[0],   midTop[1],  -10, 0),   // top: right -> left
+        mkArrow(midLeft[0],  midLeft[1],  0,  10),  // left: top -> bottom
+      ].join("")
     : [
-        '<line x1="' + ((rx1+rx2)/2 + 14) + '" y1="' + ry1 + '" x2="' + ((rx1+rx2)/2 - 14) + '" y2="' + ry1 + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
-        '<line x1="' + rx1 + '" y1="' + ((ry1+ry2)/2 + 10) + '" x2="' + rx1 + '" y2="' + ((ry1+ry2)/2 - 10) + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
-        '<line x1="' + ((rx1+rx2)/2 - 14) + '" y1="' + ry2 + '" x2="' + ((rx1+rx2)/2 + 14) + '" y2="' + ry2 + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>',
-        '<line x1="' + rx2 + '" y1="' + ((ry1+ry2)/2 - 10) + '" x2="' + rx2 + '" y2="' + ((ry1+ry2)/2 + 10) + '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>'
-      ];
+        mkArrow(midBot[0],   midBot[1],  -10, 0),   // bottom: right -> left
+        mkArrow(midLeft[0],  midLeft[1],  0, -10),  // left: bottom -> top
+        mkArrow(midTop[0],   midTop[1],   10, 0),   // top: left -> right
+        mkArrow(midRight[0], midRight[1], 0,  10),  // right: top -> bottom
+      ].join("");
+
+  const caption = '<text class="wv-note" x="' + (W - 14) + '" y="20" text-anchor="end" font-weight="600">' +
+                  (ccw ? "CCW boundary" : "CW boundary") + '</text>';
+
   return wvFrame(
-    wvAxes2D(cx, cy, 140, 90) + rect + arrows.join("") +
-    '<text class="wv-label" x="' + cx + '" y="' + ((ry1+ry2)/2 + 5) + '" text-anchor="middle">R</text>' +
-    '<text class="wv-note" x="' + cx + '" y="' + (ry1 + 22) + '" text-anchor="middle">' +
-      (ccw ? "CCW boundary" : "CW boundary") + '</text>'
+    axes + rect + arrows +
+    '<text class="wv-label" x="' + ((rx1+rx2)/2) + '" y="' + ((ry1+ry2)/2 + 5) + '" text-anchor="middle">R</text>' +
+    caption,
+    W, H
   );
 }
 
 function svgRegionTri(spec) {
   const verts = spec.vertices || [];
   if (!Array.isArray(verts) || verts.length < 3) return svgRegionGeneral(spec);
-  const cx = 180, cy = 130;
+
+  // Layout
+  const W = 360, H = 240, margin = 38;
   const xs = verts.map(v => v[0]), ys = verts.map(v => v[1]);
-  const xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
-  const yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys);
-  const sc = Math.min(120 / Math.max(1, xMax - xMin), 80 / Math.max(1, yMax - yMin));
-  const px = function(p) { return [cx + (p[0] - (xMin+xMax)/2) * sc, cy - (p[1] - (yMin+yMax)/2) * sc]; };
+  // Bounds include the origin so axes always pass through (0,0)
+  const xMin = Math.min(0, ...xs), xMax = Math.max(0, ...xs);
+  const yMin = Math.min(0, ...ys), yMax = Math.max(0, ...ys);
+  const xRange = Math.max(0.001, xMax - xMin);
+  const yRange = Math.max(0.001, yMax - yMin);
+  const sc = Math.min((W - 2*margin) / xRange, (H - 2*margin) / yRange);
+
+  // Where the data origin (0,0) lands in pixel space — chosen so the data
+  // exactly fills the inner area between the margins
+  const originX = margin - xMin * sc;
+  const originY = margin + yMax * sc;
+  const px = (p) => [originX + p[0]*sc, originY - p[1]*sc];
+
+  // Triangle in pixel coords + centroid (used as the "push-away" anchor for labels)
   const P = verts.map(px);
-  const poly = '<polygon points="' + P.map(p => p.join(",")).join(" ") + '" class="wv-region-fill"/>';
-  const orient = (spec.orientation || "clockwise").toLowerCase();
-  const cw = orient.indexOf("clock") >= 0 || orient === "cw";
+  const C = [
+    P.reduce((s,p)=>s+p[0], 0) / P.length,
+    P.reduce((s,p)=>s+p[1], 0) / P.length,
+  ];
+
+  // Axes through the data origin (0,0)
+  const xAxisL = Math.min(originX - 10, margin - 18);
+  const xAxisR = Math.max(originX + 10, W - margin + 18);
+  const yAxisT = Math.min(originY - 10, margin - 18);
+  const yAxisB = Math.max(originY + 10, H - margin + 18);
+  const axes =
+    '<line x1="' + xAxisL + '" y1="' + originY + '" x2="' + xAxisR + '" y2="' + originY +
+      '" stroke="var(--ink-mute)" stroke-width="1" marker-end="url(#wvArrSmall)"/>' +
+    '<line x1="' + originX + '" y1="' + yAxisB + '" x2="' + originX + '" y2="' + yAxisT +
+      '" stroke="var(--ink-mute)" stroke-width="1" marker-end="url(#wvArrSmall)"/>' +
+    '<text class="wv-axis-label" x="' + (xAxisR + 8) + '" y="' + (originY + 4) + '">x</text>' +
+    '<text class="wv-axis-label" x="' + (originX + 8) + '" y="' + (yAxisT - 4) + '">y</text>';
+
+  // Filled triangle
+  const poly = '<polygon points="' + P.map(p => p.join(',')).join(' ') + '" class="wv-region-fill"/>';
+
+  // Vertex dots + labels — special-case vertices on the axes for clean perpendicular labeling
+  let dotsAndLabels = "";
+  P.forEach((p, i) => {
+    const v = verts[i];
+    const onXAxis  = Math.abs(v[1]) < 1e-9 && Math.abs(v[0]) > 1e-9;
+    const onYAxis  = Math.abs(v[0]) < 1e-9 && Math.abs(v[1]) > 1e-9;
+    const atOrigin = Math.abs(v[0]) < 1e-9 && Math.abs(v[1]) < 1e-9;
+    let dx, dy;
+    if (atOrigin)      { dx = -14; dy = 18; }
+    else if (onXAxis)  { dx = 0;   dy = 22; }   // below the x-axis
+    else if (onYAxis)  { dx = -16; dy = 4; }    // to the left of the y-axis
+    else {
+      // General case: push away from triangle centroid
+      let ddx = p[0] - C[0], ddy = p[1] - C[1];
+      const len = Math.hypot(ddx, ddy) || 1;
+      dx = (ddx / len) * 22;
+      dy = (ddy / len) * 22;
+    }
+    const anchor = dx > 4 ? 'start' : (dx < -4 ? 'end' : 'middle');
+    dotsAndLabels += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3" fill="var(--ink)"/>';
+    dotsAndLabels += '<text class="wv-note" x="' + (p[0] + dx) + '" y="' + (p[1] + dy) +
+                     '" text-anchor="' + anchor + '">(' + numTex(v[0]) + ',' + numTex(v[1]) + ')</text>';
+  });
+
+  // Boundary orientation arrows. The listed vertices may be in CW or CCW order
+  // independent of the requested orientation, so we detect the natural order using
+  // the signed area test (in screen-space y-down, positive signed area = visual CW)
+  // and reverse if the listed order doesn't match the requested orientation.
+  const wantCW = parseOrientCW(spec.orientation, true);
+  let signedArea = 0;
+  for (let i = 0; i < P.length; i++) {
+    const j = (i + 1) % P.length;
+    signedArea += P[i][0] * P[j][1] - P[j][0] * P[i][1];
+  }
+  const listedCW = signedArea > 0;
+  const seq = (listedCW === wantCW) ? P : P.slice().reverse();
   let arrows = "";
-  // If CW orientation requested, draw arrows in vertex order (cw); else reverse
-  const seq = cw ? P : P.slice().reverse();
   for (let i = 0; i < seq.length; i++) {
     const a = seq[i], b = seq[(i+1) % seq.length];
     const mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2;
-    const dx = b[0]-a[0], dy = b[1]-a[1];
-    const len = Math.max(0.001, Math.hypot(dx, dy));
-    const ux = dx/len*10, uy = dy/len*10;
+    const ddx = b[0]-a[0], ddy = b[1]-a[1];
+    const L = Math.max(0.001, Math.hypot(ddx, ddy));
+    const ux = (ddx/L) * 9, uy = (ddy/L) * 9;
     arrows += '<line x1="' + (mx - ux) + '" y1="' + (my - uy) +
               '" x2="' + (mx + ux) + '" y2="' + (my + uy) +
-              '" stroke="var(--red)" stroke-width="1.5" marker-end="url(#wvArr)" color="var(--red)"/>';
+              '" stroke="var(--red)" stroke-width="1.6" marker-end="url(#wvArr)" color="var(--red)"/>';
   }
-  // Vertex dots
-  let dots = "";
-  P.forEach((p, i) => {
-    dots += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="2.5" fill="var(--ink)"/>';
-    const v = verts[i];
-    dots += '<text class="wv-note" x="' + (p[0] + 5) + '" y="' + (p[1] - 4) + '">(' +
-            numTex(v[0]) + ',' + numTex(v[1]) + ')</text>';
-  });
-  return wvFrame(
-    wvAxes2D(cx, cy, 140, 90) + poly + arrows + dots +
-    '<text class="wv-note" x="' + cx + '" y="' + (cy - 80) + '" text-anchor="middle">' +
-      (cw ? "CW boundary" : "CCW boundary") + '</text>'
-  );
+
+  // Orientation caption — top-right corner, far from y-axis label
+  const caption = '<text class="wv-note" x="' + (W - 14) + '" y="20" text-anchor="end" font-weight="600">' +
+                  (wantCW ? "CW boundary" : "CCW boundary") + '</text>';
+
+  return wvFrame(axes + poly + arrows + dotsAndLabels + caption, W, H);
+}
+
+function parsePolarAngle(val) {
+  if (typeof val === "number") return val;
+  if (typeof val !== "string") return 0;
+  const s = val.toLowerCase().replace(/\s+/g, "");
+  // Plain number with no pi
+  if (!s.includes("pi")) {
+    const f = parseFloat(s);
+    return isNaN(f) ? 0 : f;
+  }
+  // n*pi/d patterns: "pi", "2pi", "pi/2", "-3pi/4", etc.
+  const m = /^(-?)(\d*)pi(?:\/(\d+))?$/.exec(s);
+  if (m) {
+    const sign = m[1] ? -1 : 1;
+    const num  = m[2] ? parseInt(m[2], 10) : 1;
+    const den  = m[3] ? parseInt(m[3], 10) : 1;
+    return sign * num * Math.PI / den;
+  }
+  // Try parseFloat as a fallback (handles "1.5708" etc)
+  const f = parseFloat(s);
+  return isNaN(f) ? 0 : f;
+}
+
+function parsePolarValue(v) {
+  if (typeof v === "number") return v;
+  if (typeof v === "string") {
+    const f = parseFloat(v);
+    if (!isNaN(f)) return f;
+  }
+  return 0;
+}
+
+function fmtAngle(v) {
+  if (Math.abs(v) < 1e-6) return "0";
+  const sign = v < 0 ? "-" : "";
+  const a = Math.abs(v);
+  const r = a / Math.PI;
+  const fracs = [
+    [1,1,"\u03c0"], [1,2,"\u03c0/2"], [1,3,"\u03c0/3"], [1,4,"\u03c0/4"], [1,6,"\u03c0/6"],
+    [2,1,"2\u03c0"], [2,3,"2\u03c0/3"], [3,2,"3\u03c0/2"], [3,4,"3\u03c0/4"],
+    [5,4,"5\u03c0/4"], [5,6,"5\u03c0/6"], [4,3,"4\u03c0/3"], [7,6,"7\u03c0/6"], [7,4,"7\u03c0/4"],
+  ];
+  for (const [n, d, label] of fracs) {
+    if (Math.abs(r - n/d) < 1e-3) return sign + label;
+  }
+  return sign + a.toFixed(2);
 }
 
 function svgRegionPolar(spec) {
-  const cx = 180, cy = 130;
-  const rad = 70;
+  const W = 360, H = 240;
+  const cx = 180, cy = 132;
+  const rad = 78;  // pixel radius for r=rMax
+
+  // Parse bounds, tolerant of string "pi"/"2pi"/"pi/2" etc.
+  let rMin = 0, rMax = 1;
   let thStart = 0, thEnd = Math.PI;
-  if (spec.region && Array.isArray(spec.region.thetaBounds)) {
-    thStart = spec.region.thetaBounds[0]; thEnd = spec.region.thetaBounds[1];
-  } else if (spec.bounds && Array.isArray(spec.bounds.theta)) {
-    thStart = spec.bounds.theta[0]; thEnd = spec.bounds.theta[1];
+  const b = spec.bounds || (spec.region && typeof spec.region === "object" ? spec.region : null);
+  if (b) {
+    if (Array.isArray(b.r)) {
+      rMin = parsePolarValue(b.r[0]);
+      rMax = parsePolarValue(b.r[1]) || 1;
+    }
+    const th = Array.isArray(b.theta) ? b.theta : (Array.isArray(b.thetaBounds) ? b.thetaBounds : null);
+    if (th) {
+      thStart = parsePolarAngle(th[0]);
+      thEnd   = parsePolarAngle(th[1]);
+    }
   }
-  const x1 = cx + rad * Math.cos(thStart);
-  const y1 = cy - rad * Math.sin(thStart);
-  const x2 = cx + rad * Math.cos(thEnd);
-  const y2 = cy - rad * Math.sin(thEnd);
-  const largeArc = Math.abs(thEnd - thStart) > Math.PI ? 1 : 0;
-  const arc = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 +
-              ' A ' + rad + ' ' + rad + ' 0 ' + largeArc + ' 0 ' + x2 + ' ' + y2 + ' Z';
-  return wvFrame(
-    wvAxes2D(cx, cy, 130, 80) +
-    '<path d="' + arc + '" class="wv-region-fill"/>' +
-    '<text class="wv-label" x="' + (cx + 8) + '" y="' + (cy - 8) + '">R</text>' +
-    '<text class="wv-note" x="' + cx + '" y="' + (cy + rad + 22) + '" text-anchor="middle">polar region</text>'
-  );
+
+  // (r, theta) -> pixel coords. r is scaled relative to rMax.
+  const polar = (r, th) => {
+    const pr = (r / Math.max(0.001, rMax)) * rad;
+    return [cx + pr * Math.cos(th), cy - pr * Math.sin(th)];
+  };
+
+  const sweep = thEnd - thStart;
+  const largeArc = Math.abs(sweep) > Math.PI ? 1 : 0;
+  // sweep-flag=0 == counter-clockwise on screen; matches our parameterization
+  // (cy - r*sin(theta)) where increasing theta sweeps CCW visually.
+  const sweepFlag = sweep > 0 ? 0 : 1;
+
+  const pOuter1 = polar(rMax, thStart);
+  const pOuter2 = polar(rMax, thEnd);
+
+  let regionPath;
+  if (rMin <= 1e-3) {
+    // Disk sector from origin
+    regionPath = '<path d="M ' + cx + ' ' + cy +
+                 ' L ' + pOuter1[0] + ' ' + pOuter1[1] +
+                 ' A ' + rad + ' ' + rad + ' 0 ' + largeArc + ' ' + sweepFlag + ' ' +
+                 pOuter2[0] + ' ' + pOuter2[1] +
+                 ' Z" class="wv-region-fill"/>';
+  } else {
+    // Annular sector
+    const innerRad = (rMin / rMax) * rad;
+    const pInner1 = polar(rMin, thStart);
+    const pInner2 = polar(rMin, thEnd);
+    regionPath = '<path d="M ' + pOuter1[0] + ' ' + pOuter1[1] +
+                 ' A ' + rad + ' ' + rad + ' 0 ' + largeArc + ' ' + sweepFlag + ' ' +
+                 pOuter2[0] + ' ' + pOuter2[1] +
+                 ' L ' + pInner2[0] + ' ' + pInner2[1] +
+                 ' A ' + innerRad + ' ' + innerRad + ' 0 ' + largeArc + ' ' + (1 - sweepFlag) + ' ' +
+                 pInner1[0] + ' ' + pInner1[1] +
+                 ' Z" class="wv-region-fill"/>';
+  }
+
+  // Place the R label inside the sector at its angular midpoint, at a healthy radius
+  const thMid = (thStart + thEnd) / 2;
+  const rMid  = rMin + (rMax - rMin) * 0.5;
+  const labelP = polar(Math.max(rMid, rMax * 0.45), thMid);
+  const rLabel = '<text class="wv-label" x="' + labelP[0] + '" y="' + (labelP[1] + 5) + '" text-anchor="middle">R</text>';
+
+  // Caption: theta range + r range, top-right corner
+  const rRange = (rMin > 1e-3 ? (rMin + " \u2264 ") : "") + "r \u2264 " + rMax;
+  const caption =
+    '<text class="wv-note" x="' + (W - 14) + '" y="20" text-anchor="end" font-weight="600">' +
+      "\u03b8 \u2208 [" + fmtAngle(thStart) + ", " + fmtAngle(thEnd) + "]" +
+    '</text>' +
+    '<text class="wv-note" x="' + (W - 14) + '" y="36" text-anchor="end">' + rRange + '</text>';
+
+  return wvFrame(wvAxes2D(cx, cy, 132, 92) + regionPath + rLabel + caption, W, H);
 }
 
 function svgRegionGeneral(spec) {
@@ -7715,8 +7965,7 @@ function svgSurfaceParaboloid(spec) {
 
 function svgSurfaceDisk(spec) {
   const cx = 180, cy = 130;
-  const orient = (spec.boundaryOrientation || "ccw").toLowerCase();
-  const ccw = !(orient.indexOf("clock") >= 0 || orient === "cw");
+  const ccw = !parseOrientCW(spec.boundaryOrientation, false);
   return wvFrame(
     '<ellipse cx="' + cx + '" cy="' + (cy + 20) + '" rx="80" ry="22" class="wv-region-fill"/>' +
     '<line x1="' + cx + '" y1="' + (cy + 20) + '" x2="' + cx + '" y2="' + (cy - 50) +
@@ -7725,11 +7974,11 @@ function svgSurfaceDisk(spec) {
     (ccw
       ? '<line x1="' + (cx + 70) + '" y1="' + (cy + 24) + '" x2="' + (cx + 70) + '" y2="' + (cy + 8) + '" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>'
       : '<line x1="' + (cx + 70) + '" y1="' + (cy + 8)  + '" x2="' + (cx + 70) + '" y2="' + (cy + 24) + '" stroke="var(--red)" stroke-width="2" marker-end="url(#wvArr)" color="var(--red)"/>') +
-    '<text class="wv-label" x="' + (cx + 75) + '" y="' + (cy + 18) + '" fill="var(--red)">\u2202S</text>' +
-    '<text class="wv-label" x="' + (cx - 60) + '" y="' + (cy + 24) + '">S (disk)</text>' +
-    '<text class="wv-note" x="' + cx + '" y="' + (cy + 60) + '" text-anchor="middle">right-hand rule: n + ' +
+    '<text class="wv-label" x="' + (cx + 78) + '" y="' + (cy + 18) + '" fill="var(--red)">\u2202S</text>' +
+    '<text class="wv-label" x="20" y="24">S (disk)</text>' +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + 70) + '" text-anchor="middle">right-hand rule: n with ' +
       (ccw ? "CCW" : "CW") + ' boundary</text>',
-    360, 220
+    360, 230
   );
 }
 
@@ -7881,6 +8130,7 @@ function svgField2D(spec) {
       const dx = -(y - cy)*0.15;
       const dy = (x - cx)*0.15;
       const len = Math.hypot(dx, dy);
+      if (len < 1e-6) continue;  // skip the singular center where the field is zero
       const ux = (dx/len)*10, uy = (dy/len)*10;
       grid.push('<line x1="' + (x - ux) + '" y1="' + (y - uy) + '" x2="' + (x + ux) + '" y2="' + (y + uy) +
                 '" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#wvArr)" color="var(--ink-soft)" opacity="0.7"/>');
@@ -7958,7 +8208,8 @@ function svgGradient2D(spec) {
     wvAxes2D(cx, cy, 140, 90) +
     levels +
     pt + grad + dir +
-    '<text class="wv-note" x="' + (cx - 80) + '" y="' + (cy - 80) + '">level curves of f</text>'
+    '<text class="wv-note" x="346" y="20" text-anchor="end" font-weight="600">level curves of f</text>',
+    360, 240
   );
 }
 
