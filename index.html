@@ -6524,20 +6524,69 @@ async function renderWalkthroughDetail(sessionId) {
   typesetMath(root);
 }
 
-/* Render a string that may contain inline LaTeX (\(...\) or \[...\]) or bare
-   LaTeX commands like \frac, \nabla, \overrightarrow, \operatorname, etc.
-   If LaTeX is detected the whole string goes through MathJax (via the
-   tex2jax_process span); otherwise we HTML-escape as plain text. */
+/* Render a string that may contain LaTeX (explicit \(...\) delimiters, bare
+   backslash commands like \frac/\nabla/\overrightarrow, or implicit math
+   syntax like f_x / x^2 / <a,b,c>). Plain prose is HTML-escaped untouched.
+
+   Three branches:
+     1. String already contains \( or \[  -> pass through to MathJax verbatim
+     2. String contains a known backslash LaTeX command -> wrap the whole string
+        in \( ... \) so MathJax renders it as one inline math block
+     3. Otherwise -> token-wise scan; any token containing _x, ^2, or
+        <a,b,c>-style angle-bracket vectors gets wrapped in \(...\) with
+        literal angle brackets converted to \langle/\rangle. Prose tokens
+        pass through escapeHtml unchanged. */
 function renderTextOrLatex(s) {
   if (s == null) return "";
   const str = String(s);
-  // Detect any TeX delimiters OR common LaTeX commands that warrant MathJax processing
-  const hasTex = /\\\(|\\\[|\\\$|\\frac|\\sqrt|\\sum|\\int|\\iint|\\iiint|\\partial|\\nabla|\\langle|\\rangle|\\begin\{|\\end\{|\\operatorname|\\overrightarrow|\\vec\{|\\mathbf|\\mathbb|\\cdot|\\times|\\overline|\\hat|\\det|\\sin|\\cos|\\tan|\\log|\\ln|\\lambda|\\theta|\\alpha|\\beta|\\gamma|\\delta|\\mu|\\pi|\\Delta/.test(str);
-  if (!hasTex) return escapeHtml(str);
-  // If the string already contains \( or \[, MathJax will pick it up directly.
-  // Otherwise, wrap the bare expression in \( ... \) so MathJax processes it.
-  const wrapped = /\\\(|\\\[/.test(str) ? str : ('\\(' + str + '\\)');
-  return '<span class="tex2jax_process">' + wrapped + '</span>';
+  if (!str) return "";
+
+  // Case 1: explicit delimiters already present
+  if (/\\\(|\\\[/.test(str)) {
+    return '<span class="tex2jax_process">' + str + '</span>';
+  }
+
+  // Case 2: bare backslash LaTeX commands -> treat whole string as math
+  if (/\\(?:frac|sqrt|sum|int|iint|iiint|partial|nabla|langle|rangle|begin\{|end\{|operatorname|overrightarrow|underrightarrow|vec\{|mathbf|mathbb|cdot|times|overline|hat\{|det|lambda|theta|alpha|beta|gamma|delta|epsilon|mu|pi|sigma|tau|phi|psi|omega|Delta|Theta|Lambda|Pi|Sigma|Phi|Psi|Omega|infty|to|leftrightarrow|rightarrow|leftarrow|le|ge|ne|approx|equiv|in|notin|subset|supset|cup|cap|emptyset|forall|exists|perp|parallel|circ|prime|left|right|big|Big|bigg|Bigg|frac|dfrac|tfrac)\b/.test(str)) {
+    return '<span class="tex2jax_process">\\(' + str + '\\)</span>';
+  }
+
+  // Case 3: token-wise scan for implicit math (subscripts/superscripts/<a,b,c>)
+  return wrapInlineMath(str);
+}
+
+/* Wrap math-bearing tokens with \(...\), preserve whitespace and prose.
+   A token is "math-bearing" if it contains:
+     - a subscript/superscript signal: letter or digit followed by _ or ^
+       and then an alphanumeric or { character
+     - an angle-bracket vector: <a,b,c>-style with at least one comma inside
+
+   Trailing sentence punctuation (.,;:!?) stays outside the math wrap so
+   it doesn't get math-italic treatment. */
+function wrapInlineMath(str) {
+  // Preserve whitespace runs as their own array slots
+  const parts = str.split(/(\s+)/);
+  return parts.map(tok => {
+    if (!tok) return "";
+    if (/^\s+$/.test(tok)) return tok;
+
+    const hasSubSup   = /[a-zA-Z0-9][_\^][a-zA-Z0-9{]/.test(tok);
+    const hasAngleVec = /<[a-zA-Z0-9_\^\-+,.\s]*?,[a-zA-Z0-9_\^\-+,.\s]*?>/.test(tok);
+    if (!hasSubSup && !hasAngleVec) return escapeHtml(tok);
+
+    // Split off trailing sentence punctuation
+    const trailMatch = /^(.*?)([.,;:!?)\]'"]*)$/.exec(tok);
+    const body  = trailMatch[1];
+    const trail = trailMatch[2] || "";
+
+    // Convert literal <a,b,c> to \langle a,b,c\rangle inside the math body.
+    // A trailing space after \rangle is required so it terminates cleanly when
+    // followed by alphabetic characters (e.g. "<2x,2y,1>dA" -> "\langle 2x,2y,1\rangle dA",
+    // not "\rangledA" which MathJax would treat as one unknown command).
+    const mathBody = body.replace(/<([a-zA-Z0-9_\^\-+,.\s]+?)>/g, '\\langle $1\\rangle ');
+
+    return '<span class="tex2jax_process">\\(' + mathBody + '\\)</span>' + escapeHtml(trail);
+  }).join('');
 }
 
 function walkSection(num, heading, innerHtml) {
@@ -7614,24 +7663,53 @@ function svgRegionGeneral(spec) {
 /* ---------- 3D surface concept sketches ---------- */
 
 function svgSurfaceParaboloid(spec) {
-  const cx = 180, cy = 130;
-  const bowl =
-    '<ellipse cx="' + cx + '" cy="' + (cy + 40) + '" rx="80" ry="18" fill="none" stroke="var(--ink)" stroke-width="1.5"/>' +
-    '<path d="M ' + (cx - 80) + ' ' + (cy + 40) +
-           ' C ' + (cx - 80) + ' ' + (cy - 40) + ', ' + (cx + 80) + ' ' + (cy - 40) + ', ' + (cx + 80) + ' ' + (cy + 40) +
-           '" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.5" opacity="0.6"/>' +
-    '<ellipse cx="' + cx + '" cy="' + (cy - 30) + '" rx="80" ry="14" fill="none" stroke="var(--ink-mute)" stroke-width="1" stroke-dasharray="3 3"/>';
-  const normal =
-    '<line x1="' + cx + '" y1="' + (cy - 30) + '" x2="' + cx + '" y2="' + (cy - 80) +
-      '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
-    '<text class="wv-label" x="' + (cx + 8) + '" y="' + (cy - 70) + '" fill="var(--gold)">n (upward)</text>';
+  const cx = 180, cy = 145;
+  // Downward-opening paraboloid (dome) above its base disk D.
+  // Geometry:
+  //   - Base disk D in xy-plane drawn as a flat ellipse at y = cy+30
+  //   - Dome surface S sits on the disk's rim; its visible profile is a
+  //     single quadratic curve from left rim, peaking near the top, to right rim
+  //   - Apex of the dome computed exactly from the Bezier midpoint formula
+  //     so the upward normal arrow can be anchored ON the surface (its tail)
+  //     instead of floating somewhere above
+  const rimY = cy + 30;
+  const rimRx = 78;
+  const rimRy = 14;
+  const leftRim  = [cx - rimRx, rimY];
+  const rightRim = [cx + rimRx, rimY];
+  const ctrlY = cy - 75;
+  // Quadratic Bezier midpoint at t=0.5: y = 0.25*y0 + 0.5*ctrlY + 0.25*y2
+  const apexX = cx;
+  const apexY = 0.25 * leftRim[1] + 0.5 * ctrlY + 0.25 * rightRim[1];
+
+  // Base disk D (filled flat ellipse below the dome)
   const baseRegion =
-    '<ellipse cx="' + cx + '" cy="' + (cy + 40) + '" rx="80" ry="18" fill="#F0EBDF" opacity="0.7"/>' +
-    '<text class="wv-note" x="' + (cx + 88) + '" y="' + (cy + 44) + '">base region D</text>';
+    '<ellipse cx="' + cx + '" cy="' + rimY + '" rx="' + rimRx + '" ry="' + rimRy +
+      '" fill="#F0EBDF" stroke="var(--ink-mute)" stroke-width="1"/>' +
+    '<text class="wv-note" x="' + (cx + rimRx + 10) + '" y="' + (rimY + 4) + '">base region D</text>';
+
+  // Dome surface S — single quadratic curve from left rim to right rim
+  // through a control point above; this is the front profile of the paraboloid
+  const dome =
+    '<path d="M ' + leftRim[0] + ' ' + leftRim[1] +
+           ' Q ' + cx + ' ' + ctrlY + ', ' + rightRim[0] + ' ' + rightRim[1] +
+           ' Z" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.8" opacity="0.85"/>' +
+    // Back rim of the base (the half-ellipse arc hidden behind the dome), dashed for depth
+    '<path d="M ' + leftRim[0] + ' ' + leftRim[1] +
+           ' Q ' + cx + ' ' + (rimY - rimRy + 2) + ', ' + rightRim[0] + ' ' + rightRim[1] +
+           '" fill="none" stroke="var(--red)" stroke-width="1" stroke-dasharray="3 2" opacity="0.55"/>';
+
+  // Upward normal vector — tail at the apex (ON the surface), points straight up
+  const normal =
+    '<line x1="' + apexX + '" y1="' + apexY + '" x2="' + apexX + '" y2="' + (apexY - 38) +
+      '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
+    '<circle cx="' + apexX + '" cy="' + apexY + '" r="2.5" fill="var(--gold)"/>' +
+    '<text class="wv-label" x="' + (apexX + 8) + '" y="' + (apexY - 22) + '" fill="var(--gold)">n (upward)</text>';
+
   return wvFrame(
-    baseRegion + bowl + normal +
-    '<text class="wv-label" x="' + (cx - 100) + '" y="' + (cy + 4) + '">S</text>',
-    360, 220
+    baseRegion + dome + normal +
+    '<text class="wv-label" x="' + (cx - rimRx - 18) + '" y="' + (cy - 6) + '">S</text>',
+    360, 210
   );
 }
 
@@ -7657,25 +7735,30 @@ function svgSurfaceDisk(spec) {
 
 function svgSurfaceTangent(spec) {
   const cx = 180, cy = 130;
-  // Sheet of surface + tangent plane patch + small normal
+  // Graph of z = f(x,y) with tangent plane at the base point.
+  // We deliberately do NOT draw a "∇f" arrow on this sketch: for a graph z = f(x,y)
+  // the gradient lives in the (x,y) plane (it's a 2-vector in the domain), and
+  // drawing it vertically in 3-space here would be misleading. The gradient
+  // value is shown in the data block beneath instead.
   return wvFrame(
-    '<path d="M ' + (cx - 80) + ' ' + (cy + 30) +
-           ' Q ' + (cx - 40) + ' ' + (cy - 30) + ', ' + cx + ' ' + (cy - 10) +
-           ' Q ' + (cx + 40) + ' ' + (cy + 10) + ', ' + (cx + 80) + ' ' + (cy - 20) +
+    // Surface — wavy curve representing the graph of f along one cross-section
+    '<path d="M ' + (cx - 85) + ' ' + (cy + 28) +
+           ' Q ' + (cx - 40) + ' ' + (cy - 30) + ', ' + cx + ' ' + (cy - 8) +
+           ' Q ' + (cx + 40) + ' ' + (cy + 14) + ', ' + (cx + 85) + ' ' + (cy - 18) +
            '" fill="none" stroke="var(--ink)" stroke-width="1.5"/>' +
-    // tangent plane (parallelogram)
-    '<polygon points="' + (cx - 50) + ',' + (cy + 20) + ' ' +
-                         (cx + 50) + ',' + (cy + 0)  + ' ' +
-                         (cx + 60) + ',' + (cy - 30) + ' ' +
-                         (cx - 40) + ',' + (cy - 10) +
-      '" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.5" opacity="0.7"/>' +
-    '<circle cx="' + cx + '" cy="' + (cy - 5) + '" r="3" fill="var(--ink)"/>' +
-    '<text class="wv-label" x="' + (cx + 6) + '" y="' + (cy + 8) + '">(a,b)</text>' +
-    '<line x1="' + cx + '" y1="' + (cy - 5) + '" x2="' + cx + '" y2="' + (cy - 55) +
-      '" stroke="var(--gold)" stroke-width="2" marker-end="url(#wvArr)" color="var(--gold)"/>' +
-    '<text class="wv-label" x="' + (cx + 8) + '" y="' + (cy - 45) + '" fill="var(--gold)">\u2207f</text>' +
-    '<text class="wv-note" x="' + cx + '" y="' + (cy + 60) + '" text-anchor="middle">tangent plane at (a,b)</text>',
-    360, 220
+    '<text class="wv-label" x="' + (cx - 115) + '" y="' + (cy + 22) + '">z = f(x,y)</text>' +
+    // Tangent plane patch — a parallelogram positioned so the contact point lies on it
+    '<polygon points="' + (cx - 55) + ',' + (cy + 16) + ' ' +
+                         (cx + 55) + ',' + (cy + 0)  + ' ' +
+                         (cx + 65) + ',' + (cy - 32) + ' ' +
+                         (cx - 45) + ',' + (cy - 16) +
+      '" fill="var(--red-tint)" stroke="var(--red)" stroke-width="1.5" opacity="0.75"/>' +
+    // Contact point — the touch point P = (a, b, f(a,b)) on both surface and tangent plane
+    '<circle cx="' + cx + '" cy="' + (cy - 8) + '" r="3.2" fill="var(--ink)"/>' +
+    '<text class="wv-label" x="' + (cx + 8) + '" y="' + (cy + 6) + '">P = (a, b, f(a,b))</text>' +
+    '<text class="wv-label" x="' + (cx + 30) + '" y="' + (cy - 36) + '" fill="var(--red)">tangent plane</text>' +
+    '<text class="wv-note" x="' + cx + '" y="' + (cy + 58) + '" text-anchor="middle">linear approximation: z &asymp; f(a,b) + \u2207f \u00b7 ((x,y) \u2212 (a,b))</text>',
+    360, 210
   );
 }
 
