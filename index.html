@@ -2060,15 +2060,22 @@
      Hidden by default. Reveals after quick-access unlock.
      ============================================================ */
 
-  /* Quick-access mini-input in footer. Deliberately understated. */
+  /* Quick-access mini-input. Deliberately understated; sits inline next to the
+     Random from Review button in the Need Review section-head. */
+  .section-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
   .quick-access {
-    margin-top: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
     font-size: 12px;
     color: var(--ink-faint);
+    margin: 0;
   }
   .quick-access label {
     letter-spacing: 0.04em;
@@ -3320,7 +3327,13 @@
           <h2>Need Review</h2>
           <p>Problems you've flagged to come back to. Clear them as you study.</p>
         </div>
-        <button class="btn btn-ghost btn-sm" id="reviewRandomBtn">Random from Review</button>
+        <div class="section-head-actions">
+          <form class="quick-access" id="quickAccessForm" autocomplete="off">
+            <label for="quickAccess">Quick access</label>
+            <input id="quickAccess" name="quickAccess" type="text" autocomplete="off" spellcheck="false"/>
+          </form>
+          <button class="btn btn-ghost btn-sm" id="reviewRandomBtn">Random from Review</button>
+        </div>
       </div>
       <div id="reviewContent"></div>
     </section>
@@ -3377,10 +3390,6 @@
 <footer>
   <div class="foot-brand"><span class="num">21-254</span> Practice Lab</div>
   <div>Original SI-style practice problems. Not official course materials.</div>
-  <form class="quick-access" id="quickAccessForm" autocomplete="off">
-    <label for="quickAccess">Quick access</label>
-    <input id="quickAccess" name="quickAccess" type="text" placeholder="Type a mode…" autocomplete="off" spellcheck="false"/>
-  </form>
 </footer>
 
 <!-- ================================================================
@@ -5735,8 +5744,8 @@ function renderReview() {
       <div class="empty" style="text-align:center; padding: 48px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md);">
         <div style="font-size: 32px; margin-bottom: 10px; color: var(--ink-faint);">★</div>
         <h3 style="font-family: var(--font-display); font-weight: 500; margin: 0 0 8px;">No problems flagged for review</h3>
-        <p style="color: var(--ink-mute); margin: 0 0 18px;">
-          On any problem, hit <kbd style="padding: 1px 6px; font-size: 12px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 4px;">R</kbd> or use the "Mark as Need Review" button to build your study list.
+        <p style="color: var(--ink-mute); margin: 0 auto 18px; max-width: 440px; line-height: 1.55;">
+          On any problem, hit <kbd style="padding: 1px 6px; font-size: 12px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 4px;">R</kbd> or use the &ldquo;Mark as Need Review&rdquo; button to build your study list.
         </p>
         <button class="btn btn-red" data-route="/topics">Browse problems <span class="arrow">→</span></button>
       </div>`;
@@ -6204,7 +6213,7 @@ async function renderWalkthroughs() {
     [...secs].sort((a,b) => a - b).forEach(n => {
       const opt = document.createElement("option");
       opt.value = String(n);
-      opt.textContent = "Practice Lab \u00a7" + n;
+      opt.textContent = "Practice Lab Section " + n;
       secSel.appendChild(opt);
     });
   }
@@ -6280,7 +6289,7 @@ function walkCardHtml(s) {
   const typeTag = isExam
     ? '<span class="walk-tag exam">Exam Review</span>'
     : '<span class="walk-tag gen">General</span>';
-  const secs = (s.practiceLabSections || []).map(n => '<span class="walk-tag sec">\u00a7' + n + '</span>').join("");
+  const secs = (s.practiceLabSections || []).map(n => '<span class="walk-tag sec">Sec ' + n + '</span>').join("");
   const dur = s.estimatedDurationMinutes ? '~' + s.estimatedDurationMinutes + ' min' : "";
   const goal = escapeHtml(s.sessionGoal || "");
   const id = escapeHtml(s.sessionId || ("s" + s.sessionNumber));
@@ -6332,7 +6341,7 @@ async function renderWalkthroughDetail(sessionId) {
 
   const isExam = s.sessionType === "exam-review";
   const num = String(s.sessionNumber || "?").padStart(2, "0");
-  const secs = (s.practiceLabSections || []).map(n => '<span class="walk-tag sec">\u00a7' + n + '</span>').join("");
+  const secs = (s.practiceLabSections || []).map(n => '<span class="walk-tag sec">Sec ' + n + '</span>').join("");
   const typeTag = isExam
     ? '<span class="walk-tag exam">Exam Review</span>'
     : '<span class="walk-tag gen">General</span>';
@@ -6367,47 +6376,79 @@ async function renderWalkthroughDetail(sessionId) {
   parts.push(walkBulletSection("02", "Say This First", s.sayThisFirst));
 
   if (Array.isArray(s.boardPlan) && s.boardPlan.length) {
-    const items = s.boardPlan.map(b => {
-      const writes = Array.isArray(b.whatToWrite)
-        ? '<div class="walk-board-write"><ul>' + b.whatToWrite.map(w => '<li>' + escapeHtml(w) + '</li>').join("") + '</ul></div>'
-        : (b.whatToWrite ? '<div class="walk-board-write">' + escapeHtml(b.whatToWrite) + '</div>' : "");
-      const say = b.whatToSay ? '<div class="walk-board-say">' + escapeHtml(b.whatToSay) + '</div>' : "";
-      const t = (b.timeMinutes != null) ? (b.timeMinutes + " min") : "";
-      return (
-        '<div class="walk-board-item">' +
-          '<div class="walk-board-time">' + t + '</div>' +
-          '<div class="walk-board-body">' +
-            '<div class="walk-board-title">' + escapeHtml(b.boardTitle || "") + '</div>' +
-            writes + say +
-          '</div>' +
-        '</div>'
-      );
-    }).join("");
-    parts.push(walkSection("03", "Board Plan", items));
+    // Sessions 1-2 use detailed objects ({timeMinutes, boardTitle, whatToWrite, whatToSay}).
+    // Sessions 3-22 use plain strings (a checklist). Render both shapes cleanly.
+    const allStrings = s.boardPlan.every(x => typeof x === "string");
+    if (allStrings) {
+      const li = s.boardPlan.map(t => '<li>' + renderTextOrLatex(t) + '</li>').join("");
+      parts.push(walkSection("03", "Board Plan", '<ul class="walk-list">' + li + '</ul>'));
+    } else {
+      const items = s.boardPlan.map(b => {
+        if (typeof b === "string") return '<div class="walk-board-string">' + renderTextOrLatex(b) + '</div>';
+        const writes = Array.isArray(b.whatToWrite)
+          ? '<div class="walk-board-write"><ul>' + b.whatToWrite.map(w => '<li>' + renderTextOrLatex(w) + '</li>').join("") + '</ul></div>'
+          : (b.whatToWrite ? '<div class="walk-board-write">' + renderTextOrLatex(b.whatToWrite) + '</div>' : "");
+        const say = b.whatToSay ? '<div class="walk-board-say">' + escapeHtml(b.whatToSay) + '</div>' : "";
+        const t = (b.timeMinutes != null) ? (b.timeMinutes + " min") : "";
+        return (
+          '<div class="walk-board-item">' +
+            '<div class="walk-board-time">' + t + '</div>' +
+            '<div class="walk-board-body">' +
+              (b.boardTitle ? '<div class="walk-board-title">' + escapeHtml(b.boardTitle) + '</div>' : "") +
+              writes + say +
+            '</div>' +
+          '</div>'
+        );
+      }).join("");
+      parts.push(walkSection("03", "Board Plan", items));
+    }
   }
 
   if (Array.isArray(s.keyFormulas) && s.keyFormulas.length) {
-    const items = s.keyFormulas.map(f =>
-      '<div class="walk-formula">' +
-        '<div class="walk-formula-name">' + escapeHtml(f.name || "") + '</div>' +
-        '<div class="walk-formula-latex">\\(' + (f.latex || "") + '\\)</div>' +
-        (f.plainEnglish ? '<div class="walk-formula-plain">' + escapeHtml(f.plainEnglish) + '</div>' : "") +
-      '</div>'
-    ).join("");
-    parts.push(walkSection("04", "Key Formulas", '<div class="walk-formulas">' + items + '</div>'));
+    // Sessions 1-2 use objects ({name, latex, plainEnglish}).
+    // Sessions 3-22 use plain LaTeX/text strings.
+    const allStrings = s.keyFormulas.every(x => typeof x === "string");
+    if (allStrings) {
+      const li = s.keyFormulas.map(t => '<li>' + renderTextOrLatex(t) + '</li>').join("");
+      parts.push(walkSection("04", "Key Formulas", '<ul class="walk-list walk-list-formulas">' + li + '</ul>'));
+    } else {
+      const items = s.keyFormulas.map(f => {
+        if (typeof f === "string") return '<div class="walk-formula walk-formula-single">' + renderTextOrLatex(f) + '</div>';
+        return (
+          '<div class="walk-formula">' +
+            '<div class="walk-formula-name">' + escapeHtml(f.name || "") + '</div>' +
+            '<div class="walk-formula-latex">' + (f.latex ? '\\(' + f.latex + '\\)' : "") + '</div>' +
+            (f.plainEnglish ? '<div class="walk-formula-plain">' + escapeHtml(f.plainEnglish) + '</div>' : "") +
+          '</div>'
+        );
+      }).join("");
+      parts.push(walkSection("04", "Key Formulas", '<div class="walk-formulas">' + items + '</div>'));
+    }
   }
 
   parts.push(walkBulletSection("05", "Common Mistakes", s.commonMistakes));
 
   if (Array.isArray(s.notationWarnings) && s.notationWarnings.length) {
-    const items = s.notationWarnings.map(n =>
-      '<div class="walk-notation-item">' +
-        '<div class="walk-notation-cell walk-notation-bad">\\(' + (n.bad || "") + '\\)</div>' +
-        '<div class="walk-notation-cell walk-notation-good">\\(' + (n.good || "") + '\\)</div>' +
-        (n.reason ? '<div class="walk-notation-reason">' + escapeHtml(n.reason) + '</div>' : "") +
-      '</div>'
-    ).join("");
-    parts.push(walkSection("06", "Notation Warnings", '<div class="walk-notation">' + items + '</div>'));
+    // Sessions 1-2 use objects ({bad, good, reason|why}).
+    // Sessions 3-22 use plain strings (a reminder list).
+    const allStrings = s.notationWarnings.every(x => typeof x === "string");
+    if (allStrings) {
+      const li = s.notationWarnings.map(t => '<li>' + renderTextOrLatex(t) + '</li>').join("");
+      parts.push(walkSection("06", "Notation Warnings", '<ul class="walk-list">' + li + '</ul>'));
+    } else {
+      const items = s.notationWarnings.map(n => {
+        if (typeof n === "string") return '<div class="walk-notation-string">' + renderTextOrLatex(n) + '</div>';
+        const explain = n.reason || n.why || "";
+        return (
+          '<div class="walk-notation-item">' +
+            '<div class="walk-notation-cell walk-notation-bad">' + (n.bad ? '\\(' + n.bad + '\\)' : "") + '</div>' +
+            '<div class="walk-notation-cell walk-notation-good">' + (n.good ? '\\(' + n.good + '\\)' : "") + '</div>' +
+            (explain ? '<div class="walk-notation-reason">' + escapeHtml(explain) + '</div>' : "") +
+          '</div>'
+        );
+      }).join("");
+      parts.push(walkSection("06", "Notation Warnings", '<div class="walk-notation">' + items + '</div>'));
+    }
   }
 
   if (Array.isArray(s.problems) && s.problems.length) {
@@ -6424,7 +6465,7 @@ async function renderWalkthroughDetail(sessionId) {
   }
 
   if (Array.isArray(s.wrapUpQuestions) && s.wrapUpQuestions.length) {
-    const items = s.wrapUpQuestions.map(q => '<li>' + escapeHtml(q) + '</li>').join("");
+    const items = s.wrapUpQuestions.map(q => '<li>' + renderTextOrLatex(q) + '</li>').join("");
     parts.push(walkSection("08", "Wrap-up Questions", '<ol class="walk-wrap-list">' + items + '</ol>'));
   }
 
@@ -6441,11 +6482,11 @@ async function renderWalkthroughDetail(sessionId) {
   }
 
   if (Array.isArray(s.qualityControlNotes) && s.qualityControlNotes.length) {
-    const items = s.qualityControlNotes.map(q => '<li>' + escapeHtml(q) + '</li>').join("");
+    const items = s.qualityControlNotes.map(q => '<li>' + renderTextOrLatex(q) + '</li>').join("");
     const status = s.reviewStatus ? ' &middot; <em>' + escapeHtml(s.reviewStatus) + '</em>' : "";
     const summary = (Array.isArray(s.reviewSummary) && s.reviewSummary.length)
       ? '<ul class="walk-qc-list" style="margin-top:8px">' +
-        s.reviewSummary.map(q => '<li>' + escapeHtml(q) + '</li>').join("") + '</ul>' : "";
+        s.reviewSummary.map(q => '<li>' + renderTextOrLatex(q) + '</li>').join("") + '</ul>' : "";
     parts.push(
       '<details class="walk-qc">' +
         '<summary>Quality-control notes (' + s.qualityControlNotes.length + ')' + status + '</summary>' +
@@ -6483,6 +6524,22 @@ async function renderWalkthroughDetail(sessionId) {
   typesetMath(root);
 }
 
+/* Render a string that may contain inline LaTeX (\(...\) or \[...\]) or bare
+   LaTeX commands like \frac, \nabla, \overrightarrow, \operatorname, etc.
+   If LaTeX is detected the whole string goes through MathJax (via the
+   tex2jax_process span); otherwise we HTML-escape as plain text. */
+function renderTextOrLatex(s) {
+  if (s == null) return "";
+  const str = String(s);
+  // Detect any TeX delimiters OR common LaTeX commands that warrant MathJax processing
+  const hasTex = /\\\(|\\\[|\\\$|\\frac|\\sqrt|\\sum|\\int|\\iint|\\iiint|\\partial|\\nabla|\\langle|\\rangle|\\begin\{|\\end\{|\\operatorname|\\overrightarrow|\\vec\{|\\mathbf|\\mathbb|\\cdot|\\times|\\overline|\\hat|\\det|\\sin|\\cos|\\tan|\\log|\\ln|\\lambda|\\theta|\\alpha|\\beta|\\gamma|\\delta|\\mu|\\pi|\\Delta/.test(str);
+  if (!hasTex) return escapeHtml(str);
+  // If the string already contains \( or \[, MathJax will pick it up directly.
+  // Otherwise, wrap the bare expression in \( ... \) so MathJax processes it.
+  const wrapped = /\\\(|\\\[/.test(str) ? str : ('\\(' + str + '\\)');
+  return '<span class="tex2jax_process">' + wrapped + '</span>';
+}
+
 function walkSection(num, heading, innerHtml) {
   return (
     '<section class="walk-section">' +
@@ -6495,7 +6552,7 @@ function walkSection(num, heading, innerHtml) {
 
 function walkBulletSection(num, heading, items) {
   if (!Array.isArray(items) || !items.length) return "";
-  const li = items.map(t => '<li>' + escapeHtml(t) + '</li>').join("");
+  const li = items.map(t => '<li>' + renderTextOrLatex(t) + '</li>').join("");
   return walkSection(num, heading, '<ul class="walk-list">' + li + '</ul>');
 }
 
@@ -6547,9 +6604,9 @@ function renderWalkProblem(p, i, total, sessionId) {
   const pl = p.practiceLabPointer;
   const plHtml = pl
     ? '<div class="walk-pl-pointer">' +
-        '<div><strong>Practice Lab \u00a7' + escapeHtml(String(pl.section)) + ':</strong> ' +
+        '<div><strong>Practice Lab Section ' + escapeHtml(String(pl.section)) + ':</strong> ' +
         escapeHtml(pl.message || "More practice in this section.") + '</div>' +
-        '<a href="#/section/' + escapeHtml(String(pl.section)) + '" data-route="/section/' + escapeHtml(String(pl.section)) + '">Open \u00a7' + escapeHtml(String(pl.section)) + ' &rarr;</a>' +
+        '<a href="#/section/' + escapeHtml(String(pl.section)) + '" data-route="/section/' + escapeHtml(String(pl.section)) + '">Open Section ' + escapeHtml(String(pl.section)) + ' &rarr;</a>' +
       '</div>'
     : "";
 
