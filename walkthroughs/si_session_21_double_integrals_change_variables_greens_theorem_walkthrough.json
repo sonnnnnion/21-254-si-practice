@@ -1,0 +1,273 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-21",
+  "sessionNumber": 21,
+  "sessionType": "general",
+  "title": "Double Integrals, Change of Variables, and Green's Theorem",
+  "practiceLabSections": [
+    9
+  ],
+  "estimatedDurationMinutes": 50,
+  "sessionGoal": "Students should be able to set up double integrals, use polar coordinates when helpful, and apply Green's Theorem to convert a line integral to a double integral.",
+  "quickStartIfUnprepared": [
+    "Start with the sentence: always draw the region first.",
+    "Do Problem 1 to practice switching order.",
+    "Do Problem 2 to practice polar coordinates.",
+    "Do Problem 3 to practice Green's Theorem and orientation."
+  ],
+  "sayThisFirst": [
+    "For double integrals, the region matters as much as the function.",
+    "When switching order, redraw the region and rewrite the bounds.",
+    "Use polar when the region has circles, disks, or angles.",
+    "Green's Theorem changes a closed line integral into a double integral over the region inside.",
+    "Positive orientation means counterclockwise."
+  ],
+  "boardPlan": [
+    "Write 'draw first' at the top of the board.",
+    "Do one order-switching region.",
+    "Do one polar integral over a disk/half-disk.",
+    "Do one Green's Theorem problem over a rectangle."
+  ],
+  "keyFormulas": [
+    "Polar: \\(x=r\\cos\\theta\\), \\(y=r\\sin\\theta\\), \\(dA=r\\,dr\\,d\\theta\\).",
+    "Green's Theorem: \\(\\oint_C P\\,dx+Q\\,dy=\\iint_D(Q_x-P_y)\\,dA\\), for positive orientation.",
+    "For switching order: describe the same region using the other variable as the outside bound."
+  ],
+  "commonMistakes": [
+    "Not drawing the region before changing bounds.",
+    "Forgetting the extra \\(r\\) in polar.",
+    "Using Green's Theorem when the curve is not closed.",
+    "Forgetting that clockwise orientation changes the sign.",
+    "Mixing up \\(Q_x-P_y\\) with \\(P_y-Q_x\\)."
+  ],
+  "notationWarnings": [
+    "Use \\(D\\) for the region and \\(C=\\partial D\\) for its boundary.",
+    "For Green's Theorem, clearly identify \\(P\\) and \\(Q\\).",
+    "Write 'CCW' or 'clockwise' near the boundary arrows."
+  ],
+  "problems": [
+    {
+      "problemId": "si21-p1",
+      "title": "Switch order and evaluate",
+      "difficulty": "Core",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Double integrals",
+        "Switching order",
+        "Region sketching"
+      ],
+      "studentPromptLatex": "Rewrite the integral with the order reversed, then evaluate: \\[\\int_0^2\\int_x^2 (x+y)\\,dy\\,dx.\\]",
+      "whatToSayBefore": "Say: read the bounds as inequalities, then draw the region.",
+      "visualSpec": {
+        "type": "double_integral_region_switch_order",
+        "originalBounds": {
+          "x": [
+            0,
+            2
+          ],
+          "y": [
+            "x",
+            2
+          ]
+        },
+        "reversedBounds": {
+          "y": [
+            0,
+            2
+          ],
+          "x": [
+            0,
+            "y"
+          ]
+        },
+        "regionDescription": "Triangle bounded by y=x, y=2, and x=0.",
+        "integralValue": 4,
+        "drawInstructions": [
+          "Draw the triangle bounded by x=0, y=x, and y=2.",
+          "Shade the region.",
+          "Show vertical slices for the original order.",
+          "Show horizontal slices for the reversed order.",
+          "Label reversed bounds: 0<=y<=2 and 0<=x<=y."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Describe the region",
+          "latex": "The original bounds say \\[0\\le x\\le2,\\qquad x\\le y\\le2.\\] This is the triangle above \\(y=x\\), below \\(y=2\\), and to the right of \\(x=0\\)."
+        },
+        {
+          "label": "Reverse the order",
+          "latex": "Using horizontal slices, \\(y\\) goes from \\(0\\) to \\(2\\). For a fixed \\(y\\), \\(x\\) goes from \\(0\\) to \\(y\\). So \\[\\int_0^2\\int_x^2 (x+y)\\,dy\\,dx=\\int_0^2\\int_0^y (x+y)\\,dx\\,dy.\\]"
+        },
+        {
+          "label": "Evaluate",
+          "latex": "\\[\\int_0^2\\int_0^y (x+y)\\,dx\\,dy=\\int_0^2\\left[\\frac{x^2}{2}+yx\\right]_{0}^{y}\\,dy=\\int_0^2\\frac{3y^2}{2}\\,dy=4.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\int_0^2\\int_0^y (x+y)\\,dx\\,dy=4.\\]",
+      "commonMistakes": [
+        "Writing \\(x\\) from \\(y\\) to 2 after reversing.",
+        "Forgetting that the lower y-value is 0 in the reversed order.",
+        "Changing the region while changing the order."
+      ],
+      "practiceLabPointer": {
+        "section": 9,
+        "route": "#/section/9",
+        "note": "Practice Lab Section 9 for double integrals and changing order."
+      }
+    },
+    {
+      "problemId": "si21-p2",
+      "title": "Polar integral over a half disk",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Polar coordinates",
+        "Change of variables",
+        "Jacobian"
+      ],
+      "studentPromptLatex": "Evaluate \\(\\iint_D (x^2+y^2)\\,dA\\), where \\(D\\) is the upper half disk \\(x^2+y^2\\le4\\), \\(y\\ge0\\).",
+      "whatToSayBefore": "Say: circles should make you think polar. Also, never forget the extra r in dA.",
+      "visualSpec": {
+        "type": "polar_half_disk",
+        "region": "upper half disk radius 2",
+        "bounds": {
+          "r": [
+            0,
+            2
+          ],
+          "theta": [
+            0,
+            "pi"
+          ]
+        },
+        "integrandPolar": "r^2",
+        "jacobian": "r",
+        "integralValue": "4pi",
+        "drawInstructions": [
+          "Draw the upper half disk of radius 2.",
+          "Label theta from 0 to pi.",
+          "Label r from 0 to 2.",
+          "Write x^2+y^2=r^2 and dA=r dr dtheta."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Convert the region",
+          "latex": "For the upper half disk of radius 2, \\[0\\le r\\le2,\\qquad 0\\le\\theta\\le\\pi.\\]"
+        },
+        {
+          "label": "Convert the integrand and area element",
+          "latex": "\\[x^2+y^2=r^2,\\qquad dA=r\\,dr\\,d\\theta.\\] So the integrand becomes \\(r^3\\)."
+        },
+        {
+          "label": "Integrate",
+          "latex": "\\[\\iint_D(x^2+y^2)\\,dA=\\int_0^\\pi\\int_0^2 r^3\\,dr\\,d\\theta=\\int_0^\\pi 4\\,d\\theta=4\\pi.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{4\\pi}\\]",
+      "commonMistakes": [
+        "Forgetting the Jacobian factor \\(r\\).",
+        "Using \\(0\\le\\theta\\le2\\pi\\) for the upper half disk.",
+        "Leaving the integrand as \\(x^2+y^2\\) after switching to polar."
+      ],
+      "practiceLabPointer": {
+        "section": 9,
+        "route": "#/section/9",
+        "note": "Practice Lab Section 9 for polar coordinates and change of variables."
+      }
+    },
+    {
+      "problemId": "si21-p3",
+      "title": "Green's Theorem over a rectangle",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Green's Theorem",
+        "Orientation",
+        "Double integrals"
+      ],
+      "studentPromptLatex": "Let \\(C\\) be the positively oriented boundary of the rectangle \\(0\\le x\\le3\\), \\(0\\le y\\le2\\). Use Green's Theorem to compute \\[\\oint_C (x-y^2)\\,dx+(2xy)\\,dy.\\]",
+      "whatToSayBefore": "Say: positively oriented means counterclockwise. Green's Theorem turns the boundary integral into an area integral.",
+      "visualSpec": {
+        "type": "greens_theorem_rectangle",
+        "region": {
+          "xMin": 0,
+          "xMax": 3,
+          "yMin": 0,
+          "yMax": 2
+        },
+        "orientation": "counterclockwise",
+        "P": "x-y^2",
+        "Q": "2xy",
+        "integrand": "Q_x-P_y=4y",
+        "integralValue": 24,
+        "drawInstructions": [
+          "Draw the rectangle 0<=x<=3, 0<=y<=2.",
+          "Put counterclockwise arrows on the boundary.",
+          "Identify P=x-y^2 and Q=2xy.",
+          "Write Q_x-P_y=2y-(-2y)=4y.",
+          "Shade the inside region D."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Identify P and Q",
+          "latex": "\\[P=x-y^2,\\qquad Q=2xy.\\]"
+        },
+        {
+          "label": "Apply Green's Theorem",
+          "latex": "\\[\\oint_C P\\,dx+Q\\,dy=\\iint_D(Q_x-P_y)\\,dA.\\] Here \\[Q_x=2y,\\qquad P_y=-2y,\\] so \\[Q_x-P_y=2y-(-2y)=4y.\\]"
+        },
+        {
+          "label": "Set up the double integral",
+          "latex": "\\[\\iint_D4y\\,dA=\\int_0^3\\int_0^2 4y\\,dy\\,dx.\\]"
+        },
+        {
+          "label": "Evaluate",
+          "latex": "\\[\\int_0^3\\left[2y^2\\right]_0^2 dx=\\int_0^3 8\\,dx=24.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{24}\\]",
+      "commonMistakes": [
+        "Using \\(P_y-Q_x\\), which gives the negative.",
+        "Forgetting that positive orientation is counterclockwise.",
+        "Trying to compute the four boundary integrals directly when Green's Theorem is faster."
+      ],
+      "practiceLabPointer": {
+        "section": 9,
+        "route": "#/section/9",
+        "note": "Practice Lab Section 9 for Green's Theorem."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What is the first thing you should do for any double integral region?",
+    "When should polar coordinates be considered?",
+    "What are the two signs to be careful with in Green's Theorem?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 9",
+      "route": "#/section/9",
+      "topics": [
+        "double integrals",
+        "polar coordinates",
+        "Green's Theorem"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Checked switched-order integral and value 4.",
+    "Checked polar half-disk integral value 4pi.",
+    "Checked Green's Theorem integrand 4y and value 24.",
+    "Visual specs include exact regions and orientation arrows."
+  ],
+  "reviewSummary": "Session 21 is ready with checked double-integral, polar, and Green's Theorem problems."
+}

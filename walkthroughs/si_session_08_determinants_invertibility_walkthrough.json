@@ -1,0 +1,302 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "sessionId": "si-08",
+  "sessionNumber": 8,
+  "sessionType": "general",
+  "title": "Determinants and Invertibility",
+  "practiceLabSections": [
+    4
+  ],
+  "estimatedDurationMinutes": 50,
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "sessionGoal": "Students should be able to compute determinants, use determinant properties, and decide when a matrix is invertible.",
+  "quickStartIfUnprepared": [
+    "Start with: determinant zero means the matrix collapses space and is not invertible.",
+    "Write: det(A) nonzero means invertible for square matrices.",
+    "Review row-operation effects on determinants.",
+    "Do Problem 1 for direct computation.",
+    "Do Problem 2 for determinant properties.",
+    "Do Problem 3 for parameter values."
+  ],
+  "sayThisFirst": [
+    "The determinant is a number attached to a square matrix.",
+    "For a 2D matrix, determinant tells area scaling and orientation.",
+    "For a square matrix, determinant nonzero means invertible.",
+    "Determinant zero means the columns are dependent.",
+    "Row swaps, row scaling, and row replacement affect determinants in different ways."
+  ],
+  "boardPlan": [
+    "Write the invertible matrix test: det(A) != 0 means invertible.",
+    "Write the three row-operation effects.",
+    "Problem 1: compute a 3 by 3 determinant using expansion or row reduction.",
+    "Problem 2: track determinant changes from row operations.",
+    "Problem 3: find the k value that makes determinant zero."
+  ],
+  "keyFormulas": [
+    {
+      "name": "Invertibility test",
+      "latex": "A\\text{ square is invertible }\\Longleftrightarrow \\det(A)\\neq 0",
+      "plainEnglish": "Nonzero determinant means the matrix has an inverse."
+    },
+    {
+      "name": "Row swap",
+      "latex": "\\text{swap two rows} \\Rightarrow \\det \\text{ changes sign}",
+      "plainEnglish": "A row swap multiplies determinant by -1."
+    },
+    {
+      "name": "Row scaling",
+      "latex": "R_i\\leftarrow cR_i \\Rightarrow \\det \\text{ is multiplied by } c",
+      "plainEnglish": "Scaling a row scales the determinant."
+    },
+    {
+      "name": "Row replacement",
+      "latex": "R_i\\leftarrow R_i+cR_j \\Rightarrow \\det \\text{ unchanged}",
+      "plainEnglish": "Adding a multiple of one row to another does not change determinant."
+    }
+  ],
+  "commonMistakes": [
+    "Using determinant tests on non-square matrices.",
+    "Forgetting that row replacement does not change the determinant.",
+    "Forgetting that a row swap changes the sign.",
+    "Saying determinant zero means no solutions for every Ax=b. More precisely, it means A is not invertible.",
+    "Dropping a negative sign during cofactor expansion."
+  ],
+  "notationWarnings": [
+    "Use \\det(A), not |A| if students may confuse it with absolute value.",
+    "For parameter problems, write \\det(A(k))=0 to find non-invertible values.",
+    "Always mention square matrix before saying determinant/invertible."
+  ],
+  "problems": [
+    {
+      "problemId": "si08-p1",
+      "title": "Compute a determinant and decide invertibility",
+      "difficulty": "Warm-up/Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Compute a 3 by 3 determinant",
+        "Use determinant to decide invertibility"
+      ],
+      "studentPromptLatex": "Let\n\\[A=\\begin{bmatrix}2&1&0\\\\1&-1&3\\\\0&2&1\\end{bmatrix}.\\]\nCompute \\(\\det(A)\\). Is \\(A\\) invertible?",
+      "whatToSayBefore": "Tell students: determinant is just a number. For a square matrix, nonzero means invertible.",
+      "visualSpec": {
+        "type": "determinant_3x3_expansion",
+        "matrix": [
+          [
+            2,
+            1,
+            0
+          ],
+          [
+            1,
+            -1,
+            3
+          ],
+          [
+            0,
+            2,
+            1
+          ]
+        ],
+        "determinant": -15,
+        "invertible": true,
+        "drawInstructions": [
+          "Write the 3 by 3 matrix large on the board.",
+          "Choose the first row for cofactor expansion because it has a zero.",
+          "Circle the zero entry to show why that term disappears.",
+          "After finding det(A)=-15, write nonzero -> invertible."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Expand along the first row",
+          "latex": "\\[\\det(A)=2\\det\\begin{bmatrix}-1&3\\\\2&1\\end{bmatrix}-1\\det\\begin{bmatrix}1&3\\\\0&1\\end{bmatrix}+0(\\cdots).\\]"
+        },
+        {
+          "label": "Compute the 2 by 2 determinants",
+          "latex": "\\[\\det\\begin{bmatrix}-1&3\\\\2&1\\end{bmatrix}=(-1)(1)-3(2)=-7,\\]\\n\\[\\det\\begin{bmatrix}1&3\\\\0&1\\end{bmatrix}=1(1)-3(0)=1.\\]"
+        },
+        {
+          "label": "Finish the determinant",
+          "latex": "\\[\\det(A)=2(-7)-1(1)=-14-1=-15.\\]"
+        },
+        {
+          "label": "Decide invertibility",
+          "latex": "Since \\(\\det(A)=-15\\neq 0\\), the matrix is invertible."
+        }
+      ],
+      "finalAnswerLatex": "\\det(A)=-15,\\qquad A\\text{ is invertible.}",
+      "commonMistakes": [
+        "Forgetting the minus sign on the middle cofactor.",
+        "Forgetting the zero term vanishes.",
+        "Saying invertible only because the matrix is 3 by 3. It is invertible because det is nonzero."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "More determinant and invertibility practice."
+      }
+    },
+    {
+      "problemId": "si08-p2",
+      "title": "Track determinant changes from row operations",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Use row operation determinant rules",
+        "Track signs and scaling"
+      ],
+      "studentPromptLatex": "Suppose \\(A\\) is a \\(3\\times 3\\) matrix with \\(\\det(A)=4\\). A matrix \\(B\\) is made from \\(A\\) by doing these row operations in order:\n1. Swap rows 1 and 2.\n2. Multiply row 3 by 5.\n3. Replace row 1 by row 1 plus 2 times row 2.\nFind \\(\\det(B)\\).",
+      "whatToSayBefore": "Tell students: do not try to invent A. Just track what each row operation does to the determinant.",
+      "visualSpec": {
+        "type": "determinant_row_operation_tracker",
+        "initialDeterminant": 4,
+        "operations": [
+          {
+            "operation": "swap rows 1 and 2",
+            "factor": -1
+          },
+          {
+            "operation": "multiply row 3 by 5",
+            "factor": 5
+          },
+          {
+            "operation": "row replacement R1 <- R1 + 2R2",
+            "factor": 1
+          }
+        ],
+        "finalDeterminant": -20,
+        "drawInstructions": [
+          "Draw a three-step determinant tracker: 4 -> -4 -> -20 -> -20.",
+          "Label row swap as times -1.",
+          "Label row scaling as times 5.",
+          "Label row replacement as no change."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Start with the given determinant",
+          "latex": "\\[\\det(A)=4.\\]"
+        },
+        {
+          "label": "Apply the row swap",
+          "latex": "Swapping two rows multiplies the determinant by \\(-1\\):\\n\\[4\\mapsto -4.\\]"
+        },
+        {
+          "label": "Apply row scaling",
+          "latex": "Multiplying one row by 5 multiplies the determinant by 5:\\n\\[-4\\mapsto -20.\\]"
+        },
+        {
+          "label": "Apply row replacement",
+          "latex": "Replacing a row by itself plus a multiple of another row does not change the determinant. So it stays \\(-20\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\det(B)=-20.",
+      "commonMistakes": [
+        "Thinking row replacement changes the determinant.",
+        "Forgetting row swap changes the sign.",
+        "Multiplying by 5 three times instead of once. Only one row was scaled."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "Good follow-up for determinant properties."
+      }
+    },
+    {
+      "problemId": "si08-p3",
+      "title": "Find when a matrix is invertible",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Compute determinant with a parameter",
+        "Solve for non-invertible values",
+        "State invertibility condition"
+      ],
+      "studentPromptLatex": "For what values of \\(k\\) is\n\\[A(k)=\\begin{bmatrix}1&2&k\\\\0&1&3\\\\2&0&1\\end{bmatrix}\\]\ninvertible?",
+      "whatToSayBefore": "Tell students: invertible means determinant nonzero. So find det(A(k)), set it not equal to zero.",
+      "visualSpec": {
+        "type": "parameter_determinant_invertibility",
+        "matrixWithParameter": [
+          [
+            "1",
+            "2",
+            "k"
+          ],
+          [
+            "0",
+            "1",
+            "3"
+          ],
+          [
+            "2",
+            "0",
+            "1"
+          ]
+        ],
+        "determinantExpression": "13-2k",
+        "nonInvertibleValues": [
+          "13/2"
+        ],
+        "invertibleCondition": "k != 13/2",
+        "drawInstructions": [
+          "Write det(A(k)) at the top.",
+          "After computing 13-2k, draw a number line and mark k=13/2 as the bad value.",
+          "Say: every other value is okay."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Use determinant test",
+          "latex": "A square matrix is invertible exactly when its determinant is nonzero."
+        },
+        {
+          "label": "Compute the determinant",
+          "latex": "Expand along the second row or compute directly:\\n\\[\\det(A(k))=13-2k.\\]"
+        },
+        {
+          "label": "Find the bad value",
+          "latex": "The matrix is not invertible when\\n\\[13-2k=0.\\]\\nSo \\(2k=13\\), and \\(k=\\frac{13}{2}\\)."
+        },
+        {
+          "label": "State the invertible values",
+          "latex": "Therefore, \\(A(k)\\) is invertible for every \\(k\\) except \\(\\frac{13}{2}\\)."
+        }
+      ],
+      "finalAnswerLatex": "A(k)\\text{ is invertible for }k\\neq \\frac{13}{2}.",
+      "commonMistakes": [
+        "Giving the non-invertible value when the question asks for invertible values.",
+        "Forgetting to say k not equal to 13/2.",
+        "Setting determinant equal to 1 instead of nonzero."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "More parameter determinant problems are in Section 4."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What determinant value means not invertible?",
+    "Which row operation does not change determinant?",
+    "What does a row swap do to determinant?",
+    "For parameter problems, what equation finds the bad values?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 4",
+      "route": "#/section/4",
+      "reason": "More determinant, invertibility, and transformation practice."
+    }
+  ],
+  "qualityControlNotes": [
+    "Problem 1 checked: det(A)=-15.",
+    "Problem 2 checked: determinant changes 4 -> -4 -> -20 -> -20.",
+    "Problem 3 checked: det(A(k))=13-2k, so non-invertible when k=13/2."
+  ],
+  "reviewStatus": "reviewed",
+  "reviewSummary": "Session 08 keeps determinant rules simple and checks all arithmetic before export."
+}

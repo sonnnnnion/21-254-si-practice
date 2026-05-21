@@ -1,0 +1,398 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "sessionId": "si-03",
+  "sessionNumber": 3,
+  "sessionType": "general",
+  "title": "Linear Systems, Gaussian Elimination, and RREF",
+  "practiceLabSections": [
+    2
+  ],
+  "estimatedDurationMinutes": 50,
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, board-friendly, and quick to remember. Avoid abstract language unless the problem needs it.",
+  "sessionGoal": "Students should be able to row-reduce an augmented matrix, identify pivots and free variables, and decide whether a system has one solution, no solution, or infinitely many solutions.",
+  "quickStartIfUnprepared": [
+    "Write the three possible outcomes on the board: one solution, no solution, infinitely many solutions.",
+    "Remind students that row operations do not change the solution set.",
+    "Do Problem 1 to practice reading RREF before doing any long row reduction.",
+    "Do Problem 2 as the main computation problem.",
+    "Use Problem 3 to connect pivots, free variables, and consistency with a parameter."
+  ],
+  "sayThisFirst": [
+    "A linear system is just equations organized into a matrix.",
+    "Row reduction is not magic. It is just rewriting the same solution set in an easier form.",
+    "A pivot variable is controlled by the equations.",
+    "A free variable is allowed to vary, so it usually gets a parameter.",
+    "The dangerous row is a row like \\(0=5\\). That means no solution."
+  ],
+  "boardPlan": [
+    "Start with the three outcomes: unique / none / infinitely many.",
+    "Review what a pivot column means and what a free variable means.",
+    "Do Problem 1 by reading an already-reduced matrix.",
+    "Do Problem 2 by row reducing a full system from scratch.",
+    "Do Problem 3 by classifying a parameter case from echelon form.",
+    "End by pointing students to Practice Lab Section 2 for more RREF and solution-set problems."
+  ],
+  "keyFormulas": [
+    {
+      "name": "Augmented matrix",
+      "latex": "Ax=b \\quad \\longleftrightarrow \\quad [A\\mid b]"
+    },
+    {
+      "name": "Inconsistent row",
+      "latex": "[0\\;0\\;\\cdots\\;0\\mid c],\\; c\\ne0 \\quad \\Rightarrow \\quad \\text{no solution}"
+    },
+    {
+      "name": "Free-variable idea",
+      "latex": "\\text{no pivot in a variable column} \\quad \\Rightarrow \\quad \\text{free variable}"
+    }
+  ],
+  "commonMistakes": [
+    "Forgetting that a row of all zeros is fine.",
+    "Missing that \\([0\\;0\\;0\\mid 5]\\) means no solution.",
+    "Calling every variable a pivot variable.",
+    "Forgetting to introduce a parameter for a free variable.",
+    "Doing row operations to the left side but forgetting to update the augmented column."
+  ],
+  "notationWarnings": [
+    "Use \\([A\\mid b]\\) for an augmented matrix, not just \\(A\\), when the right-hand side is included.",
+    "Do not write \\(0=5\\) as if it is a solution. It is a contradiction.",
+    "If \\(z=t\\), every expression involving \\(z\\) should be written in terms of \\(t\\)."
+  ],
+  "problems": [
+    {
+      "problemId": "si03-p01",
+      "title": "Reading a solution set from RREF",
+      "difficulty": "Warm-up / Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "RREF interpretation",
+        "Pivot variables",
+        "Free variables",
+        "Parametric solution"
+      ],
+      "studentPromptLatex": "The augmented matrix for a system in variables \\(x,y,z\\) row-reduces to\n\\[\n\\begin{bmatrix}\n1&0&-2&\\mid&5\\\\\n0&1&3&\\mid&-1\\\\\n0&0&0&\\mid&0\n\\end{bmatrix}.\n\\]\nWrite the solution set in parametric form.",
+      "whatToSayBefore": "This is a reading problem. The row reduction is already done, so do not keep reducing. Just translate rows into equations.",
+      "visualSpec": {
+        "type": "rref_pivot_free_variable_highlight",
+        "purpose": "Show which columns have pivots and which variable is free.",
+        "matrix": [
+          [
+            1,
+            0,
+            -2,
+            "|",
+            5
+          ],
+          [
+            0,
+            1,
+            3,
+            "|",
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            "|",
+            0
+          ]
+        ],
+        "pivotColumns": [
+          "x",
+          "y"
+        ],
+        "freeVariables": [
+          "z"
+        ],
+        "boardSketchInstructions": [
+          "Circle the leading 1 in column x and the leading 1 in column y.",
+          "Mark the z-column as free because it has no pivot.",
+          "Write \\(z=t\\) beside the matrix.",
+          "Translate each row into an equation before writing the final vector form."
+        ],
+        "accuracyNote": "The displayed matrix is already in RREF, and the solution set below is exact."
+      },
+      "walkthrough": [
+        {
+          "label": "Identify pivots and the free variable",
+          "latex": "x\\text{ and }y\\text{ are pivot variables. }z\\text{ is free.}",
+          "sayOutLoud": "The third variable does not have a pivot, so it gets a parameter."
+        },
+        {
+          "label": "Set the free variable",
+          "latex": "z=t,\\quad t\\in\\mathbb{R}.",
+          "sayOutLoud": "Use any letter you want. I will use t."
+        },
+        {
+          "label": "Translate the rows",
+          "latex": "x-2z=5,\\qquad y+3z=-1.",
+          "sayOutLoud": "Each nonzero row gives one equation."
+        },
+        {
+          "label": "Solve for the pivot variables",
+          "latex": "x=5+2t,\\qquad y=-1-3t,\\qquad z=t.",
+          "sayOutLoud": "The pivot variables are controlled by the free variable."
+        },
+        {
+          "label": "Write the solution as a vector",
+          "latex": "\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}=\\begin{bmatrix}5\\\\-1\\\\0\\end{bmatrix}+t\\begin{bmatrix}2\\\\-3\\\\1\\end{bmatrix},\\quad t\\in\\mathbb{R}.",
+          "sayOutLoud": "This means infinitely many solutions along a line in \\(\\mathbb{R}^3\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}=\\begin{bmatrix}5\\\\-1\\\\0\\end{bmatrix}+t\\begin{bmatrix}2\\\\-3\\\\1\\end{bmatrix},\\quad t\\in\\mathbb{R}.",
+      "commonMistakes": [
+        "Treating \\(z\\) like a pivot variable.",
+        "Writing \\(x=5-2t\\) instead of \\(x=5+2t\\).",
+        "Forgetting the parameter \\(t\\).",
+        "Ignoring the zero row; the zero row is fine and does not mean no solution."
+      ],
+      "practiceLabPointer": "Practice Lab Section 2: interpreting RREF and solution sets."
+    },
+    {
+      "problemId": "si03-p02",
+      "title": "Row-reducing a system to one solution",
+      "difficulty": "Core exam-style",
+      "estimatedMinutes": 20,
+      "skills": [
+        "Gaussian elimination",
+        "Augmented matrices",
+        "Back substitution / RREF",
+        "Unique solution"
+      ],
+      "studentPromptLatex": "Solve the system\n\\[\n\\begin{aligned}\nx+2y-z&=3,\\\\\n2x+5y+z&=8,\\\\\n-x-y+2z&=0.\n\\end{aligned}\n\\]",
+      "whatToSayBefore": "This is the main row-reduction problem. The goal is not to be fancy. The goal is to make zeros below the first pivot, then keep going.",
+      "visualSpec": {
+        "type": "gaussian_elimination_augmented_matrix_steps",
+        "purpose": "Show the augmented matrix and the pivot strategy row by row.",
+        "initialAugmentedMatrix": [
+          [
+            1,
+            2,
+            -1,
+            "|",
+            3
+          ],
+          [
+            2,
+            5,
+            1,
+            "|",
+            8
+          ],
+          [
+            -1,
+            -1,
+            2,
+            "|",
+            0
+          ]
+        ],
+        "rowOperations": [
+          "R_2 \\leftarrow R_2-2R_1",
+          "R_3 \\leftarrow R_3+R_1",
+          "R_3 \\leftarrow R_3-R_2",
+          "R_3 \\leftarrow -\\frac12 R_3",
+          "Clear above the pivot in column 3, then clear above the pivot in column 2."
+        ],
+        "finalRREF": [
+          [
+            1,
+            0,
+            0,
+            "|",
+            "-\\frac92"
+          ],
+          [
+            0,
+            1,
+            0,
+            "|",
+            "\\frac72"
+          ],
+          [
+            0,
+            0,
+            1,
+            "|",
+            "-\\frac12"
+          ]
+        ],
+        "boardSketchInstructions": [
+          "Write the augmented matrix first.",
+          "Circle the first pivot in row 1 column 1.",
+          "Use row 1 to make zeros below it.",
+          "Circle the next pivot in row 2 column 2.",
+          "Use row 2 to make a zero below it.",
+          "Scale the last row to get the final pivot and then clear above."
+        ],
+        "accuracyNote": "The final RREF gives the exact solution \\(x=-9/2, y=7/2, z=-1/2\\)."
+      },
+      "walkthrough": [
+        {
+          "label": "Write the augmented matrix",
+          "latex": "\\left[\\begin{array}{ccc|c}1&2&-1&3\\\\2&5&1&8\\\\-1&-1&2&0\\end{array}\\right].",
+          "sayOutLoud": "The augmented column is the right-hand side. Do not lose it during row operations."
+        },
+        {
+          "label": "Use the first pivot to clear below",
+          "latex": "R_2\\leftarrow R_2-2R_1,\\quad R_3\\leftarrow R_3+R_1\\quad\\Rightarrow\\quad\\left[\\begin{array}{ccc|c}1&2&-1&3\\\\0&1&3&2\\\\0&1&1&3\\end{array}\\right].",
+          "sayOutLoud": "Now the first column is clean below the pivot."
+        },
+        {
+          "label": "Use the second pivot",
+          "latex": "R_3\\leftarrow R_3-R_2\\quad\\Rightarrow\\quad\\left[\\begin{array}{ccc|c}1&2&-1&3\\\\0&1&3&2\\\\0&0&-2&1\\end{array}\\right].",
+          "sayOutLoud": "The third row now gives the z-value after scaling."
+        },
+        {
+          "label": "Scale the last row",
+          "latex": "R_3\\leftarrow -\\frac12R_3\\quad\\Rightarrow\\quad\\left[\\begin{array}{ccc|c}1&2&-1&3\\\\0&1&3&2\\\\0&0&1&-\\frac12\\end{array}\\right].",
+          "sayOutLoud": "So \\(z=-\\frac12\\)."
+        },
+        {
+          "label": "Clear above the last pivot",
+          "latex": "R_2\\leftarrow R_2-3R_3,\\quad R_1\\leftarrow R_1+R_3\\quad\\Rightarrow\\quad\\left[\\begin{array}{ccc|c}1&2&0&\\frac52\\\\0&1&0&\\frac72\\\\0&0&1&-\\frac12\\end{array}\\right].",
+          "sayOutLoud": "Now the \\(z\\)-terms are gone from the first two rows."
+        },
+        {
+          "label": "Clear above the second pivot",
+          "latex": "R_1\\leftarrow R_1-2R_2\\quad\\Rightarrow\\quad\\left[\\begin{array}{ccc|c}1&0&0&-\\frac92\\\\0&1&0&\\frac72\\\\0&0&1&-\\frac12\\end{array}\\right].",
+          "sayOutLoud": "Each variable column has a pivot, so there is one solution."
+        }
+      ],
+      "finalAnswerLatex": "x=-\\frac92,\\qquad y=\\frac72,\\qquad z=-\\frac12.",
+      "commonMistakes": [
+        "Forgetting to apply the row operation to the augmented column.",
+        "Dropping a negative sign in the third row.",
+        "Stopping at echelon form but not reading the variables carefully.",
+        "Thinking fractions mean the answer is wrong; fractions are normal in RREF."
+      ],
+      "practiceLabPointer": "Practice Lab Section 2: Gaussian elimination and RREF."
+    },
+    {
+      "problemId": "si03-p03",
+      "title": "Classifying a system with a parameter",
+      "difficulty": "Challenge / Exam-style",
+      "estimatedMinutes": 16,
+      "skills": [
+        "Consistency",
+        "Parameter values",
+        "Free variables",
+        "No solution vs. infinitely many solutions"
+      ],
+      "studentPromptLatex": "After row reduction, an augmented matrix has the form\n\\[\n\\left[\\begin{array}{ccc|c}\n1&1&0&3\\\\\n0&1&-2&1\\\\\n0&0&(k-2)(k+1)&k-2\n\\end{array}\\right].\n\\]\nFor which values of \\(k\\) does the system have one solution, no solution, or infinitely many solutions?",
+      "whatToSayBefore": "This looks scary because of the parameter, but only the last row matters. Ask: when is the last coefficient zero? Then check the right-hand side.",
+      "visualSpec": {
+        "type": "parameter_consistency_last_row_focus",
+        "purpose": "Focus attention on the final row because that row controls the parameter cases.",
+        "matrix": [
+          [
+            1,
+            1,
+            0,
+            "|",
+            3
+          ],
+          [
+            0,
+            1,
+            -2,
+            "|",
+            1
+          ],
+          [
+            0,
+            0,
+            "(k-2)(k+1)",
+            "|",
+            "k-2"
+          ]
+        ],
+        "criticalValues": [
+          2,
+          -1
+        ],
+        "caseAnalysis": [
+          {
+            "case": "k \\ne 2,-1",
+            "meaning": "last coefficient is nonzero, so z is a pivot variable; one solution"
+          },
+          {
+            "case": "k = 2",
+            "meaning": "last row becomes 0 = 0; one free variable; infinitely many solutions"
+          },
+          {
+            "case": "k = -1",
+            "meaning": "last row becomes 0 = -3; contradiction; no solution"
+          }
+        ],
+        "boardSketchInstructions": [
+          "Box the last row only.",
+          "Set \\((k-2)(k+1)=0\\) to find the critical values \\(k=2\\) and \\(k=-1\\).",
+          "Make a three-row case table on the board.",
+          "For each case, plug the value into both the coefficient and the augmented entry."
+        ],
+        "accuracyNote": "The case split is exact: unique for \\(k\\ne2,-1\\), infinite for \\(k=2\\), and no solution for \\(k=-1\\)."
+      },
+      "walkthrough": [
+        {
+          "label": "Focus on the last row",
+          "latex": "0x+0y+(k-2)(k+1)z=k-2.",
+          "sayOutLoud": "The first two rows are fine. The last row decides the special cases."
+        },
+        {
+          "label": "Find when the last coefficient is zero",
+          "latex": "(k-2)(k+1)=0\\quad\\Rightarrow\\quad k=2\\text{ or }k=-1.",
+          "sayOutLoud": "If this coefficient is not zero, then \\(z\\) has a pivot and the system has one solution."
+        },
+        {
+          "label": "Generic case",
+          "latex": "k\\ne2,-1\\quad\\Rightarrow\\quad (k-2)(k+1)\\ne0,\\quad \\text{so there is a pivot in the }z\\text{-column}.",
+          "sayOutLoud": "With pivots in all three variable columns, there is exactly one solution."
+        },
+        {
+          "label": "Case \\(k=2\\)",
+          "latex": "0\\cdot z=0\\quad\\Rightarrow\\quad 0=0.",
+          "sayOutLoud": "This row disappears. That creates a free variable, so there are infinitely many solutions."
+        },
+        {
+          "label": "Case \\(k=-1\\)",
+          "latex": "0\\cdot z=-3\\quad\\Rightarrow\\quad 0=-3.",
+          "sayOutLoud": "This is impossible, so the system has no solution."
+        }
+      ],
+      "finalAnswerLatex": "\\text{One solution if }k\\ne2,-1.\\quad \\text{Infinitely many solutions if }k=2.\\quad \\text{No solution if }k=-1.",
+      "commonMistakes": [
+        "Only checking when the coefficient is zero, but forgetting to check the augmented entry too.",
+        "Saying \\(k=2\\) gives no solution even though the row is \\(0=0\\).",
+        "Saying \\(k=-1\\) gives infinite solutions even though the row is \\(0=-3\\).",
+        "Forgetting that all non-special values of \\(k\\) give a unique solution."
+      ],
+      "practiceLabPointer": "Practice Lab Section 2: consistency, rank, and parameter cases."
+    }
+  ],
+  "wrapUpQuestions": [
+    "What row tells you there is no solution?",
+    "How do you know a variable is free?",
+    "Why does a free variable usually mean infinitely many solutions?",
+    "What is the difference between a zero row and an inconsistent row?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 2",
+      "sectionNumber": 2,
+      "reason": "More problems on RREF, rank, null space, and solution sets."
+    }
+  ],
+  "qualityControlNotes": [
+    "All row-reduction arithmetic in Problem 2 was checked independently.",
+    "Problem 3 was designed so the parameter cases are distinct: unique, infinite, and none.",
+    "Notation uses \\([A\\mid b]\\) for augmented matrices and avoids ambiguous system notation."
+  ],
+  "reviewStatus": "reviewed",
+  "reviewSummary": "Session 03 emphasizes simple interpretation before long computation, then ends with a parameter consistency problem."
+}

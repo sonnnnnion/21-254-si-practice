@@ -1,0 +1,499 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "sessionId": "si-09",
+  "sessionNumber": 9,
+  "sessionType": "exam-review",
+  "title": "Exam 1 Review: Vectors, Matrices, Systems, Subspaces, Transformations, and Determinants",
+  "practiceLabSections": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "estimatedDurationMinutes": 75,
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "sessionGoal": "Students should leave with a clean map of Exam 1 skills and practice the most common mixed problem types from the first part of the course.",
+  "quickStartIfUnprepared": [
+    "Open with a topic map: vectors/matrices, systems/RREF, subspaces/bases, transformations, determinants.",
+    "Tell students the goal is not to memorize; it is to recognize the problem type quickly.",
+    "Do Problems 2, 3, and 5 if time is short.",
+    "For each problem, ask: what type of problem is this before solving?",
+    "End by pointing students to Practice Lab Sections 1-4 and Exam Mode."
+  ],
+  "sayThisFirst": [
+    "Exam review is about recognition. First identify the problem type, then use the matching method.",
+    "For vector problems, ask: do I need a vector, a scalar, or a geometric interpretation?",
+    "For systems, row reduce and read pivots/free variables.",
+    "For subspaces and bases, ask: do I need span, independence, or both?",
+    "For transformations, remember columns are images of basis vectors.",
+    "For determinants, nonzero means invertible."
+  ],
+  "boardPlan": [
+    "Make a two-column board: Topic / What to do first.",
+    "List the five problem types in today’s review.",
+    "Work through the problems in order, but skip Problem 1 if students are already strong with vectors.",
+    "After each problem, write one takeaway sentence.",
+    "Leave the last 5 minutes for students to choose which Practice Lab sections to review."
+  ],
+  "examCoverageGuide": [
+    {
+      "topic": "Vectors and matrices",
+      "whatToRecognize": "Component arithmetic, dot products, matrix dimensions, transposes."
+    },
+    {
+      "topic": "Linear systems and RREF",
+      "whatToRecognize": "Pivots, free variables, no solution vs infinitely many solutions."
+    },
+    {
+      "topic": "Subspaces, span, bases",
+      "whatToRecognize": "Span membership equations and independence equations look similar but ask different things."
+    },
+    {
+      "topic": "Linear transformations",
+      "whatToRecognize": "Build matrices from images of basis vectors and use Ax."
+    },
+    {
+      "topic": "Determinants",
+      "whatToRecognize": "Use det(A) to decide invertibility and track row operation effects."
+    }
+  ],
+  "keyFormulas": [
+    "\\overrightarrow{AB}=B-A",
+    "u\\cdot v=\\|u\\|\\|v\\|\\cos\\theta",
+    "\\operatorname{rank}(A)+\\operatorname{nullity}(A)=n",
+    "A=\\begin{bmatrix}T(e_1)&T(e_2)&\\cdots&T(e_n)\\end{bmatrix}",
+    "A\\text{ square invertible }\\Longleftrightarrow \\det(A)\\neq 0"
+  ],
+  "commonMistakes": [
+    "Not saying what type of problem it is before starting algebra.",
+    "Using RREF columns as a basis for Col(A).",
+    "Mixing up span membership with linear independence.",
+    "Forgetting that T(e_i) values become columns.",
+    "For determinant parameter problems, giving the bad value instead of the invertible condition."
+  ],
+  "notationWarnings": [
+    "Use \\overrightarrow{AB} for vectors between points.",
+    "Use [A|b] for augmented matrices.",
+    "Use \\operatorname{span}, \\operatorname{Col}(A), \\operatorname{Nul}(A), and \\ker(T) clearly.",
+    "Do not call det(A) a matrix. It is a scalar."
+  ],
+  "problems": [
+    {
+      "problemId": "si09-p1",
+      "title": "Vector warm-up: arithmetic and dot product meaning",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 8,
+      "skills": [
+        "Vector arithmetic",
+        "Dot product",
+        "Angle interpretation"
+      ],
+      "studentPromptLatex": "Let \\(u=(2,-1,2)\\) and \\(v=(1,3,0)\\). Compute \\(u+2v\\), compute \\(u\\cdot v\\), and decide whether the angle between \\(u\\) and \\(v\\) is acute, obtuse, or right.",
+      "whatToSayBefore": "Tell students: first check whether each answer should be a vector or a scalar.",
+      "visualSpec": {
+        "type": "vector_arithmetic_dot_angle",
+        "vectors": {
+          "u": [
+            2,
+            -1,
+            2
+          ],
+          "v": [
+            1,
+            3,
+            0
+          ]
+        },
+        "resultVector": [
+          4,
+          5,
+          2
+        ],
+        "dotProduct": -1,
+        "angleType": "obtuse",
+        "drawInstructions": [
+          "Draw two arrows from the origin labeled u and v.",
+          "Write dot product < 0 means the angle is obtuse.",
+          "Do not try to draw exact 3D coordinates; use the sign interpretation."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Compute the vector expression",
+          "latex": "\\[u+2v=(2,-1,2)+2(1,3,0)=(2,-1,2)+(2,6,0)=(4,5,2).\\]"
+        },
+        {
+          "label": "Compute the dot product",
+          "latex": "\\[u\\cdot v=2(1)+(-1)(3)+2(0)=2-3+0=-1.\\]"
+        },
+        {
+          "label": "Interpret the angle",
+          "latex": "Because \\(u\\cdot v<0\\), the angle between them is obtuse."
+        }
+      ],
+      "finalAnswerLatex": "u+2v=(4,5,2),\\qquad u\\cdot v=-1,\\qquad \\text{the angle is obtuse.}",
+      "commonMistakes": [
+        "Thinking dot product gives a vector.",
+        "Forgetting to multiply v by 2 before adding.",
+        "Only saying dot product is negative without interpreting the angle."
+      ],
+      "practiceLabPointer": {
+        "section": 1,
+        "route": "#/section/1",
+        "note": "Practice Lab Section 1 for vector/matrix basics."
+      }
+    },
+    {
+      "problemId": "si09-p2",
+      "title": "Read a solution set from RREF",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "RREF interpretation",
+        "Pivot/free variables",
+        "Parametric solution"
+      ],
+      "studentPromptLatex": "The augmented matrix of a system row-reduces to\n\\[\\begin{bmatrix}1&0&2&|&-1\\\\0&1&-3&|&4\\\\0&0&0&|&0\\end{bmatrix}.\\]\nWrite the solution set in parametric form.",
+      "whatToSayBefore": "Tell students: this problem is about reading, not more row reducing. Identify pivots and free variables first.",
+      "visualSpec": {
+        "type": "rref_augmented_solution_set",
+        "rrefAugmented": [
+          [
+            1,
+            0,
+            2,
+            -1
+          ],
+          [
+            0,
+            1,
+            -3,
+            4
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "pivotVariables": [
+          "x_1",
+          "x_2"
+        ],
+        "freeVariables": [
+          "x_3"
+        ],
+        "solution": "(-1-2t, 4+3t, t)",
+        "drawInstructions": [
+          "Circle pivots in columns 1 and 2.",
+          "Write x3=t above the free column.",
+          "Translate the first two rows into equations.",
+          "Box the final parametric vector form."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Identify pivot and free variables",
+          "latex": "Pivots are in columns 1 and 2, so \\(x_1\\) and \\(x_2\\) are pivot variables. Column 3 has no pivot, so let \\(x_3=t\\)."
+        },
+        {
+          "label": "Translate rows into equations",
+          "latex": "The rows say\\n\\[x_1+2x_3=-1,\\qquad x_2-3x_3=4.\\]"
+        },
+        {
+          "label": "Solve using the parameter",
+          "latex": "Since \\(x_3=t\\),\\n\\[x_1=-1-2t,\\qquad x_2=4+3t.\\]"
+        },
+        {
+          "label": "Write the solution set",
+          "latex": "\\[(x_1,x_2,x_3)=(-1-2t,4+3t,t),\\qquad t\\in\\mathbb{R}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "(x_1,x_2,x_3)=(-1-2t,4+3t,t),\\quad t\\in\\mathbb{R}.",
+      "commonMistakes": [
+        "Forgetting to introduce a parameter for x3.",
+        "Thinking the zero row means no solution. It does not.",
+        "Leaving the answer as equations without a clear solution set."
+      ],
+      "practiceLabPointer": {
+        "section": 2,
+        "route": "#/section/2",
+        "note": "Practice Lab Section 2 for RREF and solution sets."
+      }
+    },
+    {
+      "problemId": "si09-p3",
+      "title": "Span, dependence, and a basis for the span",
+      "difficulty": "Core",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Span membership",
+        "Linear dependence",
+        "Basis for a span"
+      ],
+      "studentPromptLatex": "Let\n\\[v_1=(1,0,2),\\quad v_2=(0,1,-1),\\quad v_3=(2,1,3),\\quad b=(3,2,4).\\]\nIs \\(b\\) in \\(\\operatorname{span}\\{v_1,v_2,v_3\\}\\)? Are \\(v_1,v_2,v_3\\) linearly independent? Give a basis for their span.",
+      "whatToSayBefore": "Tell students: this problem asks three related questions. Do not answer only the first one.",
+      "visualSpec": {
+        "type": "span_membership_and_dependence",
+        "vectors": {
+          "v1": [
+            1,
+            0,
+            2
+          ],
+          "v2": [
+            0,
+            1,
+            -1
+          ],
+          "v3": [
+            2,
+            1,
+            3
+          ],
+          "b": [
+            3,
+            2,
+            4
+          ]
+        },
+        "relations": [
+          "v3 = 2v1 + v2",
+          "b = 3v1 + 2v2"
+        ],
+        "basisForSpan": [
+          [
+            1,
+            0,
+            2
+          ],
+          [
+            0,
+            1,
+            -1
+          ]
+        ],
+        "spanDimension": 2,
+        "drawInstructions": [
+          "Draw a plane through the origin spanned by v1 and v2.",
+          "Draw v3 inside the same plane and label v3=2v1+v2.",
+          "Draw b inside the same plane and label b=3v1+2v2.",
+          "Emphasize that v3 is redundant, so v1 and v2 form a basis for the span."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Notice the relation for v3",
+          "latex": "\\[2v_1+v_2=2(1,0,2)+(0,1,-1)=(2,1,3)=v_3.\\]\\nSo \\(v_3\\) is redundant."
+        },
+        {
+          "label": "Check b is in the span",
+          "latex": "\\[3v_1+2v_2=3(1,0,2)+2(0,1,-1)=(3,2,4)=b.\\]\\nSo \\(b\\in\\operatorname{span}\\{v_1,v_2,v_3\\}\\)."
+        },
+        {
+          "label": "Decide independence",
+          "latex": "Since \\(v_3=2v_1+v_2\\), one vector is made from the others. Therefore the set is linearly dependent."
+        },
+        {
+          "label": "Give a basis for the span",
+          "latex": "The vectors \\(v_1\\) and \\(v_2\\) are not multiples of each other, so they are independent. Since \\(v_3\\) is redundant, a basis is\\n\\[\\{v_1,v_2\\}=\\{(1,0,2),(0,1,-1)\\}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "b\\in\\operatorname{span}\\{v_1,v_2,v_3\\},\\quad \\{v_1,v_2,v_3\\}\\text{ is dependent},\\quad \\text{a basis for the span is }\\{(1,0,2),(0,1,-1)\\}.",
+      "commonMistakes": [
+        "Answering span membership but forgetting independence.",
+        "Thinking dependent means b is not in the span. These are different questions.",
+        "Giving all three vectors as a basis even though v3 is redundant."
+      ],
+      "practiceLabPointer": {
+        "section": 3,
+        "route": "#/section/3",
+        "note": "Practice Lab Section 3 for span, independence, and bases."
+      }
+    },
+    {
+      "problemId": "si09-p4",
+      "title": "Linear transformation and area scaling",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Use a standard matrix",
+        "Compute T(x)",
+        "Use determinant for invertibility and area scaling"
+      ],
+      "studentPromptLatex": "Let \\(T(x)=Ax\\), where\n\\[A=\\begin{bmatrix}1&2\\\\3&1\\end{bmatrix}.\\]\nCompute \\(T(2,-1)\\). Is \\(T\\) one-to-one and onto? What is the area scale factor?",
+      "whatToSayBefore": "Tell students: for a square 2 by 2 transformation, determinant answers invertibility and area scaling.",
+      "visualSpec": {
+        "type": "linear_transform_area_scaling_2d",
+        "matrix": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "inputVector": [
+          2,
+          -1
+        ],
+        "outputVector": [
+          0,
+          5
+        ],
+        "determinant": -5,
+        "areaScaleFactor": 5,
+        "drawInstructions": [
+          "Draw the unit square and its image as a parallelogram with area scale 5.",
+          "Write det(A)=-5, so orientation flips and area scales by 5.",
+          "Show T(2,-1) as a separate matrix-vector multiplication."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Compute the output",
+          "latex": "\\[T(2,-1)=\\begin{bmatrix}1&2\\\\3&1\\end{bmatrix}\\begin{bmatrix}2\\\\-1\\end{bmatrix}=\\begin{bmatrix}2-2\\\\6-1\\end{bmatrix}=\\begin{bmatrix}0\\\\5\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute determinant",
+          "latex": "\\[\\det(A)=1(1)-2(3)=1-6=-5.\\]"
+        },
+        {
+          "label": "Interpret determinant",
+          "latex": "Since \\(\\det(A)\\neq 0\\), \\(T\\) is one-to-one and onto. The area scale factor is \\(|\\det(A)|=5\\). The negative sign means orientation is flipped."
+        }
+      ],
+      "finalAnswerLatex": "T(2,-1)=\\begin{bmatrix}0\\\\5\\end{bmatrix},\\quad T\\text{ is one-to-one and onto},\\quad \\text{area scale factor }=5.",
+      "commonMistakes": [
+        "Forgetting absolute value for area scale.",
+        "Saying area scale is -5. Area cannot be negative.",
+        "Forgetting that determinant nonzero implies both one-to-one and onto for R2 to R2."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "Practice Lab Section 4 for transformations and determinants."
+      }
+    },
+    {
+      "problemId": "si09-p5",
+      "title": "Parameter value for invertibility",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Determinant with parameter",
+        "Invertibility condition"
+      ],
+      "studentPromptLatex": "For what values of \\(k\\) is\n\\[M(k)=\\begin{bmatrix}1&k&0\\\\2&1&1\\\\0&3&2\\end{bmatrix}\\]\ninvertible?",
+      "whatToSayBefore": "Tell students: this is a determinant problem. Invertible means det is not zero.",
+      "visualSpec": {
+        "type": "parameter_invertibility_exam_review",
+        "matrixWithParameter": [
+          [
+            "1",
+            "k",
+            "0"
+          ],
+          [
+            "2",
+            "1",
+            "1"
+          ],
+          [
+            "0",
+            "3",
+            "2"
+          ]
+        ],
+        "determinantExpression": "-4k-1",
+        "nonInvertibleValues": [
+          "-1/4"
+        ],
+        "invertibleCondition": "k != -1/4",
+        "drawInstructions": [
+          "Write det(M(k)) first.",
+          "After computing -4k-1, set it equal to zero to find the bad value.",
+          "Draw a number line with k=-1/4 marked as the only excluded value."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Compute determinant",
+          "latex": "Expand along the first row:\\n\\[\\det(M)=1\\det\\begin{bmatrix}1&1\\\\3&2\\end{bmatrix}-k\\det\\begin{bmatrix}2&1\\\\0&2\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Simplify",
+          "latex": "\\[\\det\\begin{bmatrix}1&1\\\\3&2\\end{bmatrix}=2-3=-1,\\qquad \\det\\begin{bmatrix}2&1\\\\0&2\\end{bmatrix}=4.\\]\\nSo\\n\\[\\det(M)=-1-4k.\\]"
+        },
+        {
+          "label": "Find the bad value",
+          "latex": "The matrix is not invertible when\\n\\[-1-4k=0.\\]\\nSo \\(k=-\\frac14\\)."
+        },
+        {
+          "label": "State the invertible condition",
+          "latex": "Therefore \\(M(k)\\) is invertible for all \\(k\\neq -\\frac14\\)."
+        }
+      ],
+      "finalAnswerLatex": "M(k)\\text{ is invertible for }k\\neq -\\frac14.",
+      "commonMistakes": [
+        "Stopping at k=-1/4 without saying whether that is good or bad.",
+        "Forgetting the minus sign in cofactor expansion.",
+        "Saying determinant must equal 1. It only needs to be nonzero."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "Practice Lab Section 4 and Exam Mode for more review."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "Which topics still feel slow: RREF, span/bases, transformations, or determinants?",
+    "What is the first thing you do when you see an RREF matrix?",
+    "What does determinant nonzero tell you?",
+    "What Practice Lab section should you review next?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 1",
+      "route": "#/section/1",
+      "reason": "Vectors, matrices, and basic operations."
+    },
+    {
+      "label": "Practice Lab Section 2",
+      "route": "#/section/2",
+      "reason": "Linear systems, RREF, rank, and null space."
+    },
+    {
+      "label": "Practice Lab Section 3",
+      "route": "#/section/3",
+      "reason": "Subspaces, span, bases, column space, and null space."
+    },
+    {
+      "label": "Practice Lab Section 4",
+      "route": "#/section/4",
+      "reason": "Transformations, determinants, and inverses."
+    },
+    {
+      "label": "Practice Lab Exam Mode",
+      "route": "#/exam",
+      "reason": "Generate a mixed review set for Exam 1."
+    }
+  ],
+  "qualityControlNotes": [
+    "Problem 1 checked: u+2v=(4,5,2), dot=-1 so angle is obtuse.",
+    "Problem 2 checked: solution is (-1-2t, 4+3t, t).",
+    "Problem 3 checked: v3=2v1+v2 and b=3v1+2v2.",
+    "Problem 4 checked: T(2,-1)=(0,5), det=-5, area scale=5.",
+    "Problem 5 checked: det(M(k))=-4k-1, non-invertible at k=-1/4."
+  ],
+  "reviewStatus": "reviewed",
+  "reviewSummary": "Session 09 is the first exam review session. It has five mixed original problems covering Sections 1-4, with simple board-first explanations and exact visual specs."
+}

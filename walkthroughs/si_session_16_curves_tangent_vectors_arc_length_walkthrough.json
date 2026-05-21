@@ -1,0 +1,269 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-16",
+  "sessionNumber": 16,
+  "sessionType": "general",
+  "title": "Curves, Tangent Vectors, and Arc Length",
+  "practiceLabSections": [
+    7
+  ],
+  "estimatedDurationMinutes": 50,
+  "sessionGoal": "Students should be able to read a parametrized curve, find velocity/speed/unit tangent, parametrize a line segment, and compute simple arc length.",
+  "quickStartIfUnprepared": [
+    "Start with the sentence: a parametrized curve is a moving point.",
+    "Do Problem 1 to review position, velocity, speed, and unit tangent.",
+    "Do Problem 2 if students struggle with parametrizing segments.",
+    "Do Problem 3 to show a clean arc length example."
+  ],
+  "sayThisFirst": [
+    "A curve \\(r(t)\\) is a position that changes with time.",
+    "\\(r'(t)\\) is the velocity vector, so it points tangent to the curve.",
+    "Speed is the length of velocity: \\(\\|r'(t)\\|\\).",
+    "Arc length adds up speed over the interval."
+  ],
+  "boardPlan": [
+    "Write position, velocity, speed, unit tangent.",
+    "Work a point-value curve example.",
+    "Show line segment parametrization from A to B.",
+    "Finish with one arc length integral where speed is constant."
+  ],
+  "keyFormulas": [
+    "Velocity: \\(r'(t)\\).",
+    "Speed: \\(\\|r'(t)\\|\\).",
+    "Unit tangent: \\(T(t)=\\dfrac{r'(t)}{\\|r'(t)\\|}\\).",
+    "Line segment from A to B: \\(r(t)=A+t(B-A),\\ 0\\le t\\le1\\).",
+    "Arc length: \\(L=\\int_a^b \\|r'(t)\\|\\,dt\\)."
+  ],
+  "commonMistakes": [
+    "Forgetting that velocity is a vector but speed is a number.",
+    "Using \\(A-B\\) instead of \\(B-A\\) for a segment from A to B.",
+    "Forgetting the interval for a parametrization.",
+    "Integrating \\(r(t)\\) instead of \\(\\|r'(t)\\|\\) for arc length."
+  ],
+  "notationWarnings": [
+    "Use \\(\\overrightarrow{AB}=B-A\\) for the vector from A to B.",
+    "Write \\(\\|r'(t)\\|\\), not just \\(r'(t)\\), for speed.",
+    "The unit tangent only exists when \\(r'(t)\\ne 0\\)."
+  ],
+  "problems": [
+    {
+      "problemId": "si16-p1",
+      "title": "Position, velocity, speed, and unit tangent",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Parametrized curves",
+        "Velocity",
+        "Speed",
+        "Unit tangent"
+      ],
+      "studentPromptLatex": "Let \\(r(t)=(t^2,t^3-3t,2t)\\). Find \\(r(1)\\), \\(r'(1)\\), the speed at \\(t=1\\), and the unit tangent vector at \\(t=1\\).",
+      "whatToSayBefore": "Say: take the derivative component-by-component. Then speed is just the length of that derivative vector.",
+      "visualSpec": {
+        "type": "parametric_curve_tangent_exact_point",
+        "curve": "r(t)=(t^2,t^3-3t,2t)",
+        "parameter": 1,
+        "point": [
+          1,
+          -2,
+          2
+        ],
+        "velocity": [
+          2,
+          0,
+          2
+        ],
+        "unitTangent": [
+          "1/sqrt(2)",
+          0,
+          "1/sqrt(2)"
+        ],
+        "drawInstructions": [
+          "Draw a curve in 3D or as a simple squiggle.",
+          "Mark the point r(1).",
+          "Draw an arrow tangent to the curve labeled r'(1).",
+          "Label speed as the length of r'(1), not a new direction."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Evaluate the position",
+          "latex": "\\[r(1)=(1^2,1^3-3(1),2(1))=(1,-2,2).\\]"
+        },
+        {
+          "label": "Differentiate component-by-component",
+          "latex": "\\[r'(t)=(2t,3t^2-3,2).\\] So \\[r'(1)=(2,0,2).\\]"
+        },
+        {
+          "label": "Find the speed",
+          "latex": "\\[\\|r'(1)\\|=\\sqrt{2^2+0^2+2^2}=\\sqrt{8}=2\\sqrt2.\\]"
+        },
+        {
+          "label": "Divide by speed to get the unit tangent",
+          "latex": "\\[T(1)=\\frac{r'(1)}{\\|r'(1)\\|}=\\frac{(2,0,2)}{2\\sqrt2}=\\left(\\frac{1}{\\sqrt2},0,\\frac{1}{\\sqrt2}\\right).\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[r(1)=(1,-2,2),\\quad r'(1)=(2,0,2),\\quad \\text{speed}=2\\sqrt2,\\quad T(1)=\\left(\\frac{1}{\\sqrt2},0,\\frac{1}{\\sqrt2}\\right).\\]",
+      "commonMistakes": [
+        "Calling \\(r'(1)\\) the speed. \\(r'(1)\\) is velocity; its magnitude is speed.",
+        "Forgetting to divide by the speed for the unit tangent.",
+        "Differentiating only one component."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for curves and tangent vectors."
+      }
+    },
+    {
+      "problemId": "si16-p2",
+      "title": "Parametrize a line segment",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Line segment parametrization",
+        "Vector between points",
+        "Length"
+      ],
+      "studentPromptLatex": "Parametrize the line segment from \\(A=(1,2,0)\\) to \\(B=(4,-1,3)\\). Then find its length.",
+      "whatToSayBefore": "Say: start at A, then add t times the vector from A to B.",
+      "visualSpec": {
+        "type": "line_segment_3d",
+        "points": {
+          "A": [
+            1,
+            2,
+            0
+          ],
+          "B": [
+            4,
+            -1,
+            3
+          ]
+        },
+        "direction": [
+          3,
+          -3,
+          3
+        ],
+        "parameterInterval": [
+          0,
+          1
+        ],
+        "drawInstructions": [
+          "Draw point A and point B.",
+          "Draw an arrow from A to B.",
+          "Label the direction vector \\overrightarrow{AB}=B-A.",
+          "Show t=0 gives A and t=1 gives B."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find the direction vector",
+          "latex": "\\[\\overrightarrow{AB}=B-A=(4,-1,3)-(1,2,0)=(3,-3,3).\\]"
+        },
+        {
+          "label": "Write the parametrization",
+          "latex": "\\[r(t)=A+t\\overrightarrow{AB}=(1,2,0)+t(3,-3,3).\\] So \\[r(t)=(1+3t,2-3t,3t),\\qquad 0\\le t\\le1.\\]"
+        },
+        {
+          "label": "Find the length",
+          "latex": "The length of the segment is \\[\\|\\overrightarrow{AB}\\|=\\sqrt{3^2+(-3)^2+3^2}=\\sqrt{27}=3\\sqrt3.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[r(t)=(1+3t,2-3t,3t),\\ 0\\le t\\le1,\\qquad \\text{length}=3\\sqrt3.\\]",
+      "commonMistakes": [
+        "Using \\(A-B\\) instead of \\(B-A\\).",
+        "Forgetting the interval \\(0\\le t\\le1\\).",
+        "Writing a line instead of a line segment."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for parametrized curves."
+      }
+    },
+    {
+      "problemId": "si16-p3",
+      "title": "Arc length of a helix",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Arc length",
+        "Speed",
+        "Parametric curve"
+      ],
+      "studentPromptLatex": "Find the arc length of \\(r(t)=(3\\cos t,3\\sin t,4t)\\) for \\(0\\le t\\le2\\pi\\).",
+      "whatToSayBefore": "Say: arc length is not about the position vector. It is the integral of speed.",
+      "visualSpec": {
+        "type": "helix_arc_length",
+        "curve": "r(t)=(3cos t,3sin t,4t)",
+        "interval": [
+          0,
+          "2pi"
+        ],
+        "speed": 5,
+        "drawInstructions": [
+          "Draw a helix wrapping upward around the z-axis.",
+          "Label radius 3 and vertical speed 4.",
+          "Draw a tangent arrow and label its length as 5.",
+          "Explain that constant speed makes the integral easy."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Differentiate the curve",
+          "latex": "\\[r'(t)=(-3\\sin t,3\\cos t,4).\\]"
+        },
+        {
+          "label": "Find the speed",
+          "latex": "\\[\\|r'(t)\\|=\\sqrt{(-3\\sin t)^2+(3\\cos t)^2+4^2}=\\sqrt{9\\sin^2t+9\\cos^2t+16}.\\] Since \\(\\sin^2t+\\cos^2t=1\\), \\[\\|r'(t)\\|=\\sqrt{9+16}=5.\\]"
+        },
+        {
+          "label": "Integrate speed",
+          "latex": "\\[L=\\int_0^{2\\pi}\\|r'(t)\\|\\,dt=\\int_0^{2\\pi}5\\,dt=10\\pi.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{10\\pi}\\]",
+      "commonMistakes": [
+        "Forgetting to use the identity \\(\\sin^2t+\\cos^2t=1\\).",
+        "Integrating each component separately instead of speed.",
+        "Dropping the vertical component \\(4t\\), which changes the length."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for arc length."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What is the difference between velocity and speed?",
+    "How do you parametrize from A to B?",
+    "Why does arc length use \\(\\|r'(t)\\|\\)?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 7",
+      "route": "#/section/7",
+      "topics": [
+        "curves",
+        "velocity",
+        "arc length"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Checked r(1), velocity, speed, and unit tangent.",
+    "Checked line segment direction and length.",
+    "Checked helix speed is constant 5 and length is 10pi.",
+    "Notation uses \\overrightarrow{AB}=B-A."
+  ],
+  "reviewSummary": "Session 16 is ready with exact visual specs for curve tangent, segment, and helix sketches."
+}

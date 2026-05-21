@@ -1,0 +1,428 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "sessionId": "si-04",
+  "sessionNumber": 4,
+  "sessionType": "general",
+  "title": "Rank, Consistency, Null Space, and Solution Sets",
+  "practiceLabSections": [
+    2,
+    3
+  ],
+  "estimatedDurationMinutes": 50,
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, board-friendly, and quick to remember. Avoid abstract language unless the problem needs it.",
+  "sessionGoal": "Students should be able to use pivots to find rank and nullity, decide whether Ax=b is consistent, and write solution sets using a particular solution plus the null space.",
+  "quickStartIfUnprepared": [
+    "Start by writing: rank = number of pivots; nullity = number of free variables.",
+    "Tell students that the null space solves Ax=0, so it is the movement that keeps b unchanged.",
+    "Do Problem 1 to connect RREF with rank and null space.",
+    "Do Problem 2 to practice consistency with ranks and an augmented matrix.",
+    "Do Problem 3 to explain the idea: all solutions = one solution + null space."
+  ],
+  "sayThisFirst": [
+    "Rank counts pivot columns.",
+    "Nullity counts free variables.",
+    "The null space is all vectors x where Ax=0.",
+    "If Ax=b has one solution p, then every other solution looks like p plus something from the null space.",
+    "Consistency just means at least one solution exists."
+  ],
+  "boardPlan": [
+    "Write the rank-nullity idea at the top of the board.",
+    "Show that pivots control rank and free variables control nullity.",
+    "Use Problem 1 to read rank and null space from RREF.",
+    "Use Problem 2 to compare rank(A) and rank([A|b]).",
+    "Use Problem 3 to explain the geometry of p + Nul(A).",
+    "End by pointing students to Practice Lab Sections 2 and 3 for more rank/null space/subspace review."
+  ],
+  "keyFormulas": [
+    {
+      "name": "Rank",
+      "latex": "\\operatorname{rank}(A)=\\text{number of pivot columns}"
+    },
+    {
+      "name": "Nullity",
+      "latex": "\\operatorname{nullity}(A)=\\text{number of free variables}"
+    },
+    {
+      "name": "Rank-nullity theorem",
+      "latex": "\\operatorname{rank}(A)+\\operatorname{nullity}(A)=\\text{number of columns of }A"
+    },
+    {
+      "name": "Consistency test",
+      "latex": "Ax=b\\text{ is consistent }\\Longleftrightarrow \\operatorname{rank}(A)=\\operatorname{rank}([A\\mid b])"
+    },
+    {
+      "name": "All solutions to Ax=b",
+      "latex": "x=p+v,\\quad v\\in\\operatorname{Nul}(A)"
+    }
+  ],
+  "commonMistakes": [
+    "Using the number of rows instead of the number of pivot columns for rank.",
+    "Forgetting that nullity counts free variables, not zero rows.",
+    "Confusing the null space of A with the solution set of Ax=b.",
+    "Saying a system is inconsistent just because it has a free variable. Free variables usually mean infinitely many solutions, not no solution.",
+    "Forgetting that a particular solution must be included when solving Ax=b. The null space alone solves Ax=0."
+  ],
+  "notationWarnings": [
+    "Write \\(\\operatorname{Nul}(A)\\) or \\(N(A)\\) for the null space. Be consistent on the board.",
+    "Use \\([A\\mid b]\\) for the augmented matrix, not just \\(A\\), when checking consistency of \\(Ax=b\\).",
+    "Do not write the null space as just one vector unless it is one-dimensional. Use \\(\\operatorname{span}\\{\\cdots\\}\\).",
+    "For nonhomogeneous systems, write \\(x=p+t v\\) or \\(x=p+s v_1+t v_2\\), not just \\(t v\\)."
+  ],
+  "problems": [
+    {
+      "problemId": "si04-p01",
+      "title": "Rank, nullity, and null space from RREF",
+      "difficulty": "Warm-up / Core",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Rank",
+        "Nullity",
+        "Pivot variables",
+        "Free variables",
+        "Null space basis"
+      ],
+      "studentPromptLatex": "Suppose a \\(3\\times 4\\) matrix \\(A\\) row-reduces to\n\\[\n\\operatorname{rref}(A)=\\begin{bmatrix}\n1&0&-2&0\\\n0&1&3&0\\\n0&0&0&1\n\\end{bmatrix}.\n\\]\nFind \\(\\operatorname{rank}(A)\\), the nullity of \\(A\\), and a basis for \\(\\operatorname{Nul}(A)\\).",
+      "whatToSayBefore": "This is a reading problem. The RREF tells us where the pivots are. The null space comes from solving Ax=0, so there is no augmented column here.",
+      "visualSpec": {
+        "type": "rref_rank_nullity_highlight",
+        "purpose": "Show pivot columns, free columns, rank, nullity, and the null-space direction.",
+        "matrix": [
+          [
+            1,
+            0,
+            -2,
+            0
+          ],
+          [
+            0,
+            1,
+            3,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        "pivotColumns": [
+          "x_1",
+          "x_2",
+          "x_4"
+        ],
+        "freeVariables": [
+          "x_3"
+        ],
+        "rank": 3,
+        "nullity": 1,
+        "nullspaceBasis": [
+          [
+            2,
+            -3,
+            1,
+            0
+          ]
+        ],
+        "boardSketchInstructions": [
+          "Circle the pivots in columns 1, 2, and 4.",
+          "Write rank = 3 beside the matrix.",
+          "Mark column 3 as free and write \\(x_3=t\\).",
+          "Translate the rows into \\(x_1-2x_3=0\\), \\(x_2+3x_3=0\\), and \\(x_4=0\\).",
+          "Write the null-space vector vertically so students see the order \\((x_1,x_2,x_3,x_4)\\)."
+        ],
+        "accuracyNote": "The RREF is exact. Rank is 3, nullity is 1, and the null space is exactly span{(2,-3,1,0)}."
+      },
+      "walkthrough": [
+        {
+          "label": "Find the pivot columns",
+          "latex": "\\text{Pivots are in columns }1,2,\\text{ and }4.",
+          "sayOutLoud": "Rank is just the pivot count. Here I see three pivot columns."
+        },
+        {
+          "label": "Find rank and nullity",
+          "latex": "\\operatorname{rank}(A)=3.\n\n\\text{There are }4\\text{ columns total, so }\\operatorname{nullity}(A)=4-3=1.",
+          "sayOutLoud": "One free variable means the null space will have one direction vector."
+        },
+        {
+          "label": "Solve the homogeneous system",
+          "latex": "\\begin{aligned}\nx_1-2x_3&=0,\\\nx_2+3x_3&=0,\\\nx_4&=0.\n\\end{aligned}",
+          "sayOutLoud": "For the null space, the right side is zero. Do not add an augmented column."
+        },
+        {
+          "label": "Use a parameter",
+          "latex": "x_3=t.\n\n\\text{Then }x_1=2t,\\quad x_2=-3t,\\quad x_4=0.",
+          "sayOutLoud": "The free variable controls all the pivot variables."
+        },
+        {
+          "label": "Write the null space as a span",
+          "latex": "x=\\begin{bmatrix}x_1\\x_2\\x_3\\x_4\\end{bmatrix}=t\\begin{bmatrix}2\\-3\\1\\0\\end{bmatrix}.\n\n\\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}2\\-3\\1\\0\\end{bmatrix}\\right\\}.",
+          "sayOutLoud": "The basis is the vector multiplying the parameter."
+        }
+      ],
+      "finalAnswerLatex": "\\operatorname{rank}(A)=3,\\quad \\operatorname{nullity}(A)=1,\\quad \\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}2\\-3\\1\\0\\end{bmatrix}\\right\\}.",
+      "commonMistakes": [
+        "Counting the zero row instead of counting pivot columns.",
+        "Forgetting that \\(x_4\\) is a pivot variable even though it appears by itself.",
+        "Putting the free variable in the wrong coordinate position.",
+        "Writing \\((2,-3,1)\\) instead of \\((2,-3,1,0)\\). The matrix has four columns, so vectors in the null space have four entries."
+      ],
+      "practiceLabPointer": "Practice Lab Sections 2 and 3: RREF, rank, null space, and subspace problems."
+    },
+    {
+      "problemId": "si04-p02",
+      "title": "Consistency from an augmented matrix",
+      "difficulty": "Core / Exam-style",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Consistency",
+        "Rank of A",
+        "Rank of augmented matrix",
+        "Free variables",
+        "Parameter cases"
+      ],
+      "studentPromptLatex": "A system in variables \\(x,y,z\\) row-reduces to\n\\[\n\\begin{bmatrix}\n1&0&2&\\mid&4\\\n0&1&-1&\\mid&3\\\n0&0&0&\\mid&h-5\n\\end{bmatrix}.\n\\]\nFor which values of \\(h\\) is the system consistent? When it is consistent, write the solution set.",
+      "whatToSayBefore": "This problem is about the last row. The whole question is whether the last row becomes \\(0=0\\) or \\(0=\\text{nonzero}\\).",
+      "visualSpec": {
+        "type": "augmented_matrix_consistency_rank_highlight",
+        "purpose": "Highlight the inconsistent row and compare rank(A) to rank([A|b]).",
+        "matrix": [
+          [
+            1,
+            0,
+            2,
+            "|",
+            4
+          ],
+          [
+            0,
+            1,
+            -1,
+            "|",
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            "|",
+            "h-5"
+          ]
+        ],
+        "criticalRow": [
+          0,
+          0,
+          0,
+          "|",
+          "h-5"
+        ],
+        "consistentCondition": "h=5",
+        "rankWhenConsistent": {
+          "rankA": 2,
+          "rankAugmented": 2
+        },
+        "rankWhenInconsistent": {
+          "rankA": 2,
+          "rankAugmented": 3
+        },
+        "boardSketchInstructions": [
+          "Box the last row \\([0\\;0\\;0\\mid h-5]\\).",
+          "Say: this row means \\(0=h-5\\).",
+          "Set \\(h-5=0\\) to find the consistent case.",
+          "For \\(h=5\\), mark \\(z\\) as free and write \\(z=t\\).",
+          "If \\(h\ne5\\), write rank(A)=2 but rank([A|b])=3, so no solution."
+        ],
+        "accuracyNote": "The system is consistent exactly when h=5. For h=5, the solution set is (4-2t, 3+t, t)."
+      },
+      "walkthrough": [
+        {
+          "label": "Read the last row",
+          "latex": "0=h-5.",
+          "sayOutLoud": "Everything depends on whether the augmented entry is zero."
+        },
+        {
+          "label": "Find the consistent value",
+          "latex": "h-5=0\\quad\\Rightarrow\\quad h=5.",
+          "sayOutLoud": "If h is 5, the last row is just 0=0, so it is harmless."
+        },
+        {
+          "label": "Explain the inconsistent case",
+          "latex": "h\ne5\\quad\\Rightarrow\\quad 0=h-5\\text{ is impossible.}\n\n\\text{So the system has no solution.}",
+          "sayOutLoud": "A nonzero number in the augmented column with all zeros on the left means no solution."
+        },
+        {
+          "label": "Solve when h=5",
+          "latex": "\\text{When }h=5,\\text{ the matrix becomes}\n\\[\n\\begin{bmatrix}\n1&0&2&\\mid&4\\\n0&1&-1&\\mid&3\\\n0&0&0&\\mid&0\n\\end{bmatrix}.\n\\]\n\\text{The variable }z\\text{ is free, so let }z=t.",
+          "sayOutLoud": "Now there are two pivots and one free variable, so infinitely many solutions."
+        },
+        {
+          "label": "Translate the rows",
+          "latex": "x+2z=4\\quad\\Rightarrow\\quad x=4-2t.\n\ny-z=3\\quad\\Rightarrow\\quad y=3+t.",
+          "sayOutLoud": "Move the z terms to the other side because z is the parameter."
+        },
+        {
+          "label": "Write the final solution set",
+          "latex": "\\begin{bmatrix}x\\y\\z\\end{bmatrix}=\\begin{bmatrix}4\\3\\0\\end{bmatrix}+t\\begin{bmatrix}-2\\1\\1\\end{bmatrix},\\quad t\\in\\mathbb{R}.",
+          "sayOutLoud": "This is a line of solutions: one particular solution plus one null-space direction."
+        }
+      ],
+      "finalAnswerLatex": "\\text{Consistent exactly when }h=5.\n\n\\text{For }h=5:\\quad (x,y,z)=(4-2t,\\;3+t,\\;t),\\quad t\\in\\mathbb{R}.\n\n\\text{For }h\ne5:\\quad \\text{no solution}.",
+      "commonMistakes": [
+        "Saying \\(z=0\\) just because there is no pivot in the z-column. Actually \\(z\\) is free.",
+        "Forgetting to check the last row before solving.",
+        "Writing one solution when the system has a free variable.",
+        "Mixing up the consistent case \\(h=5\\) with the inconsistent case \\(h\ne5\\)."
+      ],
+      "practiceLabPointer": "Practice Lab Section 2: consistency, free variables, and parametric solution sets."
+    },
+    {
+      "problemId": "si04-p03",
+      "title": "All solutions are one solution plus the null space",
+      "difficulty": "Core / Conceptual",
+      "estimatedMinutes": 16,
+      "skills": [
+        "Particular solution",
+        "Null space",
+        "Affine solution set",
+        "Checking another solution",
+        "Solution-set geometry"
+      ],
+      "studentPromptLatex": "For a matrix \\(A\\), suppose one solution to \\(Ax=b\\) is\n\\[\np=\\begin{bmatrix}1\\0\\2\\-1\\end{bmatrix}\n\\]\nand\n\\[\n\\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\-2\\0\\1\\end{bmatrix},\\begin{bmatrix}0\\3\\1\\-1\\end{bmatrix}\\right\\}.\n\\]\n(a) Write the full solution set to \\(Ax=b\\).\n\n(b) Decide whether\n\\[\nq=\\begin{bmatrix}3\\-4\\2\\1\\end{bmatrix}\n\\]\nis also a solution.\n\n(c) Decide whether\n\\[\nr=\\begin{bmatrix}1\\3\\4\\-3\\end{bmatrix}\n\\]\nis also a solution.",
+      "whatToSayBefore": "This is the big idea problem. If p solves Ax=b, then adding anything from the null space still solves Ax=b. To check another vector, subtract p and see if the difference is in the null space.",
+      "visualSpec": {
+        "type": "affine_solution_set_particular_plus_nullspace",
+        "purpose": "Show the solution set as a shifted copy of the null space directions.",
+        "particularSolution": [
+          1,
+          0,
+          2,
+          -1
+        ],
+        "nullspaceBasis": [
+          [
+            1,
+            -2,
+            0,
+            1
+          ],
+          [
+            0,
+            3,
+            1,
+            -1
+          ]
+        ],
+        "candidateSolutions": {
+          "q": [
+            3,
+            -4,
+            2,
+            1
+          ],
+          "r": [
+            1,
+            3,
+            4,
+            -3
+          ]
+        },
+        "differencesFromParticular": {
+          "qMinusP": [
+            2,
+            -4,
+            0,
+            2
+          ],
+          "rMinusP": [
+            0,
+            3,
+            2,
+            -2
+          ]
+        },
+        "boardSketchInstructions": [
+          "Draw a point labeled \\(p\\).",
+          "Draw a plane or sheet through \\(p\\), not through the origin, to represent \\(p+\\operatorname{Nul}(A)\\).",
+          "Draw two direction arrows on the sheet for the two null-space basis vectors.",
+          "Say: the null space gives directions you can move without changing \\(Ax\\).",
+          "To test \\(q\\) and \\(r\\), subtract \\(p\\) and check if the difference is in the span of the null-space vectors."
+        ],
+        "accuracyNote": "q is a solution because q-p = 2(1,-2,0,1). r is not a solution because r-p is not in the given null space."
+      },
+      "walkthrough": [
+        {
+          "label": "Write the solution-set template",
+          "latex": "\\text{All solutions to }Ax=b\\text{ look like }x=p+v,\\quad v\\in\\operatorname{Nul}(A).",
+          "sayOutLoud": "The particular solution gets us to the right b. The null space lets us move around without changing b."
+        },
+        {
+          "label": "Plug in the particular solution and null-space basis",
+          "latex": "x=\\begin{bmatrix}1\\0\\2\\-1\\end{bmatrix}+s\\begin{bmatrix}1\\-2\\0\\1\\end{bmatrix}+t\\begin{bmatrix}0\\3\\1\\-1\\end{bmatrix},\\quad s,t\\in\\mathbb{R}.",
+          "sayOutLoud": "Because there are two null-space basis vectors, I need two parameters."
+        },
+        {
+          "label": "Check q by subtracting p",
+          "latex": "q-p=\\begin{bmatrix}3\\-4\\2\\1\\end{bmatrix}-\\begin{bmatrix}1\\0\\2\\-1\\end{bmatrix}=\\begin{bmatrix}2\\-4\\0\\2\\end{bmatrix}.",
+          "sayOutLoud": "We do not plug q into A because A is not given. Instead, use the null-space information."
+        },
+        {
+          "label": "See whether q-p is in the null space",
+          "latex": "\\begin{bmatrix}2\\-4\\0\\2\\end{bmatrix}=2\\begin{bmatrix}1\\-2\\0\\1\\end{bmatrix}+0\\begin{bmatrix}0\\3\\1\\-1\\end{bmatrix}.\n\n\\text{So }q-p\\in\\operatorname{Nul}(A).",
+          "sayOutLoud": "Since q differs from p by a null-space vector, q is also a solution."
+        },
+        {
+          "label": "Check r by subtracting p",
+          "latex": "r-p=\\begin{bmatrix}1\\3\\4\\-3\\end{bmatrix}-\\begin{bmatrix}1\\0\\2\\-1\\end{bmatrix}=\\begin{bmatrix}0\\3\\2\\-2\\end{bmatrix}.",
+          "sayOutLoud": "Now we do the same test for r."
+        },
+        {
+          "label": "Try to write r-p using the null-space basis",
+          "latex": "s\\begin{bmatrix}1\\-2\\0\\1\\end{bmatrix}+t\\begin{bmatrix}0\\3\\1\\-1\\end{bmatrix}=\\begin{bmatrix}s\\-2s+3t\\t\\s-t\\end{bmatrix}.\n\n\\text{To match }\\begin{bmatrix}0\\3\\2\\-2\\end{bmatrix},\\text{ the first entry gives }s=0\\text{ and the third entry gives }t=2.\n\n\\text{Then the second entry would be }-2(0)+3(2)=6,\\text{ not }3.",
+          "sayOutLoud": "The entries contradict each other, so r-p is not in the null space."
+        }
+      ],
+      "finalAnswerLatex": "\\text{All solutions: }\\quad x=\\begin{bmatrix}1\\0\\2\\-1\\end{bmatrix}+s\\begin{bmatrix}1\\-2\\0\\1\\end{bmatrix}+t\\begin{bmatrix}0\\3\\1\\-1\\end{bmatrix},\\quad s,t\\in\\mathbb{R}.\n\nq\\text{ is a solution because }q-p=2\\begin{bmatrix}1\\-2\\0\\1\\end{bmatrix}.\n\nr\\text{ is not a solution because }r-p\notin\\operatorname{Nul}(A).",
+      "commonMistakes": [
+        "Forgetting the particular solution and writing only the null space.",
+        "Thinking every vector in the null space is itself a solution to \\(Ax=b\\). It solves \\(Ax=0\\), not necessarily \\(Ax=b\\).",
+        "Trying to check \\(q\\) by multiplying by \\(A\\) even though \\(A\\) is not given.",
+        "Using only one parameter even though the null space has two basis vectors."
+      ],
+      "practiceLabPointer": "Practice Lab Sections 2 and 3: null space, subspaces, and solution-set geometry."
+    }
+  ],
+  "wrapUpQuestions": [
+    "How do you find rank from RREF?",
+    "What does nullity count?",
+    "What row tells you that a system is inconsistent?",
+    "Why does \\(p+\\operatorname{Nul}(A)\\) describe all solutions to \\(Ax=b\\)?",
+    "What is the difference between solving \\(Ax=0\\) and \\(Ax=b\\)?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 2",
+      "route": "#/section/2",
+      "reason": "More RREF, consistency, and solution-set practice."
+    },
+    {
+      "label": "Practice Lab Section 3",
+      "route": "#/section/3",
+      "reason": "More span, subspace, basis, and null-space practice."
+    }
+  ],
+  "qualityControlNotes": [
+    "All vectors in Problem 1 have four entries because A has four columns.",
+    "Problem 1 rank-nullity check: rank 3 + nullity 1 = 4 columns.",
+    "Problem 2 consistent exactly when h=5 because the final row becomes 0=0.",
+    "Problem 2 solution check: x=4-2t, y=3+t, z=t satisfies x+2z=4 and y-z=3.",
+    "Problem 3 q check: q-p=(2,-4,0,2)=2(1,-2,0,1), so q is a solution.",
+    "Problem 3 r check: r-p=(0,3,2,-2) cannot be s(1,-2,0,1)+t(0,3,1,-1) because s=0 and t=2 force second entry 6, not 3.",
+    "Notation intentionally uses \\(\\operatorname{Nul}(A)\\), \\([A\\mid b]\\), and vector-column formatting to reduce ambiguity."
+  ],
+  "reviewStatus": "reviewed",
+  "reviewSummary": "Session 04 is ready for Claude implementation. It emphasizes rank/nullity, consistency, and solution-set geometry with exact arithmetic and structured visual specifications."
+}

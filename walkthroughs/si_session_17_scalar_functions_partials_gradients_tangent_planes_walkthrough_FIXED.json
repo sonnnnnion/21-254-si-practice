@@ -1,0 +1,281 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-17",
+  "sessionNumber": 17,
+  "sessionType": "general",
+  "title": "Scalar Functions, Partials, Gradients, and Tangent Planes",
+  "practiceLabSections": [
+    7
+  ],
+  "estimatedDurationMinutes": 50,
+  "sessionGoal": "Students should be able to compute partial derivatives, use gradients for directional derivatives, and build tangent planes / linear approximations.",
+  "quickStartIfUnprepared": [
+    "Start with the sentence: a scalar function takes in a point and outputs a number.",
+    "Do Problem 1 if students need gradient and directional derivative practice.",
+    "Do Problem 2 to connect tangent planes with linear approximation.",
+    "Do Problem 3 if optimization/classification is coming up soon."
+  ],
+  "sayThisFirst": [
+    "A scalar function \\(f(x,y)\\) gives a number, like height or temperature.",
+    "A partial derivative means change one variable and freeze the other.",
+    "The gradient \\(\\nabla f\\) points in the direction of fastest increase.",
+    "A directional derivative is the gradient dotted with a unit direction.",
+    "A tangent plane is the best linear approximation near a point."
+  ],
+  "boardPlan": [
+    "Write \\(f_x\\), \\(f_y\\), and \\(\\nabla f\\).",
+    "Show directional derivative as \\(\\nabla f\\cdot u\\).",
+    "Do one tangent plane / approximation problem.",
+    "Finish with a critical point classification example if time allows."
+  ],
+  "keyFormulas": [
+    "\\(\\nabla f=(f_x,f_y)\\).",
+    "Directional derivative in unit direction \\(u\\): \\(D_uf=\\nabla f\\cdot u\\).",
+    "Tangent plane: \\(z=f(a,b)+f_x(a,b)(x-a)+f_y(a,b)(y-b)\\).",
+    "Second derivative test: \\(D=f_{xx}f_{yy}-(f_{xy})^2\\)."
+  ],
+  "commonMistakes": [
+    "Forgetting the direction vector must be a unit vector.",
+    "Mixing up \\(f_x\\) and \\(f_y\\).",
+    "Plugging into the tangent plane before computing both partials.",
+    "Using the gradient as a point instead of a vector.",
+    "Forgetting the second derivative test can be inconclusive if \\(D=0\\)."
+  ],
+  "notationWarnings": [
+    "Use \\(D_u f\\) for directional derivative, where \\(u\\) should be a unit vector.",
+    "For tangent planes, clearly label the base point \\((a,b)\\).",
+    "For critical points, solve \\(f_x=0\\) and \\(f_y=0\\) together."
+  ],
+  "problems": [
+    {
+      "problemId": "si17-p1",
+      "title": "Gradient and directional derivative",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Partial derivatives",
+        "Gradient",
+        "Directional derivative"
+      ],
+      "studentPromptLatex": "Let \\(f(x,y)=x^2y+e^{xy}\\). Find \\(\\nabla f(1,0)\\). Then find the directional derivative at \\((1,0)\\) in the direction \\(u=\\left(\\frac35,\\frac45\\right)\\).",
+      "whatToSayBefore": "Say: the gradient is made from the two partial derivatives. Directional derivative is gradient dot unit direction.",
+      "visualSpec": {
+        "type": "gradient_directional_derivative",
+        "point": [
+          1,
+          0
+        ],
+        "gradient": [
+          0,
+          2
+        ],
+        "unitDirection": [
+          0.6,
+          0.8
+        ],
+        "directionalDerivative": 1.6,
+        "drawInstructions": [
+          "Draw level curves conceptually.",
+          "Mark the point (1,0).",
+          "Draw the gradient straight upward because \\nabla f(1,0)=(0,2).",
+          "Draw the unit direction u angled up and right.",
+          "Explain the dot product measures how much u points along the gradient."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find the partial derivatives",
+          "latex": "\\[f_x=2xy+y e^{xy},\\qquad f_y=x^2+x e^{xy}.\\]"
+        },
+        {
+          "label": "Evaluate at \\((1,0)\\)",
+          "latex": "\\[f_x(1,0)=2(1)(0)+0\\cdot e^0=0,\\] \\[f_y(1,0)=1^2+1\\cdot e^0=2.\\] So \\[\\nabla f(1,0)=(0,2).\\]"
+        },
+        {
+          "label": "Dot with the unit direction",
+          "latex": "\\[D_u f(1,0)=\\nabla f(1,0)\\cdot u=(0,2)\\cdot\\left(\\frac35,\\frac45\\right)=\\frac85.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\nabla f(1,0)=(0,2),\\qquad D_u f(1,0)=\\frac85.\\]",
+      "commonMistakes": [
+        "Forgetting the derivative of \\(e^{xy}\\) needs chain rule.",
+        "Using a non-unit direction vector.",
+        "Taking the magnitude of the gradient instead of dotting with \\(u\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for gradients and directional derivatives."
+      }
+    },
+    {
+      "problemId": "si17-p2",
+      "title": "Tangent plane and linear approximation",
+      "difficulty": "Core",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Tangent plane",
+        "Linear approximation",
+        "Partial derivatives"
+      ],
+      "studentPromptLatex": "Let \\(f(x,y)=x^2+xy+2y^2\\). Find the tangent plane to \\(z=f(x,y)\\) at \\((1,1)\\). Then use it to approximate \\(f(1.1,0.9)\\).",
+      "whatToSayBefore": "Say: tangent plane is just the linear approximation near the point. Compute height and slopes.",
+      "visualSpec": {
+        "type": "tangent_plane_graph",
+        "function": "f(x,y)=x^2+xy+2y^2",
+        "basePoint": [
+          1,
+          1,
+          4
+        ],
+        "gradientAtBase": [
+          3,
+          5
+        ],
+        "approximationPoint": [
+          1.1,
+          0.9
+        ],
+        "linearApproximation": 3.8,
+        "drawInstructions": [
+          "Draw a curved surface.",
+          "Mark the point (1,1,4).",
+          "Draw a flat tangent plane touching the surface at that point.",
+          "Label slopes f_x=3 and f_y=5.",
+          "Show the nearby point (1.1,0.9) using the plane, not the full surface."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find the height",
+          "latex": "\\[f(1,1)=1^2+(1)(1)+2(1)^2=4.\\]"
+        },
+        {
+          "label": "Find the partial derivatives",
+          "latex": "\\[f_x=2x+y,\\qquad f_y=x+4y.\\] At \\((1,1)\\), \\[f_x(1,1)=3,\\qquad f_y(1,1)=5.\\]"
+        },
+        {
+          "label": "Write the tangent plane",
+          "latex": "\\[z=4+3(x-1)+5(y-1).\\]"
+        },
+        {
+          "label": "Approximate the nearby value",
+          "latex": "For \\((x,y)=(1.1,0.9)\\), \\[z\\approx 4+3(0.1)+5(-0.1)=4+0.3-0.5=3.8.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[z=4+3(x-1)+5(y-1),\\qquad f(1.1,0.9)\\approx 3.8.\\]",
+      "commonMistakes": [
+        "Forgetting to compute \\(f(1,1)\\), the height of the tangent plane.",
+        "Using \\(x\\) and \\(y\\) instead of \\(x-1\\) and \\(y-1\\).",
+        "Thinking the approximation must equal the exact value."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for tangent planes and linearization."
+      }
+    },
+    {
+      "problemId": "si17-p3",
+      "title": "Critical point classification",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Optimization",
+        "Critical points",
+        "Second derivative test"
+      ],
+      "studentPromptLatex": "Find and classify the critical point of \\(f(x,y)=x^2+xy+y^2-3x-3y\\).",
+      "whatToSayBefore": "Say: a critical point happens where both first partials are zero. Then the Hessian tells us the shape.",
+      "visualSpec": {
+        "type": "critical_point_classification",
+        "function": "x^2+xy+y^2-3x-3y",
+        "criticalPoint": [
+          1,
+          1
+        ],
+        "classification": "local minimum",
+        "hessian": [
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "drawInstructions": [
+          "Draw bowl-shaped level curves centered near (1,1).",
+          "Mark (1,1) as the critical point.",
+          "Label the Hessian test: D=3>0 and f_xx=2>0, so local min."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find the first partial derivatives",
+          "latex": "\\[f_x=2x+y-3,\\qquad f_y=x+2y-3.\\]"
+        },
+        {
+          "label": "Set both equal to zero",
+          "latex": "\\[2x+y-3=0,\\qquad x+2y-3=0.\\] Solving gives \\(x=1\\), \\(y=1\\). So the critical point is \\((1,1)\\)."
+        },
+        {
+          "label": "Compute the second derivatives",
+          "latex": "\\[f_{xx}=2,\\qquad f_{yy}=2,\\qquad f_{xy}=1.\\]"
+        },
+        {
+          "label": "Use the second derivative test",
+          "latex": "\\[D=f_{xx}f_{yy}-(f_{xy})^2=2\\cdot2-1^2=3.\\] Since \\(D>0\\) and \\(f_{xx}>0\\), the critical point is a local minimum."
+        },
+        {
+          "label": "Find the minimum value if needed",
+          "latex": "\\[f(1,1)=1+1+1-3-3=-3.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\text{Critical point: }(1,1).\\quad \\text{It is a local minimum, with value }-3.\\]",
+      "commonMistakes": [
+        "Only solving \\(f_x=0\\) and forgetting \\(f_y=0\\).",
+        "Mixing up the cases in the second derivative test.",
+        "Forgetting that \\(D>0\\) needs \\(f_{xx}\\) to decide min vs. max."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for optimization and critical points."
+      },
+      "qualityCorrection": "Corrected minimum value from -2 to -3 after review."
+    }
+  ],
+  "wrapUpQuestions": [
+    "Why does the directional derivative use a dot product?",
+    "What are the three ingredients of a tangent plane?",
+    "What does the second derivative test tell us geometrically?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 7",
+      "route": "#/section/7",
+      "topics": [
+        "partials",
+        "gradients",
+        "directional derivatives",
+        "tangent planes",
+        "optimization"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Checked gradient for f=x^2y+e^(xy): grad(1,0)=(0,2), D_u=8/5.",
+    "Checked tangent plane z=4+3(x-1)+5(y-1) and approximation 3.8.",
+    "Checked critical point (1,1), Hessian determinant 3, local minimum, value -3.",
+    "All direction vectors in directional derivative language are unit vectors."
+  ],
+  "reviewSummary": "Session 17 is ready with simple teaching language and exact visual specs for gradient, tangent plane, and optimization sketches. Minimum value correction applied after audit."
+}

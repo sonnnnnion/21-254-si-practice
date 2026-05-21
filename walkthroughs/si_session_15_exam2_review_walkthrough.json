@@ -1,0 +1,425 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-15",
+  "sessionNumber": 15,
+  "sessionType": "exam-review",
+  "title": "Exam 2 Review",
+  "practiceLabSections": [
+    4,
+    5,
+    6
+  ],
+  "estimatedDurationMinutes": 75,
+  "sessionGoal": "Students should review the core Exam 2 skills: inverses, determinants, eigenvalues/eigenvectors, diagonalization, projections, and cross product.",
+  "quickStartIfUnprepared": [
+    "Start by saying: Exam 2 is mostly about what matrices do and what directions they preserve.",
+    "Do Problems 2 and 3 if eigenstuff is the priority.",
+    "Do Problems 4 and 5 if students want vector geometry review.",
+    "Use Problem 1 as a quick warm-up to connect inverses and determinants."
+  ],
+  "sayThisFirst": [
+    "For Exam 2, always ask: is this an algebra question, an eigenvalue question, or a geometry question?",
+    "Invertibility is about whether a matrix can be undone.",
+    "Eigenvectors are directions that do not rotate under the matrix.",
+    "Diagonalization is useful because it makes powers easy.",
+    "Projection and cross product are geometry tools."
+  ],
+  "boardPlan": [
+    "Write the Exam 2 topic map.",
+    "Do a short inverse/determinant warm-up.",
+    "Do a repeated-eigenvalue diagonalizability problem.",
+    "Do an eigenbasis power problem.",
+    "Finish with projection and cross product geometry."
+  ],
+  "keyFormulas": [
+    "For \\(2\\times2\\), \\(A^{-1}=\\dfrac{1}{ad-bc}\\begin{bmatrix}d&-b\\\\-c&a\\end{bmatrix}\\).",
+    "Eigenvalues solve \\(\\det(A-\\lambda I)=0\\).",
+    "A matrix is diagonalizable when it has enough independent eigenvectors.",
+    "\\operatorname{proj}_{u}(v)=\\dfrac{v\\cdot u}{u\\cdot u}u.",
+    "\\|a\\times b\\| = area of the parallelogram spanned by \\(a\\) and \\(b\\)."
+  ],
+  "commonMistakes": [
+    "Assuming a repeated eigenvalue automatically means not diagonalizable.",
+    "Mixing up algebraic multiplicity and geometric multiplicity.",
+    "Putting eigenvectors as rows instead of columns in P.",
+    "Using cross product in 2D without first embedding or using the correct formula.",
+    "Forgetting that \\(AB\\) and \\(BA\\) may have different behavior."
+  ],
+  "notationWarnings": [
+    "Use \\(\\lambda\\) for eigenvalues and \\(v\\) for eigenvectors.",
+    "Use \\(PDP^{-1}\\) and keep the columns of P matched with the diagonal entries of D.",
+    "Use arrows like \\(\\overrightarrow{AB}\\) for vectors between points."
+  ],
+  "problems": [
+    {
+      "problemId": "si15-p1",
+      "title": "Inverse warm-up with a system",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Inverse matrix",
+        "Determinant",
+        "Solving Ax=b"
+      ],
+      "studentPromptLatex": "Let \\[A=\\begin{bmatrix}2&1\\\\1&1\\end{bmatrix},\\qquad b=\\begin{bmatrix}7\\\\4\\end{bmatrix}.\\] Find \\(A^{-1}\\), then solve \\(Ax=b\\).",
+      "whatToSayBefore": "Say: determinant first tells us whether the inverse exists.",
+      "visualSpec": {
+        "type": "matrix_inverse_flow",
+        "matrix": [
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "rhs": [
+          7,
+          4
+        ],
+        "drawInstructions": [
+          "Draw the flow b -> A^{-1}b -> x.",
+          "Emphasize that A^{-1} undoes A.",
+          "Write determinant nonzero means the map can be undone."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Check the determinant",
+          "latex": "\\[\\det(A)=2(1)-1(1)=1.\\] Since the determinant is not zero, \\(A^{-1}\\) exists."
+        },
+        {
+          "label": "Find the inverse",
+          "latex": "\\[A^{-1}=\\frac{1}{1}\\begin{bmatrix}1&-1\\\\-1&2\\end{bmatrix}=\\begin{bmatrix}1&-1\\\\-1&2\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Multiply by b",
+          "latex": "\\[x=A^{-1}b=\\begin{bmatrix}1&-1\\\\-1&2\\end{bmatrix}\\begin{bmatrix}7\\\\4\\end{bmatrix}=\\begin{bmatrix}3\\\\1\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[A^{-1}=\\begin{bmatrix}1&-1\\\\-1&2\\end{bmatrix},\\qquad x=\\begin{bmatrix}3\\\\1\\end{bmatrix}.\\]",
+      "commonMistakes": [
+        "Forgetting the determinant in the denominator.",
+        "Switching the wrong entries in the inverse formula.",
+        "Solving \\(bA^{-1}\\) instead of \\(A^{-1}b\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "Practice Lab Section 4 for inverses and determinants."
+      }
+    },
+    {
+      "problemId": "si15-p2",
+      "title": "Repeated eigenvalue and diagonalizability",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Eigenvalues",
+        "Eigenspaces",
+        "Diagonalizability"
+      ],
+      "studentPromptLatex": "Let \\[A=\\begin{bmatrix}3&1\\\\0&3\\end{bmatrix}.\\] Find the eigenvalue, find its eigenspace, and decide whether \\(A\\) is diagonalizable.",
+      "whatToSayBefore": "Say: repeated eigenvalues are not automatically bad. The real question is how many independent eigenvectors we get.",
+      "visualSpec": {
+        "type": "eigenvector_invariant_direction",
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "eigenvalue": 3,
+        "eigenspaceBasis": [
+          [
+            1,
+            0
+          ]
+        ],
+        "drawInstructions": [
+          "Draw one invariant direction along the x-axis.",
+          "Show that there is only one independent eigenvector direction.",
+          "Explain that a 2 by 2 matrix needs two independent eigenvectors to diagonalize."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Read the eigenvalue",
+          "latex": "Since \\(A\\) is triangular, the eigenvalue is the diagonal entry: \\[\\lambda=3\\] with algebraic multiplicity 2."
+        },
+        {
+          "label": "Find the eigenspace",
+          "latex": "\\[A-3I=\\begin{bmatrix}0&1\\\\0&0\\end{bmatrix}.\\] Solve \\((A-3I)x=0\\): \\[x_2=0,\\quad x_1\\text{ is free}.\\] So the eigenspace is \\[\\operatorname{span}\\{(1,0)\\}.\\]"
+        },
+        {
+          "label": "Decide diagonalizability",
+          "latex": "The eigenspace is 1-dimensional, so there is only one independent eigenvector. A \\(2\\times2\\) matrix needs two independent eigenvectors to be diagonalizable."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\lambda=3,\\qquad E_3=\\operatorname{span}\\{(1,0)\\},\\qquad A\\text{ is not diagonalizable}.\\]",
+      "commonMistakes": [
+        "Saying repeated eigenvalue means automatically not diagonalizable.",
+        "Forgetting to compute the eigenspace.",
+        "Thinking algebraic multiplicity and geometric multiplicity are always the same."
+      ],
+      "practiceLabPointer": {
+        "section": 5,
+        "route": "#/section/5",
+        "note": "Practice Lab Section 5 for eigenvalues and eigenspaces."
+      }
+    },
+    {
+      "problemId": "si15-p3",
+      "title": "Use an eigenbasis to compute \\(A^3x\\)",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Eigenbasis",
+        "Matrix powers",
+        "Diagonalization idea"
+      ],
+      "studentPromptLatex": "Suppose \\(v_1=(1,1)\\) is an eigenvector with eigenvalue \\(4\\), and \\(v_2=(1,-1)\\) is an eigenvector with eigenvalue \\(2\\). If \\(x=(3,1)\\), compute \\(A^3x\\).",
+      "whatToSayBefore": "Say: if a vector is written in the eigenbasis, powers of A just raise the eigenvalues to that power.",
+      "visualSpec": {
+        "type": "eigenbasis_decomposition",
+        "eigenvectors": {
+          "v1": [
+            1,
+            1
+          ],
+          "v2": [
+            1,
+            -1
+          ]
+        },
+        "eigenvalues": {
+          "v1": 4,
+          "v2": 2
+        },
+        "vector": [
+          3,
+          1
+        ],
+        "coordinatesInEigenbasis": [
+          2,
+          1
+        ],
+        "drawInstructions": [
+          "Draw x as a combination of v1 and v2.",
+          "Label x=2v1+v2.",
+          "Under A^3, label the new vector as 2(4^3)v1+1(2^3)v2."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Write x in the eigenbasis",
+          "latex": "We want \\(x=c_1v_1+c_2v_2\\). So \\[(3,1)=c_1(1,1)+c_2(1,-1)=(c_1+c_2,c_1-c_2).\\] This gives \\(c_1+c_2=3\\) and \\(c_1-c_2=1\\), so \\(c_1=2\\), \\(c_2=1\\)."
+        },
+        {
+          "label": "Apply A^3 to each eigenvector piece",
+          "latex": "\\[A^3x=A^3(2v_1+v_2)=2A^3v_1+A^3v_2.\\] Since \\(A^3v_1=4^3v_1\\) and \\(A^3v_2=2^3v_2\\), \\[A^3x=2(64)v_1+8v_2.\\]"
+        },
+        {
+          "label": "Convert back to standard coordinates",
+          "latex": "\\[A^3x=128(1,1)+8(1,-1)=(128,128)+(8,-8)=(136,120).\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{A^3x=(136,120)}\\]",
+      "commonMistakes": [
+        "Multiplying the coordinates by \\(4\\) and \\(2\\) instead of \\(4^3\\) and \\(2^3\\).",
+        "Trying to compute \\(A\\) first even though the eigenbasis information is enough.",
+        "Forgetting to convert back to standard coordinates."
+      ],
+      "practiceLabPointer": {
+        "section": 6,
+        "route": "#/section/6",
+        "note": "Practice Lab Section 6 for diagonalization and powers."
+      }
+    },
+    {
+      "problemId": "si15-p4",
+      "title": "Projection in R^3",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Projection",
+        "Components",
+        "Orthogonality check"
+      ],
+      "studentPromptLatex": "Let \\(u=(1,2,2)\\) and \\(v=(5,1,4)\\). Find \\(\\operatorname{proj}_{u}(v)\\) and \\(v_{\\perp}=v-\\operatorname{proj}_{u}(v)\\).",
+      "whatToSayBefore": "Say: the vector being projected onto controls the denominator.",
+      "visualSpec": {
+        "type": "projection_3d_concept",
+        "vectors": {
+          "u": [
+            1,
+            2,
+            2
+          ],
+          "v": [
+            5,
+            1,
+            4
+          ],
+          "projection": [
+            1.6666666666666667,
+            3.3333333333333335,
+            3.3333333333333335
+          ],
+          "perpendicular": [
+            3.3333333333333335,
+            -2.3333333333333335,
+            0.6666666666666666
+          ]
+        },
+        "drawInstructions": [
+          "Draw u as the direction line.",
+          "Draw v from the origin.",
+          "Draw the projection along u.",
+          "Draw the perpendicular leftover from the projection tip to v."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Compute dot products",
+          "latex": "\\[v\\cdot u=5(1)+1(2)+4(2)=15,\\qquad u\\cdot u=1^2+2^2+2^2=9.\\]"
+        },
+        {
+          "label": "Find the projection",
+          "latex": "\\[\\operatorname{proj}_{u}(v)=\\frac{15}{9}u=\\frac{5}{3}(1,2,2)=\\left(\\frac{5}{3},\\frac{10}{3},\\frac{10}{3}\\right).\\]"
+        },
+        {
+          "label": "Subtract to get the perpendicular part",
+          "latex": "\\[v_{\\perp}=v-\\operatorname{proj}_{u}(v)=\\left(5,1,4\\right)-\\left(\\frac{5}{3},\\frac{10}{3},\\frac{10}{3}\\right)=\\left(\\frac{10}{3},-\\frac{7}{3},\\frac{2}{3}\\right).\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\operatorname{proj}_{u}(v)=\\left(\\frac{5}{3},\\frac{10}{3},\\frac{10}{3}\\right),\\qquad v_{\\perp}=\\left(\\frac{10}{3},-\\frac{7}{3},\\frac{2}{3}\\right).\\]",
+      "commonMistakes": [
+        "Using \\(v\\cdot v\\) in the denominator.",
+        "Forgetting that \\(v_{\\perp}\\) should be perpendicular to \\(u\\).",
+        "Mixing up \\(\\operatorname{proj}_{u}(v)\\) and \\(\\operatorname{proj}_{v}(u)\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 6,
+        "route": "#/section/6",
+        "note": "Practice Lab Section 6 for projections."
+      }
+    },
+    {
+      "problemId": "si15-p5",
+      "title": "Cross product, normal vector, and area",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Cross product",
+        "Area",
+        "Normal vector"
+      ],
+      "studentPromptLatex": "Let \\(a=(1,2,0)\\) and \\(b=(3,-1,2)\\). Compute \\(a\\times b\\) and the area of the parallelogram spanned by \\(a\\) and \\(b\\).",
+      "whatToSayBefore": "Say: cross product gives the normal vector, and its length gives the parallelogram area.",
+      "visualSpec": {
+        "type": "cross_product_area",
+        "vectors": {
+          "a": [
+            1,
+            2,
+            0
+          ],
+          "b": [
+            3,
+            -1,
+            2
+          ],
+          "cross": [
+            4,
+            -2,
+            -7
+          ]
+        },
+        "drawInstructions": [
+          "Draw a and b starting at the same point.",
+          "Draw the parallelogram they span.",
+          "Draw a normal vector labeled a x b.",
+          "Label the area as ||a x b||."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Set up the cross product",
+          "latex": "\\[a\\times b=\\begin{vmatrix}\\mathbf{i}&\\mathbf{j}&\\mathbf{k}\\\\1&2&0\\\\3&-1&2\\end{vmatrix}.\\]"
+        },
+        {
+          "label": "Compute the components",
+          "latex": "\\[a\\times b=(2\\cdot2-0(-1),\\;-(1\\cdot2-0\\cdot3),\\;1(-1)-2(3))=(4,-2,-7).\\]"
+        },
+        {
+          "label": "Take the length for area",
+          "latex": "\\[\\text{Area}=\\|a\\times b\\|=\\sqrt{4^2+(-2)^2+(-7)^2}=\\sqrt{69}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[a\\times b=(4,-2,-7),\\qquad \\text{Area}=\\sqrt{69}.\\]",
+      "commonMistakes": [
+        "Forgetting the negative sign on the \\(\\mathbf{j}\\)-component.",
+        "Using dot product instead of cross product for area.",
+        "Reporting the cross product as the area instead of its magnitude."
+      ],
+      "practiceLabPointer": {
+        "section": 6,
+        "route": "#/section/6",
+        "note": "Practice Lab Section 6 for cross product."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What is the difference between algebraic multiplicity and geometric multiplicity?",
+    "Why does diagonalization make powers easier?",
+    "When should you use projection vs. cross product?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 4",
+      "route": "#/section/4",
+      "topics": [
+        "inverses",
+        "determinants"
+      ]
+    },
+    {
+      "label": "Practice Lab Section 5",
+      "route": "#/section/5",
+      "topics": [
+        "eigenvalues",
+        "eigenspaces"
+      ]
+    },
+    {
+      "label": "Practice Lab Section 6",
+      "route": "#/section/6",
+      "topics": [
+        "diagonalization",
+        "projections",
+        "cross product"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Exam review problems are original and cover the intended Exam 2 topics.",
+    "Checked inverse solution x=(3,1).",
+    "Checked repeated eigenvalue eigenspace span{(1,0)}.",
+    "Checked eigenbasis computation A^3x=(136,120).",
+    "Checked projection and cross product arithmetic."
+  ],
+  "reviewSummary": "Session 15 is an Exam 2 review set with five mixed problems and visual specs for each major geometry/eigen concept."
+}

@@ -1,0 +1,275 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-18",
+  "sessionNumber": 18,
+  "sessionType": "general",
+  "title": "Optimization, Vector Fields, Divergence, and Curl",
+  "practiceLabSections": [
+    7,
+    8
+  ],
+  "estimatedDurationMinutes": 50,
+  "sessionGoal": "Students should be able to finish a basic optimization problem and interpret divergence/curl for vector fields.",
+  "quickStartIfUnprepared": [
+    "Start with optimization: find where the first derivatives are zero, then check edges if the region is closed.",
+    "Then say: a vector field puts an arrow at every point.",
+    "Divergence measures source/sink behavior. Curl measures local rotation.",
+    "Do Problem 1 if students need optimization. Do Problems 2 and 3 if they need vector fields."
+  ],
+  "sayThisFirst": [
+    "Optimization means finding highest and lowest values.",
+    "For interior points, set the first partial derivatives equal to zero.",
+    "If the region has a boundary, you must also check the boundary.",
+    "A vector field is a function whose output is a vector.",
+    "Divergence is expansion or compression. Curl is rotation."
+  ],
+  "boardPlan": [
+    "Review the optimization checklist.",
+    "Work one absolute extrema example on a rectangle.",
+    "Define 2D divergence and 2D curl.",
+    "Work one 2D vector field example.",
+    "If time allows, show the 3D curl formula with a clean example."
+  ],
+  "keyFormulas": [
+    "Interior critical points: solve \\(f_x=0\\) and \\(f_y=0\\).",
+    "For closed bounded regions: check interior points, edges, and corners.",
+    "For \\(F=\\langle P,Q\\rangle\\), \\(\\operatorname{div}F=P_x+Q_y\\).",
+    "For \\(F=\\langle P,Q\\rangle\\), scalar curl is \\(Q_x-P_y\\).",
+    "For \\(F=\\langle P,Q,R\\rangle\\), \\(\\nabla\\times F=\\langle R_y-Q_z,\\,P_z-R_x,\\,Q_x-P_y\\rangle\\)."
+  ],
+  "commonMistakes": [
+    "Only checking the interior critical point and forgetting the boundary.",
+    "Mixing up divergence and curl.",
+    "For 2D curl, using \\(P_y-Q_x\\) instead of \\(Q_x-P_y\\).",
+    "Forgetting that divergence is a scalar.",
+    "Forgetting that 3D curl is a vector."
+  ],
+  "notationWarnings": [
+    "For 2D fields, write \\(F=\\langle P,Q\\rangle\\) before computing divergence or curl.",
+    "For 3D fields, write \\(F=\\langle P,Q,R\\rangle\\).",
+    "When checking absolute extrema, label interior, boundary, and corners separately."
+  ],
+  "problems": [
+    {
+      "problemId": "si18-p1",
+      "title": "Absolute extrema on a rectangle",
+      "difficulty": "Core",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Optimization",
+        "Critical points",
+        "Boundary checking",
+        "Absolute extrema"
+      ],
+      "studentPromptLatex": "Find the absolute maximum and minimum of \\(f(x,y)=x^2+y^2-2x-4y\\) on the rectangle \\(0\\le x\\le3\\), \\(0\\le y\\le4\\).",
+      "whatToSayBefore": "Say: because the rectangle is closed and bounded, absolute max and min exist. We must check both the inside and the boundary.",
+      "visualSpec": {
+        "type": "rectangle_optimization",
+        "function": "f(x,y)=x^2+y^2-2x-4y",
+        "region": {
+          "xMin": 0,
+          "xMax": 3,
+          "yMin": 0,
+          "yMax": 4
+        },
+        "interiorCriticalPoint": [
+          1,
+          2
+        ],
+        "interiorValue": -5,
+        "cornerValues": {
+          "(0,0)": 0,
+          "(3,0)": 3,
+          "(0,4)": 0,
+          "(3,4)": 3
+        },
+        "drawInstructions": [
+          "Draw the rectangle 0<=x<=3, 0<=y<=4.",
+          "Mark the interior point (1,2).",
+          "Circle the four corners.",
+          "Write 'inside + edges + corners' as the checklist.",
+          "Label the minimum at (1,2) and the maximum at the corners (3,0) and (3,4)."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Check the interior",
+          "latex": "\\[f_x=2x-2,\\qquad f_y=2y-4.\\] Set both equal to zero: \\[2x-2=0\\Rightarrow x=1,\\qquad 2y-4=0\\Rightarrow y=2.\\] So the interior critical point is \\((1,2)\\)."
+        },
+        {
+          "label": "Evaluate the interior point",
+          "latex": "\\[f(1,2)=1^2+2^2-2(1)-4(2)=1+4-2-8=-5.\\]"
+        },
+        {
+          "label": "Check the boundary idea",
+          "latex": "On each edge, the function becomes a one-variable quadratic. The smallest boundary values are \\(-4\\) on \\(x=0\\), and \\(-1\\) on the other nontrivial edges. These are all larger than \\(-5\\), so the interior point is the absolute minimum."
+        },
+        {
+          "label": "Check the corners for the maximum",
+          "latex": "\\[f(0,0)=0,\\quad f(3,0)=3,\\quad f(0,4)=0,\\quad f(3,4)=3.\\] The largest value is \\(3\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\text{Absolute minimum: }-5\\text{ at }(1,2).\\qquad \\text{Absolute maximum: }3\\text{ at }(3,0)\\text{ and }(3,4).\\]",
+      "commonMistakes": [
+        "Stopping after finding \\((1,2)\\) and not checking the boundary.",
+        "Assuming corners are enough. For absolute extrema, edges can matter too.",
+        "Forgetting that a maximum can occur at more than one point."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for optimization."
+      }
+    },
+    {
+      "problemId": "si18-p2",
+      "title": "Divergence and curl in 2D",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 10,
+      "skills": [
+        "2D vector fields",
+        "Divergence",
+        "Curl"
+      ],
+      "studentPromptLatex": "Let \\(F(x,y)=\\langle x^2y,xy^2\\rangle\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\). Then evaluate both at \\((1,2)\\).",
+      "whatToSayBefore": "Say: name the components first. P is the first component and Q is the second component.",
+      "visualSpec": {
+        "type": "vector_field_div_curl_2d",
+        "field": "F=<x^2 y, x y^2>",
+        "point": [
+          1,
+          2
+        ],
+        "divergenceAtPoint": 8,
+        "curlAtPoint": 3,
+        "drawInstructions": [
+          "Draw a small grid of arrows near (1,2).",
+          "Label divergence as source/sink strength.",
+          "Label curl as local rotation.",
+          "At (1,2), write div F = 8 and curl F = 3."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Name the components",
+          "latex": "\\[P=x^2y,\\qquad Q=xy^2.\\]"
+        },
+        {
+          "label": "Compute divergence",
+          "latex": "\\[\\operatorname{div}F=P_x+Q_y=2xy+2xy=4xy.\\] At \\((1,2)\\), \\[\\operatorname{div}F(1,2)=4(1)(2)=8.\\]"
+        },
+        {
+          "label": "Compute scalar curl",
+          "latex": "\\[Q_x-P_y=y^2-x^2.\\] At \\((1,2)\\), \\[Q_x-P_y=2^2-1^2=3.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\operatorname{div}F=4xy,\\quad \\operatorname{div}F(1,2)=8,\\qquad Q_x-P_y=y^2-x^2,\\quad (Q_x-P_y)(1,2)=3.\\]",
+      "commonMistakes": [
+        "Using \\(P_y+Q_x\\) for divergence.",
+        "Flipping the curl sign.",
+        "Forgetting that 2D scalar curl is a number."
+      ],
+      "practiceLabPointer": {
+        "section": 8,
+        "route": "#/section/8",
+        "note": "Practice Lab Section 8 for divergence and curl."
+      }
+    },
+    {
+      "problemId": "si18-p3",
+      "title": "Divergence and curl in 3D",
+      "difficulty": "Core",
+      "estimatedMinutes": 14,
+      "skills": [
+        "3D vector fields",
+        "Divergence",
+        "Curl"
+      ],
+      "studentPromptLatex": "Let \\(F(x,y,z)=\\langle xy,yz,zx\\rangle\\). Find \\(\\operatorname{div}F\\) and \\(\\nabla\\times F\\). Then evaluate both at \\((1,-2,3)\\).",
+      "whatToSayBefore": "Say: in 3D, divergence is still one number, but curl becomes a vector.",
+      "visualSpec": {
+        "type": "vector_field_div_curl_3d",
+        "field": "F=<xy,yz,zx>",
+        "point": [
+          1,
+          -2,
+          3
+        ],
+        "divergenceAtPoint": 2,
+        "curlAtPoint": [
+          2,
+          -3,
+          -1
+        ],
+        "drawInstructions": [
+          "Draw a 3D coordinate box or axes.",
+          "Mark the point (1,-2,3).",
+          "Write div F as one scalar.",
+          "Write curl F as a vector with three components.",
+          "Emphasize that the curl vector gives the axis/direction of local rotation."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Compute divergence",
+          "latex": "\\[\\operatorname{div}F=\\frac{\\partial}{\\partial x}(xy)+\\frac{\\partial}{\\partial y}(yz)+\\frac{\\partial}{\\partial z}(zx)=y+z+x.\\] At \\((1,-2,3)\\), \\[\\operatorname{div}F= -2+3+1=2.\\]"
+        },
+        {
+          "label": "Compute curl",
+          "latex": "\\[\\nabla\\times F=\\langle R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y\\rangle.\\] Here \\(P=xy\\), \\(Q=yz\\), and \\(R=zx\\), so \\[\\nabla\\times F=\\langle 0-y,\\;0-z,\\;0-x\\rangle=\\langle -y,-z,-x\\rangle.\\]"
+        },
+        {
+          "label": "Evaluate curl at the point",
+          "latex": "\\[(\\nabla\\times F)(1,-2,3)=\\langle 2,-3,-1\\rangle.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\operatorname{div}F=x+y+z,\\quad \\operatorname{div}F(1,-2,3)=2,\\qquad \\nabla\\times F=\\langle -y,-z,-x\\rangle,\\quad (\\nabla\\times F)(1,-2,3)=\\langle 2,-3,-1\\rangle.\\]",
+      "commonMistakes": [
+        "Returning a vector for divergence.",
+        "Returning a scalar for 3D curl.",
+        "Putting the components of curl in the wrong order."
+      ],
+      "practiceLabPointer": {
+        "section": 8,
+        "route": "#/section/8",
+        "note": "Practice Lab Section 8 for 3D vector fields."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "Why do absolute extrema problems require checking boundaries?",
+    "What does divergence measure in plain words?",
+    "What does curl measure in plain words?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 7",
+      "route": "#/section/7",
+      "topics": [
+        "optimization"
+      ]
+    },
+    {
+      "label": "Practice Lab Section 8",
+      "route": "#/section/8",
+      "topics": [
+        "vector fields",
+        "divergence",
+        "curl"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Checked optimization values: interior minimum -5 at (1,2); corner maximum 3 at (3,0) and (3,4).",
+    "Checked 2D divergence/curl: div=4xy, curl=y^2-x^2, values 8 and 3.",
+    "Checked 3D divergence/curl: div=x+y+z, curl=<-y,-z,-x>, values 2 and <2,-3,-1>.",
+    "Visual specs include exact points/values when possible."
+  ],
+  "reviewSummary": "Session 18 is ready with checked optimization and vector field examples."
+}

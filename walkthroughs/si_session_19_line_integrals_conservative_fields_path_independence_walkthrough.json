@@ -1,0 +1,263 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-19",
+  "sessionNumber": 19,
+  "sessionType": "general",
+  "title": "Line Integrals, Conservative Fields, and Path Independence",
+  "practiceLabSections": [
+    8
+  ],
+  "estimatedDurationMinutes": 50,
+  "sessionGoal": "Students should be able to compute scalar and vector line integrals and use potential functions when a field is conservative.",
+  "quickStartIfUnprepared": [
+    "Start with the difference: scalar line integral uses ds; vector line integral uses dr.",
+    "Do Problem 1 for scalar line integrals.",
+    "Do Problem 2 for direct vector line integral setup.",
+    "Do Problem 3 for conservative fields and path independence."
+  ],
+  "sayThisFirst": [
+    "A scalar line integral adds up a scalar quantity along a curve.",
+    "A vector line integral measures how much a vector field pushes along the path.",
+    "For \\(\\int_C F\\cdot dr\\), plug in the curve and dot with \\(r'(t)\\).",
+    "If \\(F=\\nabla f\\), then the line integral only depends on endpoints."
+  ],
+  "boardPlan": [
+    "Write the two line-integral templates side by side.",
+    "Do one scalar line integral using \\(ds=\\|r'(t)\\|dt\\).",
+    "Do one vector line integral using \\(F(r(t))\\cdot r'(t)\\).",
+    "Finish with a potential function and endpoint shortcut."
+  ],
+  "keyFormulas": [
+    "Scalar line integral: \\(\\int_C g\\,ds=\\int_a^b g(r(t))\\|r'(t)\\|\\,dt\\).",
+    "Vector line integral: \\(\\int_C F\\cdot dr=\\int_a^b F(r(t))\\cdot r'(t)\\,dt\\).",
+    "For \\(F=\\langle P,Q\\rangle\\), conservative usually means \\(P_y=Q_x\\) on a nice region.",
+    "If \\(F=\\nabla f\\), then \\(\\int_C F\\cdot dr=f(\\text{end})-f(\\text{start})\\)."
+  ],
+  "commonMistakes": [
+    "Using \\(ds\\) in a vector line integral.",
+    "Forgetting to compute \\(r'(t)\\).",
+    "Forgetting to plug the curve into the field.",
+    "Using the endpoint shortcut before checking the field is conservative.",
+    "Subtracting endpoints in the wrong order."
+  ],
+  "notationWarnings": [
+    "Use \\(ds\\) for scalar line integrals.",
+    "Use \\(dr\\) or \\(F\\cdot dr\\) for vector line integrals.",
+    "For conservative fields, clearly name the potential function, often \\(\\phi\\) or \\(f\\)."
+  ],
+  "problems": [
+    {
+      "problemId": "si19-p1",
+      "title": "Scalar line integral along a line segment",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Scalar line integral",
+        "Parametrization",
+        "Arc length element"
+      ],
+      "studentPromptLatex": "Let \\(C\\) be the line segment from \\((0,0)\\) to \\((3,4)\\). Compute \\(\\int_C (x+y)\\,ds\\).",
+      "whatToSayBefore": "Say: because this has \\(ds\\), we need the speed factor \\(\\|r'(t)\\|\\).",
+      "visualSpec": {
+        "type": "scalar_line_integral_segment",
+        "start": [
+          0,
+          0
+        ],
+        "end": [
+          3,
+          4
+        ],
+        "parametrization": "r(t)=(3t,4t), 0<=t<=1",
+        "speed": 5,
+        "drawInstructions": [
+          "Draw the segment from (0,0) to (3,4).",
+          "Label r(t)=(3t,4t).",
+          "Write ds=||r'(t)||dt=5dt.",
+          "Shade/mark that x+y is sampled along the segment."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Parametrize the segment",
+          "latex": "\\[r(t)=(3t,4t),\\qquad 0\\le t\\le1.\\]"
+        },
+        {
+          "label": "Compute \\(ds\\)",
+          "latex": "\\[r'(t)=(3,4),\\qquad \\|r'(t)\\|=5.\\] So \\[ds=5\\,dt.\\]"
+        },
+        {
+          "label": "Plug into the scalar function",
+          "latex": "\\[x+y=3t+4t=7t.\\]"
+        },
+        {
+          "label": "Integrate",
+          "latex": "\\[\\int_C (x+y)\\,ds=\\int_0^1 (7t)(5)\\,dt=35\\int_0^1 t\\,dt=\\frac{35}{2}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{\\frac{35}{2}}\\]",
+      "commonMistakes": [
+        "Forgetting the factor \\(ds=5dt\\).",
+        "Using \\(r'(t)\\) as a vector instead of its length.",
+        "Not including the interval \\(0\\le t\\le1\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 8,
+        "route": "#/section/8",
+        "note": "Practice Lab Section 8 for line integrals."
+      }
+    },
+    {
+      "problemId": "si19-p2",
+      "title": "Vector line integral by direct parametrization",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Vector line integral",
+        "Parametrized curve",
+        "Dot product"
+      ],
+      "studentPromptLatex": "Let \\(F(x,y)=\\langle y,x\\rangle\\) and let \\(C\\) be \\(r(t)=(t,t^2)\\), \\(0\\le t\\le1\\). Compute \\(\\int_C F\\cdot dr\\) directly.",
+      "whatToSayBefore": "Say: for \\(F\\cdot dr\\), the recipe is field along the curve dotted with velocity.",
+      "visualSpec": {
+        "type": "vector_line_integral_curve",
+        "field": "F=<y,x>",
+        "curve": "r(t)=(t,t^2), 0<=t<=1",
+        "start": [
+          0,
+          0
+        ],
+        "end": [
+          1,
+          1
+        ],
+        "drawInstructions": [
+          "Draw the parabola y=x^2 from (0,0) to (1,1).",
+          "Put arrows on the curve from left to right.",
+          "Draw a few field arrows F=<y,x> near the curve.",
+          "Write F(r(t)) dot r'(t) beside the picture."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find the velocity",
+          "latex": "\\[r'(t)=(1,2t).\\]"
+        },
+        {
+          "label": "Plug the curve into the field",
+          "latex": "Along the curve, \\(x=t\\) and \\(y=t^2\\), so \\[F(r(t))=\\langle t^2,t\\rangle.\\]"
+        },
+        {
+          "label": "Dot with velocity",
+          "latex": "\\[F(r(t))\\cdot r'(t)=\\langle t^2,t\\rangle\\cdot\\langle1,2t\\rangle=t^2+2t^2=3t^2.\\]"
+        },
+        {
+          "label": "Integrate",
+          "latex": "\\[\\int_C F\\cdot dr=\\int_0^1 3t^2\\,dt=1.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{1}\\]",
+      "commonMistakes": [
+        "Using \\(ds\\) instead of \\(dr\\).",
+        "Forgetting to plug \\(x=t\\), \\(y=t^2\\) into the field.",
+        "Forgetting the dot product with \\(r'(t)\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 8,
+        "route": "#/section/8",
+        "note": "Practice Lab Section 8 for vector line integrals."
+      }
+    },
+    {
+      "problemId": "si19-p3",
+      "title": "Conservative field and endpoint shortcut",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Conservative fields",
+        "Potential functions",
+        "Path independence"
+      ],
+      "studentPromptLatex": "Let \\(F(x,y)=\\langle 2xy+3,x^2+4y\\rangle\\). Show that \\(F\\) is conservative, find a potential function \\(\\phi\\), and compute \\(\\int_C F\\cdot dr\\) from \\((0,1)\\) to \\((2,-1)\\).",
+      "whatToSayBefore": "Say: if the field is conservative, the path itself does not matter. Only the start and end points matter.",
+      "visualSpec": {
+        "type": "conservative_field_endpoints",
+        "field": "F=<2xy+3,x^2+4y>",
+        "start": [
+          0,
+          1
+        ],
+        "end": [
+          2,
+          -1
+        ],
+        "potential": "phi=x^2y+3x+2y^2",
+        "integralValue": 2,
+        "drawInstructions": [
+          "Draw two different paths from (0,1) to (2,-1).",
+          "Label both paths with the same endpoint value difference.",
+          "Write integral = phi(end)-phi(start).",
+          "Emphasize path independence."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Check the conservative condition",
+          "latex": "Here \\(P=2xy+3\\) and \\(Q=x^2+4y\\). \\[P_y=2x,\\qquad Q_x=2x.\\] Since \\(P_y=Q_x\\), the field is conservative on \\(\\mathbb{R}^2\\)."
+        },
+        {
+          "label": "Find the potential",
+          "latex": "Integrate \\(P\\) with respect to \\(x\\): \\[\\phi(x,y)=\\int(2xy+3)\\,dx=x^2y+3x+g(y).\\]"
+        },
+        {
+          "label": "Match the second component",
+          "latex": "\\[\\phi_y=x^2+g'(y).\\] We need \\(\\phi_y=x^2+4y\\), so \\(g'(y)=4y\\), meaning \\(g(y)=2y^2\\). Thus \\[\\phi(x,y)=x^2y+3x+2y^2.\\]"
+        },
+        {
+          "label": "Use endpoint values",
+          "latex": "\\[\\int_C F\\cdot dr=\\phi(2,-1)-\\phi(0,1).\\] Now \\[\\phi(2,-1)=4(-1)+6+2=4,\\qquad \\phi(0,1)=0+0+2=2.\\] So the integral is \\[4-2=2.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\phi(x,y)=x^2y+3x+2y^2,\\qquad \\int_C F\\cdot dr=2.\\]",
+      "commonMistakes": [
+        "Forgetting the \\(g(y)\\) term after integrating with respect to \\(x\\).",
+        "Using start minus end instead of end minus start.",
+        "Using the shortcut without first checking the field is conservative."
+      ],
+      "practiceLabPointer": {
+        "section": 8,
+        "route": "#/section/8",
+        "note": "Practice Lab Section 8 for conservative fields."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "When do we use \\(ds\\)?",
+    "When do we use \\(F\\cdot dr\\)?",
+    "What changes when a field is conservative?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 8",
+      "route": "#/section/8",
+      "topics": [
+        "line integrals",
+        "conservative fields",
+        "path independence"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Checked scalar line integral value 35/2.",
+    "Checked vector line integral value 1.",
+    "Checked conservative potential phi=x^2y+3x+2y^2 and endpoint integral value 2.",
+    "Visual specs distinguish scalar ds from vector dr."
+  ],
+  "reviewSummary": "Session 19 is ready with checked line integral and conservative-field problems."
+}

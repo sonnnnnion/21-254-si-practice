@@ -1,0 +1,502 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "sessionId": "si-02",
+  "sessionNumber": 2,
+  "sessionType": "general",
+  "title": "Matrices, Transposes, Multiplication, and Special Matrices",
+  "practiceLabSections": [
+    1
+  ],
+  "estimatedDurationMinutes": 50,
+  "audience": "SI leader teaching live on a whiteboard",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless needed.",
+  "sessionGoal": "Students should be able to multiply matrices, check dimensions, use transposes correctly, and recognize simple matrix power patterns.",
+  "quickStartIfUnprepared": [
+    "Start by writing the dimension rule: (m\u00d7n)(n\u00d7p) gives m\u00d7p.",
+    "Say: matrix multiplication is row dot column.",
+    "Warn that matrix multiplication is usually not commutative: AB and BA can be different or have different sizes.",
+    "Do Problem 1 for multiplication and dimensions.",
+    "Do Problem 2 for transpose order reversal.",
+    "Do Problem 3 if time remains for powers and the identity matrix."
+  ],
+  "sayThisFirst": [
+    "A matrix is a rectangular table of numbers.",
+    "Matrix multiplication works only when the inner dimensions match.",
+    "Each entry of AB comes from one row of A dotted with one column of B.",
+    "Order matters: AB is not usually the same as BA.",
+    "Transpose means flip rows and columns.",
+    "For products, transpose reverses the order: \\((AB)^T=B^TA^T\\)."
+  ],
+  "boardPlan": [
+    {
+      "timeMinutes": 6,
+      "boardTitle": "Setup",
+      "whatToWrite": [
+        "\\((m\\times n)(n\\times p)=m\\times p\\)",
+        "\\((AB)_{ij}=\\text{row }i\\text{ of }A\\cdot\\text{ column }j\\text{ of }B\\)",
+        "\\((AB)^T=B^TA^T\\)",
+        "\\(AI=IA=A\\)"
+      ],
+      "whatToSay": "Today is mostly about order. Check dimensions before doing any arithmetic."
+    },
+    {
+      "timeMinutes": 17,
+      "boardTitle": "Problem 1",
+      "whatToSay": "Make students say the sizes first. Do not let them start multiplying until the dimensions make sense."
+    },
+    {
+      "timeMinutes": 15,
+      "boardTitle": "Problem 2",
+      "whatToSay": "Transpose a product by reversing the order. This is a common place to make a small but important mistake."
+    },
+    {
+      "timeMinutes": 10,
+      "boardTitle": "Problem 3",
+      "whatToSay": "Once you see A squared is the identity, stop multiplying over and over. Use the pattern."
+    },
+    {
+      "timeMinutes": 2,
+      "boardTitle": "Wrap-up",
+      "whatToSay": "Ask: what do we check before multiplying? What happens to order when transposing a product?"
+    }
+  ],
+  "keyFormulas": [
+    {
+      "name": "Matrix multiplication dimensions",
+      "latex": "(m\\times n)(n\\times p)=m\\times p",
+      "plainEnglish": "The inner dimensions must match. The outer dimensions give the answer size."
+    },
+    {
+      "name": "Entry of a product",
+      "latex": "(AB)_{ij}=\\sum_k a_{ik}b_{kj}",
+      "plainEnglish": "Row i of A dotted with column j of B."
+    },
+    {
+      "name": "Transpose",
+      "latex": "(A^T)_{ij}=A_{ji}",
+      "plainEnglish": "Rows become columns."
+    },
+    {
+      "name": "Transpose of a product",
+      "latex": "(AB)^T=B^TA^T",
+      "plainEnglish": "Flip each matrix and reverse the order."
+    },
+    {
+      "name": "Identity matrix",
+      "latex": "AI=IA=A",
+      "plainEnglish": "Multiplying by the identity leaves a matrix unchanged, when the sizes work."
+    }
+  ],
+  "commonMistakes": [
+    "Trying to multiply matrices without checking dimensions first.",
+    "Forgetting that AB and BA can have different sizes.",
+    "Assuming AB = BA. Usually false.",
+    "Computing an entry of AB using column times column instead of row times column.",
+    "Writing \\((AB)^T=A^TB^T\\). The correct order is \\((AB)^T=B^TA^T\\).",
+    "Forgetting that \\(A^2\\) means \\(AA\\), not squaring each entry."
+  ],
+  "notationWarnings": [
+    {
+      "bad": "\\((AB)^T=A^TB^T\\)",
+      "good": "\\((AB)^T=B^TA^T\\)",
+      "why": "Transpose reverses the order of multiplication."
+    },
+    {
+      "bad": "\\(A^2\\) means square every entry of \\(A\\).",
+      "good": "\\(A^2=AA\\).",
+      "why": "Matrix powers mean repeated matrix multiplication."
+    }
+  ],
+  "problems": [
+    {
+      "problemId": "si02-p01",
+      "title": "Matrix multiplication: check dimensions first",
+      "difficulty": "Warm-up / Core",
+      "estimatedMinutes": 17,
+      "skills": [
+        "Matrix dimensions",
+        "Matrix multiplication",
+        "Row dot column",
+        "Noncommutativity"
+      ],
+      "studentPromptLatex": "Let \\(A=\\begin{bmatrix}1&-2&0\\\\3&1&4\\end{bmatrix}\\) and \\(B=\\begin{bmatrix}2&-1\\\\0&5\\\\3&2\\end{bmatrix}\\). Compute \\(AB\\) and \\(BA\\), if they are defined. Are they equal?",
+      "whatToSayBefore": "Before multiplying, ask for the size of each matrix. A is 2\u00d73 and B is 3\u00d72.",
+      "visualSpec": {
+        "type": "matrix_multiplication_dimensions_and_row_column_highlight",
+        "purpose": "Show that dimensions decide whether a product exists, and one product entry comes from row dot column.",
+        "matrices": {
+          "A": [
+            [
+              1,
+              -2,
+              0
+            ],
+            [
+              3,
+              1,
+              4
+            ]
+          ],
+          "B": [
+            [
+              2,
+              -1
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "AB": [
+            [
+              2,
+              -11
+            ],
+            [
+              18,
+              10
+            ]
+          ],
+          "BA": [
+            [
+              -1,
+              -5,
+              -4
+            ],
+            [
+              15,
+              5,
+              20
+            ],
+            [
+              9,
+              -4,
+              8
+            ]
+          ]
+        },
+        "dimensionFacts": [
+          "A is 2\u00d73.",
+          "B is 3\u00d72.",
+          "AB is defined and has size 2\u00d72.",
+          "BA is defined and has size 3\u00d73.",
+          "AB and BA cannot be equal here because they do not even have the same size."
+        ],
+        "boardSketchInstructions": [
+          "Write A as a 2\u00d73 block and B as a 3\u00d72 block.",
+          "Highlight row 1 of A and column 1 of B to compute the first entry of AB.",
+          "Then highlight row 1 of B and column 1 of A to show BA is a different product.",
+          "Circle the sizes: AB is 2\u00d72 while BA is 3\u00d73."
+        ],
+        "accuracyNote": "The matrix products and sizes are exact."
+      },
+      "walkthrough": [
+        {
+          "label": "Check sizes",
+          "latex": "A\\text{ is }2\\times3,\\quad B\\text{ is }3\\times2.",
+          "sayOutLoud": "The inner dimensions match for AB, so AB is defined and will be 2 by 2."
+        },
+        {
+          "label": "Compute \\(AB\\)",
+          "latex": "AB=\\begin{bmatrix}1&-2&0\\\\3&1&4\\end{bmatrix}\\begin{bmatrix}2&-1\\\\0&5\\\\3&2\\end{bmatrix}=\\begin{bmatrix}2&-11\\\\18&10\\end{bmatrix}.",
+          "sayOutLoud": "Each entry is a row of A dotted with a column of B."
+        },
+        {
+          "label": "Check sizes for \\(BA\\)",
+          "latex": "B\\text{ is }3\\times2,\\quad A\\text{ is }2\\times3,\\quad \text{so }BA\\text{ is }3\\times3.",
+          "sayOutLoud": "This product is also defined, but it has a different size."
+        },
+        {
+          "label": "Compute \\(BA\\)",
+          "latex": "BA=\\begin{bmatrix}2&-1\\\\0&5\\\\3&2\\end{bmatrix}\\begin{bmatrix}1&-2&0\\\\3&1&4\\end{bmatrix}=\\begin{bmatrix}-1&-5&-4\\\\15&5&20\\\\9&-4&8\\end{bmatrix}.",
+          "sayOutLoud": "Same rule, but the rows and columns come from different matrices now."
+        },
+        {
+          "label": "Compare",
+          "latex": "AB\\text{ is }2\\times2,\\quad BA\\text{ is }3\\times3,\\quad \text{so }AB\\ne BA.",
+          "sayOutLoud": "They cannot be equal because their sizes are different."
+        }
+      ],
+      "finalAnswerLatex": "AB=\\begin{bmatrix}2&-11\\\\18&10\\end{bmatrix},\\quad BA=\\begin{bmatrix}-1&-5&-4\\\\15&5&20\\\\9&-4&8\\end{bmatrix},\\quad AB\\ne BA.",
+      "commonMistakes": [
+        "Skipping the dimension check.",
+        "Multiplying entries in the same position instead of row dot column.",
+        "Assuming AB and BA should match.",
+        "Forgetting that AB and BA can have different sizes."
+      ],
+      "practiceLabPointer": "Practice Lab Section 1: matrix operations and multiplication."
+    },
+    {
+      "problemId": "si02-p02",
+      "title": "Transpose of a product reverses the order",
+      "difficulty": "Core",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Transpose",
+        "Matrix multiplication",
+        "Product rule for transposes"
+      ],
+      "studentPromptLatex": "Let \\(A=\\begin{bmatrix}1&-3&2\\\\0&4&-1\\end{bmatrix}\\) and \\(C=\\begin{bmatrix}2&0\\\\-1&5\\\\3&1\\end{bmatrix}\\). Compute \\(AC\\), then verify that \\((AC)^T=C^TA^T\\).",
+      "whatToSayBefore": "This problem is about order. The transpose of a product reverses the order.",
+      "visualSpec": {
+        "type": "transpose_product_order_reversal",
+        "purpose": "Show that the product AC is 2\u00d72 and that transposing the product matches C^T A^T.",
+        "matrices": {
+          "A": [
+            [
+              1,
+              -3,
+              2
+            ],
+            [
+              0,
+              4,
+              -1
+            ]
+          ],
+          "C": [
+            [
+              2,
+              0
+            ],
+            [
+              -1,
+              5
+            ],
+            [
+              3,
+              1
+            ]
+          ],
+          "AC": [
+            [
+              11,
+              -13
+            ],
+            [
+              -7,
+              19
+            ]
+          ],
+          "AC_transpose": [
+            [
+              11,
+              -7
+            ],
+            [
+              -13,
+              19
+            ]
+          ],
+          "C_transpose": [
+            [
+              2,
+              -1,
+              3
+            ],
+            [
+              0,
+              5,
+              1
+            ]
+          ],
+          "A_transpose": [
+            [
+              1,
+              0
+            ],
+            [
+              -3,
+              4
+            ],
+            [
+              2,
+              -1
+            ]
+          ]
+        },
+        "boardSketchInstructions": [
+          "Write \\((AC)^T\\) on the left and \\(C^TA^T\\) on the right.",
+          "Draw a small arrow showing that transpose flips the product order.",
+          "Compute AC first, then transpose it.",
+          "Then compute C^T A^T and show the same matrix appears."
+        ],
+        "accuracyNote": "All matrices in this visual are exact."
+      },
+      "walkthrough": [
+        {
+          "label": "Check the product size",
+          "latex": "A\\text{ is }2\\times3,\\quad C\\text{ is }3\\times2,\\quad \text{so }AC\\text{ is }2\\times2.",
+          "sayOutLoud": "The inner 3s match, so the product is allowed."
+        },
+        {
+          "label": "Compute \\(AC\\)",
+          "latex": "AC=\\begin{bmatrix}1&-3&2\\\\0&4&-1\\end{bmatrix}\\begin{bmatrix}2&0\\\\-1&5\\\\3&1\\end{bmatrix}=\\begin{bmatrix}11&-13\\\\-7&19\\end{bmatrix}.",
+          "sayOutLoud": "Again, row dot column for each entry."
+        },
+        {
+          "label": "Transpose the product",
+          "latex": "(AC)^T=\\begin{bmatrix}11&-7\\\\-13&19\\end{bmatrix}.",
+          "sayOutLoud": "Rows become columns."
+        },
+        {
+          "label": "Compute \\(C^T\\) and \\(A^T\\)",
+          "latex": "C^T=\\begin{bmatrix}2&-1&3\\\\0&5&1\\end{bmatrix},\\quad A^T=\\begin{bmatrix}1&0\\\\-3&4\\\\2&-1\\end{bmatrix}.",
+          "sayOutLoud": "Notice the order is C transpose first, then A transpose."
+        },
+        {
+          "label": "Multiply \\(C^TA^T\\)",
+          "latex": "C^TA^T=\\begin{bmatrix}2&-1&3\\\\0&5&1\\end{bmatrix}\\begin{bmatrix}1&0\\\\-3&4\\\\2&-1\\end{bmatrix}=\\begin{bmatrix}11&-7\\\\-13&19\\end{bmatrix}.",
+          "sayOutLoud": "This matches \\((AC)^T\\), so the rule works in this example."
+        }
+      ],
+      "finalAnswerLatex": "AC=\\begin{bmatrix}11&-13\\\\-7&19\\end{bmatrix},\\quad (AC)^T=\\begin{bmatrix}11&-7\\\\-13&19\\end{bmatrix}=C^TA^T.",
+      "commonMistakes": [
+        "Writing \\((AC)^T=A^TC^T\\) instead of \\(C^TA^T\\).",
+        "Forgetting to transpose both matrices.",
+        "Changing signs during the transpose. Transpose only flips positions; it does not change signs."
+      ],
+      "practiceLabPointer": "Practice Lab Section 1: transposes and matrix products."
+    },
+    {
+      "problemId": "si02-p03",
+      "title": "Use a matrix power pattern instead of multiplying forever",
+      "difficulty": "Core / Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Matrix powers",
+        "Identity matrix",
+        "Matrix polynomials",
+        "Pattern recognition"
+      ],
+      "studentPromptLatex": "Let \\(A=\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix}\\). Compute \\(A^2\\). Then use that result to simplify \\(A^{25}+3A^4-2I\\).",
+      "whatToSayBefore": "Do not try to multiply A twenty-five times. First find a pattern.",
+      "visualSpec": {
+        "type": "matrix_power_pattern",
+        "purpose": "Show the alternating pattern created by A^2=I.",
+        "matrices": {
+          "A": [
+            [
+              1,
+              2
+            ],
+            [
+              0,
+              -1
+            ]
+          ],
+          "A2": [
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "A4": [
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "A25": [
+            [
+              1,
+              2
+            ],
+            [
+              0,
+              -1
+            ]
+          ],
+          "final": [
+            [
+              2,
+              2
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        "patternFacts": [
+          "A^2=I.",
+          "Every even power is I.",
+          "Every odd positive power is A.",
+          "So A^25=A and A^4=I."
+        ],
+        "boardSketchInstructions": [
+          "Compute A^2 slowly on the board.",
+          "When A^2=I appears, stop and write the pattern.",
+          "Write: even powers \u2192 I, odd powers \u2192 A.",
+          "Then substitute into the expression."
+        ],
+        "accuracyNote": "The power pattern is exact because A^2=I."
+      },
+      "walkthrough": [
+        {
+          "label": "Compute \\(A^2\\)",
+          "latex": "A^2=AA=\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix}\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix}=\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}=I.",
+          "sayOutLoud": "This is the key moment. Once A squared equals I, powers become easy."
+        },
+        {
+          "label": "Use the pattern",
+          "latex": "A^{25}=(A^2)^{12}A=I^{12}A=A,\\quad A^4=(A^2)^2=I^2=I.",
+          "sayOutLoud": "Odd power gives A. Even power gives I."
+        },
+        {
+          "label": "Substitute into the expression",
+          "latex": "A^{25}+3A^4-2I=A+3I-2I=A+I.",
+          "sayOutLoud": "Combine the identity terms just like scalars because they are the same matrix."
+        },
+        {
+          "label": "Add \\(A+I\\)",
+          "latex": "A+I=\\begin{bmatrix}1&2\\\\0&-1\\end{bmatrix}+\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}=\\begin{bmatrix}2&2\\\\0&0\\end{bmatrix}.",
+          "sayOutLoud": "Only matching entries get added."
+        }
+      ],
+      "finalAnswerLatex": "A^2=I,\\quad A^{25}+3A^4-2I=A+I=\\begin{bmatrix}2&2\\\\0&0\\end{bmatrix}.",
+      "commonMistakes": [
+        "Squaring each entry instead of computing \\(AA\\).",
+        "Continuing to multiply many times instead of using \\(A^2=I\\).",
+        "Forgetting that \\(I\\) must be the correct size, here \\(2\\times2\\)."
+      ],
+      "practiceLabPointer": "Practice Lab Section 1: matrix powers and special matrices."
+    }
+  ],
+  "wrapUpQuestions": [
+    "Before multiplying two matrices, what dimensions do you check?",
+    "What does one entry of AB come from?",
+    "Is AB usually equal to BA?",
+    "What is the correct formula for \\((AB)^T\\)?",
+    "What does \\(A^2\\) mean for a matrix?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 1",
+      "route": "#/section/1",
+      "description": "Use this section for more vector, matrix, transpose, and basic operation practice."
+    }
+  ],
+  "qualityControlNotes": [
+    "All matrix products were checked by hand.",
+    "Problem 1: A is 2\u00d73 and B is 3\u00d72, so AB is 2\u00d72 and BA is 3\u00d73; both products are computed explicitly.",
+    "Problem 2 verifies \\((AC)^T=C^TA^T\\) using exact arithmetic.",
+    "Problem 3 uses \\(A^2=I\\), so odd powers equal A and even powers equal I.",
+    "Visual specs are designed to show exact matrix structure and board-friendly highlights."
+  ]
+}

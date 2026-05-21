@@ -1,0 +1,323 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-14",
+  "sessionNumber": 14,
+  "sessionType": "general",
+  "title": "Projections, Components, and Cross Product",
+  "practiceLabSections": [
+    6
+  ],
+  "estimatedDurationMinutes": 50,
+  "sessionGoal": "Students should be able to break vectors into parallel/perpendicular parts and use cross products for normals, areas, and planes.",
+  "quickStartIfUnprepared": [
+    "Start with the sentence: projection means shadow.",
+    "Do Problem 1 to show parallel and perpendicular pieces.",
+    "Do Problem 3 if students need cross product / plane practice.",
+    "Emphasize that dot product answers are numbers, but cross product answers are vectors."
+  ],
+  "sayThisFirst": [
+    "Projection means the part of one vector that points along another vector.",
+    "The perpendicular part is what is left after subtracting the projection.",
+    "The cross product gives a vector perpendicular to two 3D vectors.",
+    "For planes, the cross product is useful because a plane needs a normal vector."
+  ],
+  "boardPlan": [
+    "Write the projection formula and say what each piece means.",
+    "Do one 2D projection with a picture.",
+    "Use the same idea for distance from a point to a line.",
+    "Review the cross product determinant setup.",
+    "Use cross product to find a plane through three points."
+  ],
+  "keyFormulas": [
+    "\\operatorname{proj}_{a}(b)=\\dfrac{b\\cdot a}{a\\cdot a}a.",
+    "b=b_{\\parallel}+b_{\\perp}, where b_{\\parallel}=\\operatorname{proj}_{a}(b).",
+    "\\operatorname{comp}_{a}(b)=\\dfrac{b\\cdot a}{\\|a\\|}.",
+    "a\\times b is perpendicular to both a and b.",
+    "Plane with normal n=(A,B,C): A(x-x_0)+B(y-y_0)+C(z-z_0)=0."
+  ],
+  "commonMistakes": [
+    "Forgetting that projection is a vector, while scalar component is a number.",
+    "Projecting onto b when the problem asks to project b onto a.",
+    "Forgetting to subtract the projection when finding the perpendicular part.",
+    "Cross product order matters: a\\times b=-(b\\times a).",
+    "Using two points to define a plane. You usually need three points or a point plus a normal."
+  ],
+  "notationWarnings": [
+    "Use \\overrightarrow{AB}=B-A for the vector from A to B.",
+    "Write \\operatorname{proj}_{a}(b), not just 'projection,' so students know which direction is being used.",
+    "For planes, make it clear which vector is the normal."
+  ],
+  "problems": [
+    {
+      "problemId": "si14-p1",
+      "title": "Projection and perpendicular component in R^2",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Projection",
+        "Perpendicular component",
+        "Dot product"
+      ],
+      "studentPromptLatex": "Let \\(a=(2,1)\\) and \\(b=(3,4)\\). Find \\(\\operatorname{proj}_{a}(b)\\), the perpendicular component \\(b_{\\perp}\\), and check that \\(b_{\\perp}\\perp a\\).",
+      "whatToSayBefore": "Say: projection is the shadow of b onto the direction of a. The perpendicular piece is what is left over.",
+      "visualSpec": {
+        "type": "projection_2d_exact",
+        "vectors": {
+          "a": [
+            2,
+            1
+          ],
+          "b": [
+            3,
+            4
+          ],
+          "projection": [
+            4,
+            2
+          ],
+          "perpendicular": [
+            -1,
+            2
+          ]
+        },
+        "drawInstructions": [
+          "Draw vector a from the origin.",
+          "Draw vector b from the origin.",
+          "Draw the projection vector along the same line as a.",
+          "Draw the perpendicular piece from the tip of the projection to the tip of b.",
+          "Label the right angle between the perpendicular piece and a."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Compute the dot products",
+          "latex": "\\[b\\cdot a=(3)(2)+(4)(1)=10,\\qquad a\\cdot a=2^2+1^2=5.\\]"
+        },
+        {
+          "label": "Use the projection formula",
+          "latex": "\\[\\operatorname{proj}_{a}(b)=\\frac{b\\cdot a}{a\\cdot a}a=\\frac{10}{5}(2,1)=2(2,1)=(4,2).\\]"
+        },
+        {
+          "label": "Subtract to get the perpendicular piece",
+          "latex": "\\[b_{\\perp}=b-\\operatorname{proj}_{a}(b)=(3,4)-(4,2)=(-1,2).\\]"
+        },
+        {
+          "label": "Check perpendicular",
+          "latex": "\\[b_{\\perp}\\cdot a=(-1)(2)+(2)(1)=0.\\] Since the dot product is zero, \\(b_{\\perp}\\) is perpendicular to \\(a\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\operatorname{proj}_{a}(b)=(4,2),\\qquad b_{\\perp}=(-1,2).\\]",
+      "commonMistakes": [
+        "Using \\(b\\cdot b\\) in the denominator. The denominator is the vector you are projecting onto: \\(a\\cdot a\\).",
+        "Stopping after the projection and forgetting the perpendicular component.",
+        "Thinking the perpendicular part starts at the origin in the drawing. It is often drawn from the projection tip to the vector tip."
+      ],
+      "practiceLabPointer": {
+        "section": 6,
+        "route": "#/section/6",
+        "note": "Practice Lab Section 6 for projections and components."
+      }
+    },
+    {
+      "problemId": "si14-p2",
+      "title": "Distance from a point to a line using projection",
+      "difficulty": "Core",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Projection in R^3",
+        "Point-to-line distance",
+        "Perpendicular component"
+      ],
+      "studentPromptLatex": "Let \\(P=(3,2,1)\\). Let \\(L\\) be the line through \\(Q=(1,0,2)\\) in direction \\(d=(2,1,-2)\\). Find the distance from \\(P\\) to \\(L\\).",
+      "whatToSayBefore": "Say: the distance from a point to a line is the length of the perpendicular leftover after projecting onto the line direction.",
+      "visualSpec": {
+        "type": "point_to_line_distance_3d",
+        "point": {
+          "P": [
+            3,
+            2,
+            1
+          ],
+          "Q": [
+            1,
+            0,
+            2
+          ]
+        },
+        "direction": {
+          "d": [
+            2,
+            1,
+            -2
+          ]
+        },
+        "vectorFromLinePoint": [
+          2,
+          2,
+          -1
+        ],
+        "projection": [
+          1.7777777777777777,
+          0.8888888888888888,
+          -1.7777777777777777
+        ],
+        "perpendicular": [
+          0.2222222222222222,
+          1.1111111111111112,
+          0.7777777777777778
+        ],
+        "drawInstructions": [
+          "Draw the line L through Q in direction d.",
+          "Draw P off the line.",
+          "Draw \\overrightarrow{QP}.",
+          "Project \\overrightarrow{QP} onto d.",
+          "Draw the perpendicular leftover from the line to P and label it as the distance."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Make the vector from the line to the point",
+          "latex": "\\[\\overrightarrow{QP}=P-Q=(3,2,1)-(1,0,2)=(2,2,-1).\\]"
+        },
+        {
+          "label": "Project \\(\\overrightarrow{QP}\\) onto the line direction",
+          "latex": "\\[\\overrightarrow{QP}\\cdot d=(2)(2)+(2)(1)+(-1)(-2)=8,\\qquad d\\cdot d=2^2+1^2+(-2)^2=9.\\] So \\[\\operatorname{proj}_{d}(\\overrightarrow{QP})=\\frac{8}{9}(2,1,-2)=\\left(\\frac{16}{9},\\frac{8}{9},-\\frac{16}{9}\\right).\\]"
+        },
+        {
+          "label": "Subtract to get the perpendicular vector",
+          "latex": "\\[\\overrightarrow{QP}_{\\perp}=\\overrightarrow{QP}-\\operatorname{proj}_{d}(\\overrightarrow{QP})=\\left(2,2,-1\\right)-\\left(\\frac{16}{9},\\frac{8}{9},-\\frac{16}{9}\\right)=\\left(\\frac{2}{9},\\frac{10}{9},\\frac{7}{9}\\right).\\]"
+        },
+        {
+          "label": "Take the length",
+          "latex": "\\[\\text{distance}=\\left\\|\\overrightarrow{QP}_{\\perp}\\right\\|=\\sqrt{\\left(\\frac{2}{9}\\right)^2+\\left(\\frac{10}{9}\\right)^2+\\left(\\frac{7}{9}\\right)^2}=\\frac{\\sqrt{153}}{9}=\\frac{\\sqrt{17}}{3}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{\\dfrac{\\sqrt{17}}{3}}\\]",
+      "commonMistakes": [
+        "Using \\(P\\) as if the line went through the origin.",
+        "Finding the projected length instead of the perpendicular length.",
+        "Forgetting that distance is positive and should be a scalar."
+      ],
+      "practiceLabPointer": {
+        "section": 6,
+        "route": "#/section/6",
+        "note": "Practice Lab Section 6 for projections and distance-type questions."
+      }
+    },
+    {
+      "problemId": "si14-p3",
+      "title": "Cross product and a plane through three points",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Cross product",
+        "Plane equation",
+        "Normal vector"
+      ],
+      "studentPromptLatex": "Find an equation of the plane through \\(A=(1,0,2)\\), \\(B=(3,1,1)\\), and \\(C=(0,2,4)\\).",
+      "whatToSayBefore": "Say: three points give two direction vectors in the plane. Their cross product gives a normal vector.",
+      "visualSpec": {
+        "type": "plane_through_three_points",
+        "points": {
+          "A": [
+            1,
+            0,
+            2
+          ],
+          "B": [
+            3,
+            1,
+            1
+          ],
+          "C": [
+            0,
+            2,
+            4
+          ]
+        },
+        "vectors": {
+          "AB": [
+            2,
+            1,
+            -1
+          ],
+          "AC": [
+            -1,
+            2,
+            2
+          ],
+          "normal": [
+            4,
+            -3,
+            5
+          ]
+        },
+        "drawInstructions": [
+          "Draw a tilted plane with points A, B, and C.",
+          "Draw \\overrightarrow{AB} and \\overrightarrow{AC} lying in the plane.",
+          "Draw \\overrightarrow{AB}\\times\\overrightarrow{AC} sticking out as the normal vector.",
+          "Use point A and the normal vector to write the plane equation."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Build two vectors in the plane",
+          "latex": "\\[\\overrightarrow{AB}=B-A=(3,1,1)-(1,0,2)=(2,1,-1),\\] \\[\\overrightarrow{AC}=C-A=(0,2,4)-(1,0,2)=(-1,2,2).\\]"
+        },
+        {
+          "label": "Take the cross product to get a normal",
+          "latex": "\\[\\overrightarrow{AB}\\times\\overrightarrow{AC}=\\begin{vmatrix}\\mathbf{i}&\\mathbf{j}&\\mathbf{k}\\\\2&1&-1\\\\-1&2&2\\end{vmatrix}=(4,-3,5).\\] So a normal vector is \\(n=(4,-3,5)\\)."
+        },
+        {
+          "label": "Use point-normal form",
+          "latex": "Using point \\(A=(1,0,2)\\), \\[4(x-1)-3(y-0)+5(z-2)=0.\\]"
+        },
+        {
+          "label": "Simplify",
+          "latex": "\\[4x-4-3y+5z-10=0\\quad\\Rightarrow\\quad 4x-3y+5z-14=0.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{4x-3y+5z-14=0}\\]",
+      "commonMistakes": [
+        "Using \\(B-C\\) and \\(A-C\\) is okay, but the point used later must still lie on the plane.",
+        "Forgetting that the cross product is the normal, not a vector lying in the plane.",
+        "Writing \\(\\overrightarrow{AB}=A-B\\). The correct direction is \\(B-A\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 6,
+        "route": "#/section/6",
+        "note": "Practice Lab Section 6 for cross product and plane problems."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "When do you use dot product vs. cross product?",
+    "What is the difference between projection and scalar component?",
+    "Why does a plane equation need a normal vector?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 6",
+      "route": "#/section/6",
+      "topics": [
+        "projections",
+        "components",
+        "cross product",
+        "planes"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Projection arithmetic checked: proj_a(b)=(4,2), perpendicular=(-1,2).",
+    "Point-to-line distance checked: sqrt(17)/3.",
+    "Cross product checked: AB x AC=(4,-3,5), plane 4x-3y+5z-14=0.",
+    "Notation uses arrows for point-to-point vectors."
+  ],
+  "reviewSummary": "Session 14 is ready for Claude rendering with exact visual specs for projection, point-to-line distance, and plane-through-points."
+}

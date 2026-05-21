@@ -1,0 +1,384 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-20",
+  "sessionNumber": 20,
+  "sessionType": "exam-review",
+  "title": "Exam 3 Review",
+  "practiceLabSections": [
+    7,
+    8
+  ],
+  "estimatedDurationMinutes": 75,
+  "sessionGoal": "Students should review curves, scalar functions, gradients, optimization, vector fields, line integrals, and conservative fields.",
+  "quickStartIfUnprepared": [
+    "Start by saying: Exam 3 is curves + functions + vector fields.",
+    "Do Problem 1 for curves.",
+    "Do Problems 2 and 3 for scalar functions and optimization.",
+    "Do Problems 4 and 5 for vector fields and line integrals."
+  ],
+  "sayThisFirst": [
+    "For curves, think: position, velocity, speed.",
+    "For scalar functions, think: partial derivatives, gradient, tangent plane.",
+    "For optimization, set first partials equal to zero and classify.",
+    "For vector fields, decide whether the problem asks for divergence, curl, or a line integral.",
+    "For conservative fields, find a potential and use endpoints."
+  ],
+  "boardPlan": [
+    "Write a two-column topic map: scalar functions vs vector fields.",
+    "Run one curve/arc length problem.",
+    "Run one gradient/tangent-plane problem.",
+    "Run one optimization problem.",
+    "Finish with one div/curl problem and one conservative line integral."
+  ],
+  "keyFormulas": [
+    "\\(L=\\int_a^b\\|r'(t)\\|dt\\).",
+    "\\(D_uf=\\nabla f\\cdot u\\), where \\(u\\) is a unit vector.",
+    "\\(z=f(a,b)+f_x(a,b)(x-a)+f_y(a,b)(y-b)\\).",
+    "\\(\\operatorname{div}\\langle P,Q\\rangle=P_x+Q_y\\).",
+    "\\(\\operatorname{curl}_{2D}=Q_x-P_y\\).",
+    "If \\(F=\\nabla\\phi\\), then \\(\\int_C F\\cdot dr=\\phi(\\text{end})-\\phi(\\text{start})\\)."
+  ],
+  "commonMistakes": [
+    "Confusing speed and velocity.",
+    "Not unitizing the direction vector for directional derivatives.",
+    "Forgetting the endpoint order in the Fundamental Theorem of Line Integrals.",
+    "Mixing up divergence and curl.",
+    "Using tangent plane formula without plugging in the base point."
+  ],
+  "notationWarnings": [
+    "Use \\(r'(t)\\) for velocity and \\(\\|r'(t)\\|\\) for speed.",
+    "Use \\(u\\) for a unit direction vector.",
+    "For conservative fields, use a potential \\(\\phi\\) to avoid confusing it with the vector field \\(F\\)."
+  ],
+  "problems": [
+    {
+      "problemId": "si20-p1",
+      "title": "Curve speed and arc length",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Curves",
+        "Speed",
+        "Arc length"
+      ],
+      "studentPromptLatex": "Let \\(r(t)=(2\\cos t,2\\sin t,t)\\), \\(0\\le t\\le\\pi\\). Find the speed and arc length.",
+      "whatToSayBefore": "Say: differentiate first, then take the length of the derivative.",
+      "visualSpec": {
+        "type": "helix_arc_length",
+        "curve": "r(t)=(2cos t,2sin t,t)",
+        "interval": [
+          0,
+          "pi"
+        ],
+        "speed": "sqrt(5)",
+        "length": "pi sqrt(5)",
+        "drawInstructions": [
+          "Draw a half-turn helix around the z-axis.",
+          "Label radius 2 and upward motion z=t.",
+          "Draw tangent arrows and label speed sqrt(5)."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Differentiate",
+          "latex": "\\[r'(t)=(-2\\sin t,2\\cos t,1).\\]"
+        },
+        {
+          "label": "Find speed",
+          "latex": "\\[\\|r'(t)\\|=\\sqrt{4\\sin^2t+4\\cos^2t+1}=\\sqrt5.\\]"
+        },
+        {
+          "label": "Integrate speed",
+          "latex": "\\[L=\\int_0^\\pi\\sqrt5\\,dt=\\pi\\sqrt5.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\text{speed}=\\sqrt5,\\qquad L=\\pi\\sqrt5.\\]",
+      "commonMistakes": [
+        "Taking the length of \\(r(t)\\) instead of \\(r'(t)\\).",
+        "Forgetting \\(\\sin^2t+\\cos^2t=1\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for curves."
+      }
+    },
+    {
+      "problemId": "si20-p2",
+      "title": "Directional derivative and tangent plane",
+      "difficulty": "Core",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Gradient",
+        "Directional derivative",
+        "Tangent plane"
+      ],
+      "studentPromptLatex": "Let \\(f(x,y)=xe^y+y^2\\). At \\((1,0)\\), find the directional derivative in the direction from \\((1,0)\\) toward \\((4,4)\\). Then find the tangent plane to \\(z=f(x,y)\\) at \\((1,0)\\).",
+      "whatToSayBefore": "Say: first make the direction into a unit vector. Then use the same partials for the tangent plane.",
+      "visualSpec": {
+        "type": "gradient_tangent_plane_combo",
+        "function": "f=x e^y + y^2",
+        "basePoint": [
+          1,
+          0,
+          1
+        ],
+        "directionVector": [
+          3,
+          4
+        ],
+        "unitDirection": [
+          0.6,
+          0.8
+        ],
+        "gradientAtBase": [
+          1,
+          1
+        ],
+        "directionalDerivative": "7/5",
+        "tangentPlane": "z=x+y",
+        "drawInstructions": [
+          "Draw the base point (1,0) in the xy-plane.",
+          "Draw direction vector from (1,0) toward (4,4), then label the unit vector (3/5,4/5).",
+          "Draw gradient (1,1).",
+          "Draw a tangent plane at height z=1."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Make the unit direction",
+          "latex": "The direction from \\((1,0)\\) to \\((4,4)\\) is \\((3,4)\\), so the unit vector is \\[u=\\left(\\frac35,\\frac45\\right).\\]"
+        },
+        {
+          "label": "Compute the gradient",
+          "latex": "\\[f_x=e^y,\\qquad f_y=xe^y+2y.\\] At \\((1,0)\\), \\[\\nabla f(1,0)=(1,1).\\]"
+        },
+        {
+          "label": "Directional derivative",
+          "latex": "\\[D_uf(1,0)=\\nabla f(1,0)\\cdot u=(1,1)\\cdot\\left(\\frac35,\\frac45\\right)=\\frac75.\\]"
+        },
+        {
+          "label": "Tangent plane",
+          "latex": "\\[f(1,0)=1.\\] So \\[z=1+1(x-1)+1(y-0)=x+y.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[D_uf(1,0)=\\frac75,\\qquad z=x+y.\\]",
+      "commonMistakes": [
+        "Forgetting to unitize \\((3,4)\\).",
+        "Using the direction point \\((4,4)\\) itself as the direction vector.",
+        "Forgetting the base height \\(f(1,0)=1\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for gradients and tangent planes."
+      }
+    },
+    {
+      "problemId": "si20-p3",
+      "title": "Critical point classification",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Optimization",
+        "Critical points",
+        "Second derivative test"
+      ],
+      "studentPromptLatex": "Find and classify the critical point of \\(f(x,y)=x^2-2xy+2y^2-4y\\).",
+      "whatToSayBefore": "Say: critical point first, then Hessian test second.",
+      "visualSpec": {
+        "type": "critical_point_classification",
+        "function": "x^2-2xy+2y^2-4y",
+        "criticalPoint": [
+          2,
+          2
+        ],
+        "classification": "local minimum",
+        "minimumValue": -4,
+        "drawInstructions": [
+          "Draw bowl-shaped level curves centered near (2,2).",
+          "Mark (2,2).",
+          "Write D=4>0 and f_xx=2>0, so local minimum."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find first partials",
+          "latex": "\\[f_x=2x-2y,\\qquad f_y=-2x+4y-4.\\]"
+        },
+        {
+          "label": "Solve for the critical point",
+          "latex": "\\[2x-2y=0\\Rightarrow x=y.\\] Substitute into \\(-2x+4y-4=0\\): \\[-2y+4y-4=0\\Rightarrow y=2,\\quad x=2.\\]"
+        },
+        {
+          "label": "Second derivative test",
+          "latex": "\\[f_{xx}=2,\\qquad f_{yy}=4,\\qquad f_{xy}=-2.\\] \\[D=f_{xx}f_{yy}-(f_{xy})^2=2(4)-(-2)^2=4.\\] Since \\(D>0\\) and \\(f_{xx}>0\\), this is a local minimum."
+        },
+        {
+          "label": "Value",
+          "latex": "\\[f(2,2)=4-8+8-8=-4.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\text{Local minimum at }(2,2)\\text{ with value }-4.\\]",
+      "commonMistakes": [
+        "Forgetting to solve \\(f_x=0\\) and \\(f_y=0\\) together.",
+        "Using \\(D=f_{xx}f_{yy}+f_{xy}^2\\) instead of subtracting.",
+        "Forgetting that \\(D>0\\) still needs \\(f_{xx}\\) to decide min vs max."
+      ],
+      "practiceLabPointer": {
+        "section": 7,
+        "route": "#/section/7",
+        "note": "Practice Lab Section 7 for optimization."
+      }
+    },
+    {
+      "problemId": "si20-p4",
+      "title": "Divergence and curl checkpoint",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Divergence",
+        "Curl",
+        "2D vector fields"
+      ],
+      "studentPromptLatex": "Let \\(F(x,y)=\\langle x^2-y,xy\\rangle\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\), then evaluate both at \\((2,-1)\\).",
+      "whatToSayBefore": "Say: name P and Q first. That prevents most mistakes.",
+      "visualSpec": {
+        "type": "vector_field_div_curl_2d",
+        "field": "F=<x^2-y, xy>",
+        "point": [
+          2,
+          -1
+        ],
+        "divergenceAtPoint": 6,
+        "curlAtPoint": 0,
+        "drawInstructions": [
+          "Draw a point at (2,-1).",
+          "Write P=x^2-y and Q=xy.",
+          "Show div as P_x+Q_y and curl as Q_x-P_y."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Name components",
+          "latex": "\\[P=x^2-y,\\qquad Q=xy.\\]"
+        },
+        {
+          "label": "Divergence",
+          "latex": "\\[\\operatorname{div}F=P_x+Q_y=2x+x=3x.\\] At \\((2,-1)\\), \\[\\operatorname{div}F=6.\\]"
+        },
+        {
+          "label": "Curl",
+          "latex": "\\[Q_x-P_y=y-(-1)=y+1.\\] At \\((2,-1)\\), \\[Q_x-P_y=0.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\operatorname{div}F=3x,\\quad \\operatorname{div}F(2,-1)=6,\\qquad Q_x-P_y=y+1,\\quad (Q_x-P_y)(2,-1)=0.\\]",
+      "commonMistakes": [
+        "Flipping the curl sign.",
+        "Forgetting that \\(P_y=-1\\).",
+        "Using \\(Q_y\\) in the curl."
+      ],
+      "practiceLabPointer": {
+        "section": 8,
+        "route": "#/section/8",
+        "note": "Practice Lab Section 8 for divergence/curl."
+      }
+    },
+    {
+      "problemId": "si20-p5",
+      "title": "Conservative line integral",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Conservative fields",
+        "Potential functions",
+        "Line integrals"
+      ],
+      "studentPromptLatex": "Let \\(F(x,y)=\\langle 2xy+1,x^2+3y^2\\rangle\\). Compute \\(\\int_C F\\cdot dr\\) from \\((1,0)\\) to \\((2,1)\\), assuming \\(C\\) is any smooth path between the points.",
+      "whatToSayBefore": "Say: because it says any smooth path, we should check whether the field is conservative.",
+      "visualSpec": {
+        "type": "conservative_field_endpoints",
+        "field": "F=<2xy+1,x^2+3y^2>",
+        "start": [
+          1,
+          0
+        ],
+        "end": [
+          2,
+          1
+        ],
+        "potential": "phi=x^2y+x+y^3",
+        "integralValue": 6,
+        "drawInstructions": [
+          "Draw multiple possible paths from (1,0) to (2,1).",
+          "Label them all with the same value because the field is conservative.",
+          "Write phi(end)-phi(start)=6."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Check conservative",
+          "latex": "Here \\(P=2xy+1\\) and \\(Q=x^2+3y^2\\). \\[P_y=2x,\\qquad Q_x=2x.\\] So the field is conservative."
+        },
+        {
+          "label": "Find potential",
+          "latex": "Integrate \\(P\\) with respect to \\(x\\): \\[\\phi=x^2y+x+g(y).\\] Then \\[\\phi_y=x^2+g'(y)=x^2+3y^2,\\] so \\(g'(y)=3y^2\\), meaning \\(g(y)=y^3\\)."
+        },
+        {
+          "label": "Use endpoints",
+          "latex": "\\[\\phi(x,y)=x^2y+x+y^3.\\] \\[\\phi(2,1)=4+2+1=7,\\qquad \\phi(1,0)=0+1+0=1.\\] Therefore \\[\\int_C F\\cdot dr=7-1=6.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{6}\\]",
+      "commonMistakes": [
+        "Forgetting the \\(g(y)\\) term.",
+        "Subtracting start minus end.",
+        "Trying to parametrize the path even though the field is conservative."
+      ],
+      "practiceLabPointer": {
+        "section": 8,
+        "route": "#/section/8",
+        "note": "Practice Lab Section 8 for path independence."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What are the big categories of Exam 3 problems?",
+    "Which formulas require a unit direction vector?",
+    "How do you know whether a line integral can use endpoints only?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 7",
+      "route": "#/section/7",
+      "topics": [
+        "curves",
+        "gradients",
+        "optimization"
+      ]
+    },
+    {
+      "label": "Practice Lab Section 8",
+      "route": "#/section/8",
+      "topics": [
+        "vector fields",
+        "line integrals",
+        "conservative fields"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Checked helix speed sqrt(5) and length pi sqrt(5).",
+    "Checked gradient (1,1), directional derivative 7/5, tangent plane z=x+y.",
+    "Checked optimization critical point (2,2), value -4, local minimum.",
+    "Checked divergence/curl values 6 and 0.",
+    "Checked conservative potential phi=x^2y+x+y^3 and integral 6."
+  ],
+  "reviewSummary": "Session 20 is an Exam 3 review set with five checked mixed problems."
+}

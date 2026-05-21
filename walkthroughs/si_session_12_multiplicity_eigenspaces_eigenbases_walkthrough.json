@@ -1,0 +1,307 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-12",
+  "sessionNumber": 12,
+  "sessionType": "general",
+  "title": "Multiplicity, Eigenspaces, and Eigenbases",
+  "practiceLabSections": [
+    5
+  ],
+  "estimatedDurationMinutes": 50,
+  "sessionGoal": "Students should be able to compare algebraic and geometric multiplicity and decide whether a matrix has enough eigenvectors for an eigenbasis.",
+  "quickStartIfUnprepared": [
+    "Start by defining algebraic multiplicity versus geometric multiplicity very simply.",
+    "Use Problem 1 to show repeated eigenvalue does not always mean enough eigenvectors.",
+    "Use Problem 2 to show repeated eigenvalue can still be okay.",
+    "Use Problem 3 as a fast conceptual eigenbasis decision problem."
+  ],
+  "sayThisFirst": [
+    "Algebraic multiplicity counts how many times an eigenvalue appears in the characteristic polynomial.",
+    "Geometric multiplicity is the dimension of the eigenspace.",
+    "To build an eigenbasis for R^n, we need n linearly independent eigenvectors total.",
+    "Repeated eigenvalues are not automatically bad. They are bad only if the eigenspace is too small."
+  ],
+  "boardPlan": [
+    "Write AM = factor count, GM = eigenspace dimension.",
+    "Write: diagonalizable/eigenbasis ⇔ total number of independent eigenvectors is n.",
+    "Do the non-diagonalizable repeated example.",
+    "Do the diagonalizable repeated example.",
+    "End with a quick eigenbasis construction from given eigenspaces."
+  ],
+  "keyFormulas": [
+    "AM(λ) = multiplicity of λ as a root of the characteristic polynomial.",
+    "GM(λ) = dim Nul(A-λI).",
+    "Always 1 ≤ GM(λ) ≤ AM(λ).",
+    "An n by n matrix has an eigenbasis if it has n linearly independent eigenvectors."
+  ],
+  "commonMistakes": [
+    "Thinking AM and GM are always equal.",
+    "Thinking a repeated eigenvalue automatically means not diagonalizable.",
+    "Counting eigenvalues instead of counting independent eigenvectors.",
+    "Forgetting to include all eigenvectors when writing an eigenbasis."
+  ],
+  "notationWarnings": [
+    "Use AM and GM only after defining them.",
+    "Write E_λ for eigenspace if that helps the board stay clean.",
+    "Be clear that an eigenbasis is a basis made entirely of eigenvectors."
+  ],
+  "problems": [
+    {
+      "problemId": "si12-p1",
+      "title": "Repeated eigenvalue with too small an eigenspace",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Algebraic multiplicity",
+        "Geometric multiplicity",
+        "Eigenbasis decision"
+      ],
+      "studentPromptLatex": "Let \\[A=\\begin{bmatrix}2&1&0\\\\0&2&0\\\\0&0&3\\end{bmatrix}.\\] Find the algebraic and geometric multiplicities of each eigenvalue. Does \\(A\\) have an eigenbasis for \\(\\mathbb{R}^3\\)?",
+      "whatToSayBefore": "Tell students: this matrix has a repeated eigenvalue. We need to check the eigenspace size, not guess.",
+      "visualSpec": {
+        "type": "multiplicity_gap",
+        "matrix": [
+          [
+            2,
+            1,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            3
+          ]
+        ],
+        "eigenvalues": {
+          "2": {
+            "AM": 2,
+            "GM": 1
+          },
+          "3": {
+            "AM": 1,
+            "GM": 1
+          }
+        },
+        "drawInstructions": [
+          "Draw a table with columns λ, AM, GM.",
+          "Circle λ=2 because it is repeated.",
+          "Show that λ=2 only gives one eigenvector direction."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Read eigenvalues and algebraic multiplicities",
+          "latex": "The matrix is triangular, so the eigenvalues are the diagonal entries: \\(2,2,3\\). Thus \\(\\lambda=2\\) has AM \\(2\\), and \\(\\lambda=3\\) has AM \\(1\\)."
+        },
+        {
+          "label": "Find GM for λ=2",
+          "latex": "\\[A-2I=\\begin{bmatrix}0&1&0\\\\0&0&0\\\\0&0&1\\end{bmatrix}.\\] This gives \\(y=0\\) and \\(z=0\\), with \\(x\\) free. So \\(E_2=\\operatorname{span}\\{(1,0,0)\\}\\), and GM \\(=1\\)."
+        },
+        {
+          "label": "Find GM for λ=3",
+          "latex": "\\[A-3I=\\begin{bmatrix}-1&1&0\\\\0&-1&0\\\\0&0&0\\end{bmatrix}.\\] This gives \\(y=0\\), then \\(x=0\\), with \\(z\\) free. So \\(E_3=\\operatorname{span}\\{(0,0,1)\\}\\), and GM \\(=1\\)."
+        },
+        {
+          "label": "Decide about eigenbasis",
+          "latex": "Total independent eigenvectors: \\(1+1=2\\). For \\(\\mathbb{R}^3\\), we need \\(3\\). So there is no eigenbasis."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\lambda=2:\\ AM=2,\\ GM=1;\\qquad \\lambda=3:\\ AM=1,\\ GM=1.\\] No eigenbasis for \\(\\mathbb{R}^3\\).",
+      "commonMistakes": [
+        "Saying λ=2 gives two eigenvectors just because it appears twice.",
+        "Only counting the number of distinct eigenvalues.",
+        "Forgetting to check λ=3."
+      ],
+      "practiceLabPointer": {
+        "section": 5,
+        "route": "#/section/5",
+        "note": "Practice Lab Section 5 for multiplicity and eigenspaces."
+      }
+    },
+    {
+      "problemId": "si12-p2",
+      "title": "Repeated eigenvalue that still gives enough eigenvectors",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Eigenspace dimension",
+        "Repeated eigenvalue",
+        "Eigenbasis"
+      ],
+      "studentPromptLatex": "Let \\[B=\\begin{bmatrix}4&0&0\\\\0&4&1\\\\0&0&1\\end{bmatrix}.\\] Decide whether \\(B\\) has an eigenbasis for \\(\\mathbb{R}^3\\). If it does, give one.",
+      "whatToSayBefore": "Tell students: repeated eigenvalues are not automatically bad. We need to count eigenspace dimensions.",
+      "visualSpec": {
+        "type": "eigenbasis_count",
+        "matrix": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            1
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "eigenbasis": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            -3
+          ]
+        ],
+        "drawInstructions": [
+          "Make a table of eigenvalues and eigenspace bases.",
+          "Emphasize that λ=4 gives two directions.",
+          "Count three independent eigenvectors total."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find eigenvalues",
+          "latex": "Because \\(B\\) is triangular, the eigenvalues are \\(4,4,1\\)."
+        },
+        {
+          "label": "Find eigenspace for λ=4",
+          "latex": "\\[B-4I=\\begin{bmatrix}0&0&0\\\\0&0&1\\\\0&0&-3\\end{bmatrix}.\\] This gives \\(z=0\\), with \\(x\\) and \\(y\\) free. So \\[E_4=\\operatorname{span}\\{(1,0,0),(0,1,0)\\}.\\]"
+        },
+        {
+          "label": "Find eigenspace for λ=1",
+          "latex": "\\[B-I=\\begin{bmatrix}3&0&0\\\\0&3&1\\\\0&0&0\\end{bmatrix}.\\] This gives \\(x=0\\) and \\(3y+z=0\\). Let \\(y=1\\), so \\(z=-3\\). Thus \\[E_1=\\operatorname{span}\\{(0,1,-3)\\}.\\]"
+        },
+        {
+          "label": "Count eigenvectors",
+          "latex": "We have \\(2\\) independent eigenvectors from \\(E_4\\) and \\(1\\) from \\(E_1\\), for \\(3\\) total. So \\(B\\) has an eigenbasis."
+        }
+      ],
+      "finalAnswerLatex": "One eigenbasis is \\[\\{(1,0,0),(0,1,0),(0,1,-3)\\}.\\]",
+      "commonMistakes": [
+        "Rejecting the matrix only because λ=4 is repeated.",
+        "Forgetting that the eigenspace for λ=4 is two-dimensional.",
+        "Choosing the zero vector as an eigenvector."
+      ],
+      "practiceLabPointer": {
+        "section": 5,
+        "route": "#/section/5",
+        "note": "Practice Lab Section 5 for eigenbases."
+      }
+    },
+    {
+      "problemId": "si12-p3",
+      "title": "Use given eigenspaces to decide if an eigenbasis exists",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Eigenbasis",
+        "AM versus GM",
+        "Conceptual diagonalization"
+      ],
+      "studentPromptLatex": "Suppose \\(A\\) is a \\(3\\times3\\) matrix with characteristic polynomial \\((\\lambda-2)^2(\\lambda+1)\\). Also suppose \\[E_2=\\operatorname{span}\\{(1,0,1),(0,1,-1)\\},\\qquad E_{-1}=\\operatorname{span}\\{(1,1,0)\\}.\\] Does \\(A\\) have an eigenbasis for \\(\\mathbb{R}^3\\)? If yes, give one.",
+      "whatToSayBefore": "Tell students: this problem gives the eigenspaces, so do not row reduce. Just count independent eigenvectors.",
+      "visualSpec": {
+        "type": "eigenspace_table",
+        "charPoly": "(λ-2)^2(λ+1)",
+        "eigenspaces": {
+          "2": [
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              0,
+              1,
+              -1
+            ]
+          ],
+          "-1": [
+            [
+              1,
+              1,
+              0
+            ]
+          ]
+        },
+        "drawInstructions": [
+          "Draw a table: λ, AM, eigenspace basis, GM.",
+          "Write λ=2 has AM 2 and GM 2.",
+          "Write λ=-1 has AM 1 and GM 1.",
+          "Combine the eigenspace bases into one eigenbasis."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find AM from the characteristic polynomial",
+          "latex": "The factor \\((\\lambda-2)^2\\) means \\(\\lambda=2\\) has AM \\(2\\). The factor \\((\\lambda+1)\\) means \\(\\lambda=-1\\) has AM \\(1\\)."
+        },
+        {
+          "label": "Find GM from the eigenspaces",
+          "latex": "The eigenspace \\(E_2\\) has two basis vectors, so GM for \\(\\lambda=2\\) is \\(2\\). The eigenspace \\(E_{-1}\\) has one basis vector, so GM for \\(\\lambda=-1\\) is \\(1\\)."
+        },
+        {
+          "label": "Count total eigenvectors",
+          "latex": "Total independent eigenvectors: \\(2+1=3\\). Since this is a \\(3\\times3\\) matrix, that is enough for an eigenbasis."
+        },
+        {
+          "label": "Write the eigenbasis",
+          "latex": "One eigenbasis is the union of the eigenspace bases: \\[\\{(1,0,1),(0,1,-1),(1,1,0)\\}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "Yes. One eigenbasis is \\[\\{(1,0,1),(0,1,-1),(1,1,0)\\}.\\]",
+      "commonMistakes": [
+        "Row reducing even though the eigenspaces are already given.",
+        "Forgetting to include the eigenvector for λ=-1.",
+        "Thinking the repeated eigenvalue λ=2 is automatically a problem."
+      ],
+      "practiceLabPointer": {
+        "section": 5,
+        "route": "#/section/5",
+        "note": "Practice Lab Section 5 for AM, GM, and eigenbases."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What is the difference between AM and GM?",
+    "How many independent eigenvectors do we need for an eigenbasis of R^3?",
+    "Can a repeated eigenvalue still be okay?"
+  ],
+  "linksToWebsite": {
+    "sections": [
+      5
+    ],
+    "note": "Practice Lab Section(s) 5 for more practice."
+  },
+  "qualityControlNotes": [
+    "Checked A example: λ=2 has GM 1, λ=3 has GM 1.",
+    "Checked B example: λ=4 eigenspace has dimension 2 and λ=1 has eigenvector (0,1,-3).",
+    "Checked conceptual eigenbasis problem totals 3 eigenvectors."
+  ],
+  "reviewSummary": "Session 12 is about counting eigenvector directions, not just finding eigenvalues."
+}

@@ -1,0 +1,332 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "sessionId": "si-07",
+  "sessionNumber": 7,
+  "sessionType": "general",
+  "title": "Linear Transformations and Standard Matrices",
+  "practiceLabSections": [
+    4
+  ],
+  "estimatedDurationMinutes": 50,
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "sessionGoal": "Students should be able to build standard matrices, compute transformations, and connect one-to-one/onto with pivots and matrix shape.",
+  "quickStartIfUnprepared": [
+    "Start with: a linear transformation is controlled by what it does to basis vectors.",
+    "Write: A=[T(e1) T(e2) ...].",
+    "Remind students that columns are images of basis vectors.",
+    "Do Problem 1 to build confidence.",
+    "Do Problem 2 to connect transformations with kernel/range.",
+    "Do Problem 3 to show how to use nonstandard input vectors."
+  ],
+  "sayThisFirst": [
+    "A linear transformation is a function that respects adding and scaling.",
+    "The standard matrix is built from where the standard basis vectors go.",
+    "The columns of the matrix are T(e1), T(e2), and so on.",
+    "Kernel means inputs that go to zero.",
+    "Range means outputs the transformation can hit."
+  ],
+  "boardPlan": [
+    "Write A=[T(e1) T(e2) ...] at the top.",
+    "Draw a small before/after picture: input vector goes in, output vector comes out.",
+    "Problem 1: build a 2 by 2 matrix from T(e1), T(e2).",
+    "Problem 2: find kernel and range for a map R3 to R2.",
+    "Problem 3: use linearity when the given vectors are not e1 and e2."
+  ],
+  "keyFormulas": [
+    {
+      "name": "Standard matrix",
+      "latex": "A=\\begin{bmatrix}T(e_1)&T(e_2)&\\cdots&T(e_n)\\end{bmatrix}",
+      "plainEnglish": "The columns are where the standard basis vectors land."
+    },
+    {
+      "name": "Kernel",
+      "latex": "\\ker(T)=\\{x:T(x)=0\\}",
+      "plainEnglish": "Kernel is the set of inputs that get sent to zero."
+    },
+    {
+      "name": "Range",
+      "latex": "\\operatorname{range}(T)=\\{T(x):x\\text{ is an input}\\}",
+      "plainEnglish": "Range is all possible outputs."
+    },
+    {
+      "name": "One-to-one",
+      "latex": "T\\text{ is one-to-one }\\Longleftrightarrow \\ker(T)=\\{0\\}",
+      "plainEnglish": "Only the zero input goes to zero."
+    }
+  ],
+  "commonMistakes": [
+    "Putting T(e1) and T(e2) as rows instead of columns.",
+    "Mixing up kernel and range.",
+    "Saying a transformation from R3 to R2 can be one-to-one without checking pivots.",
+    "Forgetting that linearity lets you break T(au+bv) into aT(u)+bT(v)."
+  ],
+  "notationWarnings": [
+    "Use T(e_1), T(e_2), not Te1, when writing transformation values.",
+    "Write \\ker(T) for kernel and \\operatorname{range}(T) for range.",
+    "When using a matrix, write T(x)=Ax to connect the function and the matrix."
+  ],
+  "problems": [
+    {
+      "problemId": "si07-p1",
+      "title": "Build the standard matrix from basis vector images",
+      "difficulty": "Warm-up/Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Build a standard matrix",
+        "Compute T(x)",
+        "Use determinant to decide invertibility"
+      ],
+      "studentPromptLatex": "Let \\(T:\\mathbb{R}^2\\to\\mathbb{R}^2\\) be linear with\n\\[T(e_1)=\\begin{bmatrix}2\\\\-1\\end{bmatrix},\\qquad T(e_2)=\\begin{bmatrix}3\\\\4\\end{bmatrix}.\\]\nFind the standard matrix for \\(T\\), compute \\(T(5,-2)\\), and decide whether \\(T\\) is one-to-one and onto.",
+      "whatToSayBefore": "Tell students: the columns are the images of the standard basis vectors. This is the main idea.",
+      "visualSpec": {
+        "type": "linear_transformation_standard_matrix_2d",
+        "domainDimension": 2,
+        "codomainDimension": 2,
+        "basisImages": {
+          "e1": [
+            2,
+            -1
+          ],
+          "e2": [
+            3,
+            4
+          ]
+        },
+        "standardMatrix": [
+          [
+            2,
+            3
+          ],
+          [
+            -1,
+            4
+          ]
+        ],
+        "inputVector": [
+          5,
+          -2
+        ],
+        "outputVector": [
+          4,
+          -13
+        ],
+        "determinant": 11,
+        "drawInstructions": [
+          "Draw e1 and e2 in the input plane.",
+          "Draw their images T(e1) and T(e2) in the output plane.",
+          "Write the output vectors as columns of A.",
+          "Show that det(A)=11, so the map does not collapse area to zero."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Build the matrix",
+          "latex": "The columns are \\(T(e_1)\\) and \\(T(e_2)\\):\\n\\[A=\\begin{bmatrix}2&3\\\\-1&4\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute the transformation",
+          "latex": "\\[T(5,-2)=A\\begin{bmatrix}5\\\\-2\\end{bmatrix}=\\begin{bmatrix}2&3\\\\-1&4\\end{bmatrix}\\begin{bmatrix}5\\\\-2\\end{bmatrix}=\\begin{bmatrix}4\\\\-13\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Check one-to-one and onto",
+          "latex": "\\[\\det(A)=2(4)-3(-1)=11\\neq 0.\\]\\nSo A is invertible. Since this is a map \\(\\mathbb{R}^2\\to\\mathbb{R}^2\\), the transformation is both one-to-one and onto."
+        }
+      ],
+      "finalAnswerLatex": "A=\\begin{bmatrix}2&3\\\\-1&4\\end{bmatrix},\\quad T(5,-2)=\\begin{bmatrix}4\\\\-13\\end{bmatrix},\\quad T\\text{ is one-to-one and onto.}",
+      "commonMistakes": [
+        "Putting the two image vectors as rows.",
+        "Forgetting the determinant test only works this cleanly here because the matrix is square.",
+        "Saying onto because there are two outputs, instead of checking pivots/invertibility."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "More transformation and standard matrix practice."
+      }
+    },
+    {
+      "problemId": "si07-p2",
+      "title": "Kernel and range of a transformation",
+      "difficulty": "Core",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Write a standard matrix",
+        "Find kernel",
+        "Determine range",
+        "Decide one-to-one/onto"
+      ],
+      "studentPromptLatex": "Let \\(T:\\mathbb{R}^3\\to\\mathbb{R}^2\\) be\n\\[T(x,y,z)=\\begin{bmatrix}x-2y+z\\\\3x+y\\end{bmatrix}.\\]\nFind the standard matrix, a basis for \\(\\ker(T)\\), and the range of \\(T\\). Is \\(T\\) one-to-one? Is it onto?",
+      "whatToSayBefore": "Tell students: kernel means set the output equal to zero. Range means look at pivot columns / output space.",
+      "visualSpec": {
+        "type": "kernel_range_map_r3_to_r2",
+        "standardMatrix": [
+          [
+            1,
+            -2,
+            1
+          ],
+          [
+            3,
+            1,
+            0
+          ]
+        ],
+        "kernelBasis": [
+          [
+            1,
+            -3,
+            -7
+          ]
+        ],
+        "range": "R^2",
+        "rank": 2,
+        "nullity": 1,
+        "drawInstructions": [
+          "Draw a box labeled input R^3 and a box labeled output R^2.",
+          "Draw a line through the origin in R^3 labeled kernel direction (1,-3,-7).",
+          "Draw the whole output plane labeled range = R^2.",
+          "Say: a nonzero kernel means not one-to-one; full output plane means onto."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Write the standard matrix",
+          "latex": "\\[A=\\begin{bmatrix}1&-2&1\\\\3&1&0\\end{bmatrix},\\qquad T(x)=Ax.\\]"
+        },
+        {
+          "label": "Find the kernel",
+          "latex": "Set \\(T(x,y,z)=0\\):\\n\\[x-2y+z=0,\\qquad 3x+y=0.\\]\\nFrom the second equation, \\(y=-3x\\). Substitute into the first: \\(x+6x+z=0\\), so \\(z=-7x\\)."
+        },
+        {
+          "label": "Write the kernel basis",
+          "latex": "Let \\(x=t\\). Then\\n\\[(x,y,z)=(t,-3t,-7t)=t(1,-3,-7).\\]\\nSo \\(\\ker(T)\\) has basis \\(\\{(1,-3,-7)\\}\\)."
+        },
+        {
+          "label": "Find the range",
+          "latex": "The two rows are independent, so the rank is 2. Since the output space is \\(\\mathbb{R}^2\\), rank 2 means \\(\\operatorname{range}(T)=\\mathbb{R}^2\\)."
+        },
+        {
+          "label": "Decide one-to-one and onto",
+          "latex": "The kernel contains nonzero vectors, so \\(T\\) is not one-to-one. The range is all of \\(\\mathbb{R}^2\\), so \\(T\\) is onto."
+        }
+      ],
+      "finalAnswerLatex": "A=\\begin{bmatrix}1&-2&1\\\\3&1&0\\end{bmatrix},\\quad \\ker(T)=\\operatorname{span}\\{(1,-3,-7)\\},\\quad \\operatorname{range}(T)=\\mathbb{R}^2.\\; T\\text{ is onto but not one-to-one.}",
+      "commonMistakes": [
+        "Setting the input equal to zero instead of the output when finding kernel.",
+        "Saying not onto just because the domain has three variables.",
+        "Forgetting that a nonzero kernel means not one-to-one."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "More practice with kernels, images, and transformation matrices."
+      }
+    },
+    {
+      "problemId": "si07-p3",
+      "title": "Using linearity with nonstandard input vectors",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Use linearity",
+        "Express a vector as a combination",
+        "Find transformation values from given data"
+      ],
+      "studentPromptLatex": "Suppose \\(T:\\mathbb{R}^2\\to\\mathbb{R}^3\\) is linear and\n\\[T(1,2)=\\begin{bmatrix}4\\\\1\\\\0\\end{bmatrix},\\qquad T(0,1)=\\begin{bmatrix}-1\\\\3\\\\2\\end{bmatrix}.\\]\nFind \\(T(3,5)\\).",
+      "whatToSayBefore": "Tell students: we are not given T(e1) directly. First write (3,5) using the vectors we do know.",
+      "visualSpec": {
+        "type": "linearity_from_known_vectors",
+        "knownInputs": {
+          "u": [
+            1,
+            2
+          ],
+          "v": [
+            0,
+            1
+          ]
+        },
+        "knownOutputs": {
+          "T(u)": [
+            4,
+            1,
+            0
+          ],
+          "T(v)": [
+            -1,
+            3,
+            2
+          ]
+        },
+        "targetInput": [
+          3,
+          5
+        ],
+        "targetCoefficients": {
+          "u": 3,
+          "v": -1
+        },
+        "targetOutput": [
+          13,
+          0,
+          -2
+        ],
+        "drawInstructions": [
+          "Draw u=(1,2), v=(0,1), and target (3,5) in the input plane.",
+          "Show (3,5)=3u-v.",
+          "Then write T(3,5)=3T(u)-T(v).",
+          "Draw the output as a vector in R3 only conceptually; exact 3D drawing is not necessary."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Write the target input as a combination",
+          "latex": "We want constants a and b with\\n\\[a(1,2)+b(0,1)=(3,5).\\]\\nFrom the first coordinate, \\(a=3\\). Then \\(2a+b=5\\), so \\(6+b=5\\), and \\(b=-1\\)."
+        },
+        {
+          "label": "Use linearity",
+          "latex": "\\[(3,5)=3(1,2)-(0,1).\\]\\nSo\\n\\[T(3,5)=3T(1,2)-T(0,1).\\]"
+        },
+        {
+          "label": "Compute the output",
+          "latex": "\\[T(3,5)=3\\begin{bmatrix}4\\\\1\\\\0\\end{bmatrix}-\\begin{bmatrix}-1\\\\3\\\\2\\end{bmatrix}=\\begin{bmatrix}12\\\\3\\\\0\\end{bmatrix}+\\begin{bmatrix}1\\\\-3\\\\-2\\end{bmatrix}=\\begin{bmatrix}13\\\\0\\\\-2\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "T(3,5)=\\begin{bmatrix}13\\\\0\\\\-2\\end{bmatrix}.",
+      "commonMistakes": [
+        "Trying to plug (3,5) into a formula that was never given.",
+        "Forgetting the negative sign when using -T(0,1).",
+        "Assuming the given input vectors are e1 and e2. They are not."
+      ],
+      "practiceLabPointer": {
+        "section": 4,
+        "route": "#/section/4",
+        "note": "More practice with linearity and standard matrices."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What goes in the columns of a standard matrix?",
+    "What is the kernel?",
+    "What does a nonzero kernel tell us?",
+    "How can we use linearity when the input is written as a combination?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 4",
+      "route": "#/section/4",
+      "reason": "More practice with transformations, determinants, and inverses."
+    }
+  ],
+  "qualityControlNotes": [
+    "Problem 1 checked: A[[5],[-2]] = [[4],[-13]] and det(A)=11.",
+    "Problem 2 checked: kernel basis (1,-3,-7) satisfies both equations; rank is 2 so range is R^2.",
+    "Problem 3 checked: (3,5)=3(1,2)-(0,1), so output is (13,0,-2)."
+  ],
+  "reviewStatus": "reviewed",
+  "reviewSummary": "Session 07 emphasizes columns-as-images and very simple kernel/range language. All computations were checked."
+}

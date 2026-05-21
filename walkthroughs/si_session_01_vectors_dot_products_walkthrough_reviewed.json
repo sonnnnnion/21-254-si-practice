@@ -1,0 +1,377 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "sessionId": "si-01",
+  "sessionNumber": 1,
+  "sessionType": "general",
+  "title": "Vectors, Dot Products, Magnitudes, and Angles",
+  "practiceLabSections": [
+    1
+  ],
+  "estimatedDurationMinutes": 50,
+  "audience": "SI leader teaching live on a whiteboard",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless needed.",
+  "sessionGoal": "Students should be able to do basic vector computations and explain what the dot product says about direction.",
+  "quickStartIfUnprepared": [
+    "Write the key formulas first.",
+    "Remind students that vectors have size and direction.",
+    "Do Problem 1 to warm up components.",
+    "Do Problem 2 to emphasize \\overrightarrow{AB}=B-A.",
+    "Do Problem 3 to connect dot product with perpendicular vectors."
+  ],
+  "sayThisFirst": [
+    "A vector has size and direction.",
+    "The dot product gives a number, not another vector.",
+    "The dot product tells us how much two vectors point in the same direction.",
+    "If two vectors have dot product zero, they are perpendicular.",
+    "For points A and B, the vector from A to B is \\(\\overrightarrow{AB}=B-A\\). Order matters."
+  ],
+  "boardPlan": [
+    {
+      "timeMinutes": 5,
+      "boardTitle": "Setup",
+      "whatToWrite": [
+        "\\(\\|v\\|=\\sqrt{v\\cdot v}\\)",
+        "\\(u\\cdot v=u_1v_1+u_2v_2+\\cdots+u_nv_n\\)",
+        "\\(u\\cdot v=\\|u\\|\\|v\\|\\cos\\theta\\)",
+        "\\(\\overrightarrow{AB}=B-A\\)"
+      ],
+      "whatToSay": "These four formulas are enough for today. Most mistakes are notation or arithmetic, not concept."
+    },
+    {
+      "timeMinutes": 10,
+      "boardTitle": "Problem 1",
+      "whatToSay": "Start with component arithmetic. Make them say out loud whether the answer should be a vector or a number."
+    },
+    {
+      "timeMinutes": 15,
+      "boardTitle": "Problem 2",
+      "whatToSay": "Emphasize that \\(\\overrightarrow{AB}\\) means start at A and end at B, so we do B minus A."
+    },
+    {
+      "timeMinutes": 15,
+      "boardTitle": "Problem 3",
+      "whatToSay": "Use the dot product condition for perpendicular vectors. Then normalize the vector."
+    },
+    {
+      "timeMinutes": 5,
+      "boardTitle": "Wrap-up",
+      "whatToSay": "Ask students to name the three most important mistakes: wrong order for \\(\\overrightarrow{AB}\\), forgetting squares in magnitude, and thinking dot product gives a vector."
+    }
+  ],
+  "keyFormulas": [
+    {
+      "name": "Magnitude",
+      "latex": "\\|v\\|=\\sqrt{v_1^2+v_2^2+\\cdots+v_n^2}=\\sqrt{v\\cdot v}",
+      "plainEnglish": "Magnitude is the length of the vector."
+    },
+    {
+      "name": "Dot product",
+      "latex": "u\\cdot v=u_1v_1+u_2v_2+\\cdots+u_nv_n",
+      "plainEnglish": "Multiply matching components, then add."
+    },
+    {
+      "name": "Angle formula",
+      "latex": "u\\cdot v=\\|u\\|\\|v\\|\\cos\\theta",
+      "plainEnglish": "This connects dot product to the angle between vectors."
+    },
+    {
+      "name": "Vector from A to B",
+      "latex": "\\overrightarrow{AB}=B-A",
+      "plainEnglish": "Endpoint minus start point. Order matters."
+    },
+    {
+      "name": "Unit vector",
+      "latex": "\\hat{u}=\\frac{u}{\\|u\\|}",
+      "plainEnglish": "Divide a nonzero vector by its length."
+    }
+  ],
+  "commonMistakes": [
+    "Writing \\(AB\\) when you mean \\(\\overrightarrow{AB}\\). Use the arrow.",
+    "Computing \\(\\overrightarrow{AB}\\) as \\(A-B\\) instead of \\(B-A\\).",
+    "Forgetting to square every component when finding magnitude.",
+    "Thinking the dot product gives a vector. It gives a scalar.",
+    "Saying vectors are perpendicular because they look perpendicular. Check the dot product."
+  ],
+  "notationWarnings": [
+    {
+      "bad": "AB = B - A",
+      "good": "\\overrightarrow{AB}=B-A",
+      "reason": "AB usually names a segment or distance. The arrow tells students this is the vector from A to B."
+    }
+  ],
+  "problems": [
+    {
+      "problemId": "si01-p01",
+      "title": "Component arithmetic and dot product",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Vector addition and scalar multiplication",
+        "Dot product",
+        "Magnitude",
+        "Perpendicular check"
+      ],
+      "studentPromptLatex": "Let \\(u=\\langle 3,-1,2\\rangle\\) and \\(v=\\langle -2,4,1\\rangle\\). Find \\(2u-v\\), compute \\(u\\cdot v\\), find \\(\\|u\\|\\), and decide whether \\(u\\) and \\(v\\) are perpendicular.",
+      "whatToSayBefore": "Ask: which parts of this problem give vectors, and which parts give numbers?",
+      "visualSpec": {
+        "type": "component_table",
+        "purpose": "Show component-by-component arithmetic clearly.",
+        "vectors": {
+          "u": [
+            3,
+            -1,
+            2
+          ],
+          "v": [
+            -2,
+            4,
+            1
+          ],
+          "2u": [
+            6,
+            -2,
+            4
+          ],
+          "2u_minus_v": [
+            8,
+            -6,
+            3
+          ]
+        },
+        "boardSketchInstructions": [
+          "Draw a small 3-column component table for x, y, z.",
+          "Put u and v in the first two rows.",
+          "Compute 2u first, then subtract v.",
+          "Circle the fact that dot product is a scalar."
+        ],
+        "accuracyNote": "This is an exact component table, not a geometric sketch."
+      },
+      "walkthrough": [
+        {
+          "label": "Scale \\(u\\)",
+          "latex": "2u=2\\langle 3,-1,2\\rangle=\\langle 6,-2,4\\rangle.",
+          "sayOutLoud": "Scalar multiplication just multiplies every component."
+        },
+        {
+          "label": "Subtract \\(v\\)",
+          "latex": "2u-v=\\langle 6,-2,4\\rangle-\\langle -2,4,1\\rangle=\\langle 8,-6,3\\rangle.",
+          "sayOutLoud": "Be careful with the minus sign on the first component: 6 minus negative 2 is 8."
+        },
+        {
+          "label": "Compute the dot product",
+          "latex": "u\\cdot v=(3)(-2)+(-1)(4)+(2)(1)=-6-4+2=-8.",
+          "sayOutLoud": "The dot product is a number."
+        },
+        {
+          "label": "Find the magnitude of \\(u\\)",
+          "latex": "\\|u\\|=\\sqrt{3^2+(-1)^2+2^2}=\\sqrt{9+1+4}=\\sqrt{14}.",
+          "sayOutLoud": "Every component gets squared."
+        },
+        {
+          "label": "Check perpendicular",
+          "latex": "u\\cdot v=-8\\ne 0,\\quad \\text{so }u\\text{ and }v\\text{ are not perpendicular.}",
+          "sayOutLoud": "Perpendicular would mean dot product exactly zero."
+        }
+      ],
+      "finalAnswerLatex": "2u-v=\\langle 8,-6,3\\rangle,\\quad u\\cdot v=-8,\\quad \\|u\\|=\\sqrt{14},\\quad \\text{not perpendicular.}",
+      "commonMistakes": [
+        "Subtracting \\(v\\) incorrectly: \\(6-(-2)=8\\), not 4.",
+        "Stopping at \\(u\\cdot v=-8\\) and saying perpendicular. It must be zero.",
+        "Forgetting the negative sign in \\((-1)(4)\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 1,
+        "message": "For more practice, use Practice Lab Section 1 and look for vector operation problems."
+      }
+    },
+    {
+      "problemId": "si01-p02",
+      "title": "From two points to a direction vector",
+      "difficulty": "Core",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Vector from point A to point B",
+        "Distance",
+        "Unit vector"
+      ],
+      "studentPromptLatex": "Let \\(A=(1,-2,3)\\) and \\(B=(5,0,-1)\\). Find \\(\\overrightarrow{AB}\\), find the distance from \\(A\\) to \\(B\\), and find a unit vector pointing from \\(A\\) to \\(B\\).",
+      "whatToSayBefore": "The phrase 'from A to B' tells us the order: endpoint minus start point.",
+      "visualSpec": {
+        "type": "point_to_vector_3d",
+        "purpose": "Show the vector from A to B as an arrow with the correct direction.",
+        "coordinateSystem": "3d",
+        "points": {
+          "A": [
+            1,
+            -2,
+            3
+          ],
+          "B": [
+            5,
+            0,
+            -1
+          ]
+        },
+        "vectors": {
+          "AB": [
+            4,
+            2,
+            -4
+          ],
+          "unitAB": [
+            0.6666666667,
+            0.3333333333,
+            -0.6666666667
+          ]
+        },
+        "boardSketchInstructions": [
+          "Draw a quick 3D axis sketch.",
+          "Mark A and B roughly, but do not spend too long on exact scale.",
+          "Draw an arrow starting at A and ending at B.",
+          "Label the arrow \\(\\overrightarrow{AB}=B-A\\).",
+          "Write 'endpoint minus start point' next to the sketch."
+        ],
+        "accuracyNote": "The coordinates and vector values are exact. The whiteboard drawing can be rough, but the arrow direction must be from A to B."
+      },
+      "walkthrough": [
+        {
+          "label": "Use endpoint minus start point",
+          "latex": "\\overrightarrow{AB}=B-A=(5,0,-1)-(1,-2,3).",
+          "sayOutLoud": "Start at A, end at B, so use B minus A."
+        },
+        {
+          "label": "Subtract component by component",
+          "latex": "\\overrightarrow{AB}=\\langle 5-1,\\;0-(-2),\\;-1-3\\rangle=\\langle 4,2,-4\\rangle.",
+          "sayOutLoud": "This is the direction and displacement from A to B."
+        },
+        {
+          "label": "Distance is the length of the vector",
+          "latex": "\\|\\overrightarrow{AB}\\|=\\sqrt{4^2+2^2+(-4)^2}=\\sqrt{16+4+16}=\\sqrt{36}=6.",
+          "sayOutLoud": "Distance between the points is the magnitude of the displacement vector."
+        },
+        {
+          "label": "Divide by the length to get a unit vector",
+          "latex": "\\frac{\\overrightarrow{AB}}{\\|\\overrightarrow{AB}\\|}=\\frac{1}{6}\\langle 4,2,-4\\rangle=\\left\\langle \\frac{2}{3},\\frac{1}{3},-\\frac{2}{3}\\right\\rangle.",
+          "sayOutLoud": "A unit vector keeps the same direction but has length 1."
+        }
+      ],
+      "finalAnswerLatex": "\\overrightarrow{AB}=\\langle 4,2,-4\\rangle,\\quad d(A,B)=6,\\quad \\hat{u}=\\left\\langle \\frac{2}{3},\\frac{1}{3},-\\frac{2}{3}\\right\\rangle.",
+      "commonMistakes": [
+        "Using \\(A-B\\), which points from B to A instead.",
+        "Writing \\(AB\\) instead of \\(\\overrightarrow{AB}\\).",
+        "Forgetting to divide every component by 6 when making the unit vector."
+      ],
+      "practiceLabPointer": {
+        "section": 1,
+        "message": "For more practice, use Practice Lab Section 1 and look for point-to-vector or magnitude problems."
+      }
+    },
+    {
+      "problemId": "si01-p03",
+      "title": "Choose a parameter to make vectors perpendicular",
+      "difficulty": "Core / Exam-style",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Dot product condition",
+        "Perpendicular vectors",
+        "Unit vector"
+      ],
+      "studentPromptLatex": "Let \\(u=\\langle 2,1\\rangle\\) and \\(v=\\langle k,8\\rangle\\). Find \\(k\\) so that \\(u\\) and \\(v\\) are perpendicular. Then find a unit vector in the direction of \\(v\\).",
+      "whatToSayBefore": "When a problem says perpendicular, immediately think dot product equals zero.",
+      "visualSpec": {
+        "type": "perpendicular_vectors_2d_exact",
+        "purpose": "Show the exact final vectors after solving for k.",
+        "coordinateSystem": "2d",
+        "vectors": {
+          "u": [
+            2,
+            1
+          ],
+          "v_after_solving": [
+            -4,
+            8
+          ]
+        },
+        "origin": [
+          0,
+          0
+        ],
+        "boardSketchInstructions": [
+          "Draw x-y axes.",
+          "Draw \\(u=\\langle 2,1\\rangle\\) from the origin.",
+          "After solving, draw \\(v=\\langle -4,8\\rangle\\) from the origin.",
+          "Mark a right-angle symbol between the two directions.",
+          "Write \\(u\\cdot v=0\\) beside the picture."
+        ],
+        "accuracyNote": "These two vectors are exactly perpendicular because \\((2)(-4)+(1)(8)=0\\)."
+      },
+      "walkthrough": [
+        {
+          "label": "Use the perpendicular condition",
+          "latex": "u\\perp v\\quad \\Longleftrightarrow \\quad u\\cdot v=0.",
+          "sayOutLoud": "This is the main idea of the problem."
+        },
+        {
+          "label": "Set up the dot product",
+          "latex": "\\langle 2,1\\rangle\\cdot \\langle k,8\\rangle=2k+8.",
+          "sayOutLoud": "Multiply matching components and add."
+        },
+        {
+          "label": "Set it equal to zero",
+          "latex": "2k+8=0\\quad \\Rightarrow\\quad 2k=-8\\quad \\Rightarrow\\quad k=-4.",
+          "sayOutLoud": "Now the vector is \\(v=\\langle -4,8\\rangle\\)."
+        },
+        {
+          "label": "Find the length of \\(v\\)",
+          "latex": "\\|v\\|=\\sqrt{(-4)^2+8^2}=\\sqrt{16+64}=\\sqrt{80}=4\\sqrt{5}.",
+          "sayOutLoud": "We need the length before we can make a unit vector."
+        },
+        {
+          "label": "Divide by the length",
+          "latex": "\\hat{v}=\\frac{1}{4\\sqrt{5}}\\langle -4,8\\rangle=\\left\\langle -\\frac{1}{\\sqrt{5}},\\frac{2}{\\sqrt{5}}\\right\\rangle.",
+          "sayOutLoud": "This is the same direction as v, just length 1."
+        }
+      ],
+      "finalAnswerLatex": "k=-4,\\quad v=\\langle -4,8\\rangle,\\quad \\hat{v}=\\left\\langle -\\frac{1}{\\sqrt{5}},\\frac{2}{\\sqrt{5}}\\right\\rangle.",
+      "commonMistakes": [
+        "Trying to use a picture before setting up the dot product.",
+        "Solving \\(2k+8=1\\) instead of \\(2k+8=0\\).",
+        "Forgetting to plug \\(k=-4\\) back into \\(v\\) before finding the unit vector."
+      ],
+      "practiceLabPointer": {
+        "section": 1,
+        "message": "For more practice, use Practice Lab Section 1 and search for dot product or unit vector."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What does the dot product output: a scalar or a vector?",
+    "What dot product value means perpendicular?",
+    "What is the correct formula for the vector from A to B?",
+    "How do you turn a vector into a unit vector?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 1",
+      "route": "#/section/1",
+      "description": "Use this section for more vector, matrix, transpose, and basic operation practice."
+    }
+  ],
+  "qualityControlNotes": [
+    "All uses of vector AB should be written as \\(\\overrightarrow{AB}\\).",
+    "All dot product results in this session are scalars.",
+    "Problem 2 was independently checked: \\(B-A=\\langle4,2,-4\\rangle\\), norm 6.",
+    "Problem 3 was independently checked: k=-4 makes \\(\\langle2,1\\rangle\\cdot\\langle-4,8\\rangle=0\\).",
+    "Visuals should be rendered as teaching sketches. Exact coordinates are provided in visualSpec; board drawings may be not to scale unless explicitly marked exact."
+  ],
+  "reviewStatus": "reviewed-and-cleaned",
+  "reviewSummary": [
+    "Notation checked: vector from A to B is consistently written as \\(\\overrightarrow{AB}=B-A\\), not plain AB.",
+    "Arithmetic checked for all three problems.",
+    "Visual specs are exact where possible; 3D point sketch is labeled rough/not-to-scale while coordinate values remain exact.",
+    "Explanations are intentionally simple and whiteboard-friendly."
+  ]
+}

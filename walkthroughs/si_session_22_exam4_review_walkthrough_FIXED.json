@@ -1,0 +1,431 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-22",
+  "sessionNumber": 22,
+  "sessionType": "exam-review",
+  "title": "Exam 4 Review",
+  "practiceLabSections": [
+    9,
+    10
+  ],
+  "estimatedDurationMinutes": 75,
+  "sessionGoal": "Students should review the final vector-calculus tools: double integrals, Green's Theorem, surfaces, scalar/vector surface integrals, Stokes' Theorem, and triple integrals.",
+  "quickStartIfUnprepared": [
+    "Start by saying: Exam 4 is mostly about choosing the right integral theorem or surface setup.",
+    "Do Problem 1 if students need surface-area / scalar surface integral setup.",
+    "Do Problem 2 if students need flux through a graph.",
+    "Do Problem 3 if students need Stokes' Theorem and orientation.",
+    "Do Problem 4 if students need cylindrical coordinates.",
+    "Do Problem 5 if students need Green's Theorem / orientation review."
+  ],
+  "sayThisFirst": [
+    "For surfaces, the picture and orientation matter first.",
+    "A scalar surface integral uses \\(dS\\). A flux integral uses a normal vector.",
+    "For graphs \\(z=f(x,y)\\), upward normal area vector is \\(\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
+    "Stokes' Theorem changes a surface integral of curl into a line integral around the boundary.",
+    "Green's Theorem is the 2D version: boundary circulation equals interior curl."
+  ],
+  "boardPlan": [
+    "Write a mini decision tree: Green vs Stokes vs direct surface integral.",
+    "Work a scalar surface integral over a graph.",
+    "Work a flux integral over a graph using the upward normal.",
+    "Work a Stokes' Theorem problem over a disk boundary.",
+    "Work a cylindrical-coordinate triple integral.",
+    "Finish with a quick Green's Theorem problem if time allows."
+  ],
+  "keyFormulas": [
+    "Graph surface area element: \\(dS=\\sqrt{1+f_x^2+f_y^2}\\,dA\\).",
+    "Upward graph normal vector: \\(\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
+    "Flux: \\(\\iint_S F\\cdot n\\,dS\\), or \\(\\iint_D F(x,y,f(x,y))\\cdot\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
+    "Stokes: \\(\\iint_S (\\nabla\\times F)\\cdot n\\,dS=\\oint_{\\partial S}F\\cdot dr\\).",
+    "Cylindrical coordinates: \\(x=r\\cos\\theta\\), \\(y=r\\sin\\theta\\), \\(dV=r\\,dz\\,dr\\,d\\theta\\).",
+    "Green: \\(\\oint_C P\\,dx+Q\\,dy=\\iint_D(Q_x-P_y)\\,dA\\)."
+  ],
+  "commonMistakes": [
+    "Using \\(dA\\) when the problem needs \\(dS\\).",
+    "Forgetting the normal orientation in flux and Stokes' Theorem.",
+    "Forgetting the extra \\(r\\) in cylindrical or polar coordinates.",
+    "Using Stokes' Theorem but orienting the boundary curve the wrong way.",
+    "Using Green's Theorem with clockwise orientation without changing the sign."
+  ],
+  "notationWarnings": [
+    "Use \\(S\\) for a surface and \\(\\partial S\\) for its boundary.",
+    "For flux, write the chosen normal direction before computing.",
+    "For Stokes, match boundary orientation with the normal direction using the right-hand rule.",
+    "For cylindrical/triple integrals, write the order and bounds before integrating."
+  ],
+  "problems": [
+    {
+      "problemId": "si22-p1",
+      "title": "Scalar surface integral over a graph",
+      "difficulty": "Core",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Scalar surface integrals",
+        "Graph surface",
+        "dS"
+      ],
+      "studentPromptLatex": "Let \\(S\\) be the graph \\(z=x+2y\\) over the rectangle \\(0\\le x\\le1\\), \\(0\\le y\\le2\\). Compute \\(\\iint_S z\\,dS\\).",
+      "whatToSayBefore": "Say: because this is a scalar surface integral, we need \\(dS\\), not just \\(dA\\).",
+      "visualSpec": {
+        "type": "scalar_surface_integral_graph",
+        "surface": "z=x+2y",
+        "baseRegion": {
+          "xMin": 0,
+          "xMax": 1,
+          "yMin": 0,
+          "yMax": 2
+        },
+        "integrand": "z",
+        "dSFactor": "sqrt(6)",
+        "integralValue": "5sqrt(6)",
+        "drawInstructions": [
+          "Draw the rectangle in the xy-plane.",
+          "Draw the slanted plane z=x+2y above it.",
+          "Label the surface S and the base region D.",
+          "Write dS=sqrt(1+1^2+2^2)dA=sqrt(6)dA.",
+          "Explain that z becomes x+2y on the surface."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Use the graph formula for \\(dS\\)",
+          "latex": "Here \\(f(x,y)=x+2y\\), so \\(f_x=1\\) and \\(f_y=2\\). Therefore \\[dS=\\sqrt{1+f_x^2+f_y^2}\\,dA=\\sqrt{1+1^2+2^2}\\,dA=\\sqrt6\\,dA.\\]"
+        },
+        {
+          "label": "Replace \\(z\\) using the surface",
+          "latex": "On the surface, \\(z=x+2y\\). So \\[\\iint_S z\\,dS=\\int_0^1\\int_0^2 (x+2y)\\sqrt6\\,dy\\,dx.\\]"
+        },
+        {
+          "label": "Evaluate the integral",
+          "latex": "\\[\\sqrt6\\int_0^1\\left[xy+y^2\\right]_0^2 dx=\\sqrt6\\int_0^1(2x+4)\\,dx=\\sqrt6(1+4)=5\\sqrt6.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{5\\sqrt6}\\]",
+      "commonMistakes": [
+        "Forgetting the \\(\\sqrt6\\) surface-area factor.",
+        "Using \\(z\\) as a separate variable instead of replacing it with \\(x+2y\\).",
+        "Confusing scalar surface integral with flux."
+      ],
+      "practiceLabPointer": {
+        "section": 10,
+        "route": "#/section/10",
+        "note": "Practice Lab Section 10 for surface integrals."
+      }
+    },
+    {
+      "problemId": "si22-p2",
+      "title": "Flux through a graph with upward orientation",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Flux",
+        "Graph normal",
+        "Polar coordinates"
+      ],
+      "studentPromptLatex": "Let \\(S\\) be the paraboloid \\(z=4-x^2-y^2\\) above the disk \\(x^2+y^2\\le1\\), oriented upward. Let \\(F(x,y,z)=\\langle x,y,z\\rangle\\). Compute the flux \\(\\iint_S F\\cdot n\\,dS\\).",
+      "whatToSayBefore": "Say: for a graph with upward orientation, use the vector area element \\(\\langle -f_x,-f_y,1\\rangle dA\\).",
+      "visualSpec": {
+        "type": "flux_graph_upward_paraboloid",
+        "surface": "z=4-x^2-y^2",
+        "baseRegion": "unit disk",
+        "orientation": "upward",
+        "field": "F=<x,y,z>",
+        "normalAreaVector": "<2x,2y,1>",
+        "integrandOnDisk": "4+x^2+y^2",
+        "polarBounds": {
+          "r": [
+            0,
+            1
+          ],
+          "theta": [
+            0,
+            "2pi"
+          ]
+        },
+        "integralValue": "9pi/2",
+        "drawInstructions": [
+          "Draw a downward-opening paraboloid above the unit disk.",
+          "Draw upward normal arrows on the surface.",
+          "Write f_x=-2x and f_y=-2y.",
+          "Write upward vector area element <2x,2y,1>dA.",
+          "Switch to polar for the unit disk."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find the upward vector area element",
+          "latex": "Let \\(f(x,y)=4-x^2-y^2\\). Then \\(f_x=-2x\\) and \\(f_y=-2y\\). For upward orientation, \\[\\langle -f_x,-f_y,1\\rangle\\,dA=\\langle 2x,2y,1\\rangle\\,dA.\\]"
+        },
+        {
+          "label": "Plug the surface into the vector field",
+          "latex": "On the surface, \\[F(x,y,f(x,y))=\\langle x,y,4-x^2-y^2\\rangle.\\]"
+        },
+        {
+          "label": "Dot with the vector area element",
+          "latex": "\\[F\\cdot\\langle 2x,2y,1\\rangle=2x^2+2y^2+4-x^2-y^2=4+x^2+y^2.\\]"
+        },
+        {
+          "label": "Integrate over the unit disk",
+          "latex": "Use polar coordinates: \\(x^2+y^2=r^2\\), \\(dA=r\\,dr\\,d\\theta\\). \\[\\iint_D(4+x^2+y^2)\\,dA=\\int_0^{2\\pi}\\int_0^1(4+r^2)r\\,dr\\,d\\theta.\\]"
+        },
+        {
+          "label": "Evaluate",
+          "latex": "\\[\\int_0^{2\\pi}\\left[2r^2+\\frac{r^4}{4}\\right]_0^1 d\\theta=\\int_0^{2\\pi}\\frac94\\,d\\theta=\\frac{9\\pi}{2}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{\\frac{9\\pi}{2}}\\]",
+      "commonMistakes": [
+        "Using \\(\\langle f_x,f_y,-1\\rangle\\) for upward orientation. That is downward.",
+        "Forgetting to plug \\(z=4-x^2-y^2\\) into \\(F\\).",
+        "Forgetting the polar Jacobian \\(r\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 10,
+        "route": "#/section/10",
+        "note": "Practice Lab Section 10 for flux through graphs."
+      }
+    },
+    {
+      "problemId": "si22-p3",
+      "title": "Stokes' Theorem over a disk",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 15,
+      "skills": [
+        "Stokes' Theorem",
+        "Curl",
+        "Boundary orientation"
+      ],
+      "studentPromptLatex": "Let \\(F(x,y,z)=\\langle -y,x,z\\rangle\\). Let \\(S\\) be the disk \\(x^2+y^2\\le4\\) in the plane \\(z=3\\), oriented upward. Compute \\(\\iint_S(\\nabla\\times F)\\cdot n\\,dS\\).",
+      "whatToSayBefore": "Say: Stokes lets us use the boundary, but here the curl is so simple that the surface integral is also fast.",
+      "visualSpec": {
+        "type": "stokes_disk_upward",
+        "surface": "disk radius 2 in plane z=3",
+        "orientation": "upward normal",
+        "boundaryOrientation": "counterclockwise when viewed from above",
+        "field": "F=<-y,x,z>",
+        "curl": "<0,0,2>",
+        "area": "4pi",
+        "integralValue": "8pi",
+        "drawInstructions": [
+          "Draw the disk in the horizontal plane z=3.",
+          "Draw upward normal arrows.",
+          "Draw counterclockwise arrows on the circular boundary when viewed from above.",
+          "Write curl F=<0,0,2>.",
+          "Write dot with upward normal gives 2, then multiply by disk area 4pi."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Compute the curl",
+          "latex": "For \\(F=\\langle P,Q,R\\rangle=\\langle -y,x,z\\rangle\\), \\[\\nabla\\times F=\\langle R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y\\rangle=\\langle 0-0,\\;0-0,\\;1-(-1)\\rangle=\\langle0,0,2\\rangle.\\]"
+        },
+        {
+          "label": "Use the upward normal",
+          "latex": "The disk is horizontal and oriented upward, so \\(n=\\langle0,0,1\\rangle\\). Thus \\[(\\nabla\\times F)\\cdot n=\\langle0,0,2\\rangle\\cdot\\langle0,0,1\\rangle=2.\\]"
+        },
+        {
+          "label": "Integrate over the disk",
+          "latex": "The disk has radius \\(2\\), so its area is \\(4\\pi\\). Therefore \\[\\iint_S(\\nabla\\times F)\\cdot n\\,dS=2(4\\pi)=8\\pi.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{8\\pi}\\]",
+      "commonMistakes": [
+        "Forgetting the boundary orientation implied by the upward normal.",
+        "Using the radius as 4 instead of area \\(4\\pi\\).",
+        "Flipping the sign by using the downward normal."
+      ],
+      "practiceLabPointer": {
+        "section": 10,
+        "route": "#/section/10",
+        "note": "Practice Lab Section 10 for Stokes' Theorem."
+      }
+    },
+    {
+      "problemId": "si22-p4",
+      "title": "Triple integral in cylindrical coordinates",
+      "difficulty": "Core",
+      "estimatedMinutes": 13,
+      "skills": [
+        "Triple integrals",
+        "Cylindrical coordinates",
+        "Volume integrals"
+      ],
+      "studentPromptLatex": "Evaluate \\(\\iiint_E z\\,dV\\), where \\(E\\) is the solid inside \\(x^2+y^2\\le4\\), above \\(z=0\\), and below \\(z=x^2+y^2\\).",
+      "whatToSayBefore": "Say: cylinders and \\(x^2+y^2\\) should make us think cylindrical coordinates.",
+      "visualSpec": {
+        "type": "cylindrical_triple_integral",
+        "solid": "inside cylinder r<=2, 0<=z<=r^2",
+        "bounds": {
+          "theta": [
+            0,
+            "2pi"
+          ],
+          "r": [
+            0,
+            2
+          ],
+          "z": [
+            0,
+            "r^2"
+          ]
+        },
+        "integrand": "z",
+        "jacobian": "r",
+        "integralValue": "32pi/3",
+        "drawInstructions": [
+          "Draw a cylinder of radius 2.",
+          "Draw the lower surface z=0.",
+          "Draw the upper surface z=r^2 rising upward from the center.",
+          "Write bounds: 0<=theta<=2pi, 0<=r<=2, 0<=z<=r^2.",
+          "Write dV=r dz dr dtheta."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Convert the region",
+          "latex": "In cylindrical coordinates, \\(x^2+y^2=r^2\\). The solid has \\[0\\le\\theta\\le2\\pi,\\qquad 0\\le r\\le2,\\qquad 0\\le z\\le r^2.\\]"
+        },
+        {
+          "label": "Set up the integral",
+          "latex": "Since \\(dV=r\\,dz\\,dr\\,d\\theta\\), \\[\\iiint_E z\\,dV=\\int_0^{2\\pi}\\int_0^2\\int_0^{r^2} zr\\,dz\\,dr\\,d\\theta.\\]"
+        },
+        {
+          "label": "Integrate in z",
+          "latex": "\\[\\int_0^{r^2}zr\\,dz=r\\left[\\frac{z^2}{2}\\right]_0^{r^2}=\\frac{r^5}{2}.\\]"
+        },
+        {
+          "label": "Finish the integral",
+          "latex": "\\[\\int_0^{2\\pi}\\int_0^2\\frac{r^5}{2}\\,dr\\,d\\theta=\\int_0^{2\\pi}\\left[\\frac{r^6}{12}\\right]_0^2d\\theta=\\int_0^{2\\pi}\\frac{16}{3}\\,d\\theta=\\frac{32\\pi}{3}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{\\frac{32\\pi}{3}}\\]",
+      "commonMistakes": [
+        "Forgetting the cylindrical Jacobian \\(r\\).",
+        "Using \\(z\\le r\\) instead of \\(z\\le r^2\\).",
+        "Making the final arithmetic too fast: \\(2^6/12=64/12=16/3\\)."
+      ],
+      "practiceLabPointer": {
+        "section": 10,
+        "route": "#/section/10",
+        "note": "Practice Lab Section 10 for triple integrals."
+      },
+      "qualityCorrection": "Corrected visualSpec integralValue to 32pi/3 to match the audited walkthrough and final answer."
+    },
+    {
+      "problemId": "si22-p5",
+      "title": "Green's Theorem orientation check",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Green's Theorem",
+        "Orientation",
+        "Line integrals"
+      ],
+      "studentPromptLatex": "Let \\(C\\) be the clockwise boundary of the triangle with vertices \\((0,0)\\), \\((2,0)\\), and \\((0,1)\\). Compute \\[\\oint_C -y\\,dx+x\\,dy.\\]",
+      "whatToSayBefore": "Say: this is a sign problem. Green's Theorem naturally assumes counterclockwise orientation.",
+      "visualSpec": {
+        "type": "greens_triangle_clockwise",
+        "vertices": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "orientation": "clockwise",
+        "P": "-y",
+        "Q": "x",
+        "greenIntegrand": "2",
+        "area": 1,
+        "ccwValue": 2,
+        "clockwiseValue": -2,
+        "drawInstructions": [
+          "Draw the right triangle with vertices (0,0), (2,0), and (0,1).",
+          "Put clockwise arrows around the boundary.",
+          "Write P=-y and Q=x.",
+          "Compute Q_x-P_y=1-(-1)=2.",
+          "Write that clockwise orientation gives the negative of Green's Theorem's positive orientation."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Identify P and Q",
+          "latex": "\\[P=-y,\\qquad Q=x.\\]"
+        },
+        {
+          "label": "Compute Green's integrand",
+          "latex": "\\[Q_x-P_y=1-(-1)=2.\\]"
+        },
+        {
+          "label": "Use the triangle area",
+          "latex": "The triangle has base \\(2\\) and height \\(1\\), so area \\(=\\frac12(2)(1)=1\\). If the orientation were counterclockwise, the integral would be \\[\\iint_D2\\,dA=2(1)=2.\\]"
+        },
+        {
+          "label": "Adjust for clockwise orientation",
+          "latex": "The problem says \\(C\\) is clockwise, which is the negative orientation. So the integral is \\[-2.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\boxed{-2}\\]",
+      "commonMistakes": [
+        "Forgetting the clockwise sign flip.",
+        "Using area \\(2\\) instead of area \\(1\\).",
+        "Computing \\(P_y-Q_x\\), which also flips the sign."
+      ],
+      "practiceLabPointer": {
+        "section": 9,
+        "route": "#/section/9",
+        "note": "Practice Lab Section 9 for Green's Theorem."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "How do you decide between \\(dS\\), flux, Green, Stokes, and triple integral setup?",
+    "What orientation is positive for Green's Theorem?",
+    "How does the right-hand rule connect surface normal and boundary direction in Stokes' Theorem?",
+    "Where does the extra \\(r\\) come from in polar/cylindrical coordinates?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 9",
+      "route": "#/section/9",
+      "topics": [
+        "double integrals",
+        "Green's Theorem"
+      ]
+    },
+    {
+      "label": "Practice Lab Section 10",
+      "route": "#/section/10",
+      "topics": [
+        "surfaces",
+        "surface integrals",
+        "flux",
+        "Stokes",
+        "triple integrals"
+      ]
+    }
+  ],
+  "qualityControlNotes": [
+    "Checked scalar surface integral: dS=sqrt(6)dA and value 5sqrt(6).",
+    "Checked flux through paraboloid: integrand 4+r^2 and value 9pi/2.",
+    "Checked Stokes/curl problem: curl=<0,0,2>, disk area 4pi, value 8pi.",
+    "Checked cylindrical triple integral: bounds z from 0 to r^2, value 32pi/3.",
+    "Checked Green's Theorem clockwise triangle: CCW value 2, clockwise value -2.",
+    "Visual specs include exact regions, orientations, normal directions, and theorem-specific labels."
+  ],
+  "reviewSummary": "Session 22 is the final Exam 4 review walkthrough with five checked problems and exact visual specifications."
+}

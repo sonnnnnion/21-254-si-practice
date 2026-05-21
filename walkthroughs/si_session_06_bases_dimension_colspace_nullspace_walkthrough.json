@@ -1,0 +1,366 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "sessionId": "si-06",
+  "sessionNumber": 6,
+  "sessionType": "general",
+  "title": "Bases, Dimension, Column Space, and Null Space",
+  "practiceLabSections": [
+    3
+  ],
+  "estimatedDurationMinutes": 50,
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "sessionGoal": "Students should be able to find bases for column spaces and null spaces, use pivot columns correctly, and explain dimension using rank and nullity.",
+  "quickStartIfUnprepared": [
+    "Write: basis = spanning set with no redundancy.",
+    "Write: rank = number of pivots, nullity = number of free variables.",
+    "Emphasize: for Col(A), use pivot columns from the original A, not the RREF columns.",
+    "Do Problem 1 slowly. It is the most important one.",
+    "If time is short, do Problem 1 and Problem 3."
+  ],
+  "sayThisFirst": [
+    "A basis is a clean, non-redundant way to describe a space.",
+    "Dimension means how many basis vectors you need.",
+    "Rank counts pivot columns.",
+    "Nullity counts free variables.",
+    "For a column space basis, find the pivot columns in RREF, then go back to the original matrix."
+  ],
+  "boardPlan": [
+    "At the top, write: basis = span + independent.",
+    "Write the rank-nullity formula: rank(A)+nullity(A)=number of columns of A.",
+    "Explain that RREF is for finding pivots and equations, but original columns are used for Col(A).",
+    "Use Problem 1 to find Col(A), Nul(A), rank, and nullity from one matrix.",
+    "Use Problem 2 to show coordinates in a basis.",
+    "Use Problem 3 to show a subspace basis from equations."
+  ],
+  "keyFormulas": [
+    {
+      "name": "Basis",
+      "latex": "\\text{basis} = \\text{spanning set with no redundant vectors}",
+      "plainEnglish": "A basis describes a space with the fewest clean directions."
+    },
+    {
+      "name": "Dimension",
+      "latex": "\\dim(V)=\\text{number of vectors in a basis for }V",
+      "plainEnglish": "Dimension is the number of independent directions."
+    },
+    {
+      "name": "Rank-nullity",
+      "latex": "\\operatorname{rank}(A)+\\operatorname{nullity}(A)=n",
+      "plainEnglish": "For an m by n matrix, pivots plus free variables equals the number of columns."
+    },
+    {
+      "name": "Column space basis",
+      "latex": "\\text{Use pivot columns of the original matrix }A.",
+      "plainEnglish": "Do not use the RREF columns as the final column-space basis."
+    }
+  ],
+  "commonMistakes": [
+    "Using columns of RREF as a basis for Col(A). Use pivot columns from the original A.",
+    "Forgetting that null space vectors have one entry for each column of A.",
+    "Confusing rank with the number of rows.",
+    "Confusing nullity with the number of zero rows.",
+    "Calling a spanning set a basis before checking redundancy."
+  ],
+  "notationWarnings": [
+    "Write \\operatorname{Col}(A) and \\operatorname{Nul}(A) clearly.",
+    "For null space, solve Ax=0, not Ax=b.",
+    "For coordinates in a basis B, write [v]_B to show these are coordinates, not the standard vector."
+  ],
+  "problems": [
+    {
+      "problemId": "si06-p1",
+      "title": "Column space and null space from RREF",
+      "difficulty": "Core",
+      "estimatedMinutes": 14,
+      "skills": [
+        "Identify pivot columns",
+        "Find a column space basis",
+        "Parametrize null space",
+        "Use rank-nullity"
+      ],
+      "studentPromptLatex": "Let\n\\[A=\\begin{bmatrix}1&0&2&-1\\\\2&1&5&0\\\\0&1&1&2\\\\1&-1&1&-3\\end{bmatrix},\\qquad \\operatorname{rref}(A)=\\begin{bmatrix}1&0&2&-1\\\\0&1&1&2\\\\0&0&0&0\\\\0&0&0&0\\end{bmatrix}.\\]\nFind a basis for \\(\\operatorname{Col}(A)\\), a basis for \\(\\operatorname{Nul}(A)\\), \\(\\operatorname{rank}(A)\\), and \\(\\operatorname{nullity}(A)\\).",
+      "whatToSayBefore": "Tell students: the RREF tells us where the pivots are. But the column-space basis comes from the original matrix.",
+      "visualSpec": {
+        "type": "rref_pivot_columns_and_nullspace",
+        "matrixA": [
+          [
+            1,
+            0,
+            2,
+            -1
+          ],
+          [
+            2,
+            1,
+            5,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            2
+          ],
+          [
+            1,
+            -1,
+            1,
+            -3
+          ]
+        ],
+        "rrefA": [
+          [
+            1,
+            0,
+            2,
+            -1
+          ],
+          [
+            0,
+            1,
+            1,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "pivotColumnsOneIndexed": [
+          1,
+          2
+        ],
+        "freeVariables": [
+          "x_3",
+          "x_4"
+        ],
+        "drawInstructions": [
+          "Draw the RREF matrix and circle the pivots in columns 1 and 2.",
+          "Put a box around columns 1 and 2 of the original matrix A.",
+          "Write x_3=s and x_4=t to show where the null-space parameters come from.",
+          "Draw a simple split: pivot columns describe Col(A), free variables describe Nul(A)."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Find pivot columns",
+          "latex": "The pivots are in columns 1 and 2 of the RREF. So the pivot columns of the original matrix are the first two columns of A."
+        },
+        {
+          "label": "Write the column-space basis",
+          "latex": "\\operatorname{Col}(A)\\text{ has basis }\\left\\{\\begin{bmatrix}1\\\\2\\\\0\\\\1\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\1\\\\-1\\end{bmatrix}\\right\\}."
+        },
+        {
+          "label": "Solve Ax=0 using the RREF",
+          "latex": "The RREF gives\\n\\[x_1+2x_3-x_4=0,\\qquad x_2+x_3+2x_4=0.\\]\\nLet \\(x_3=s\\) and \\(x_4=t\\). Then \\(x_1=-2s+t\\) and \\(x_2=-s-2t\\)."
+        },
+        {
+          "label": "Write the null-space basis",
+          "latex": "\\[x=\\begin{bmatrix}-2s+t\\\\-s-2t\\\\s\\\\t\\end{bmatrix}=s\\begin{bmatrix}-2\\\\-1\\\\1\\\\0\\end{bmatrix}+t\\begin{bmatrix}1\\\\-2\\\\0\\\\1\\end{bmatrix}.\\]\\nSo a basis for \\(\\operatorname{Nul}(A)\\) is \\(\\left\\{(-2,-1,1,0),(1,-2,0,1)\\right\\}\\)."
+        },
+        {
+          "label": "Rank and nullity",
+          "latex": "There are 2 pivots, so \\(\\operatorname{rank}(A)=2\\). There are 2 free variables, so \\(\\operatorname{nullity}(A)=2\\). Check: \\(2+2=4\\), the number of columns."
+        }
+      ],
+      "finalAnswerLatex": "\\operatorname{rank}(A)=2,\\quad \\operatorname{nullity}(A)=2,\\quad \\operatorname{Col}(A)\\text{ basis }=\\left\\{\\begin{bmatrix}1\\\\2\\\\0\\\\1\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\1\\\\-1\\end{bmatrix}\\right\\},\\quad \\operatorname{Nul}(A)\\text{ basis }=\\left\\{\\begin{bmatrix}-2\\\\-1\\\\1\\\\0\\end{bmatrix},\\begin{bmatrix}1\\\\-2\\\\0\\\\1\\end{bmatrix}\\right\\}.",
+      "commonMistakes": [
+        "Using columns 1 and 2 of the RREF as the Col(A) basis instead of original A.",
+        "Forgetting that the null-space basis vectors must have 4 entries.",
+        "Calling the zero rows the nullity. Nullity is the number of free variables."
+      ],
+      "practiceLabPointer": {
+        "section": 3,
+        "route": "#/section/3",
+        "note": "More practice with column space, null space, bases, and dimensions."
+      }
+    },
+    {
+      "problemId": "si06-p2",
+      "title": "Coordinates in a nonstandard basis",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Verify a basis",
+        "Solve for coordinates",
+        "Interpret coordinate vectors"
+      ],
+      "studentPromptLatex": "Let \\(B=\\{b_1,b_2,b_3\\}\\) where\n\\[b_1=\\begin{bmatrix}1\\\\1\\\\0\\end{bmatrix},\\quad b_2=\\begin{bmatrix}2\\\\0\\\\1\\end{bmatrix},\\quad b_3=\\begin{bmatrix}0\\\\3\\\\-1\\end{bmatrix}.\\]\nDecide whether \\(B\\) is a basis for \\(\\mathbb{R}^3\\). Then find \\([v]_B\\) for \\(v=\\begin{bmatrix}5\\\\-1\\\\3\\end{bmatrix}\\).",
+      "whatToSayBefore": "Tell students: coordinates in B are not the same as standard coordinates. We are solving for the weights on the basis vectors.",
+      "visualSpec": {
+        "type": "basis_coordinate_system_3d",
+        "basisVectors": {
+          "b1": [
+            1,
+            1,
+            0
+          ],
+          "b2": [
+            2,
+            0,
+            1
+          ],
+          "b3": [
+            0,
+            3,
+            -1
+          ]
+        },
+        "targetVector": [
+          5,
+          -1,
+          3
+        ],
+        "coordinateVector": [
+          -1,
+          3,
+          0
+        ],
+        "determinant": -1,
+        "drawInstructions": [
+          "Draw three independent directions from the origin labeled b1, b2, b3.",
+          "Draw v as a target vector.",
+          "Write v = c1 b1 + c2 b2 + c3 b3.",
+          "Emphasize that [v]_B is the list of coefficients, not the same drawing as v."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Build the basis matrix",
+          "latex": "Put the basis vectors as columns:\\n\\[P=\\begin{bmatrix}1&2&0\\\\1&0&3\\\\0&1&-1\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Check if B is a basis",
+          "latex": "\\[\\det(P)=-1\\neq 0.\\]\\nSo the columns are independent and span \\(\\mathbb{R}^3\\). Therefore \\(B\\) is a basis."
+        },
+        {
+          "label": "Solve for coordinates",
+          "latex": "We solve \\(P[c]_B=v\\), or\\n\\[c_1b_1+c_2b_2+c_3b_3=v.\\]\\nThe solution is\\n\\[[v]_B=\\begin{bmatrix}-1\\\\3\\\\0\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Quick check",
+          "latex": "\\[-1b_1+3b_2+0b_3=-\\begin{bmatrix}1\\\\1\\\\0\\end{bmatrix}+3\\begin{bmatrix}2\\\\0\\\\1\\end{bmatrix}=\\begin{bmatrix}5\\\\-1\\\\3\\end{bmatrix}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "B\\text{ is a basis for }\\mathbb{R}^3,\\qquad [v]_B=\\begin{bmatrix}-1\\\\3\\\\0\\end{bmatrix}.",
+      "commonMistakes": [
+        "Forgetting to put basis vectors as columns.",
+        "Thinking [v]_B means the same thing as v.",
+        "Stopping after det is nonzero and forgetting to find the coordinate vector."
+      ],
+      "practiceLabPointer": {
+        "section": 3,
+        "route": "#/section/3",
+        "note": "Good follow-up for basis and coordinate practice."
+      }
+    },
+    {
+      "problemId": "si06-p3",
+      "title": "Basis and dimension of a solution subspace",
+      "difficulty": "Exam-style",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Describe a subspace from equations",
+        "Parametrize a solution set",
+        "Find a basis",
+        "Find dimension"
+      ],
+      "studentPromptLatex": "Let\n\\[W=\\{(x,y,z,w)\\in\\mathbb{R}^4: x+y-z=0,\\; 2x+y+w=0\\}.\\]\nFind a basis for \\(W\\) and find \\(\\dim(W)\\).",
+      "whatToSayBefore": "Tell students: this is a homogeneous system, so the solution set is a subspace. Then we parametrize it.",
+      "visualSpec": {
+        "type": "subspace_from_homogeneous_equations",
+        "ambientDimension": 4,
+        "equations": [
+          "x+y-z=0",
+          "2x+y+w=0"
+        ],
+        "parameters": [
+          "x",
+          "y"
+        ],
+        "basisVectors": [
+          [
+            1,
+            0,
+            1,
+            -2
+          ],
+          [
+            0,
+            1,
+            1,
+            -1
+          ]
+        ],
+        "drawInstructions": [
+          "Do not try to draw R4 exactly.",
+          "Draw a small parameter table with x=s and y=t.",
+          "Show that z and w are controlled by s and t.",
+          "Say this subspace has two independent directions, so dimension 2."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Use the equations to solve for z and w",
+          "latex": "From \\(x+y-z=0\\), we get \\(z=x+y\\). From \\(2x+y+w=0\\), we get \\(w=-2x-y\\)."
+        },
+        {
+          "label": "Choose parameters",
+          "latex": "Let \\(x=s\\) and \\(y=t\\). Then\\n\\[(x,y,z,w)=(s,t,s+t,-2s-t).\\]"
+        },
+        {
+          "label": "Split into basis vectors",
+          "latex": "\\[(s,t,s+t,-2s-t)=s(1,0,1,-2)+t(0,1,1,-1).\\]"
+        },
+        {
+          "label": "Read the basis and dimension",
+          "latex": "A basis is\\n\\[\\{(1,0,1,-2),(0,1,1,-1)\\}.\\]\\nThere are two basis vectors, so \\(\\dim(W)=2\\)."
+        }
+      ],
+      "finalAnswerLatex": "A basis for W is \\{(1,0,1,-2),(0,1,1,-1)\\},\\qquad \\dim(W)=2.",
+      "commonMistakes": [
+        "Trying to draw R4 literally instead of using parameters.",
+        "Forgetting that the vector has four components.",
+        "Not checking that the equations are homogeneous before calling it a subspace."
+      ],
+      "practiceLabPointer": {
+        "section": 3,
+        "route": "#/section/3",
+        "note": "More basis/dimension problems are in Practice Lab Section 3."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "For Col(A), do we use the original matrix or the RREF columns?",
+    "What does rank count?",
+    "What does nullity count?",
+    "What is the difference between v and [v]_B?"
+  ],
+  "linksToWebsite": [
+    {
+      "label": "Practice Lab Section 3",
+      "route": "#/section/3",
+      "reason": "More practice with bases, dimensions, column space, and null space."
+    }
+  ],
+  "qualityControlNotes": [
+    "Problem 1 checked: column 3 = 2 column 1 + column 2, column 4 = -column 1 + 2 column 2, so the given RREF is consistent with the original matrix.",
+    "Problem 1 null-space basis checked: vectors (-2,-1,1,0) and (1,-2,0,1) satisfy the RREF equations.",
+    "Problem 2 checked: determinant of the basis matrix is -1 and v=-b1+3b2.",
+    "Problem 3 checked: z=x+y and w=-2x-y gives basis vectors (1,0,1,-2) and (0,1,1,-1)."
+  ],
+  "reviewStatus": "reviewed",
+  "reviewSummary": "Session 06 uses simple language around bases, dimension, column space, and null space. Arithmetic and notation were checked before export."
+}

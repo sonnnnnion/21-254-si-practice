@@ -1,0 +1,274 @@
+{
+  "schemaVersion": "1.1",
+  "resourceType": "si-leader-walkthrough",
+  "course": "CMU 21-254: Linear Algebra and Vector Calculus for Engineers",
+  "siteTitle": "21-254 Practice Lab",
+  "audience": "SI leader teaching live on a whiteboard. This is not a student worksheet.",
+  "toneRule": "Keep explanations very simple, verbal, and board-friendly. Avoid textbook phrasing unless the problem needs it.",
+  "reviewStatus": "draft-reviewed",
+  "sessionId": "si-11",
+  "sessionNumber": 11,
+  "sessionType": "general",
+  "title": "Eigenvalues and Eigenvectors",
+  "practiceLabSections": [
+    5
+  ],
+  "estimatedDurationMinutes": 50,
+  "sessionGoal": "Students should be able to find eigenvalues/eigenvectors and explain that an eigenvector keeps its direction under a matrix.",
+  "quickStartIfUnprepared": [
+    "Start with the meaning: Av=λv means A only stretches or flips v.",
+    "Do Problem 1 to show triangular matrices are fast.",
+    "Do Problem 2 for the full characteristic polynomial method.",
+    "Do Problem 3 to show how to test whether a given vector is an eigenvector."
+  ],
+  "sayThisFirst": [
+    "An eigenvector is a direction that does not rotate under A.",
+    "The eigenvalue is the stretch factor in that direction.",
+    "To find eigenvalues, solve det(A-λI)=0.",
+    "To find eigenvectors, plug each λ into A-λI and solve the homogeneous system."
+  ],
+  "boardPlan": [
+    "Write Av=λv and explain it in one sentence.",
+    "Write det(A-λI)=0.",
+    "Do the triangular example first.",
+    "Do one full 2 by 2 example.",
+    "End with the shortcut: to test a given v, compute Av and see if it is a multiple of v."
+  ],
+  "keyFormulas": [
+    "Eigenvalue equation: Av=λv with v≠0.",
+    "Characteristic equation: det(A-λI)=0.",
+    "Eigenspace: Nul(A-λI).",
+    "Triangular matrix eigenvalues are the diagonal entries."
+  ],
+  "commonMistakes": [
+    "Allowing v=0 as an eigenvector. The zero vector is never an eigenvector.",
+    "Finding eigenvalues but forgetting to find eigenspaces.",
+    "Plugging λ into A instead of A-λI.",
+    "Thinking repeated eigenvalues automatically give enough eigenvectors."
+  ],
+  "notationWarnings": [
+    "Use λ for eigenvalues and v for eigenvectors.",
+    "Write Nul(A-λI), not just A-λI, when describing the eigenspace.",
+    "Always say eigenvectors are nonzero."
+  ],
+  "problems": [
+    {
+      "problemId": "si11-p1",
+      "title": "Eigenvalues and eigenspaces of a triangular matrix",
+      "difficulty": "Warm-up",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Triangular eigenvalues",
+        "Eigenspaces",
+        "Homogeneous systems"
+      ],
+      "studentPromptLatex": "Let \\[A=\\begin{bmatrix}3&1&0\\\\0&3&0\\\\0&0&2\\end{bmatrix}.\\] Find the eigenvalues and a basis for each eigenspace.",
+      "whatToSayBefore": "Tell students: because this matrix is triangular, eigenvalues are on the diagonal. We still need to solve for eigenspaces.",
+      "visualSpec": {
+        "type": "eigen_directions_triangular",
+        "matrix": [
+          [
+            3,
+            1,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            0,
+            2
+          ]
+        ],
+        "eigenvalues": [
+          3,
+          2
+        ],
+        "drawInstructions": [
+          "Circle the diagonal entries 3, 3, and 2.",
+          "Write that λ=3 has algebraic multiplicity 2.",
+          "Draw two direction arrows: one for the λ=3 eigenspace and one for λ=2."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Read eigenvalues from the diagonal",
+          "latex": "Since \\(A\\) is triangular, the eigenvalues are the diagonal entries: \\(3,3,2\\). So \\(\\lambda=3\\) and \\(\\lambda=2\\)."
+        },
+        {
+          "label": "Find the eigenspace for λ=3",
+          "latex": "\\[A-3I=\\begin{bmatrix}0&1&0\\\\0&0&0\\\\0&0&-1\\end{bmatrix}.\\] This gives \\(y=0\\) and \\(z=0\\), with \\(x\\) free. So \\[E_3=\\operatorname{span}\\{(1,0,0)\\}.\\]"
+        },
+        {
+          "label": "Find the eigenspace for λ=2",
+          "latex": "\\[A-2I=\\begin{bmatrix}1&1&0\\\\0&1&0\\\\0&0&0\\end{bmatrix}.\\] This gives \\(y=0\\) and \\(x=0\\), with \\(z\\) free. So \\[E_2=\\operatorname{span}\\{(0,0,1)\\}.\\]"
+        }
+      ],
+      "finalAnswerLatex": "\\[\\lambda=3: E_3=\\operatorname{span}\\{(1,0,0)\\},\\qquad \\lambda=2: E_2=\\operatorname{span}\\{(0,0,1)\\}.\\]",
+      "commonMistakes": [
+        "Stopping after reading the diagonal and not finding eigenspaces.",
+        "Assuming λ=3 must have a two-dimensional eigenspace because it appears twice.",
+        "Forgetting that eigenvectors cannot be zero."
+      ],
+      "practiceLabPointer": {
+        "section": 5,
+        "route": "#/section/5",
+        "note": "Practice Lab Section 5 for eigenvalues and eigenspaces."
+      }
+    },
+    {
+      "problemId": "si11-p2",
+      "title": "Full 2 by 2 eigenvalue/eigenvector calculation",
+      "difficulty": "Core",
+      "estimatedMinutes": 12,
+      "skills": [
+        "Characteristic polynomial",
+        "Eigenvectors",
+        "Eigenspaces"
+      ],
+      "studentPromptLatex": "Find the eigenvalues and eigenvectors of \\[A=\\begin{bmatrix}4&2\\\\1&3\\end{bmatrix}.\\]",
+      "whatToSayBefore": "Tell students: this is the standard method. Characteristic polynomial first, eigenspaces second.",
+      "visualSpec": {
+        "type": "eigenvector_invariant_directions",
+        "matrix": [
+          [
+            4,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ],
+        "eigenvectors": {
+          "lambda5": [
+            2,
+            1
+          ],
+          "lambda2": [
+            1,
+            -1
+          ]
+        },
+        "drawInstructions": [
+          "Draw two lines through the origin: one in direction (2,1), one in direction (1,-1).",
+          "Label the first direction λ=5 and the second λ=2.",
+          "Say these directions are preserved by A."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Set up the characteristic equation",
+          "latex": "\\[A-\\lambda I=\\begin{bmatrix}4-\\lambda&2\\\\1&3-\\lambda\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Compute the determinant",
+          "latex": "\\[\\det(A-\\lambda I)=(4-\\lambda)(3-\\lambda)-2=\\lambda^2-7\\lambda+10.\\]"
+        },
+        {
+          "label": "Solve for eigenvalues",
+          "latex": "\\[\\lambda^2-7\\lambda+10=(\\lambda-5)(\\lambda-2)=0.\\] So \\(\\lambda=5\\) and \\(\\lambda=2\\)."
+        },
+        {
+          "label": "Find eigenvectors for λ=5",
+          "latex": "\\[A-5I=\\begin{bmatrix}-1&2\\\\1&-2\\end{bmatrix}.\\] The equation is \\(-x+2y=0\\), so \\(x=2y\\). A basis vector is \\((2,1)\\)."
+        },
+        {
+          "label": "Find eigenvectors for λ=2",
+          "latex": "\\[A-2I=\\begin{bmatrix}2&2\\\\1&1\\end{bmatrix}.\\] The equation is \\(x+y=0\\), so \\(x=-y\\). A basis vector is \\((1,-1)\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[\\lambda=5: E_5=\\operatorname{span}\\{(2,1)\\},\\qquad \\lambda=2: E_2=\\operatorname{span}\\{(1,-1)\\}.\\]",
+      "commonMistakes": [
+        "Making a sign error in A-λI.",
+        "Factoring the characteristic polynomial correctly but forgetting eigenvectors.",
+        "Using the same eigenvector for both eigenvalues."
+      ],
+      "practiceLabPointer": {
+        "section": 5,
+        "route": "#/section/5",
+        "note": "Practice Lab Section 5 for full eigenvalue/eigenvector practice."
+      }
+    },
+    {
+      "problemId": "si11-p3",
+      "title": "Choose a parameter so a given vector is an eigenvector",
+      "difficulty": "Core",
+      "estimatedMinutes": 10,
+      "skills": [
+        "Testing an eigenvector",
+        "Parameter solving",
+        "Trace/eigenvalue connection"
+      ],
+      "studentPromptLatex": "Let \\[A=\\begin{bmatrix}2&k\\\\3&5\\end{bmatrix},\\qquad v=\\begin{bmatrix}1\\\\1\\end{bmatrix}.\\] Find \\(k\\) so that \\(v\\) is an eigenvector of \\(A\\). Then find the corresponding eigenvalue.",
+      "whatToSayBefore": "Tell students: if v is an eigenvector, then Av must point in exactly the same direction as v.",
+      "visualSpec": {
+        "type": "given_vector_eigen_test",
+        "matrix": [
+          [
+            2,
+            "k"
+          ],
+          [
+            3,
+            5
+          ]
+        ],
+        "vector": [
+          1,
+          1
+        ],
+        "drawInstructions": [
+          "Draw v along the line y=x.",
+          "Say Av must land on the same line y=x.",
+          "Use the two entries of Av to force them to be equal."
+        ]
+      },
+      "walkthrough": [
+        {
+          "label": "Compute Av",
+          "latex": "\\[Av=\\begin{bmatrix}2&k\\\\3&5\\end{bmatrix}\\begin{bmatrix}1\\\\1\\end{bmatrix}=\\begin{bmatrix}2+k\\\\8\\end{bmatrix}.\\]"
+        },
+        {
+          "label": "Force Av to be a multiple of v",
+          "latex": "Since \\(v=(1,1)\\), any multiple of \\(v\\) has equal entries. So we need \\(2+k=8\\)."
+        },
+        {
+          "label": "Solve for k and λ",
+          "latex": "\\[2+k=8\\quad\\Rightarrow\\quad k=6.\\] Then \\(Av=(8,8)=8(1,1)\\), so \\(\\lambda=8\\)."
+        }
+      ],
+      "finalAnswerLatex": "\\[k=6,\\qquad \\lambda=8.\\]",
+      "commonMistakes": [
+        "Only checking one coordinate of Av.",
+        "Forgetting that Av must be a scalar multiple of v, not just any vector.",
+        "Saying k is the eigenvalue. k is a matrix entry; λ is the eigenvalue."
+      ],
+      "practiceLabPointer": {
+        "section": 5,
+        "route": "#/section/5",
+        "note": "Practice Lab Section 5 for eigenvector tests."
+      }
+    }
+  ],
+  "wrapUpQuestions": [
+    "What does Av=λv mean in words?",
+    "Why do we solve det(A-λI)=0?",
+    "Why is the zero vector not an eigenvector?"
+  ],
+  "linksToWebsite": {
+    "sections": [
+      5
+    ],
+    "note": "Practice Lab Section(s) 5 for more practice."
+  },
+  "qualityControlNotes": [
+    "Checked triangular eigenspaces for λ=3 and λ=2.",
+    "Checked 2x2 characteristic polynomial λ^2-7λ+10.",
+    "Checked parameter problem: k=6 gives Av=(8,8)."
+  ],
+  "reviewSummary": "Session 11 focuses on eigenvalues as stretch factors and eigenspaces as preserved directions."
+}
