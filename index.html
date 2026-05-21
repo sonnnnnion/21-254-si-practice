@@ -6720,7 +6720,7 @@ async function renderWalkthroughDetail(sessionId) {
 const WALK_PRESENT_KEY_PREFIX = "pl254:walk:present:";
 
 function enterPresenterMode(sessionId) {
-  const sections = Array.from(document.querySelectorAll(".walk-detail .walk-section"));
+  const sections = Array.from(document.querySelectorAll("#walkDetail .walk-section"));
   if (!sections.length) return;
 
   const persistKey = sessionId ? (WALK_PRESENT_KEY_PREFIX + sessionId) : null;
