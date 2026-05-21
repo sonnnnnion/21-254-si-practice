@@ -2980,6 +2980,147 @@
   .wv-entry-free { fill: var(--gold); font-weight: 700; }
   .wv-augbar { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 3 3; }
 
+  /* ============================================================
+     PRESENTER MODE — slideshow view for SI instructor walkthrough
+     ============================================================
+     Activated by adding `body.walk-presenter`. Each walk-section
+     becomes a slide; only the .is-active slide is visible. Slides
+     are large, centered, and breathe with generous spacing.
+     A fixed bottom bar provides Prev / Slide N of M / Next / Exit.
+     Keyboard: Left/Right arrows navigate, Esc exits.
+  */
+  body.walk-presenter {
+    overflow: hidden;
+  }
+  body.walk-presenter header.nav,
+  body.walk-presenter footer,
+  body.walk-presenter .walk-detail-bar,
+  body.walk-presenter .walk-detail-head {
+    display: none !important;
+  }
+  body.walk-presenter main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  body.walk-presenter .walk-section {
+    display: none;
+  }
+  body.walk-presenter .walk-section.is-active {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: var(--surface);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 56px max(48px, 6vw) 110px;
+    z-index: 1;
+    animation: presenter-fade 240ms ease;
+  }
+  @keyframes presenter-fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  body.walk-presenter .walk-section.is-active .walk-section-head {
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  body.walk-presenter .walk-section.is-active .walk-section-head h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.15;
+    margin: 0;
+  }
+  body.walk-presenter .walk-section.is-active .wsh-num {
+    font-size: 0.55em;
+    padding: 4px 10px;
+    margin-right: 14px;
+    vertical-align: middle;
+  }
+  body.walk-presenter .walk-section.is-active .walk-section-body {
+    font-size: clamp(15px, 1.4vw, 19px);
+    line-height: 1.65;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  body.walk-presenter .walk-section.is-active .walk-list li,
+  body.walk-presenter .walk-section.is-active .walk-wrap-list li,
+  body.walk-presenter .walk-section.is-active ol li,
+  body.walk-presenter .walk-section.is-active ul li {
+    margin-bottom: 10px;
+  }
+  body.walk-presenter .walk-section.is-active .walk-step {
+    margin-bottom: 16px;
+  }
+  body.walk-presenter .walk-section.is-active .walk-step-latex,
+  body.walk-presenter .walk-section.is-active .walk-final,
+  body.walk-presenter .walk-section.is-active .math-block {
+    font-size: 1.08em;
+  }
+  /* In presenter mode, open all reveals so the instructor doesn't have to click */
+  body.walk-presenter .walk-reveal-inner { display: block !important; }
+  body.walk-presenter .walk-reveal-btn { display: none !important; }
+  /* Slightly larger visual sketches */
+  body.walk-presenter .vs-sketch svg { max-width: 480px !important; }
+
+  /* The presenter bottom bar */
+  .walk-presenter-bar {
+    display: none;
+  }
+  body.walk-presenter .walk-presenter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 18px;
+    background: var(--ink);
+    color: var(--surface);
+    padding: 10px 14px;
+    border-radius: 999px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    z-index: 10;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .walk-presenter-bar button {
+    background: transparent;
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font: inherit;
+    transition: background 120ms;
+  }
+  .walk-presenter-bar button:hover {
+    background: rgba(255,255,255,0.12);
+  }
+  .walk-presenter-bar button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .walk-presenter-bar .wpb-count {
+    min-width: 88px;
+    text-align: center;
+    color: rgba(255,255,255,0.78);
+  }
+  .walk-presenter-bar .wpb-exit {
+    border-color: rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.78);
+  }
+  .walk-presenter-bar .wpb-hint {
+    font-size: 11px;
+    opacity: 0.55;
+    margin-left: 6px;
+  }
+  @media (max-width: 640px) {
+    .walk-presenter-bar .wpb-hint { display: none; }
+    body.walk-presenter .walk-section.is-active {
+      padding: 40px 20px 100px;
+    }
+  }
+
   /* ----- Print styles ----- */
   @media print {
     body { background: #fff; color: #000; }
@@ -3644,6 +3785,48 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[c]));
+}
+
+/* Reduce a JSON dict key (used as a vector or point name) to a clean
+   display label suitable for an SVG <text> element.
+
+   The SVG labels render in italic Fraunces (display serif), so:
+   - "u" -> "u"          (already short)
+   - "AB" -> "AB"        (already short)
+   - "unitAB" -> "unitAB" (single CamelCase word, fine as-is)
+   - "x_1" -> "x\u2081"  (Unicode subscript so it reads as math without MathJax)
+   - "v_after_solving" -> "v"  (multi-segment underscore name -> use first segment)
+   - "F_x" -> "F\u2093"  (subscript single-letter -> Unicode subscript)
+   - "M_AB" -> "M"       (subscript multi-letter -> truncate, can't subscript)
+
+   We do NOT run SVG labels through MathJax; the labels render as literal text. */
+function svgLabelName(key) {
+  if (key == null) return "";
+  const s = String(key).trim();
+  if (!s) return "";
+
+  // No underscore at all -> use as is
+  if (!s.includes("_")) return s;
+
+  // Multi-segment underscore identifier like "v_after_solving" -> first segment only
+  const segs = s.split("_");
+  if (segs.length > 2) return segs[0];
+
+  // Two segments: x_1, F_x, M_AB. Try a Unicode subscript for single-character second segs.
+  const base = segs[0], sub = segs[1];
+  if (sub.length === 1) {
+    const subMap = {
+      "0":"\u2080","1":"\u2081","2":"\u2082","3":"\u2083","4":"\u2084",
+      "5":"\u2085","6":"\u2086","7":"\u2087","8":"\u2088","9":"\u2089",
+      "a":"\u2090","e":"\u2091","h":"\u2095","i":"\u1d62","j":"\u2c7c",
+      "k":"\u2096","l":"\u2097","m":"\u2098","n":"\u2099","o":"\u2092",
+      "p":"\u209a","r":"\u1d63","s":"\u209b","t":"\u209c","u":"\u1d64",
+      "v":"\u1d65","x":"\u2093"
+    };
+    if (subMap[sub]) return base + subMap[sub];
+  }
+  // Two-segment but no clean Unicode subscript -> just use the base
+  return base;
 }
 
 /* ============================================================
@@ -6357,6 +6540,7 @@ async function renderWalkthroughDetail(sessionId) {
       '<div class="walk-bar-spacer"></div>' +
       '<button ' + (prev ? 'data-route="/walkthroughs/' + escapeHtml(prev.sessionId) + '"' : "disabled") + '>&larr; Prev</button>' +
       '<button ' + (next ? 'data-route="/walkthroughs/' + escapeHtml(next.sessionId) + '"' : "disabled") + '>Next &rarr;</button>' +
+      '<button id="walkPresentBtn" title="Step through the session one section at a time">\u25b6 Presenter</button>' +
       '<button id="walkPrintBtn" title="Print or save as PDF">Print / PDF</button>' +
     '</div>'
   );
@@ -6452,16 +6636,22 @@ async function renderWalkthroughDetail(sessionId) {
   }
 
   if (Array.isArray(s.problems) && s.problems.length) {
-    const probs = s.problems.map((p, i) => renderWalkProblem(p, i, s.problems.length, s.sessionId)).join("");
-    parts.push(
-      '<section class="walk-section">' +
-        '<div class="walk-section-head"><h2><span class="wsh-num">07</span>Problems</h2>' +
-          '<span class="walk-card-dur">' + s.problems.length + ' total</span></div>' +
-        '<div class="walk-section-body" style="background:var(--bg-subtle); padding:18px 14px;">' +
-          probs +
-        '</div>' +
-      '</section>'
-    );
+    // Each problem becomes its own walk-section so it can be its own slide in
+    // presenter mode. The first problem still gets the "07" section number;
+    // subsequent problems share the same number with a sub-heading.
+    s.problems.forEach((p, i) => {
+      const probHtml = renderWalkProblem(p, i, s.problems.length, s.sessionId);
+      const heading = "Problem " + (i + 1) + " of " + s.problems.length;
+      const num = i === 0 ? "07" : "&nbsp;";  // only first problem gets the section number
+      parts.push(
+        '<section class="walk-section walk-section-problem">' +
+          '<div class="walk-section-head"><h2><span class="wsh-num">' + num + '</span>' + escapeHtml(heading) + '</h2></div>' +
+          '<div class="walk-section-body" style="background:var(--bg-subtle); padding:18px 14px;">' +
+            probHtml +
+          '</div>' +
+        '</section>'
+      );
+    });
   }
 
   if (Array.isArray(s.wrapUpQuestions) && s.wrapUpQuestions.length) {
@@ -6481,22 +6671,9 @@ async function renderWalkthroughDetail(sessionId) {
     parts.push(walkSection("09", "Links to Practice Lab", '<ul class="walk-links-list">' + items + '</ul>'));
   }
 
-  if (Array.isArray(s.qualityControlNotes) && s.qualityControlNotes.length) {
-    const items = s.qualityControlNotes.map(q => '<li>' + renderTextOrLatex(q) + '</li>').join("");
-    const status = s.reviewStatus ? ' &middot; <em>' + escapeHtml(s.reviewStatus) + '</em>' : "";
-    const summary = (Array.isArray(s.reviewSummary) && s.reviewSummary.length)
-      ? '<ul class="walk-qc-list" style="margin-top:8px">' +
-        s.reviewSummary.map(q => '<li>' + renderTextOrLatex(q) + '</li>').join("") + '</ul>' : "";
-    parts.push(
-      '<details class="walk-qc">' +
-        '<summary>Quality-control notes (' + s.qualityControlNotes.length + ')' + status + '</summary>' +
-        '<div class="walk-qc-inner">' +
-          '<ul class="walk-qc-list">' + items + '</ul>' +
-          (summary ? '<div style="margin-top:10px"><strong style="font-size:12px;color:var(--ink-mute)">Review summary:</strong>' + summary + '</div>' : "") +
-        '</div>' +
-      '</details>'
-    );
-  }
+  // Quality-control notes are internal review metadata (e.g. "Problem 2 was independently
+  // checked"), not material for the SI instructor's whiteboard prep. We intentionally
+  // do not render them in the walkthrough view; the JSON still carries them for archival.
 
   root.innerHTML = parts.join("");
 
@@ -6521,27 +6698,112 @@ async function renderWalkthroughDetail(sessionId) {
   const printBtn = $("#walkPrintBtn");
   if (printBtn) printBtn.addEventListener("click", () => window.print());
 
+  const presentBtn = $("#walkPresentBtn");
+  if (presentBtn) presentBtn.addEventListener("click", () => enterPresenterMode(sessionId));
+
   typesetMath(root);
+}
+
+/* ============================================================
+   PRESENTER MODE
+   ============================================================
+   Activates a slideshow view of the walkthrough sections. Each
+   <section class="walk-section"> becomes one slide. Navigation:
+     - Buttons on a fixed bottom bar
+     - Left/Right arrow keys
+     - Esc to exit
+   The active slide index is persisted to localStorage per session
+   so re-entering presenter mode resumes where the instructor left
+   off. typesetMath is rerun on each transition since MathJax may
+   have skipped initially-hidden slides.
+*/
+const WALK_PRESENT_KEY_PREFIX = "pl254:walk:present:";
+
+function enterPresenterMode(sessionId) {
+  const sections = Array.from(document.querySelectorAll(".walk-detail .walk-section"));
+  if (!sections.length) return;
+
+  const persistKey = sessionId ? (WALK_PRESENT_KEY_PREFIX + sessionId) : null;
+  let active = 0;
+  if (persistKey) {
+    const stored = parseInt(localStorage.getItem(persistKey) || "0", 10);
+    if (!isNaN(stored) && stored >= 0 && stored < sections.length) active = stored;
+  }
+
+  document.body.classList.add("walk-presenter");
+
+  // Insert the presenter control bar if not already present
+  let bar = document.querySelector(".walk-presenter-bar");
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.className = "walk-presenter-bar";
+    bar.innerHTML =
+      '<button class="wpb-prev" aria-label="Previous slide">&larr; Prev</button>' +
+      '<span class="wpb-count">1 / ' + sections.length + '</span>' +
+      '<button class="wpb-next" aria-label="Next slide">Next &rarr;</button>' +
+      '<button class="wpb-exit" aria-label="Exit presenter mode">Exit</button>' +
+      '<span class="wpb-hint">\u2190 \u2192 to navigate, Esc to exit</span>';
+    document.body.appendChild(bar);
+  }
+
+  function show(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= sections.length) idx = sections.length - 1;
+    sections.forEach((s, i) => s.classList.toggle("is-active", i === idx));
+    const active = sections[idx];
+    if (active) active.scrollTop = 0;
+    const countEl = bar.querySelector(".wpb-count");
+    if (countEl) countEl.textContent = (idx + 1) + " / " + sections.length;
+    const prevBtn = bar.querySelector(".wpb-prev");
+    const nextBtn = bar.querySelector(".wpb-next");
+    if (prevBtn) prevBtn.disabled = idx <= 0;
+    if (nextBtn) nextBtn.disabled = idx >= sections.length - 1;
+    if (persistKey) localStorage.setItem(persistKey, String(idx));
+    // Re-typeset math in case the slide was hidden when initial typeset ran
+    if (active) typesetMath(active);
+    return idx;
+  }
+  let current = show(active);
+
+  const goPrev = () => { current = show(current - 1); };
+  const goNext = () => { current = show(current + 1); };
+
+  // Wire up bar buttons
+  bar.querySelector(".wpb-prev").onclick = goPrev;
+  bar.querySelector(".wpb-next").onclick = goNext;
+  bar.querySelector(".wpb-exit").onclick = exitPresenterMode;
+
+  // Keyboard navigation — store handler so we can remove on exit
+  const onKey = (e) => {
+    if (!document.body.classList.contains("walk-presenter")) return;
+    // Ignore key events when the user is typing into an input
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
+    if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); goPrev(); }
+    else if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); goNext(); }
+    else if (e.key === "Escape") { e.preventDefault(); exitPresenterMode(); }
+    else if (e.key === "Home") { e.preventDefault(); current = show(0); }
+    else if (e.key === "End")  { e.preventDefault(); current = show(sections.length - 1); }
+  };
+  document.addEventListener("keydown", onKey);
+  // Stash so exit can remove
+  window._walkPresentKeyHandler = onKey;
+}
+
+function exitPresenterMode() {
+  document.body.classList.remove("walk-presenter");
+  document.querySelectorAll(".walk-section.is-active").forEach(s => s.classList.remove("is-active"));
+  const bar = document.querySelector(".walk-presenter-bar");
+  if (bar) bar.remove();
+  if (window._walkPresentKeyHandler) {
+    document.removeEventListener("keydown", window._walkPresentKeyHandler);
+    window._walkPresentKeyHandler = null;
+  }
 }
 
 /* Render a string that may contain LaTeX (explicit \(...\) delimiters, bare
    backslash commands like \frac/\nabla/\overrightarrow, or implicit math
-   syntax like f_x / x^2 / <a,b,c>). Plain prose is HTML-escaped untouched.
-
-   Three branches:
-     1. String already contains \( or \[  -> pass through to MathJax verbatim
-     2. String contains a known backslash LaTeX command -> wrap the whole string
-        in \( ... \) so MathJax renders it as one inline math block
-     3. Otherwise -> token-wise scan; any token containing _x, ^2, or
-        <a,b,c>-style angle-bracket vectors gets wrapped in \(...\) with
-        literal angle brackets converted to \langle/\rangle. Prose tokens
-        pass through escapeHtml unchanged. */
-/* Math wrappers that detect existing LaTeX delimiters in the source string
-   and avoid double-wrapping. The walkthrough JSONs are inconsistent:
-   - Some fields contain pure expressions like "u\\cdot v=-8"            (need \(...\))
-   - Some contain expressions with their own \[...\] or \(...\) framing  (already self-delimited)
-   - Some are mixed prose+math like "The triangle has base \(2\) and ..." (already self-delimited)
-   Wrapping the self-delimited cases in extra \(...\) breaks rendering. */
+   syntax like f_x / x^2 / <a,b,c>). Plain prose is HTML-escaped untouched. */
 function texInline(s) {
   if (s == null) return "";
   const str = String(s).trim();
@@ -6572,38 +6834,45 @@ function renderTextOrLatex(s) {
   const str = String(s);
   if (!str) return "";
 
-  // Case 1: explicit delimiters already present
+  // Case 1: explicit delimiters already present - pass through verbatim
   if (/\\\(|\\\[/.test(str)) {
     return '<span class="tex2jax_process">' + str + '</span>';
   }
 
-  // Case 2: bare backslash LaTeX commands -> treat whole string as math
-  if (/\\(?:frac|sqrt|sum|int|iint|iiint|partial|nabla|langle|rangle|begin\{|end\{|operatorname|overrightarrow|underrightarrow|vec\{|mathbf|mathbb|cdot|times|overline|hat\{|det|lambda|theta|alpha|beta|gamma|delta|epsilon|mu|pi|sigma|tau|phi|psi|omega|Delta|Theta|Lambda|Pi|Sigma|Phi|Psi|Omega|infty|to|leftrightarrow|rightarrow|leftarrow|le|ge|ne|approx|equiv|in|notin|subset|supset|cup|cap|emptyset|forall|exists|perp|parallel|circ|prime|left|right|big|Big|bigg|Bigg|frac|dfrac|tfrac)\b/.test(str)) {
-    return '<span class="tex2jax_process">\\(' + str + '\\)</span>';
-  }
-
-  // Case 3: token-wise scan for implicit math (subscripts/superscripts/<a,b,c>)
+  // Case 2: token-wise scan. Math-bearing tokens (subscripts, superscripts,
+  // angle-bracket vectors, backslash LaTeX commands) get wrapped in \(...\);
+  // prose tokens pass through escapeHtml. This avoids the trap of treating
+  // a whole sentence as math just because it contains one LaTeX command
+  // somewhere (e.g. "Do Problem 2 to emphasize \overrightarrow{AB}=B-A.").
   return wrapInlineMath(str);
 }
 
 /* Wrap math-bearing tokens with \(...\), preserve whitespace and prose.
-   A token is "math-bearing" if it contains:
-     - a subscript/superscript signal: letter or digit followed by _ or ^
-       and then an alphanumeric or { character
+   A token is "math-bearing" if it contains any of:
+     - a subscript/superscript signal: letter/digit followed by _ or ^ and
+       then an alphanumeric or { character (e.g. f_x, x^2, x_{12})
      - an angle-bracket vector: <a,b,c>-style with at least one comma inside
+     - a backslash LaTeX command anywhere in the token
 
-   Trailing sentence punctuation (.,;:!?) stays outside the math wrap so
-   it doesn't get math-italic treatment. */
+   Multi-word identifiers like v_after_solving (3+ underscores between
+   alphabetic runs, no digits, no curly braces) are treated as plain names,
+   not as math. Trailing sentence punctuation stays outside the wrap. */
 function wrapInlineMath(str) {
-  // Preserve whitespace runs as their own array slots
   const parts = str.split(/(\s+)/);
   return parts.map(tok => {
     if (!tok) return "";
     if (/^\s+$/.test(tok)) return tok;
 
-    const hasSubSup   = /[a-zA-Z0-9][_\^][a-zA-Z0-9{]/.test(tok);
-    const hasAngleVec = /<[a-zA-Z0-9_\^\-+,.\s]*?,[a-zA-Z0-9_\^\-+,.\s]*?>/.test(tok);
-    if (!hasSubSup && !hasAngleVec) return escapeHtml(tok);
+    // Skip multi-word identifiers: 2+ underscores joining only letters (no digits, no braces).
+    // These are dict keys like "v_after_solving" or "T_inverse_applied", not math expressions.
+    if (/^[a-zA-Z]+(?:_[a-zA-Z]+){2,}$/.test(tok)) {
+      return escapeHtml(tok);
+    }
+
+    const hasSubSup    = /[a-zA-Z0-9][_\^][a-zA-Z0-9{]/.test(tok);
+    const hasAngleVec  = /<[a-zA-Z0-9_\^\-+,.\s]*?,[a-zA-Z0-9_\^\-+,.\s]*?>/.test(tok);
+    const hasBackslash = /\\[a-zA-Z]/.test(tok);
+    if (!hasSubSup && !hasAngleVec && !hasBackslash) return escapeHtml(tok);
 
     // Split off trailing sentence punctuation
     const trailMatch = /^(.*?)([.,;:!?)\]'"]*)$/.exec(tok);
@@ -6611,9 +6880,8 @@ function wrapInlineMath(str) {
     const trail = trailMatch[2] || "";
 
     // Convert literal <a,b,c> to \langle a,b,c\rangle inside the math body.
-    // A trailing space after \rangle is required so it terminates cleanly when
-    // followed by alphabetic characters (e.g. "<2x,2y,1>dA" -> "\langle 2x,2y,1\rangle dA",
-    // not "\rangledA" which MathJax would treat as one unknown command).
+    // Trailing space after \rangle ensures it terminates cleanly before
+    // adjacent letters (e.g. "<2x,2y,1>dA" -> "\langle 2x,2y,1\rangle dA").
     const mathBody = body.replace(/<([a-zA-Z0-9_\^\-+,.\s]+?)>/g, '\\langle $1\\rangle ');
 
     return '<span class="tex2jax_process">\\(' + mathBody + '\\)</span>' + escapeHtml(trail);
@@ -6646,7 +6914,7 @@ function renderWalkProblem(p, i, total, sessionId) {
   const mins = (p.estimatedMinutes != null) ? '<span class="walk-tag">~' + p.estimatedMinutes + ' min</span>' : "";
 
   const saybefore = p.whatToSayBefore
-    ? '<div class="walk-saybefore">' + escapeHtml(p.whatToSayBefore) + '</div>' : "";
+    ? '<div class="walk-saybefore">' + renderTextOrLatex(p.whatToSayBefore) + '</div>' : "";
 
   const visual = p.visualSpec ? renderVisualSpec(p.visualSpec) : "";
 
@@ -6974,13 +7242,9 @@ function matrixToLatex(m) {
 function renderVisualInstructions(spec) {
   const list = spec.boardSketchInstructions || spec.drawInstructions;
   if (!Array.isArray(list) || !list.length) return "";
-  // If text contains LaTeX delimiters, render through MathJax inside a span
-  const items = list.map(t => {
-    if (/\\\(|\\\[/.test(t)) {
-      return '<li><span class="tex2jax_process">' + t + '</span></li>';
-    }
-    return '<li>' + escapeHtml(t) + '</li>';
-  }).join("");
+  // Each instruction line may contain delimited LaTeX, bare backslash commands,
+  // or implicit math (A^{-1}, f_x, <a,b,c>) — route through renderTextOrLatex.
+  const items = list.map(t => '<li>' + renderTextOrLatex(t) + '</li>').join("");
   return (
     '<div class="vs-instr">' +
       '<div class="vs-instr-title">Board sketch instructions</div>' +
@@ -7084,7 +7348,7 @@ function svgVectors2D(spec) {
   const cols = ["var(--red)","var(--ink)","var(--gold)","#5A6F8E"];
   const arrows = keys.slice(0, 4).map((k, i) => {
     const v = vecs[k];
-    return wv2DArrow(cx, cy, v[0], v[1], scale, k, cols[i % cols.length]);
+    return wv2DArrow(cx, cy, v[0], v[1], scale, svgLabelName(k), cols[i % cols.length]);
   }).join("");
 
   let perp = "";
@@ -7195,7 +7459,13 @@ function vsListVectors(val) {
 
 function wvAxes3D(cx, cy, scale) {
   scale = scale || 60;
-  const ax = function(p) { const xy = wv3DProject(p); return [cx + xy[0]*scale, cy + xy[1]*scale]; };
+  // Enforce a minimum axis length (in pixels) so when the data scale shrinks
+  // the axes don't collapse to a tiny triangle near the origin (which used to
+  // pile axis labels on top of each other and on top of the data).
+  const minAxisPx = 38;
+  const dataLen = 1.5 * scale;
+  const axScale = dataLen < minAxisPx ? (minAxisPx / 1.5) : scale;
+  const ax = function(p) { const xy = wv3DProject(p); return [cx + xy[0]*axScale, cy + xy[1]*axScale]; };
   const a1 = ax([1.5, 0, 0]);
   const a2 = ax([0, 1.5, 0]);
   const a3 = ax([0, 0, 1.5]);
@@ -7206,9 +7476,9 @@ function wvAxes3D(cx, cy, scale) {
       '" stroke="var(--ink-mute)" marker-end="url(#wvArrSmall)"/>' +
     '<line x1="' + cx + '" y1="' + cy + '" x2="' + a3[0] + '" y2="' + a3[1] +
       '" stroke="var(--ink-mute)" marker-end="url(#wvArrSmall)"/>' +
-    '<text class="wv-axis-label" x="' + (a1[0]+4) + '" y="' + (a1[1]+4) + '">x</text>' +
-    '<text class="wv-axis-label" x="' + (a2[0]+4) + '" y="' + (a2[1]+8) + '">y</text>' +
-    '<text class="wv-axis-label" x="' + (a3[0]-4) + '" y="' + (a3[1]-4) + '">z</text>'
+    '<text class="wv-axis-label" x="' + (a1[0]+6) + '" y="' + (a1[1]+4) + '">x</text>' +
+    '<text class="wv-axis-label" x="' + (a2[0]-4) + '" y="' + (a2[1]+12) + '">y</text>' +
+    '<text class="wv-axis-label" x="' + (a3[0]-4) + '" y="' + (a3[1]-6) + '">z</text>'
   );
 }
 
@@ -7227,37 +7497,102 @@ function svgVectors3D(spec) {
   if (Array.isArray(spec.direction)) things.push(spec.direction);
   const scale = wv3DScale(things);
 
-  let dots = "";
+  // Identify point-to-point vector names (e.g. "AB" where A and B are both points).
+  // We'll then suppress derived vectors like "unitAB", "AB_unit", "norm_AB" from the
+  // sketch — they're parallel to or identical with the main displayed vector and
+  // pile labels on top of each other.
+  const ptToPtNames = new Set();
+  Object.keys(vecs).forEach(name => {
+    const m = /^([A-Z])([A-Z])$/.exec(name);
+    if (m && pts[m[1]] && pts[m[2]]) ptToPtNames.add(name);
+  });
+  function isDerivedFromPointVec(name) {
+    for (const base of ptToPtNames) {
+      const lower = name.toLowerCase();
+      const lowerBase = base.toLowerCase();
+      if (lower === lowerBase) continue;
+      if (lower.includes(lowerBase) && (
+        lower.startsWith("unit") || lower.endsWith("unit") ||
+        lower.startsWith("norm") || lower.endsWith("norm") ||
+        lower.includes("hat") || lower.includes("normalized")
+      )) return true;
+    }
+    return false;
+  }
+
+  // Project all points into pixel space and compute the centroid (for label-push direction)
+  const projPts = {};
   Object.keys(pts).forEach(name => {
     const p = pts[name]; if (!Array.isArray(p)) return;
     const xy = wv3DProject(p);
-    const x = cx + xy[0]*scale, y = cy + xy[1]*scale;
-    dots += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="var(--ink)"/>' +
-            '<text class="wv-label" x="' + (x + 6) + '" y="' + (y - 6) + '">' + escapeHtml(name) + '</text>';
+    projPts[name] = [cx + xy[0]*scale, cy + xy[1]*scale];
+  });
+  const pointKeys = Object.keys(projPts);
+  let centroid = [cx, cy];
+  if (pointKeys.length) {
+    centroid = [
+      pointKeys.reduce((s,k)=>s+projPts[k][0],0) / pointKeys.length,
+      pointKeys.reduce((s,k)=>s+projPts[k][1],0) / pointKeys.length,
+    ];
+  }
+
+  // Render point dots with labels pushed away from the centroid
+  let dots = "";
+  pointKeys.forEach(name => {
+    const p = projPts[name];
+    let dx = p[0] - centroid[0], dy = p[1] - centroid[1];
+    const len = Math.hypot(dx, dy);
+    if (len < 1) { dx = 8; dy = -8; }   // fallback when point sits at the centroid
+    else { dx = (dx/len) * 12; dy = (dy/len) * 12; }
+    const anchor = dx > 3 ? 'start' : (dx < -3 ? 'end' : 'middle');
+    dots += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3" fill="var(--ink)"/>' +
+            '<text class="wv-label" x="' + (p[0] + dx) + '" y="' + (p[1] + dy + 4) +
+            '" text-anchor="' + anchor + '">' + escapeHtml(svgLabelName(name)) + '</text>';
   });
 
   const cols = ["var(--red)","var(--ink)","var(--gold)","#5A6F8E"];
-  let i = 0;
+  let colorIdx = 0;
   let arrows = "";
 
   Object.keys(vecs).forEach(name => {
     const v = vecs[name]; if (!Array.isArray(v)) return;
+    if (isDerivedFromPointVec(name)) return;  // skip unitAB, AB_norm, etc
+
     const m = /^([A-Z])([A-Z])$/.exec(name);
-    let sx, sy, ex, ey;
-    if (m && pts[m[1]] && pts[m[2]]) {
-      const S = wv3DProject(pts[m[1]]);
-      const E = wv3DProject(pts[m[2]]);
-      sx = cx + S[0]*scale; sy = cy + S[1]*scale;
-      ex = cx + E[0]*scale; ey = cy + E[1]*scale;
+    let sx, sy, ex, ey, isPointToPoint = false;
+    if (m && projPts[m[1]] && projPts[m[2]]) {
+      [sx, sy] = projPts[m[1]];
+      [ex, ey] = projPts[m[2]];
+      isPointToPoint = true;
     } else {
       const E = wv3DProject(v);
       sx = cx; sy = cy; ex = cx + E[0]*scale; ey = cy + E[1]*scale;
     }
-    const col = cols[i++ % cols.length];
+    const col = cols[colorIdx++ % cols.length];
     arrows += '<line x1="' + sx + '" y1="' + sy + '" x2="' + ex + '" y2="' + ey +
-              '" stroke="' + col + '" stroke-width="2" marker-end="url(#wvArr)" color="' + col + '"/>' +
-              '<text class="wv-label" x="' + (ex + 5) + '" y="' + (ey - 4) + '" fill="' + col + '">' +
-              escapeHtml(name) + '</text>';
+              '" stroke="' + col + '" stroke-width="2" marker-end="url(#wvArr)" color="' + col + '"/>';
+
+    // Label placement:
+    //   - point-to-point arrow (e.g. AB): place at the arrow's midpoint, offset perpendicular
+    //     to the arrow direction so it doesn't sit on the line or collide with the
+    //     endpoint labels A and B
+    //   - free vector (e.g. v=...): label at the arrow head as before
+    let lx, ly, anchor = 'start';
+    if (isPointToPoint) {
+      const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+      const ddx = ex - sx, ddy = ey - sy;
+      const L = Math.max(1, Math.hypot(ddx, ddy));
+      // Perpendicular unit vector (rotated 90deg counterclockwise in screen coords)
+      const perpX = -ddy / L, perpY = ddx / L;
+      lx = mx + perpX * 12;
+      ly = my + perpY * 12 + 4;
+      anchor = perpX > 0.2 ? 'start' : (perpX < -0.2 ? 'end' : 'middle');
+    } else {
+      lx = ex + 6;
+      ly = ey - 6;
+    }
+    arrows += '<text class="wv-label" x="' + lx + '" y="' + ly + '" fill="' + col +
+              '" text-anchor="' + anchor + '">' + escapeHtml(svgLabelName(name)) + '</text>';
   });
 
   // Basis & column vectors (each may be an array or named dict)
@@ -7271,7 +7606,7 @@ function svgVectors3D(spec) {
       if (!Array.isArray(v)) return;
       const E = wv3DProject(v);
       const ex = cx + E[0]*scale, ey = cy + E[1]*scale;
-      const lab = entry.label || (s.defaultName + (s.items.length > 1 ? (k+1) : ""));
+      const lab = svgLabelName(entry.label || (s.defaultName + (s.items.length > 1 ? (k+1) : "")));
       arrows += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ex + '" y2="' + ey +
                 '" stroke="' + s.color + '" stroke-width="2" marker-end="url(#wvArr)" color="' + s.color + '"/>' +
                 '<text class="wv-label" x="' + (ex + 5) + '" y="' + (ey - 4) +
@@ -7384,7 +7719,7 @@ function svgPlane3D(spec) {
       if (!Array.isArray(p)) return;
       const xy = project(p);
       pts += '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="3" fill="var(--ink)"/>' +
-             '<text class="wv-label" x="' + (xy[0]+5) + '" y="' + (xy[1]-6) + '">' + escapeHtml(name) + '</text>';
+             '<text class="wv-label" x="' + (xy[0]+5) + '" y="' + (xy[1]-6) + '">' + escapeHtml(svgLabelName(name)) + '</text>';
     });
   }
 
@@ -7529,7 +7864,7 @@ function svgMatrixPair(spec) {
     const left = padX + 6, right = padX + 6 + cols*cell;
     const top = padY + 8, bot = padY + 8 + rows*cell;
     return (
-      '<text class="wv-label" x="' + ((left+right)/2) + '" y="' + padY + '" text-anchor="middle">' + escapeHtml(name) + '</text>' +
+      '<text class="wv-label" x="' + ((left+right)/2) + '" y="' + padY + '" text-anchor="middle">' + escapeHtml(svgLabelName(name)) + '</text>' +
       '<path class="wv-bracket" d="M ' + (left - 8) + ' ' + (top - 4) + ' L ' + (left - 12) + ' ' + (top - 4) +
         ' L ' + (left - 12) + ' ' + (bot + 4) + ' L ' + (left - 8) + ' ' + (bot + 4) + '"/>' +
       '<path class="wv-bracket" d="M ' + (right + 8) + ' ' + (top - 4) + ' L ' + (right + 12) + ' ' + (top - 4) +
