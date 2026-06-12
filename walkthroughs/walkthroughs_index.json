@@ -1,0 +1,92 @@
+{
+ "sessions": [
+  {
+   "sessionNumber": 1,
+   "file": "walkthroughs/si_session_01_vectors_dot_products_walkthrough_reviewed.json"
+  },
+  {
+   "sessionNumber": 2,
+   "file": "walkthroughs/si_session_02_matrices_transposes_multiplication_walkthrough.json"
+  },
+  {
+   "sessionNumber": 3,
+   "file": "walkthroughs/si_session_03_linear_systems_rref_walkthrough.json"
+  },
+  {
+   "sessionNumber": 4,
+   "file": "walkthroughs/si_session_04_rank_consistency_nullspace_walkthrough.json"
+  },
+  {
+   "sessionNumber": 5,
+   "file": "walkthroughs/si_session_05_subspaces_span_linear_independence_walkthrough.json"
+  },
+  {
+   "sessionNumber": 6,
+   "file": "walkthroughs/si_session_06_bases_dimension_colspace_nullspace_walkthrough.json"
+  },
+  {
+   "sessionNumber": 7,
+   "file": "walkthroughs/si_session_07_linear_transformations_standard_matrices_walkthrough.json"
+  },
+  {
+   "sessionNumber": 8,
+   "file": "walkthroughs/si_session_08_determinants_invertibility_walkthrough.json"
+  },
+  {
+   "sessionNumber": 9,
+   "file": "walkthroughs/si_session_09_exam1_review_walkthrough.json"
+  },
+  {
+   "sessionNumber": 10,
+   "file": "walkthroughs/si_session_10_matrix_inverses_determinant_properties_walkthrough.json"
+  },
+  {
+   "sessionNumber": 11,
+   "file": "walkthroughs/si_session_11_eigenvalues_eigenvectors_walkthrough.json"
+  },
+  {
+   "sessionNumber": 12,
+   "file": "walkthroughs/si_session_12_multiplicity_eigenspaces_eigenbases_walkthrough.json"
+  },
+  {
+   "sessionNumber": 13,
+   "file": "walkthroughs/si_session_13_diagonalization_matrix_powers_walkthrough.json"
+  },
+  {
+   "sessionNumber": 14,
+   "file": "walkthroughs/si_session_14_projections_components_cross_product_walkthrough.json"
+  },
+  {
+   "sessionNumber": 15,
+   "file": "walkthroughs/si_session_15_exam2_review_walkthrough.json"
+  },
+  {
+   "sessionNumber": 16,
+   "file": "walkthroughs/si_session_16_curves_tangent_vectors_arc_length_walkthrough.json"
+  },
+  {
+   "sessionNumber": 17,
+   "file": "walkthroughs/si_session_17_scalar_functions_partials_gradients_tangent_planes_walkthrough_FIXED.json"
+  },
+  {
+   "sessionNumber": 18,
+   "file": "walkthroughs/si_session_18_optimization_vector_fields_divergence_curl_walkthrough.json"
+  },
+  {
+   "sessionNumber": 19,
+   "file": "walkthroughs/si_session_19_line_integrals_conservative_fields_path_independence_walkthrough.json"
+  },
+  {
+   "sessionNumber": 20,
+   "file": "walkthroughs/si_session_20_exam3_review_walkthrough.json"
+  },
+  {
+   "sessionNumber": 21,
+   "file": "walkthroughs/si_session_21_double_integrals_change_variables_greens_theorem_walkthrough.json"
+  },
+  {
+   "sessionNumber": 22,
+   "file": "walkthroughs/si_session_22_exam4_review_walkthrough_FIXED.json"
+  }
+ ]
+}
