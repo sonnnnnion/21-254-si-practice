@@ -298,11 +298,12 @@
     letter-spacing: .04em;
     text-transform: uppercase;
   }
-  .hero-eyebrow .dot {
-    width: 6px; height: 6px;
-    border-radius: 999px;
-    background: var(--red);
-    box-shadow: 0 0 0 4px rgba(200,16,46,.12);
+  .hero-eyebrow .mark {
+    color: var(--red);
+    font-family: var(--font-display);
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 600;
   }
   .hero h1 {
     font-family: var(--font-display);
@@ -376,7 +377,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 12px 5px 10px;
+    padding: 5px 13px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 999px;
@@ -388,14 +389,6 @@
     transition: transform 0.18s var(--ease), border-color 0.18s var(--ease);
   }
   .hero-chip:hover { transform: translateY(-1px); border-color: var(--border-strong, var(--border)); }
-  .hero-chip .hc-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background: var(--red);
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
 
   /* Live stat row */
   .hero-stats {
@@ -1241,12 +1234,6 @@
     background: var(--red-tint);
     color: var(--red-deep);
     border-color: rgba(200,16,46,.2);
-  }
-  .pill.status-got::before, .pill.status-review::before {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 999px;
-    background: currentColor;
   }
   @media (max-width: 540px) {
     .prob-row { flex-direction: column; align-items: flex-start; }
@@ -2260,13 +2247,6 @@
   /* Walkthroughs nav link — hidden unless body.walk-unlocked */
   .nav-link.nav-walk { display: none; }
   body.walk-unlocked .nav-link.nav-walk { display: inline-flex; }
-  .nav-walk-dot {
-    display: inline-block;
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--gold);
-    margin-right: 6px;
-    vertical-align: 1px;
-  }
 
   /* ----- Dashboard ----- */
   .walk-head {
@@ -2309,11 +2289,6 @@
     color: var(--ink-mute);
     width: fit-content;
     font-weight: 500;
-  }
-  .walk-note::before {
-    content: "";
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--gold);
   }
 
   .walk-toolbar {
@@ -3500,7 +3475,7 @@
       <button class="nav-link" data-route="/topics">Practice</button>
       <button class="nav-link" data-route="/exam">Exam Mode</button>
       <button class="nav-link" data-route="/review">Need Review <span class="nav-badge" id="navReviewBadge" hidden>0</span></button>
-      <button class="nav-link nav-walk" data-route="/walkthroughs" title="SI Leader Walkthroughs"><span class="nav-walk-dot"></span>Walkthroughs</button>
+      <button class="nav-link nav-walk" data-route="/walkthroughs" title="SI Leader Walkthroughs">Walkthroughs</button>
     </nav>
   </div>
 </header>
@@ -3514,14 +3489,14 @@
     <section class="view" id="view-home">
       <div class="home-grid">
         <div class="home-left">
-          <span class="hero-eyebrow"><span class="dot"></span>CMU · Linear Algebra &amp; Vector Calculus</span>
+          <span class="hero-eyebrow"><span class="mark" aria-hidden="true">∇</span>CMU · Linear Algebra &amp; Vector Calculus</span>
           <h1 class="home-title">21-254 <span class="accent">Practice Lab</span></h1>
-          <p class="hero-sub">Practice problems with guided hints and worked solutions — built for review, not for grades.</p>
+          <p class="hero-sub">Extra practice problems with guided hints and full worked solutions, for reviewing on your own time.</p>
 
           <div class="hero-chips" aria-label="Features">
-            <span class="hero-chip"><span class="hc-dot"></span>Guided hints</span>
-            <span class="hero-chip"><span class="hc-dot"></span>Worked solutions</span>
-            <span class="hero-chip"><span class="hc-dot"></span>Exam-mode review</span>
+            <span class="hero-chip">Guided hints</span>
+            <span class="hero-chip">Worked solutions</span>
+            <span class="hero-chip">Exam-mode review</span>
           </div>
 
           <div class="hero-actions">
