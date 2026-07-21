@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="21-254 Practice Lab — original SI-style practice problems for CMU's Linear Algebra and Vector Calculus for Engineers." />
+<meta name="description" content="21-254 Practice Lab — original practice problems for CMU's Linear Algebra and Vector Calculus for Engineers." />
 <title>21-254 Practice Lab</title>
 
 <!-- Favicon: stylized ∇ (nabla / gradient) on a soft red-tint pad -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%23FCEFF1'/%3E%3Cpath d='M14 16 L50 16 L32 52 Z' fill='none' stroke='%23C8102E' stroke-width='6' stroke-linejoin='round' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='52' r='3.4' fill='%23C8102E'/%3E%3C/svg%3E" />
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%23FCEFF1'/%3E%3Cpath d='M14 16 L50 16 L32 52 Z' fill='none' stroke='%23C8102E' stroke-width='6' stroke-linejoin='round' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='52' r='3.4' fill='%23C8102E'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#C8102E" />
 
 <!-- Fonts: Fraunces (display serif) + Manrope (UI sans) + JetBrains Mono (monospace accents) -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,7 +37,8 @@
     }
   };
 </script>
-<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<!-- MathJax is vendored locally (vendor/mathjax/) so the site renders math with no internet. -->
+<script async src="vendor/mathjax/tex-svg.js"></script>
 
 <style>
   /* ============================================================
@@ -1909,6 +1912,14 @@
     font-weight: 600;
   }
   footer .foot-brand .num { color: var(--red); }
+  footer .foot-ai {
+    max-width: 560px;
+    margin: 6px auto 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--ink-faint);
+  }
+  footer .foot-ai strong { color: var(--ink-mute); font-weight: 600; }
   footer .foot-links {
     margin-top: 8px;
     display: inline-flex;
@@ -3462,7 +3473,7 @@
         <div class="home-left">
           <span class="hero-eyebrow"><span class="dot"></span>CMU · Linear Algebra &amp; Vector Calculus</span>
           <h1 class="home-title">21-254 <span class="accent">Practice Lab</span></h1>
-          <p class="hero-sub">SI-style practice problems with guided hints and worked solutions — built for review, not for grades.</p>
+          <p class="hero-sub">Practice problems with guided hints and worked solutions — built for review, not for grades.</p>
 
           <div class="hero-chips" aria-label="Features">
             <span class="hero-chip"><span class="hc-dot"></span>Guided hints</span>
@@ -3728,7 +3739,7 @@
           <button class="btn btn-ghost" id="examReshuffle" style="display:none;">Reshuffle</button>
         </div>
 
-        <div class="exam-disclaimer">This is a practice review set generated from the available SI-style problem library, not an official exam.</div>
+        <div class="exam-disclaimer">This is a practice review set generated from the available problem library, not an official exam.</div>
       </div>
 
       <div id="examSetContainer"></div>
@@ -3806,7 +3817,8 @@
 
 <footer>
   <div class="foot-brand"><span class="num">21-254</span> Practice Lab</div>
-  <div>Original SI-style practice problems. Not official course materials.</div>
+  <div>Original practice problems. Not official course materials.</div>
+  <div class="foot-ai"><strong>AI-Disclosure Notice:</strong> Problems, hints, and solutions were built by AI on the author's own 21-254 practice materials. An occasional error is possible, so make sure to use the <strong>Report Issue</strong> feature to improve the quality of the site!</div>
   <div class="foot-links">
     <button type="button" id="aboutTrigger">About this resource</button>
     <span aria-hidden="true">·</span>
@@ -7128,13 +7140,13 @@ function toggleAboutModal() {
         <div class="about-body">
           <p><strong>21-254 Practice Lab</strong> is an unofficial supplemental instruction practice
              resource for CMU 21-254: Linear Algebra and Vector Calculus for Engineers.</p>
-          <p>The problems are <strong>original SI-style practice problems</strong> designed for review.
+          <p>The problems are <strong>original practice problems</strong> designed for review.
              They are not official course materials, and nothing here affects your grade.</p>
           <p>Your progress, scratch work, and review flags are saved <strong>only in this browser</strong>
              (localStorage). There's no login and no data collection.</p>
           <p>Spot something wrong or confusing? Every problem has a <strong>Report Issue</strong> button
-             that opens an email with the problem ID pre-filled — feedback makes the library better
-             for everyone.</p>
+             that opens an email with the problem ID pre-filled — flagging errors is the best way to
+             make the library better for everyone.</p>
         </div>
       </div>`;
     document.body.appendChild(modal);
