@@ -1938,6 +1938,9 @@
   .about-body strong { color: var(--ink); }
 
   /* QR share button + modal */
+  /* The floating button is only shown on viewports wide enough for it to sit
+     clear of the 1180px content column; otherwise it would cover problem rows.
+     Narrower screens use the footer entry instead. */
   .qr-fab {
     position: fixed;
     bottom: 22px; right: 22px;
@@ -1947,19 +1950,16 @@
     background: var(--ink);
     color: #fff;
     border: 0;
-    display: grid;
+    display: none;                 /* enabled only on wide viewports, below */
     place-items: center;
     cursor: pointer;
     box-shadow: 0 6px 20px -6px rgba(31,41,51,.5), inset 0 -2px 0 rgba(0,0,0,.18);
     transition: transform .16s var(--ease), background .18s var(--ease);
   }
+  @media (min-width: 1330px) { .qr-fab { display: grid; } }
   .qr-fab:hover { transform: translateY(-2px); background: #000; }
   .qr-fab:active { transform: translateY(0); }
   .qr-fab svg { width: 25px; height: 25px; }
-  @media (max-width: 640px) {
-    .qr-fab { width: 46px; height: 46px; bottom: 16px; right: 16px; }
-    .qr-fab svg { width: 22px; height: 22px; }
-  }
   .qr-card { max-width: 360px; text-align: center; }
   .qr-wrap {
     background: #fff;
@@ -3840,6 +3840,8 @@
   <div class="foot-links">
     <button type="button" id="aboutTrigger">About this resource</button>
     <span aria-hidden="true">·</span>
+    <button type="button" id="qrFooterBtn">QR code</button>
+    <span aria-hidden="true">·</span>
     <a href="mailto:mbocksta@andrew.cmu.edu?subject=21-254%20Practice%20Lab%20Feedback">Send feedback</a>
   </div>
 </footer>
@@ -3983,8 +3985,16 @@ function lsSet(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); }
   catch { /* ignore quota */ }
 }
-function getStatusMap()  { return lsGet(LS.STATUS, {}); }
-function getScratchMap() { return lsGet(LS.SCRATCH, {}); }
+/* A stored map must be a plain object. If the value is anything else — an
+   array, a string, a number, null — we discard it and start fresh. Without this
+   check, assigning keys onto a stored array would serialize back to "[]" and
+   silently destroy the student's saved work on the very next write. */
+function lsGetMap(key) {
+  const v = lsGet(key, null);
+  return (v && typeof v === "object" && !Array.isArray(v)) ? v : {};
+}
+function getStatusMap()  { return lsGetMap(LS.STATUS); }
+function getScratchMap() { return lsGetMap(LS.SCRATCH); }
 function setStatus(problemId, status) {
   const map = getStatusMap();
   if (status === null) delete map[problemId];
@@ -4419,12 +4429,16 @@ function renderResumeLink() {
   if (lastProblem && State.sectionsData.length > 0) {
     const status = getStatus(lastId);
     const verb = status === "got" ? "Revisit" : "Continue";
-    const title = String(lastProblem.title || "").slice(0, 56);
+    // Do NOT hard-truncate the title: some titles contain \(...\) math, and
+    // slicing can cut a LaTeX command in half. CSS ellipsis handles overflow,
+    // and we typeset below so math in titles renders properly.
+    const title = String(lastProblem.title || "");
     helpEl.innerHTML = `<button class="resume-link" data-route="/problem/${lastId}" type="button">
       <span class="resume-verb">${verb} where you left off</span>
       <span class="resume-title">${escapeHtml(title)}<span class="resume-arrow"> →</span></span>
     </button>`;
     helpEl.classList.add("has-resume");
+    typesetMath(helpEl);
   } else {
     helpEl.innerHTML = "Mark problems as you finish — your progress is saved in this browser.";
     helpEl.classList.remove("has-resume");
@@ -7029,9 +7043,11 @@ function wireGlobal() {
   $("#aboutTrigger")?.addEventListener("click", toggleAboutModal);
 
   // QR share button + modal
-  const qrFab = $("#qrFab"), qrModal = $("#qrModal");
-  if (qrFab && qrModal) {
-    qrFab.addEventListener("click", () => { qrModal.hidden = false; });
+  const qrModal = $("#qrModal");
+  if (qrModal) {
+    const openQr = () => { qrModal.hidden = false; };
+    $("#qrFab")?.addEventListener("click", openQr);        // wide screens
+    $("#qrFooterBtn")?.addEventListener("click", openQr);  // always available
     $("#qrClose")?.addEventListener("click", () => { qrModal.hidden = true; });
     qrModal.addEventListener("click", (e) => { if (e.target === qrModal) qrModal.hidden = true; });
   }
@@ -7767,14 +7783,14 @@ async function renderWalkthroughDetail(sessionId) {
       wrap.classList.toggle("open");
       const key = wrap.dataset.openKey;
       if (key) {
-        const open = lsGet(LS.WALK_OPEN, {});
+        const open = lsGetMap(LS.WALK_OPEN);
         if (wrap.classList.contains("open")) open[key] = 1; else delete open[key];
         lsSet(LS.WALK_OPEN, open);
       }
     });
   });
 
-  const open = lsGet(LS.WALK_OPEN, {});
+  const open = lsGetMap(LS.WALK_OPEN);
   root.querySelectorAll(".walk-reveal[data-open-key]").forEach(w => {
     if (open[w.dataset.openKey]) w.classList.add("open");
   });
