@@ -37,7 +37,7 @@
     "For a 3 by 4 matrix, rank-nullity says rank(A)+dim(Nul(A))=4.",
     "Column dependence relations can be read from the RREF because the same linear relations among columns are preserved."
    ],
-   "setupLatex": "Start with \\[A\\mid b]=\\left[\\begin{array}{rrrr|r}1&2&0&-4&0\\\\-1&1&1&-5&1\\\\2&0&1&4&8\\end{array}\\right].\\] Row reducing gives pivot columns 1, 2, and 3, so \\(x_4\\) will be free.",
+   "setupLatex": "Start with \\[[A\\mid b]=\\left[\\begin{array}{rrrr|r}1&2&0&-4&0\\\\-1&1&1&-5&1\\\\2&0&1&4&8\\end{array}\\right].\\] Row reducing gives pivot columns 1, 2, and 3, so \\(x_4\\) will be free.",
    "solutionSteps": [
     {
      "label": "Row reduce the augmented matrix",
