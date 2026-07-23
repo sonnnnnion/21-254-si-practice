@@ -1680,27 +1680,6 @@
     margin-bottom: 8px;
   }
 
-  /* Common mistakes */
-  .mistakes-list {
-    margin: 4px 0 0;
-    padding: 0;
-    list-style: none;
-  }
-  .mistakes-list li {
-    position: relative;
-    padding: 6px 0 6px 24px;
-    font-size: 14.5px;
-    color: var(--ink-soft);
-  }
-  .mistakes-list li::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 13px;
-    width: 12px; height: 2px;
-    background: var(--red);
-    border-radius: 2px;
-  }
-
   /* Status / action bar */
   .study-actions {
     display: flex;
@@ -6526,13 +6505,6 @@ function renderProblem(problemId) {
            </div>`
   }) : "";
 
-  const mistakesBlock = (p.commonMistakes && p.commonMistakes.length) ? revealBlock({
-    label: "Common Mistakes",
-    n: "!",
-    body: `<ul class="mistakes-list">${p.commonMistakes.map(m =>
-      `<li><div class="math-block" style="display:inline-block;">${m}</div></li>`).join("")}</ul>`
-  }) : "";
-
   const similarBlock = p.similarProblemPrompt ? revealBlock({
     label: "Try a Similar Problem",
     n: "↻",
@@ -6611,7 +6583,6 @@ function renderProblem(problemId) {
     ${setupBlock}
     ${solutionBlock}
     ${answerBlock}
-    ${mistakesBlock}
     ${similarBlock}
 
     <div class="study-actions">
