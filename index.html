@@ -40,6 +40,11 @@
 <!-- MathJax is vendored locally (vendor/mathjax/) so the site renders math with no internet. -->
 <script async src="vendor/mathjax/tex-svg.js"></script>
 
+<!-- Anonymous, cookieless usage analytics (GoatCounter). SPA page-views are counted manually; see countRoute(). -->
+<script>window.goatcounter = { no_onload: true };</script>
+<script data-goatcounter="https://mbocksta.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+
 <style>
   /* ============================================================
      DESIGN TOKENS
@@ -3816,6 +3821,7 @@
   <div class="foot-brand"><span class="num">21-254</span> Practice Lab</div>
   <div>Original practice problems. Not official course materials.</div>
   <div class="foot-ai"><strong>AI-Disclosure Notice:</strong> Problems, hints, and solutions were built by AI on the author's own 21-254 practice materials. An occasional error is possible, so make sure to use the <strong>Report Issue</strong> feature to improve the quality of the site!</div>
+  <div class="foot-ai">Anonymous, cookie-free usage statistics. No personal data is collected.</div>
   <div class="foot-links">
     <button type="button" id="aboutTrigger">About this resource</button>
     <span aria-hidden="true">·</span>
@@ -4265,12 +4271,36 @@ function handleRoute() {
 
   // Scroll to top on every route change
   window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+
+  // Anonymous usage ping (GoatCounter) — one count per route
+  countRoute();
 }
 function markNav(route) {
   $$(".nav-link").forEach(b => {
     if (b.dataset.route === route) b.classList.add("active");
   });
 }
+
+/* ============================================================
+   USAGE ANALYTICS (GoatCounter — anonymous, cookieless)
+   One page-view per hash-route, so we can see how many students
+   visit, roughly how long they stay, and which sections/problems
+   they use. No cookies, no personal data. Endpoint is set in <head>.
+   ============================================================ */
+let lastCountedPath = null;
+function countRoute() {
+  const p = location.hash ? location.hash.replace(/^#/, "") : "/home";
+  if (p === lastCountedPath) return;                 // de-dupe repeated handleRoute() calls
+  if (window.goatcounter && typeof window.goatcounter.count === "function") {
+    lastCountedPath = p;
+    window.goatcounter.count({ path: p });
+  }
+}
+// count.js loads async; fire the first page-view as soon as it is ready
+(function goatCounterReady(tries) {
+  if (window.goatcounter && typeof window.goatcounter.count === "function") countRoute();
+  else if (tries < 50) setTimeout(() => goatCounterReady(tries + 1), 100);
+})(0);
 
 /* ============================================================
    STATS
