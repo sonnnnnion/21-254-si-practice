@@ -130,11 +130,11 @@
      "latex": "We need\n\\[9-x^2-y^2>0.\\]\nEquivalently,\n\\[x^2+y^2<9.\\]\nSo the domain is the open disk of radius \\(3\\) centered at the origin."
     },
     {
-     "label": "Find the level curve for f=0",
+     "label": "Find the level curve for \\(f=0\\)",
      "latex": "Set\n\\[\\ln(9-x^2-y^2)=0.\\]\nExponentiating gives\n\\[9-x^2-y^2=e^0=1.\\]\nThus\n\\[x^2+y^2=8.\\]\nThis is a circle centered at the origin with radius \\(\\sqrt8=2\\sqrt2\\)."
     },
     {
-     "label": "Find the level curve for f=ln 5",
+     "label": "Find the level curve for \\(f=\\ln 5\\)",
      "latex": "Set\n\\[\\ln(9-x^2-y^2)=\\ln 5.\\]\nThen\n\\[9-x^2-y^2=5,\\]\nso\n\\[x^2+y^2=4.\\]\nThis is a circle centered at the origin with radius \\(2\\)."
     }
    ],
@@ -168,15 +168,15 @@
    "setupLatex": "Split the function into two pieces:\n\\[x^2e^{xy}\\quad\\text{and}\\quad y\\sin x.\\]\nThe first piece uses product rule and chain rule.",
    "solutionSteps": [
     {
-     "label": "Compute f_x",
+     "label": "Compute \\(f_x\\)",
      "latex": "For \\(f_x\\), treat \\(y\\) as constant:\n\\[f_x=2xe^{xy}+x^2\\cdot ye^{xy}+y\\cos x.\\]\nSo\n\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x.\\]"
     },
     {
-     "label": "Compute f_y",
+     "label": "Compute \\(f_y\\)",
      "latex": "For \\(f_y\\), treat \\(x\\) as constant:\n\\[f_y=x^2\\cdot xe^{xy}+\\sin x=x^3e^{xy}+\\sin x.\\]"
     },
     {
-     "label": "Compute f_xy",
+     "label": "Compute \\(f_{xy}\\)",
      "latex": "Differentiate \\(f_x\\) with respect to \\(y\\):\n\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x.\\]\nThen\n\\[f_{xy}=2x\\cdot xe^{xy}+x^2\\left(e^{xy}+xy e^{xy}\\right)+\\cos x.\\]\nThus\n\\[f_{xy}=2x^2e^{xy}+x^2e^{xy}+x^3ye^{xy}+\\cos x=3x^2e^{xy}+x^3ye^{xy}+\\cos x.\\]"
     },
     {
@@ -222,11 +222,11 @@
      "latex": "At \\((1,2)\\),\n\\[x_s=2,\\qquad x_t=1,\\qquad y_s=4,\\qquad y_t=4.\\]"
     },
     {
-     "label": "Apply the chain rule for z_s",
+     "label": "Apply the chain rule for \\(z_s\\)",
      "latex": "Using \\(f_x=3\\) and \\(f_y=-2\\),\n\\[z_s=f_xx_s+f_yy_s=3(2)+(-2)(4)=6-8=-2.\\]"
     },
     {
-     "label": "Apply the chain rule for z_t",
+     "label": "Apply the chain rule for \\(z_t\\)",
      "latex": "Similarly,\n\\[z_t=f_xx_t+f_yy_t=3(1)+(-2)(4)=3-8=-5.\\]"
     }
    ],

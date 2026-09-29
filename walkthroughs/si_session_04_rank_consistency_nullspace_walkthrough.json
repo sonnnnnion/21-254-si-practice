@@ -85,7 +85,7 @@
     "Free variables",
     "Null space basis"
    ],
-   "studentPromptLatex": "Suppose a \\(3\\times 4\\) matrix \\(A\\) row-reduces to\n\\[\n\\operatorname{rref}(A)=\\begin{bmatrix}\n1&0&-2&0\\\n0&1&3&0\\\n0&0&0&1\n\\end{bmatrix}.\n\\]\nFind \\(\\operatorname{rank}(A)\\), the nullity of \\(A\\), and a basis for \\(\\operatorname{Nul}(A)\\).",
+   "studentPromptLatex": "Suppose a \\(3\\times 4\\) matrix \\(A\\) row-reduces to\n\\[\n\\operatorname{rref}(A)=\\begin{bmatrix}\n1&0&-2&0\\\\\n0&1&3&0\\\\\n0&0&0&1\n\\end{bmatrix}.\n\\]\nFind \\(\\operatorname{rank}(A)\\), the nullity of \\(A\\), and a basis for \\(\\operatorname{Nul}(A)\\).",
    "whatToSayBefore": "This is a reading problem. The RREF tells us where the pivots are. The null space comes from solving Ax=0, so there is no augmented column here.",
    "visualSpec": {
     "type": "rref_rank_nullity_highlight",
@@ -185,7 +185,7 @@
     "Free variables",
     "Parameter cases"
    ],
-   "studentPromptLatex": "A system in variables \\(x,y,z\\) row-reduces to\n\\[\n\\begin{bmatrix}\n1&0&2&\\mid&4\\\n0&1&-1&\\mid&3\\\n0&0&0&\\mid&h-5\n\\end{bmatrix}.\n\\]\nFor which values of \\(h\\) is the system consistent? When it is consistent, write the solution set.",
+   "studentPromptLatex": "A system in variables \\(x,y,z\\) row-reduces to\n\\[\n\\begin{bmatrix}\n1&0&2&\\mid&4\\\\\n0&1&-1&\\mid&3\\\\\n0&0&0&\\mid&h-5\n\\end{bmatrix}.\n\\]\nFor which values of \\(h\\) is the system consistent? When it is consistent, write the solution set.",
    "whatToSayBefore": "This problem is about the last row. The whole question is whether the last row becomes \\(0=0\\) or \\(0=\\text{nonzero}\\).",
    "visualSpec": {
     "type": "augmented_matrix_consistency_rank_highlight",
@@ -256,7 +256,7 @@
     },
     {
      "label": "Solve when h=5",
-     "latex": "\\text{When }h=5,\\text{ the matrix becomes}\n\\[\n\\begin{bmatrix}\n1&0&2&\\mid&4\\\n0&1&-1&\\mid&3\\\n0&0&0&\\mid&0\n\\end{bmatrix}.\n\\]\n\\text{The variable }z\\text{ is free, so let }z=t.",
+     "latex": "When \\(h=5\\), the matrix becomes\n\\[\n\\begin{bmatrix}\n1&0&2&\\mid&4\\\\\n0&1&-1&\\mid&3\\\\\n0&0&0&\\mid&0\n\\end{bmatrix}.\n\\]\nThe variable \\(z\\) is free, so let \\(z=t\\).",
      "sayOutLoud": "Now there are two pivots and one free variable, so infinitely many solutions."
     },
     {

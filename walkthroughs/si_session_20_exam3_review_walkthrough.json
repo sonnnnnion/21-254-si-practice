@@ -251,7 +251,7 @@
    "whatToSayBefore": "Say: name P and Q first. That prevents most mistakes.",
    "visualSpec": {
     "type": "vector_field_div_curl_2d",
-    "field": "F=<x^2-y, xy>",
+    "field": "\\(F=\\langle x^2-y,\\,xy\\rangle\\)",
     "point": [
      2,
      -1

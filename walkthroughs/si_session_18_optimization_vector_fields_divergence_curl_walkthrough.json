@@ -141,7 +141,7 @@
    "whatToSayBefore": "Say: name the components first. P is the first component and Q is the second component.",
    "visualSpec": {
     "type": "vector_field_div_curl_2d",
-    "field": "F=<x^2 y, x y^2>",
+    "field": "\\(F=\\langle x^2y,\\,xy^2\\rangle\\)",
     "point": [
      1,
      2

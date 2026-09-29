@@ -41,7 +41,7 @@
  "keyFormulas": [
   "\\operatorname{span}\\{v_1,\\dots,v_k\\}=\\{c_1v_1+\\cdots+c_kv_k: c_i\\in\\mathbb{R}\\}",
   "\\text{Independent} \\Longleftrightarrow c_1v_1+\\cdots+c_kv_k=0 \\text{ only has } c_1=\\cdots=c_k=0.",
-  "\\text{For } n \\text{ vectors in } \\mathbb{R}^n,\\; \\det A\\neq 0 \\Longleftrightarrow \\text{the columns are independent.}",
+  "For \\(n\\) vectors in \\(\\mathbb{R}^n\\), \\(\\det A\\neq 0 \\Longleftrightarrow\\) the columns are independent.",
   "\\text{A homogeneous solution set } Ax=0 \\text{ is always a subspace.}"
  ],
  "commonMistakes": [

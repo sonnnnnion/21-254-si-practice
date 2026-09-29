@@ -117,7 +117,7 @@
     },
     {
      "label": "Compute the 2 by 2 determinants",
-     "latex": "\\[\\det\\begin{bmatrix}-1&3\\\\2&1\\end{bmatrix}=(-1)(1)-3(2)=-7,\\]\\n\\[\\det\\begin{bmatrix}1&3\\\\0&1\\end{bmatrix}=1(1)-3(0)=1.\\]"
+     "latex": "\\[\\det\\begin{bmatrix}-1&3\\\\2&1\\end{bmatrix}=(-1)(1)-3(2)=-7,\\]\n\\[\\det\\begin{bmatrix}1&3\\\\0&1\\end{bmatrix}=1(1)-3(0)=1.\\]"
     },
     {
      "label": "Finish the determinant",
@@ -183,11 +183,11 @@
     },
     {
      "label": "Apply the row swap",
-     "latex": "Swapping two rows multiplies the determinant by \\(-1\\):\\n\\[4\\mapsto -4.\\]"
+     "latex": "Swapping two rows multiplies the determinant by \\(-1\\):\n\\[4\\mapsto -4.\\]"
     },
     {
      "label": "Apply row scaling",
-     "latex": "Multiplying one row by 5 multiplies the determinant by 5:\\n\\[-4\\mapsto -20.\\]"
+     "latex": "Multiplying one row by 5 multiplies the determinant by 5:\n\\[-4\\mapsto -20.\\]"
     },
     {
      "label": "Apply row replacement",
@@ -255,11 +255,11 @@
     },
     {
      "label": "Compute the determinant",
-     "latex": "Expand along the second row or compute directly:\\n\\[\\det(A(k))=13-2k.\\]"
+     "latex": "Expand along the second row or compute directly:\n\\[\\det(A(k))=13-2k.\\]"
     },
     {
      "label": "Find the bad value",
-     "latex": "The matrix is not invertible when\\n\\[13-2k=0.\\]\\nSo \\(2k=13\\), and \\(k=\\frac{13}{2}\\)."
+     "latex": "The matrix is not invertible when\n\\[13-2k=0.\\]\nSo \\(2k=13\\), and \\(k=\\frac{13}{2}\\)."
     },
     {
      "label": "State the invertible values",

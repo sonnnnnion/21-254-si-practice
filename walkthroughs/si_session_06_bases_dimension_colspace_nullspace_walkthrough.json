@@ -164,11 +164,11 @@
     },
     {
      "label": "Solve Ax=0 using the RREF",
-     "latex": "The RREF gives\\n\\[x_1+2x_3-x_4=0,\\qquad x_2+x_3+2x_4=0.\\]\\nLet \\(x_3=s\\) and \\(x_4=t\\). Then \\(x_1=-2s+t\\) and \\(x_2=-s-2t\\)."
+     "latex": "The RREF gives\n\\[x_1+2x_3-x_4=0,\\qquad x_2+x_3+2x_4=0.\\]\nLet \\(x_3=s\\) and \\(x_4=t\\). Then \\(x_1=-2s+t\\) and \\(x_2=-s-2t\\)."
     },
     {
      "label": "Write the null-space basis",
-     "latex": "\\[x=\\begin{bmatrix}-2s+t\\\\-s-2t\\\\s\\\\t\\end{bmatrix}=s\\begin{bmatrix}-2\\\\-1\\\\1\\\\0\\end{bmatrix}+t\\begin{bmatrix}1\\\\-2\\\\0\\\\1\\end{bmatrix}.\\]\\nSo a basis for \\(\\operatorname{Nul}(A)\\) is \\(\\left\\{(-2,-1,1,0),(1,-2,0,1)\\right\\}\\)."
+     "latex": "\\[x=\\begin{bmatrix}-2s+t\\\\-s-2t\\\\s\\\\t\\end{bmatrix}=s\\begin{bmatrix}-2\\\\-1\\\\1\\\\0\\end{bmatrix}+t\\begin{bmatrix}1\\\\-2\\\\0\\\\1\\end{bmatrix}.\\]\nSo a basis for \\(\\operatorname{Nul}(A)\\) is \\(\\left\\{(-2,-1,1,0),(1,-2,0,1)\\right\\}\\)."
     },
     {
      "label": "Rank and nullity",
@@ -239,15 +239,15 @@
    "walkthrough": [
     {
      "label": "Build the basis matrix",
-     "latex": "Put the basis vectors as columns:\\n\\[P=\\begin{bmatrix}1&2&0\\\\1&0&3\\\\0&1&-1\\end{bmatrix}.\\]"
+     "latex": "Put the basis vectors as columns:\n\\[P=\\begin{bmatrix}1&2&0\\\\1&0&3\\\\0&1&-1\\end{bmatrix}.\\]"
     },
     {
      "label": "Check if B is a basis",
-     "latex": "\\[\\det(P)=-1\\neq 0.\\]\\nSo the columns are independent and span \\(\\mathbb{R}^3\\). Therefore \\(B\\) is a basis."
+     "latex": "\\[\\det(P)=-1\\neq 0.\\]\nSo the columns are independent and span \\(\\mathbb{R}^3\\). Therefore \\(B\\) is a basis."
     },
     {
      "label": "Solve for coordinates",
-     "latex": "We solve \\(P[c]_B=v\\), or\\n\\[c_1b_1+c_2b_2+c_3b_3=v.\\]\\nThe solution is\\n\\[[v]_B=\\begin{bmatrix}-1\\\\3\\\\0\\end{bmatrix}.\\]"
+     "latex": "We solve \\(P[c]_B=v\\), or\n\\[c_1b_1+c_2b_2+c_3b_3=v.\\]\nThe solution is\n\\[[v]_B=\\begin{bmatrix}-1\\\\3\\\\0\\end{bmatrix}.\\]"
     },
     {
      "label": "Quick check",
@@ -318,7 +318,7 @@
     },
     {
      "label": "Choose parameters",
-     "latex": "Let \\(x=s\\) and \\(y=t\\). Then\\n\\[(x,y,z,w)=(s,t,s+t,-2s-t).\\]"
+     "latex": "Let \\(x=s\\) and \\(y=t\\). Then\n\\[(x,y,z,w)=(s,t,s+t,-2s-t).\\]"
     },
     {
      "label": "Split into basis vectors",
@@ -326,7 +326,7 @@
     },
     {
      "label": "Read the basis and dimension",
-     "latex": "A basis is\\n\\[\\{(1,0,1,-2),(0,1,1,-1)\\}.\\]\\nThere are two basis vectors, so \\(\\dim(W)=2\\)."
+     "latex": "A basis is\n\\[\\{(1,0,1,-2),(0,1,1,-1)\\}.\\]\nThere are two basis vectors, so \\(\\dim(W)=2\\)."
     }
    ],
    "finalAnswerLatex": "A basis for W is \\{(1,0,1,-2),(0,1,1,-1)\\},\\qquad \\dim(W)=2.",

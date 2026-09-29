@@ -3160,6 +3160,7 @@
     white-space: nowrap;
   }
   .walk-pl-pointer a:hover { text-decoration: underline; }
+  .walk-pl-links { display: inline-flex; gap: 14px; flex-wrap: wrap; }
 
   .walk-wrap-list, .walk-links-list, .walk-qc-list {
     margin: 0; padding-left: 22px;
@@ -4031,6 +4032,19 @@ function normalizeProse(s) {
     .replace(/©/g, "(c)")
     .replace(/®/g, "(r)")
     .replace(/™/g, "(tm)");
+  // 3) Real newlines. HTML collapses them, so blank-line paragraph breaks in the
+  //    source ("(a) ...\n\n(b) ...") rendered as one run-on line. Turn them into
+  //    <br><br> in prose only: never inside a math span (a <br> would split the
+  //    TeX) and not beside display math, which already starts on its own line.
+  const parts = out.split(/(\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|\$\$[\s\S]*?\$\$)/);
+  out = parts.map((seg, i) => {
+    if (i % 2) return seg;                                    // math span: untouched
+    return seg.replace(/\n[ \t]*(?:\n[ \t]*)+/g, (m, off) => {
+      const afterDisplay  = i > 0 && !seg.slice(0, off).trim() && /^(\\\[|\$\$)/.test(parts[i - 1]);
+      const beforeDisplay = i + 1 < parts.length && !seg.slice(off + m.length).trim() && /^(\\\[|\$\$)/.test(parts[i + 1]);
+      return (afterDisplay || beforeDisplay) ? m : "<br><br>";
+    });
+  }).join("");
   return out;
 }
 
@@ -4194,6 +4208,10 @@ function typesetMath(root) {
   if (window.MathJax && MathJax.typesetPromise) {
     return MathJax.typesetPromise(root ? [root] : undefined).catch(err => {
       console.warn("MathJax error:", err);
+      // A failed typeset leaves half-processed items in MathJax's internal list,
+      // and every later typeset trips over them, so all math on every page stops
+      // rendering until reload. Dropping that list lets the next view render.
+      try { MathJax.typesetClear(); } catch (_) {}
     });
   }
   return Promise.resolve();
@@ -8000,17 +8018,22 @@ function wrapInlineMath(str) {
     const hasBackslash = /\\[a-zA-Z]/.test(tok);
     if (!hasSubSup && !hasAngleVec && !hasBackslash) return escapeHtml(tok);
 
-    // Split off trailing sentence punctuation
+    // Split off trailing sentence punctuation, but not a mark that belongs to a
+    // TeX control symbol like "\;" or "\,": stripping it would leave a lone
+    // backslash that turns the closing "\)" into "\\)" and the math never ends.
     const trailMatch = /^(.*?)([.,;:!?)\]'"]*)$/.exec(tok);
-    const body  = trailMatch[1];
-    const trail = trailMatch[2] || "";
+    let body  = trailMatch[1];
+    let trail = trailMatch[2] || "";
+    if (trail && /(^|[^\\])(\\\\)*\\$/.test(body)) { body += trail[0]; trail = trail.slice(1); }
 
     // Convert literal <a,b,c> to \langle a,b,c\rangle inside the math body.
     // Trailing space after \rangle ensures it terminates cleanly before
     // adjacent letters (e.g. "<2x,2y,1>dA" -> "\langle 2x,2y,1\rangle dA").
     const mathBody = body.replace(/<([a-zA-Z0-9_\^\-+,.\s]+?)>/g, '\\langle $1\\rangle ');
 
-    return '<span class="tex2jax_process">\\(' + mathBody + '\\)</span>' + escapeHtml(trail);
+    // Escape for HTML (MathJax reads the decoded text, so TeX is unaffected):
+    // an unconverted "<" would otherwise be parsed by the browser as a tag.
+    return '<span class="tex2jax_process">\\(' + escapeHtml(mathBody) + '\\)</span>' + escapeHtml(trail);
   }).join('');
 }
 
@@ -8079,12 +8102,29 @@ function renderWalkProblem(p, i, total, sessionId) {
         sessionId + ":" + p.problemId + ":mistakes")
     : "";
 
+  // practiceLabPointer comes in three shapes across the walkthrough files:
+  //   "Practice Lab Section 2: text" (or "Sections 2 and 3: text"),
+  //   { section, message }, and { section, route, note }.
   const pl = p.practiceLabPointer;
+  let plSections = [], plLabel = "", plMsg = "";
+  if (typeof pl === "string") {
+    const m = pl.match(/^\s*(Practice Lab Sections?\s+[\d\s,and]+?)\s*:\s*(.*)$/i);
+    if (m) { plLabel = m[1]; plSections = m[1].match(/\d+/g) || []; plMsg = m[2]; }
+    else plMsg = pl;
+  } else if (pl && typeof pl === "object") {
+    if (pl.section != null && /^\d+$/.test(String(pl.section))) plSections = [String(pl.section)];
+    plLabel = plSections.length ? "Practice Lab Section " + plSections[0] : "Practice Lab";
+    plMsg = pl.message || pl.note || "";
+  }
+  // A note that already names the Practice Lab section reads fine on its own.
+  const plText = !plMsg ? '<strong>' + escapeHtml(plLabel) + ':</strong> More practice in this section.'
+    : /practice lab/i.test(plMsg) ? escapeHtml(plMsg)
+    : '<strong>' + escapeHtml(plLabel) + ':</strong> ' + escapeHtml(plMsg);
   const plHtml = pl
     ? '<div class="walk-pl-pointer">' +
-        '<div><strong>Practice Lab Section ' + escapeHtml(String(pl.section)) + ':</strong> ' +
-        escapeHtml(pl.message || "More practice in this section.") + '</div>' +
-        '<a href="#/section/' + escapeHtml(String(pl.section)) + '" data-route="/section/' + escapeHtml(String(pl.section)) + '">Open Section ' + escapeHtml(String(pl.section)) + ' &rarr;</a>' +
+        '<div>' + plText + '</div>' +
+        (plSections.length ? '<span class="walk-pl-links">' + plSections.map(n =>
+          '<a href="#/section/' + n + '" data-route="/section/' + n + '">Open Section ' + n + ' &rarr;</a>').join("") + '</span>' : "") +
       '</div>'
     : "";
 

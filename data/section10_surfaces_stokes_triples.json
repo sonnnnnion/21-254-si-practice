@@ -24,7 +24,7 @@
    "skills": [
     "Parameterize a graph surface",
     "Find a normal vector from a parametrization",
-    "Compute surface area using {r_u × r_v}"
+    "Compute surface area using \\(\\|\\mathbf r_x\\times\\mathbf r_y\\|\\)"
    ],
    "examFlavor": "Exam-style surface parametrization followed by a surface area computation",
    "problemLatex": "Let \\(S\\) be the part of the plane\n\\[\nz=6-2x-y\n\\]\nlying above the triangular region\n\\[\nD=\\{(x,y):x\\ge 0,\\ y\\ge 0,\\ x+y\\le 2\\}.\n\\]\n\n(a) Give a parametrization of \\(S\\).\n\n(b) Compute \\(\\|\\mathbf r_x\\times \\mathbf r_y\\|\\).\n\n(c) Find the surface area of \\(S\\).",

@@ -203,11 +203,11 @@
     },
     {
      "label": "Translate rows into equations",
-     "latex": "The rows say\\n\\[x_1+2x_3=-1,\\qquad x_2-3x_3=4.\\]"
+     "latex": "The rows say\n\\[x_1+2x_3=-1,\\qquad x_2-3x_3=4.\\]"
     },
     {
      "label": "Solve using the parameter",
-     "latex": "Since \\(x_3=t\\),\\n\\[x_1=-1-2t,\\qquad x_2=4+3t.\\]"
+     "latex": "Since \\(x_3=t\\),\n\\[x_1=-1-2t,\\qquad x_2=4+3t.\\]"
     },
     {
      "label": "Write the solution set",
@@ -289,11 +289,11 @@
    "walkthrough": [
     {
      "label": "Notice the relation for v3",
-     "latex": "\\[2v_1+v_2=2(1,0,2)+(0,1,-1)=(2,1,3)=v_3.\\]\\nSo \\(v_3\\) is redundant."
+     "latex": "\\[2v_1+v_2=2(1,0,2)+(0,1,-1)=(2,1,3)=v_3.\\]\nSo \\(v_3\\) is redundant."
     },
     {
      "label": "Check b is in the span",
-     "latex": "\\[3v_1+2v_2=3(1,0,2)+2(0,1,-1)=(3,2,4)=b.\\]\\nSo \\(b\\in\\operatorname{span}\\{v_1,v_2,v_3\\}\\)."
+     "latex": "\\[3v_1+2v_2=3(1,0,2)+2(0,1,-1)=(3,2,4)=b.\\]\nSo \\(b\\in\\operatorname{span}\\{v_1,v_2,v_3\\}\\)."
     },
     {
      "label": "Decide independence",
@@ -301,7 +301,7 @@
     },
     {
      "label": "Give a basis for the span",
-     "latex": "The vectors \\(v_1\\) and \\(v_2\\) are not multiples of each other, so they are independent. Since \\(v_3\\) is redundant, a basis is\\n\\[\\{v_1,v_2\\}=\\{(1,0,2),(0,1,-1)\\}.\\]"
+     "latex": "The vectors \\(v_1\\) and \\(v_2\\) are not multiples of each other, so they are independent. Since \\(v_3\\) is redundant, a basis is\n\\[\\{v_1,v_2\\}=\\{(1,0,2),(0,1,-1)\\}.\\]"
     }
    ],
    "finalAnswerLatex": "b\\in\\operatorname{span}\\{v_1,v_2,v_3\\},\\quad \\{v_1,v_2,v_3\\}\\text{ is dependent},\\quad \\text{a basis for the span is }\\{(1,0,2),(0,1,-1)\\}.",
@@ -426,15 +426,15 @@
    "walkthrough": [
     {
      "label": "Compute determinant",
-     "latex": "Expand along the first row:\\n\\[\\det(M)=1\\det\\begin{bmatrix}1&1\\\\3&2\\end{bmatrix}-k\\det\\begin{bmatrix}2&1\\\\0&2\\end{bmatrix}.\\]"
+     "latex": "Expand along the first row:\n\\[\\det(M)=1\\det\\begin{bmatrix}1&1\\\\3&2\\end{bmatrix}-k\\det\\begin{bmatrix}2&1\\\\0&2\\end{bmatrix}.\\]"
     },
     {
      "label": "Simplify",
-     "latex": "\\[\\det\\begin{bmatrix}1&1\\\\3&2\\end{bmatrix}=2-3=-1,\\qquad \\det\\begin{bmatrix}2&1\\\\0&2\\end{bmatrix}=4.\\]\\nSo\\n\\[\\det(M)=-1-4k.\\]"
+     "latex": "\\[\\det\\begin{bmatrix}1&1\\\\3&2\\end{bmatrix}=2-3=-1,\\qquad \\det\\begin{bmatrix}2&1\\\\0&2\\end{bmatrix}=4.\\]\nSo\n\\[\\det(M)=-1-4k.\\]"
     },
     {
      "label": "Find the bad value",
-     "latex": "The matrix is not invertible when\\n\\[-1-4k=0.\\]\\nSo \\(k=-\\frac14\\)."
+     "latex": "The matrix is not invertible when\n\\[-1-4k=0.\\]\nSo \\(k=-\\frac14\\)."
     },
     {
      "label": "State the invertible condition",

@@ -42,7 +42,7 @@
   "Eigenvalues solve \\(\\det(A-\\lambda I)=0\\).",
   "A matrix is diagonalizable when it has enough independent eigenvectors.",
   "\\operatorname{proj}_{u}(v)=\\dfrac{v\\cdot u}{u\\cdot u}u.",
-  "\\|a\\times b\\| = area of the parallelogram spanned by \\(a\\) and \\(b\\)."
+  "\\(\\|a\\times b\\|\\) = area of the parallelogram spanned by \\(a\\) and \\(b\\)."
  ],
  "commonMistakes": [
   "Assuming a repeated eigenvalue automatically means not diagonalizable.",
