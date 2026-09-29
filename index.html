@@ -848,7 +848,8 @@
   }
   body.is-home footer .foot-brand { display: none; }
   @media (max-height: 880px) {
-    body.is-home footer { display: none; }
+    /* the notices stay on every screen size, just below the fold on short screens */
+    body.is-home footer { margin-top: 6px; }
     body.is-home main { padding-top: 24px; padding-bottom: 8px; }
     body.is-home .home-grid { padding: 14px 0 10px; gap: 24px; }
     body.is-home .home-modules { margin-top: 12px; gap: 14px; }
@@ -1613,115 +1614,6 @@
     .viz3d-canvas { height: 250px; }
   }
 
-  /* Reveal blocks */
-  .reveal-block {
-    margin: 14px 0;
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    background: var(--surface);
-    overflow: hidden;
-    transition: border-color .2s var(--ease);
-  }
-
-  /* Reveal-next-step button: appears between scratch and reveal stack */
-  .reveal-next-wrap { margin: 18px 0 2px; }
-  .reveal-next-btn {
-    width: 100%;
-    background: linear-gradient(180deg, var(--surface), var(--red-tint));
-    border: 1.5px dashed var(--red-soft);
-    border-radius: var(--r);
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    color: var(--red-deep);
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: -.005em;
-    transition: background 0.18s var(--ease), border-color 0.18s var(--ease), transform 0.18s var(--ease);
-  }
-  .reveal-next-btn:hover {
-    background: linear-gradient(180deg, var(--red-tint), var(--red-soft));
-    border-color: var(--red);
-    transform: translateY(-1px);
-  }
-  .reveal-next-btn:active { transform: translateY(0); }
-  .reveal-next-btn .rn-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    background: var(--red);
-    color: #fff;
-    border-radius: 50%;
-    font-size: 14px;
-    line-height: 1;
-    font-weight: 700;
-  }
-  .reveal-next-btn .rn-arrow {
-    color: var(--red);
-    font-weight: 600;
-    transition: transform 0.18s var(--ease);
-  }
-  .reveal-next-btn:hover .rn-arrow { transform: translateX(2px); }
-  .reveal-next-btn[hidden] { display: none; }
-  .reveal-trigger {
-    width: 100%;
-    background: transparent;
-    border: 0;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    text-align: left;
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 14.5px;
-    color: var(--ink);
-    transition: background .15s var(--ease);
-  }
-  .reveal-trigger:hover { background: var(--bg-subtle); }
-  .reveal-trigger .left {
-    display: flex; align-items: center; gap: 12px;
-  }
-  .reveal-trigger .icon {
-    width: 26px; height: 26px;
-    border-radius: 7px;
-    display: grid; place-items: center;
-    background: var(--bg-subtle);
-    color: var(--ink-soft);
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 12px;
-    flex-shrink: 0;
-  }
-  .reveal-trigger .chev {
-    color: var(--ink-faint);
-    transition: transform .25s var(--ease);
-    flex-shrink: 0;
-  }
-  .reveal-block.open .reveal-trigger .chev { transform: rotate(180deg); }
-  .reveal-block.open { border-color: var(--border-strong); }
-  .reveal-block.open .reveal-trigger { background: var(--bg-subtle); }
-  .reveal-block.open .reveal-trigger .icon { background: var(--red); color: #fff; }
-
-  .reveal-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height .5s var(--ease-out);
-  }
-  .reveal-body-inner {
-    padding: 4px 22px 20px;
-    border-top: 1px solid var(--border);
-    margin-top: 0;
-  }
-  .reveal-block.open .reveal-body-inner { padding-top: 16px; }
-
   /* Think-first prompt */
   .think-first {
     border-left: 3px solid var(--gold);
@@ -1742,59 +1634,109 @@
     font-weight: 700;
   }
 
-  /* Scratch attempt */
-  .scratch {
-    margin: 24px 0;
+  /* ---------- Guided solution ----------
+     One path through a problem: hints, setup, worked steps, answer. Steps wait collapsed
+     (in layout, so MathJax measures them) and open one at a time along a rail. */
+  .guide { margin: 30px 0 6px; }
+  .guide-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+  .guide-kicker { font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--red); }
+  .guide-sub { margin: 5px 0 0; font-size: 14px; color: var(--ink-mute); line-height: 1.45; }
+  .guide-tools { display: flex; gap: 16px; flex-shrink: 0; }
+  .g-link {
+    background: none; border: 0; padding: 4px 0; cursor: pointer;
+    font: 600 13px var(--font-sans); color: var(--ink-mute);
+    text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px;
+    transition: color .15s var(--ease), text-decoration-color .15s var(--ease);
   }
-  .scratch label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink-soft);
-    margin-bottom: 8px;
-  }
-  .scratch textarea {
-    min-height: 110px;
-    font-family: var(--font-mono);
-    font-size: 13.5px;
-    line-height: 1.6;
-    resize: vertical;
-    background: #FCFAF6;
-    background-image:
-      linear-gradient(transparent calc(1.6em - 1px), var(--border) calc(1.6em - 1px), var(--border) 1.6em, transparent 1.6em);
-    background-size: 100% 1.6em;
-    background-attachment: local;
-    padding: 12px 14px;
-  }
+  .g-link:hover, .g-link:focus-visible { color: var(--red-deep); text-decoration-color: currentColor; }
+  .g-link[hidden] { display: none; }
 
-  /* Solution step boxes */
-  .sol-step {
-    margin-top: 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    background: var(--surface-2);
-    padding: 14px 18px;
+  /* where you are: one bar per phase, filling as steps open */
+  .guide-track { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; margin: 0 0 22px; }
+  .gt-bar { height: 4px; border-radius: 99px; background: var(--border); overflow: hidden; }
+  .gt-bar i { display: block; height: 100%; width: var(--fill, 0%); border-radius: inherit; background: var(--red); transition: width .7s var(--ease-out); }
+  .gt-seg[data-kind="hint"] .gt-bar i { background: var(--gold); }
+  .gt-seg[data-kind="setup"] .gt-bar i { background: var(--ink-soft); }
+  .gt-seg span { display: block; margin-top: 7px; font-size: 11.5px; font-weight: 600; color: var(--ink-faint); transition: color .3s var(--ease); }
+  .gt-seg.on span { color: var(--ink-soft); }
+  .gt-seg.now span { color: var(--red-deep); }
+
+  /* the rail */
+  .g-rail { list-style: none; margin: 0; padding: 0; }
+  .g-step {
+    display: grid; grid-template-rows: 0fr; visibility: hidden;
+    transition: grid-template-rows .55s var(--ease-out), visibility 0s linear .55s;
   }
-  .sol-step:first-child { margin-top: 4px; }
-  .sol-step-label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 13.5px;
-    color: var(--ink);
-    font-weight: 600;
+  .g-step.shown { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .55s var(--ease-out), visibility 0s; }
+  .g-inner { min-height: 0; overflow: hidden; position: relative; padding-left: 46px; }
+  .g-inner::before {                                   /* the line down to the next node */
+    content: ""; position: absolute; left: 14px; top: 34px; bottom: 4px; width: 2px; border-radius: 2px;
+    background: var(--border-strong); transform-origin: top;
   }
-  .sol-step-label .n {
-    width: 22px; height: 22px;
-    border-radius: 6px;
-    background: var(--ink);
-    color: #fff;
-    display: grid; place-items: center;
-    font-family: var(--font-display);
-    font-size: 12px;
-    font-weight: 700;
-    flex-shrink: 0;
+  .g-step.tail .g-inner::before { display: none; }
+  .g-node {
+    position: absolute; left: 0; top: 2px; width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center; box-sizing: border-box;
+    font: 700 12.5px var(--font-display); background: var(--surface); border: 2px solid var(--border-strong); color: var(--ink-soft);
+  }
+  .g-node svg { width: 14px; height: 14px; }
+  .g-hint .g-node { border-color: var(--gold); background: #FFF8E7; color: #8A6A12; }
+  .g-setup .g-node { border-color: var(--ink-soft); color: var(--ink); }
+  .g-step-k .g-node { border-color: var(--red); background: var(--red); color: #fff; }
+  .g-answer .g-node { border-color: var(--red-deep); background: var(--red-deep); color: #fff; }
+  .g-title { padding-top: 6px; margin-bottom: 10px; }
+  .g-kick { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
+  .g-hint .g-kick { color: #8A6A12; }
+  .g-step-k .g-kick, .g-answer .g-kick { color: var(--red-deep); }
+  .g-name { margin-top: 3px; font-family: var(--font-display); font-size: 17px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+  .g-content { padding-bottom: 26px; }
+  .g-answer .final-answer-box { margin-top: 0; }
+  .g-answer .g-content { padding-bottom: 8px; }
+
+  /* the next step waits at the end of the rail */
+  .g-next-row { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding-left: 46px; min-height: 44px; }
+  .g-next-row[hidden] { display: none; }
+  .g-ghost {
+    position: absolute; left: 0; top: 7px; width: 30px; height: 30px; border-radius: 50%; box-sizing: border-box;
+    border: 2px dashed var(--red); opacity: .55; background: var(--surface);
+    animation: gGhost 2.6s ease-in-out infinite;
+  }
+  .g-next { gap: 8px; }
+  .g-next .arrow { transition: transform .18s var(--ease); }
+  .g-next:hover .arrow { transform: translateX(3px); }
+  .g-label { display: inline-block; }
+  .g-label.swap { animation: gSwap .35s var(--ease-out); }
+
+  .g-end {
+    position: relative; margin-top: 18px; padding: 16px 20px 16px 62px;
+    border: 1px solid var(--border); border-radius: var(--r-md);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--red-tint) 140%);
+  }
+  .g-end[hidden] { display: none; }
+  .g-end .g-node { left: 16px; top: 16px; border-color: var(--red-soft); color: var(--red); }
+  .g-end .g-kick { color: var(--red-deep); margin: 5px 0 8px; }
+  .g-end .g-content { padding-bottom: 4px; color: var(--ink-soft); }
+  .g-end-note { margin: 8px 0 0; font-size: 13px; color: var(--ink-mute); }
+  .g-end.enter { animation: gRise .6s var(--ease-out) both; }
+
+  /* motion: node pops, title and body rise, the rail line draws down */
+  .g-step.enter .g-node { animation: gNode .55s var(--ease-out) both; animation-delay: var(--d, 0ms); }
+  .g-step.enter .g-title { animation: gRise .5s var(--ease-out) both; animation-delay: calc(var(--d, 0ms) + 80ms); }
+  .g-step.enter .g-content { animation: gRise .6s var(--ease-out) both; animation-delay: calc(var(--d, 0ms) + 150ms); }
+  .g-step.enter .g-inner::before { animation: gLine .8s var(--ease-out) both; animation-delay: calc(var(--d, 0ms) + 220ms); }
+  .g-answer.enter .final-answer-box { animation: gRise .6s var(--ease-out) both, gAnswer 1.4s ease .5s; animation-delay: calc(var(--d, 0ms) + 150ms), calc(var(--d, 0ms) + 650ms); }
+  .guide.no-anim .g-step, .guide.no-anim .gt-bar i { transition: none !important; }
+  @keyframes gNode { 0% { transform: scale(.35); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+  @keyframes gRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes gLine { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @keyframes gSwap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  @keyframes gGhost { 0%, 100% { box-shadow: 0 0 0 0 rgba(200,16,46,0); } 50% { box-shadow: 0 0 0 6px rgba(200,16,46,.10); } }
+  @keyframes gAnswer { 0% { box-shadow: 0 0 0 0 rgba(200,16,46,0); } 35% { box-shadow: 0 0 0 7px rgba(200,16,46,.12); } 100% { box-shadow: 0 0 0 0 rgba(200,16,46,0); } }
+  @media (max-width: 640px) {
+    .guide-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .gt-seg span { font-size: 10.5px; }
+    .g-inner, .g-next-row { padding-left: 40px; }
+    .g-end { padding-left: 56px; }
   }
 
   /* Final answer */
@@ -1913,6 +1855,15 @@
     border-color: var(--ink);
   }
   .choice.red.selected { background: var(--red); border-color: var(--red); }
+
+  .exam-cover { margin: 14px 0 0; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface-2); }
+  .exam-cover:empty { display: none; }
+  .ec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 13.5px; color: var(--ink); }
+  .ec-head span { color: var(--ink-mute); font-size: 12.5px; }
+  .ec-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+  .ec-topics span { padding: 3px 9px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; color: var(--ink-soft); }
+  .pill.pill-lec { background: var(--surface); border-color: var(--border-strong); color: var(--ink-soft); }
+  .lec-tag { color: var(--red-deep); font-weight: 600; }
 
   .exam-disclaimer {
     margin-top: 16px;
@@ -3559,6 +3510,10 @@
 
     /* open every collapse */
     .walk-reveal-body { display: block !important; }
+    .guide-tools, .guide-track, .g-next-row { display: none !important; }
+    .g-step { grid-template-rows: 1fr !important; visibility: visible !important; }
+    .g-inner { overflow: visible !important; }
+    .g-step .g-title, .g-step .g-content, .g-step .g-node { animation: none !important; opacity: 1 !important; transform: none !important; }
     .walk-qc[open] summary { border-bottom: 0; }
     .walk-qc summary { display: none; }
     .walk-qc-inner { padding: 0; }
@@ -3722,7 +3677,7 @@
         <script>
 /* ============================================================
    ROTATING HERO VISUALS
-   Five course pictures share the hero frame; each visit shows the next one
+   Ten course pictures share the hero frame; each visit shows the next one
    (first-ever visit: the original circulation picture). Clicking the picture
    also moves on. The new pictures are pure functions of time, drawn with
    requestAnimationFrame only while the home page is on screen; with reduced
@@ -3950,13 +3905,21 @@
         return { L, d };
       });
     },
-    path(x, y) {                                     // steepest-ascent path, 1.5px steps, until the top
+    path(x, y) {                                     // steepest-ascent path to the top
+      // 1.5px steps; a step that would overshoot the hilltop (f stops increasing) is halved,
+      // so the point settles onto the peak instead of zigzagging across it
       const pts = [[x, y]];
-      for (let n = 0; n < 900; n++) {
+      let h = 1.5, fv = this.f(x, y);
+      for (let n = 0; n < 1200 && h > .02; n++) {
         const [gx, gy] = this.grad(x, y), g = Math.hypot(gx, gy);
-        if (g < 2e-5) break;
-        x += 1.5 * gx / g; y += 1.5 * gy / g; pts.push([x, y]);
-        if (pts.length > 20) { const q = pts[pts.length - 20]; if (Math.hypot(q[0] - x, q[1] - y) < 6) break; }
+        if (g < 1e-7) break;
+        const nx = x + h * gx / g, ny = y + h * gy / g, nf = this.f(nx, ny);
+        if (nf <= fv) { h /= 2; continue; }
+        x = nx; y = ny; fv = nf; pts.push([x, y]);
+      }
+      for (let i = 2; i < pts.length; i++) {         // end at the first backtrack (sub-pixel, right at the top)
+        const a = pts[i - 2], b = pts[i - 1], c = pts[i];
+        if ((b[0] - a[0]) * (c[0] - b[0]) + (b[1] - a[1]) * (c[1] - b[1]) < 0) { pts.length = i; break; }
       }
       const len = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
       return { pts, len, L: len[len.length - 1] };
@@ -4125,9 +4088,368 @@
     },
   };
 
+  /* ---------- 3D helpers (x right, y into the page, z up: right-handed) ---------- */
+  function camera(cx, cy, s, az, el) {
+    const ca = Math.cos(az), sa = Math.sin(az), ce = Math.cos(el), se = Math.sin(el);
+    const f = (x, y, z) => { const X = x * ca - y * sa, Y = x * sa + y * ca; return [cx + s * X, cy - s * (z * ce + Y * se), Y * ce - z * se]; };
+    f.view = [-ce * sa, -ce * ca, se];                 // unit vector pointing at the viewer
+    return f;
+  }
+  const dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross3 = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const add3 = (a, b, s = 1) => [a[0] + b[0] * s, a[1] + b[1] * s, a[2] + b[2] * s];
+  const norm3 = a => { const L = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / L, a[1] / L, a[2] / L]; };
+  function hull(p) {                                   // convex hull (monotone chain) of 2D points
+    p = p.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const lo = [], up = [];
+    for (const q of p) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+    for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+    return lo.slice(0, -1).concat(up.slice(0, -1));
+  }
+  const poly = pts => "M" + pts.map(p => P(p[0], p[1])).join("L") + "Z";
+  // split a sampled 3D curve into front / back path data by a visibility test on each segment's midpoint
+  function splitPath(pts3, cam, isFront, out) {
+    let cur = null, last = null;
+    for (let i = 0; i < pts3.length - 1; i++) {
+      const a = pts3[i], b = pts3[i + 1], m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
+      const side = isFront(m) ? "front" : "back", pa = cam(a[0], a[1], a[2]), pb = cam(b[0], b[1], b[2]);
+      if (side !== cur || last !== i) out[side] += "M" + P(pa[0], pa[1]);
+      out[side] += "L" + P(pb[0], pb[1]); cur = side; last = i + 1;
+    }
+  }
+  const hexRGB = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const mixA = (A, B, u) => A.map((v, i) => Math.round(v + (B[i] - v) * u));
+  const rgb = A => "rgb(" + A.join(",") + ")";
+  function labels2(formula, subText, caption, size) {  // labels() with a smaller formula for long ones
+    return labels(formula, subText, caption).replace('font-size="22"', 'font-size="' + (size || 22) + '"');
+  }
+
+  /* ---------- 5. Stokes' theorem: a dome and its rim ---------- */
+  const stokes = {
+    label: "A dome-shaped surface S turning slowly; a particle circulates around its rim C while curl arrows poke through the surface (Stokes' theorem)",
+    poster: 3.4,
+    build() {
+      let extra = "";
+      for (let i = 0; i < 3; i++) extra += '<path data-k="lp' + i + '" fill="none" stroke="' + RED + '" stroke-width="1.5" stroke-linecap="round" marker-end="url(#hx-arrR)" opacity="0"/>';
+      for (let i = 0; i < 5; i++) extra += arrowLine("n" + i, DEEP, "hx-arrD", 2.2);
+      return defs('<radialGradient id="hx-dome" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".95"/>' +
+                  '<stop offset=".7" stop-color="' + RED + '" stop-opacity=".07"/><stop offset="1" stop-color="' + RED + '" stop-opacity=".14"/></radialGradient>') +
+        '<path data-k="rimBack" fill="none" stroke="' + RED + '" stroke-width="2.4" stroke-linecap="round" opacity="0"/>' +
+        '<path data-k="fill" fill="url(#hx-dome)" stroke="' + GREY + '" stroke-opacity=".35" stroke-width="1" opacity="0"/>' +
+        '<path data-k="back" fill="none" stroke="' + GREY + '" stroke-width="1" stroke-linecap="round" stroke-dasharray=".01 4" opacity="0"/>' +
+        '<path data-k="front" fill="none" stroke="' + GREY + '" stroke-width="1.1" stroke-linecap="round" opacity="0"/>' +
+        extra +
+        '<path data-k="rimFront" fill="none" stroke="' + RED + '" stroke-width="3" stroke-linecap="round" opacity="0"/>' +
+        arrowLine("tan", DEEP, "hx-arrD", 2.6) + particle("p") +
+        '<text data-k="lC" font-family="\'Fraunces\', Georgia, serif" font-size="15" font-style="italic" fill="' + RED + '" text-anchor="middle" opacity="0">C</text>' +
+        '<text data-k="lS" font-family="\'Fraunces\', Georgia, serif" font-size="15" font-style="italic" fill="' + GREY + '" text-anchor="middle" opacity="0">S</text>' +
+        labels2("∮" + sub("C") + ' <tspan font-style="italic" fill="' + RED + '">F</tspan>·' + it("d") + bold("r") + " = ∬" + sub("S") +
+                ' curl <tspan font-style="italic" fill="' + RED + '">F</tspan>·' + it("d") + bold("S"),
+                "circulation around the rim = curl through the surface", "surface S with boundary C", 19);
+    },
+    frame(t, k) {
+      const cam = camera(198, 252, 102, -.4 + .1 * t, .4), V = cam.view;
+      const isFront = q => dot3(q, V) > 0;
+      const sph = (ph, la) => [Math.sin(ph) * Math.cos(la), Math.sin(ph) * Math.sin(la), Math.cos(ph)];
+      const wire = { front: "", back: "" };
+      for (const ph of [.55, 1.0, 1.32]) {                         // latitude circles
+        const pts = []; for (let i = 0; i <= 72; i++) pts.push(sph(ph, TAU * i / 72)); splitPath(pts, cam, isFront, wire);
+      }
+      for (let m = 0; m < 8; m++) {                                  // meridians
+        const pts = []; for (let i = 0; i <= 24; i++) pts.push(sph(Math.PI / 2 * i / 24, TAU * m / 8)); splitPath(pts, cam, isFront, wire);
+      }
+      const rim = { front: "", back: "" }, rp = [];
+      for (let i = 0; i <= 96; i++) rp.push(sph(Math.PI / 2, TAU * i / 96));
+      splitPath(rp, cam, isFront, rim);
+      const sil = []; for (let a = 0; a <= 9; a++) for (let b = 0; b < 24; b++) { const q = sph(Math.PI / 2 * a / 9, TAU * b / 24), s = cam(q[0], q[1], q[2]); sil.push([s[0], s[1]]); }
+      const intro = faint(t, 0, .6);
+      k.fill.setAttribute("d", poly(hull(sil))); k.fill.setAttribute("opacity", n2(intro));
+      k.front.setAttribute("d", wire.front); k.front.setAttribute("opacity", n2(.5 * intro));
+      k.back.setAttribute("d", wire.back); k.back.setAttribute("opacity", n2(.5 * intro));
+      const rimOn = smooth(.1, .9, t);
+      k.rimFront.setAttribute("d", rim.front); k.rimFront.setAttribute("opacity", n2(rimOn));
+      k.rimBack.setAttribute("d", rim.back); k.rimBack.setAttribute("opacity", n2(.35 * rimOn));
+      // curl arrows along the outward normal, only where the surface faces us
+      const nPts = [[0, 0], [.95, .8], [.95, 2.37], [.95, 3.94], [.95, 5.51]];
+      nPts.forEach(([ph, la], i) => {
+        const q = sph(ph, la), a = cam(q[0], q[1], q[2]), b = cam(q[0] * 1.36, q[1] * 1.36, q[2] * 1.36), fr = dot3(q, V);
+        setLine(k["n" + i], a[0], a[1], b[0], b[1]);
+        k["n" + i].setAttribute("opacity", n2(smooth(.05, .3, fr) * smooth(.9, 1.3, t) * (.78 + .22 * Math.sin(2.2 * t + i))));
+      });
+      // little circulation loops on the surface (they cancel inside, leaving only the rim)
+      [[.72, 1.3], [.72, 3.4], [.72, 5.5]].forEach(([ph, la], i) => {
+        const N = sph(ph, la), e1 = [-Math.sin(la), Math.cos(la), 0], e2 = cross3(N, e1), s0 = 2.1 * t;
+        let d = "";
+        for (let j = 0; j <= 22; j++) {
+          const s = s0 + 4.3 * j / 22, q = add3(add3(N.map(v => v * 1.01), e1, .12 * Math.cos(s)), e2, .12 * Math.sin(s)), p = cam(q[0], q[1], q[2]);
+          d += (j ? "L" : "M") + P(p[0], p[1]);
+        }
+        k["lp" + i].setAttribute("d", d);
+        k["lp" + i].setAttribute("opacity", n2(.75 * smooth(.08, .35, dot3(N, V)) * smooth(1.0, 1.4, t)));
+      });
+      // particle on the rim, counterclockwise seen from above (matches the upward normal)
+      const al = .9 * t + 2.2, q = [Math.cos(al), Math.sin(al), 0], pp = cam(q[0], q[1], q[2]);
+      const tq = add3(q, [-Math.sin(al), Math.cos(al), 0], .3), tp = cam(tq[0], tq[1], tq[2]);
+      const vis = isFront(q) ? 1 : .3, on = smooth(.8, 1.2, t);
+      k.p.setAttribute("transform", "translate(" + P(pp[0], pp[1]) + ")"); k.p.setAttribute("opacity", n2(vis * on));
+      setLine(k.tan, pp[0], pp[1], tp[0], tp[1]); k.tan.setAttribute("opacity", n2(vis * on));
+      const cl = cam(Math.cos(-.9), Math.sin(-.9), 0), sl = cam(.55, -.25, .92);
+      k.lC.setAttribute("x", n2(cl[0] + 14)); k.lC.setAttribute("y", n2(cl[1] + 18));
+      k.lS.setAttribute("x", n2(sl[0] + 22)); k.lS.setAttribute("y", n2(sl[1]));
+      k.lC.setAttribute("opacity", n2(introLabels(t))); k.lS.setAttribute("opacity", n2(introLabels(t)));
+      k.labels.setAttribute("opacity", n2(introLabels(t)));
+    },
+  };
+
+  /* ---------- 6. Change of variables: a rectangle curls into a polar region ---------- */
+  const polar = {
+    label: "A rectangle in the (r, θ) plane curling around the origin into a polar region; cells far from the origin grow by a factor of r",
+    poster: 6.2,
+    O: [132, 300], S: 104, K: 78, r0: .6, r1: 2, th1: 2 * Math.PI / 3,
+    pos(r, th, m) {
+      const [ox, oy] = this.O, xr = ox + r * this.S, yr = oy - th * this.K, xp = ox + r * Math.cos(th) * this.S, yp = oy - r * Math.sin(th) * this.S;
+      return [xr + (xp - xr) * m, yr + (yp - yr) * m];
+    },
+    morph(t) {                                         // rest (rectangle) -> curl -> rest (polar) -> uncurl
+      const u = Math.max(0, t - 1.0) % 9.2;
+      if (u < 1.4) return 0; if (u < 3.8) return ease((u - 1.4) / 2.4);
+      if (u < 6.8) return 1; return 1 - ease((u - 6.8) / 2.4);
+    },
+    build() {
+      const cell = (k, fill, op) => '<path data-k="' + k + '" fill="' + fill + '" fill-opacity="' + op + '" stroke="' + RED + '" stroke-width="1.4" stroke-linejoin="round" opacity="0"/>';
+      const tx = (k, s, col, it_) => '<text data-k="' + k + '" font-family="\'Fraunces\', Georgia, serif" font-size="15"' + (it_ ? ' font-style="italic"' : "") + ' fill="' + col + '" text-anchor="middle" opacity="0">' + s + '</text>';
+      return defs() +
+        '<path data-k="axes" fill="none" stroke="' + INK + '" stroke-width="1.2" opacity="0" mask="url(#hx-quiet)"/>' +
+        '<path data-k="region" fill="' + RED + '" fill-opacity=".06" stroke="' + RED + '" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round" opacity="0"/>' +
+        '<path data-k="grid" fill="none" stroke="' + GREY + '" stroke-width="1" opacity="0"/>' +
+        cell("c1", RED, ".16") + cell("c2", RED, ".32") +
+        tx("ax1", "x", INK, true) + tx("ax2", "y", INK, true) + tx("ar1", "r", INK, true) + tx("ar2", "θ", INK, true) +
+        '<text data-k="lrect" font-family="\'Fraunces\', Georgia, serif" font-size="14" fill="' + DEEP + '" text-anchor="middle" opacity="0">' + it("Δr Δθ") + '</text>' +
+        '<text data-k="lpol" font-family="\'Fraunces\', Georgia, serif" font-size="14" fill="' + DEEP + '" text-anchor="middle" opacity="0"><tspan font-style="italic" fill="' + RED + '" font-weight="700">r</tspan> ' + it("Δr Δθ") + '</text>' +
+        '<circle data-k="o" cx="' + this.O[0] + '" cy="' + this.O[1] + '" r="3.4" fill="' + INK + '" opacity="0"/>' +
+        labels(it("dA") + ' = <tspan font-style="italic" font-weight="700" fill="' + RED + '">r</tspan> ' + it("dr dθ"),
+               "cells far from the origin are stretched by r", "the (r, θ) rectangle and the region it maps to");
+    },
+    frame(t, k) {
+      const m = this.morph(t), N = 6, rv = i => this.r0 + (this.r1 - this.r0) * i / N, tv = j => this.th1 * j / N;
+      let g = "";
+      for (let i = 0; i <= N; i++) { let d = ""; for (let s = 0; s <= 36; s++) { const p = this.pos(rv(i), this.th1 * s / 36, m); d += (s ? "L" : "M") + P(p[0], p[1]); } g += d; }
+      for (let j = 0; j <= N; j++) { const a = this.pos(this.r0, tv(j), m), b = this.pos(this.r1, tv(j), m); g += "M" + P(a[0], a[1]) + "L" + P(b[0], b[1]); }
+      k.grid.setAttribute("d", g); k.grid.setAttribute("opacity", n2(.42 * faint(t, 0, .6)));
+      const outline = (ra, rb, ta, tb, n) => {
+        const pts = [];
+        for (let s = 0; s <= n; s++) pts.push(this.pos(ra, ta + (tb - ta) * s / n, m));
+        for (let s = 0; s <= n; s++) pts.push(this.pos(rb, tb - (tb - ta) * s / n, m));
+        return poly(pts);
+      };
+      k.region.setAttribute("d", outline(this.r0, this.r1, 0, this.th1, 48)); k.region.setAttribute("opacity", n2(faint(t, .1, .8)));
+      k.c1.setAttribute("d", outline(rv(0), rv(1), tv(2), tv(3), 8)); k.c2.setAttribute("d", outline(rv(5), rv(6), tv(2), tv(3), 8));
+      k.c1.setAttribute("opacity", n2(smooth(.5, 1, t))); k.c2.setAttribute("opacity", n2(smooth(.5, 1, t)));
+      const [ox, oy] = this.O;
+      k.axes.setAttribute("d", "M" + P(ox - 110, oy) + "L" + P(384, oy) + "M" + P(ox, oy + 30) + "L" + P(ox, 60));
+      k.axes.setAttribute("opacity", n2(.38 * faint(t, 0, .5)));
+      const L = introLabels(t);
+      [["ax1", 376, oy + 20, m], ["ar1", 376, oy + 20, 1 - m], ["ax2", ox - 12, 78, m], ["ar2", ox - 12, 78, 1 - m]].forEach(([key, x, y, w]) => {
+        k[key].setAttribute("x", x); k[key].setAttribute("y", y); k[key].setAttribute("opacity", n2(L * w));
+      });
+      // area label beside the outer cell: Δr Δθ on the rectangle, r Δr Δθ once curled
+      const c = this.pos(this.r1 + .3, (tv(2) + tv(3)) / 2, m);       // just outside the outer edge, beside the cell
+      [["lrect", 1 - m], ["lpol", m]].forEach(([key, w]) => { k[key].setAttribute("x", n2(Math.min(c[0], 372))); k[key].setAttribute("y", n2(c[1] + 5)); k[key].setAttribute("opacity", n2(L * smooth(.15, .85, w))); });
+      k.o.setAttribute("opacity", n2(faint(t, 0, .4)));
+      k.labels.setAttribute("opacity", n2(L));
+    },
+  };
+
+  /* ---------- 7. Projection onto a plane ---------- */
+  const project = {
+    label: "A vector b above a plane W, its projection p in the plane, and the perpendicular piece b − p",
+    poster: 2.8,
+    build() {
+      const u1 = norm3([1, 0, .18]), n = norm3(cross3([1, 0, .18], [0, 1, .3])), u2 = cross3(n, u1);
+      Object.assign(this, { u1, u2, n });
+      const tx = (k, s, col) => '<text data-k="' + k + '" font-family="\'Fraunces\', Georgia, serif" font-size="15" fill="' + col + '" text-anchor="middle" opacity="0">' + s + '</text>';
+      return defs() +
+        '<path data-k="plane" fill="' + RED + '" fill-opacity=".05" stroke="' + GREY + '" stroke-opacity=".55" stroke-width="1.2" stroke-linejoin="round" opacity="0"/>' +
+        '<path data-k="grid" fill="none" stroke="' + GREY + '" stroke-width="1" opacity="0"/>' +
+        '<path data-k="trace" fill="none" stroke="' + RED + '" stroke-width="1.3" stroke-dasharray=".01 5" stroke-linecap="round" opacity="0"/>' +
+        '<line data-k="res" stroke="' + DEEP + '" stroke-width="2" stroke-dasharray=".01 5" stroke-linecap="round" opacity="0"/>' +
+        '<path data-k="rt" fill="none" stroke="' + DEEP + '" stroke-width="1.3" opacity="0"/>' +
+        arrowLine("pv", RED, "hx-arrR", 3) + arrowLine("bv", INK, "hx-arrI", 2.6) +
+        '<circle data-k="o" r="3.4" fill="' + INK + '" opacity="0"/>' +
+        tx("lb", bold("b"), INK) + tx("lp", bold("p"), RED) + tx("lr", bold("b") + " − " + bold("p"), DEEP) + tx("lW", it("W"), GREY) +
+        labels(bold("p") + " = proj" + sub("W") + " " + bold("b"), "the closest point to b in the plane W", "b − p is perpendicular to W");
+    },
+    frame(t, k) {
+      const cam = camera(196, 236, 96, -.62 + .1 * Math.sin(.33 * t), .42), { u1, u2, n } = this;
+      const at = (s, r, h = 0) => { const q = add3(add3(u1.map(v => v * s), u2, r), n, h); return cam(q[0], q[1], q[2]); };
+      const E = 1.45, c = [at(-E, -E), at(E, -E), at(E, E), at(-E, E)];
+      k.plane.setAttribute("d", poly(c));
+      let g = ""; for (let i = 1; i < 4; i++) { const s = -E + 2 * E * i / 4, a = at(s, -E), b = at(s, E), a2 = at(-E, s), b2 = at(E, s); g += "M" + P(a[0], a[1]) + "L" + P(b[0], b[1]) + "M" + P(a2[0], a2[1]) + "L" + P(b2[0], b2[1]); }
+      k.grid.setAttribute("d", g);
+      const on = faint(t, 0, .6);
+      k.plane.setAttribute("opacity", n2(on)); k.grid.setAttribute("opacity", n2(.3 * on));
+      // b circles above the plane; p follows underneath it
+      const w = .42 * Math.max(0, t - .4) + .6, A = .95, h = 1.05 + .22 * Math.sin(2 * w + 1.3);
+      const ps = A * Math.cos(w), pr = A * Math.sin(w), grow = ease(smooth(.15, .95, t));
+      const O = at(0, 0), Pp = at(ps * grow, pr * grow), B = at(ps * grow, pr * grow, h * grow);
+      let tr = ""; for (let i = 0; i <= 64; i++) { const a = at(A * Math.cos(TAU * i / 64), A * Math.sin(TAU * i / 64)); tr += (i ? "L" : "M") + P(a[0], a[1]); }
+      k.trace.setAttribute("d", tr); k.trace.setAttribute("opacity", n2(.5 * smooth(.6, 1.2, t)));
+      setLine(k.pv, O[0], O[1], Pp[0], Pp[1]); setLine(k.bv, O[0], O[1], B[0], B[1]); setLine(k.res, B[0], B[1], Pp[0], Pp[1]);
+      const vis = smooth(.3, .6, grow);
+      k.pv.setAttribute("opacity", n2(vis)); k.bv.setAttribute("opacity", n2(vis)); k.res.setAttribute("opacity", n2(.9 * smooth(.8, 1.1, t)));
+      // right-angle mark at p: one leg up the normal, one back toward the origin
+      const ud = norm3([-ps, -pr, 0]), e = .16, r1 = at(ps, pr, e), r2 = at(ps + ud[0] * e, pr + ud[1] * e, e), r3 = at(ps + ud[0] * e, pr + ud[1] * e, 0);
+      k.rt.setAttribute("d", "M" + P(r1[0], r1[1]) + "L" + P(r2[0], r2[1]) + "L" + P(r3[0], r3[1])); k.rt.setAttribute("opacity", n2(.8 * smooth(1.0, 1.3, t)));
+      k.o.setAttribute("cx", n2(O[0])); k.o.setAttribute("cy", n2(O[1])); k.o.setAttribute("opacity", n2(faint(t, 0, .4)));
+      const place = (el, tip, dx, dy) => { el.setAttribute("x", n2(tip[0] + dx)); el.setAttribute("y", n2(tip[1] + dy + 5)); el.setAttribute("opacity", n2(introLabels(t))); };
+      const away = (tip, d) => { const vx = tip[0] - O[0], vy = tip[1] - O[1], L = Math.hypot(vx, vy) || 1; return [vx / L * d, vy / L * d]; };
+      const ob = away(B, 16), op = away(Pp, 22);
+      place(k.lb, B, ob[0], ob[1] - 4); place(k.lp, Pp, op[0], op[1] + 6);
+      const mid = [B[0] + (Pp[0] - B[0]) * .4, B[1] + (Pp[1] - B[1]) * .4], side = (B[0] + Pp[0]) / 2 > O[0] ? 36 : -36;
+      place(k.lr, mid, side, 0);
+      const wl = at(E * .82, E * .88); place(k.lW, wl, 0, 0);
+      k.labels.setAttribute("opacity", n2(introLabels(t)));
+    },
+  };
+
+  /* ---------- 8. Cross product: area and direction ---------- */
+  const crossP = {
+    label: "Vectors u and v in a plane with the parallelogram they span; u × v stands perpendicular to the plane with length equal to that area",
+    poster: 2.2,
+    build() {
+      const tx = (k, s, col) => '<text data-k="' + k + '" font-family="\'Fraunces\', Georgia, serif" font-size="15" fill="' + col + '" text-anchor="middle" opacity="0">' + s + '</text>';
+      return defs() +
+        arrowLine("xDown", DEEP, "hx-arrD", 3) +
+        '<path data-k="plane" fill="' + INK + '" fill-opacity=".025" stroke="' + GREY + '" stroke-opacity=".5" stroke-width="1.2" stroke-linejoin="round" opacity="0"/>' +
+        '<path data-k="grid" fill="none" stroke="' + GREY + '" stroke-width="1" opacity="0"/>' +
+        '<path data-k="par" fill="' + RED + '" fill-opacity=".14" stroke="' + RED + '" stroke-opacity=".6" stroke-width="1.4" stroke-linejoin="round" opacity="0"/>' +
+        '<path data-k="arc" fill="none" stroke="' + GREY + '" stroke-width="1.4" marker-end="url(#hx-arrM)" opacity="0"/>' +
+        arrowLine("u", INK, "hx-arrI", 2.8) + arrowLine("v", RED, "hx-arrR", 2.8) + arrowLine("xUp", DEEP, "hx-arrD", 3) +
+        '<circle data-k="o" r="3.4" fill="' + INK + '" opacity="0"/>' +
+        tx("lu", bold("u"), INK) + tx("lv", bold("v"), RED) + tx("lx", bold("u") + " × " + bold("v"), DEEP) +
+        tx("lth", it("θ"), GREY) +
+        labels("|" + bold("u") + " × " + bold("v") + "| = area", "perpendicular to both u and v", "area = |u × v| = 0.00");
+    },
+    frame(t, k) {
+      const cam = camera(196, 228, 92, -.5 + .12 * Math.sin(.3 * t), .36), V = cam.view;
+      const E = 1.6, c = [cam(-E, -E, 0), cam(E, -E, 0), cam(E, E, 0), cam(-E, E, 0)];
+      k.plane.setAttribute("d", poly(c));
+      let g = ""; for (let i = 1; i < 4; i++) { const s = -E + 2 * E * i / 4, a = cam(s, -E, 0), b = cam(s, E, 0), a2 = cam(-E, s, 0), b2 = cam(E, s, 0); g += "M" + P(a[0], a[1]) + "L" + P(b[0], b[1]) + "M" + P(a2[0], a2[1]) + "L" + P(b2[0], b2[1]); }
+      k.grid.setAttribute("d", g);
+      const on = faint(t, 0, .6);
+      k.plane.setAttribute("opacity", n2(on)); k.grid.setAttribute("opacity", n2(.26 * on));
+      // v swings round; it rests briefly near a right angle (biggest area) and where it lines up with u
+      const w = .38 * Math.max(0, t - .3) + .5, th = w - .25 * Math.sin(2 * (w - Math.PI / 2)), grow = ease(smooth(.15, .95, t));
+      const U = [1.3, 0, 0], Vv = [1.05 * Math.cos(th), 1.05 * Math.sin(th), 0], X = cross3(U, Vv), area = X[2];
+      const O = cam(0, 0, 0), pu = cam(U[0] * grow, 0, 0), pv = cam(Vv[0] * grow, Vv[1] * grow, 0);
+      const pw = cam((U[0] + Vv[0]) * grow, Vv[1] * grow, 0), px = cam(0, 0, .72 * area * grow);
+      k.par.setAttribute("d", poly([O, pu, pw, pv])); k.par.setAttribute("opacity", n2(smooth(.4, .9, t)));
+      setLine(k.u, O[0], O[1], pu[0], pu[1]); setLine(k.v, O[0], O[1], pv[0], pv[1]);
+      const vis = smooth(.3, .6, grow), up = area >= 0, xl = Math.abs(.72 * area * grow);
+      k.u.setAttribute("opacity", n2(vis)); k.v.setAttribute("opacity", n2(vis));
+      setLine(k.xUp, O[0], O[1], px[0], px[1]); setLine(k.xDown, O[0], O[1], px[0], px[1]);
+      const xo = vis * smooth(.08, .25, xl);
+      k.xUp.setAttribute("opacity", n2(up ? xo : 0)); k.xDown.setAttribute("opacity", n2(up ? 0 : xo * .85));
+      // theta arc from u to v in the plane
+      let d = ""; const ra = .42, span = ((th % TAU) + TAU) % TAU;
+      for (let i = 0; i <= 28; i++) { const a = span * i / 28, q = cam(ra * Math.cos(a), ra * Math.sin(a), 0); d += (i ? "L" : "M") + P(q[0], q[1]); }
+      k.arc.setAttribute("d", d); k.arc.setAttribute("opacity", n2(.8 * smooth(1.0, 1.3, t) * smooth(.25, .6, span)));
+      const mid = cam(.62 * Math.cos(span / 2), .62 * Math.sin(span / 2), 0);
+      k.lth.setAttribute("x", n2(mid[0])); k.lth.setAttribute("y", n2(mid[1] + 5)); k.lth.setAttribute("opacity", n2(introLabels(t) * smooth(.35, .7, span)));
+      const tip = (el, p, d0) => { const vx = p[0] - O[0], vy = p[1] - O[1], L = Math.hypot(vx, vy) || 1; el.setAttribute("x", n2(p[0] + vx / L * d0)); el.setAttribute("y", n2(p[1] + vy / L * d0 + 5)); };
+      tip(k.lu, pu, 16); tip(k.lv, pv, 16);
+      k.lu.setAttribute("opacity", n2(introLabels(t))); k.lv.setAttribute("opacity", n2(introLabels(t)));
+      k.lx.setAttribute("x", n2(px[0] + 36)); k.lx.setAttribute("y", n2(px[1] + (up ? 2 : 12)));
+      k.lx.setAttribute("opacity", n2(introLabels(t) * smooth(10, 24, Math.abs(px[1] - O[1]))));
+      k.o.setAttribute("cx", n2(O[0])); k.o.setAttribute("cy", n2(O[1])); k.o.setAttribute("opacity", n2(faint(t, 0, .4)));
+      k.caption.textContent = "area = |u × v| = " + Math.abs(area).toFixed(2);
+      k.labels.setAttribute("opacity", n2(introLabels(t)));
+    },
+  };
+
+  /* ---------- 9. Double integral as the limit of boxes ---------- */
+  const riemann = {
+    label: "Boxes over a square region whose heights follow f(x, y); they refine from 3 by 3 to 12 by 12 and approach the surface, the double integral",
+    poster: 9.0,
+    levels: [3, 6, 12],
+    f(x, y) { return .22 + .78 * Math.exp(-((x - .62) ** 2 / .08 + (y - .4) ** 2 / .12)) + .3 * Math.exp(-((x - .2) ** 2 + (y - .78) ** 2) / .03); },
+    build() {
+      const cam = camera(198, 262, 188, -.72, .52), V = cam.view; this.cam = cam;
+      const H = .5, P3 = (x, y, z) => cam(x - .5, y - .5, z);
+      this.P3 = P3; this.H = H;
+      const hmax = 1.05;
+      this.sets = this.levels.map(n => {
+        const bars = [];
+        for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+          const x0 = i / n, y0 = j / n, x1 = (i + 1) / n, y1 = (j + 1) / n, v = this.f((x0 + x1) / 2, (y0 + y1) / 2);
+          const top = mixA(hexRGB("#F6E3E5"), hexRGB(RED), .12 + .8 * Math.min(1, v / hmax)), dark = hexRGB("#4A0512");
+          bars.push({ x0, y0, x1, y1, h: v * H, depth: P3((x0 + x1) / 2, (y0 + y1) / 2, 0)[2], delay: .55 * (i + (n - 1 - j)) / (2 * (n - 1)),
+                      cTop: rgb(top), cX: rgb(mixA(top, dark, .24)), cY: rgb(mixA(top, dark, .12)) });
+        }
+        bars.sort((a, b) => b.depth - a.depth);                  // far boxes first
+        return { n, bars, key: null, done: false };
+      });
+      // which vertical faces face us: +x and -y for this camera
+      this.faceX = V[0] > 0 ? 1 : 0; this.faceY = V[1] < 0 ? 0 : 1;
+      let mesh = "";
+      for (let a = 0; a <= 16; a++) {
+        let d1 = "", d2 = "";
+        for (let b = 0; b <= 32; b++) {
+          const s = a / 16, r = b / 32, p1 = P3(s, r, this.f(s, r) * H), p2 = P3(r, s, this.f(r, s) * H);
+          d1 += (b ? "L" : "M") + P(p1[0], p1[1]); d2 += (b ? "L" : "M") + P(p2[0], p2[1]);
+        }
+        mesh += d1 + d2;
+      }
+      const base = [P3(0, 0, 0), P3(1, 0, 0), P3(1, 1, 0), P3(0, 1, 0)];
+      const groups = this.sets.map((st, si) => '<g data-k="set' + si + '" opacity="0">' +
+        st.bars.map(b => ['cX', 'cY', 'cTop'].map(c => '<path fill="' + b[c] + '" stroke="#FFFFFF" stroke-opacity=".55" stroke-width=".7" stroke-linejoin="round"/>').join("")).join("") + '</g>').join("");
+      return defs() +
+        '<path d="' + poly(base) + '" fill="' + INK + '" fill-opacity=".03" stroke="' + GREY + '" stroke-opacity=".6" stroke-width="1.2" stroke-linejoin="round" data-k="base" opacity="0"/>' +
+        groups +
+        '<path data-k="mesh" d="' + mesh + '" fill="none" stroke="' + RED + '" stroke-width="1" stroke-linejoin="round" opacity="0"/>' +
+        '<text x="' + n2((P3(0, 0, 0)[0] + P3(1, 0, 0)[0]) / 2 - 16) + '" y="' + n2((P3(0, 0, 0)[1] + P3(1, 0, 0)[1]) / 2 + 22) + '" font-family="\'Fraunces\', Georgia, serif" font-size="15" font-style="italic" fill="' + GREY + '" data-k="lR" opacity="0">R</text>' +
+        labels("∬" + sub("R") + ' <tspan font-style="italic" fill="' + RED + '">f</tspan> ' + it("dA"), "the limit of sums f · ΔA as the boxes shrink", "3 × 3 = 9 boxes");
+    },
+    paint(st, g, t0, t) {                                 // draw one set; boxes rise in a wave
+      const kids = g.children, P3 = this.P3; let all = true;
+      st.bars.forEach((b, i) => {
+        const u = ease(clamp01((t - t0 - b.delay) / .7)); if (u < 1) all = false;
+        const h = Math.max(.002, b.h * u), top = [P3(b.x0, b.y0, h), P3(b.x1, b.y0, h), P3(b.x1, b.y1, h), P3(b.x0, b.y1, h)];
+        const fx = this.faceX ? [P3(b.x1, b.y0, 0), P3(b.x1, b.y1, 0), top[2], top[1]] : [P3(b.x0, b.y0, 0), P3(b.x0, b.y1, 0), top[3], top[0]];
+        const fy = this.faceY ? [P3(b.x0, b.y1, 0), P3(b.x1, b.y1, 0), top[2], top[3]] : [P3(b.x0, b.y0, 0), P3(b.x1, b.y0, 0), top[1], top[0]];
+        kids[3 * i].setAttribute("d", poly(fx)); kids[3 * i + 1].setAttribute("d", poly(fy)); kids[3 * i + 2].setAttribute("d", poly(top));
+      });
+      return all;
+    },
+    frame(t, k) {
+      // 3x3 rises, rests; 6x6; 12x12; then the surface itself shows through; fade and repeat
+      const step = 3.1, cyc = 3 * step + 3.2, tt = Math.max(0, t - .3), cycle = Math.floor(tt / cyc), u = tt - cycle * cyc;
+      const lvl = Math.min(2, Math.floor(u / step)), local = u - lvl * step, meshOn = smooth(3 * step, 3 * step + .9, u);
+      const out = 1 - smooth(cyc - .6, cyc, u);
+      k.base.setAttribute("opacity", n2(faint(t, 0, .5)));
+      this.sets.forEach((st, si) => {
+        let op = 0;
+        if (si === lvl) op = lvl === 2 ? 1 - .72 * meshOn : 1;
+        else if (si === lvl - 1) op = 1 - smooth(0, .45, local);
+        op *= out;
+        k["set" + si].setAttribute("opacity", n2(op));
+        if (op > 0) {                                     // repaint only while its boxes are still rising
+          const key = cycle + ":" + si;
+          if (st.key !== key || !st.done) { st.key = key; st.done = this.paint(st, k["set" + si], .3 + cycle * cyc + si * step, t); }
+        }
+      });
+      k.mesh.setAttribute("opacity", n2(.75 * meshOn * out));
+      const n = this.levels[lvl];
+      k.caption.textContent = meshOn > .5 ? "boxes → the surface z = f(x, y)" : n + " × " + n + " = " + n * n + " boxes";
+      k.lR.setAttribute("opacity", n2(introLabels(t)));
+      k.labels.setAttribute("opacity", n2(introLabels(t)));
+    },
+  };
+
   /* ---------- rotation, mounting and the clock ---------- */
   const ORIGINAL = { html: svg.innerHTML, label: svg.getAttribute("aria-label") };
-  const HEROES = [null, linearMap, eigen, ascent, flux];
+  const HEROES = [null, linearMap, eigen, ascent, flux, stokes, polar, project, crossP, riemann];
   let idx = 0, hero = null, keys = null, t0 = null, raf = 0, timer = 0;
   try {
     const prev = parseInt(localStorage.getItem("pl254:hero"), 10);
@@ -4315,7 +4637,7 @@
 
       <div class="exam-setup" id="examSetup">
         <h2>Build your review set</h2>
-        <p>Choose an exam and a set size. We'll randomize problems from the matched sections.</p>
+        <p>Choose an exam and a set size. Problems are drawn from that exam's lectures, spread across as many lectures as the set allows.</p>
 
         <span class="group-label">Exam</span>
         <div class="choice-row" id="examChoiceRow">
@@ -4325,6 +4647,7 @@
           <button class="choice" data-exam-pick="4">Exam 4</button>
           <button class="choice red" data-exam-pick="final">Final Exam</button>
         </div>
+        <div class="exam-cover" id="examCover" aria-live="polite"></div>
 
         <span class="group-label">Number of problems</span>
         <div class="choice-row" id="examSizeRow">
@@ -4338,7 +4661,7 @@
           <button class="btn btn-ghost" id="examReshuffle" style="display:none;">Reshuffle</button>
         </div>
 
-        <div class="exam-disclaimer">This is a practice review set generated from the available problem library, not an official exam.</div>
+        <div class="exam-disclaimer">This is a practice review set from the problem library, not an official exam. Lecture ranges follow the Fall 2026 schedule; always confirm exam coverage with the course calendar.</div>
       </div>
 
       <div id="examSetContainer"></div>
@@ -4516,21 +4839,18 @@ const SECTIONS = [
 // Which sections to emphasize for each exam, with explanatory copy.
 // Easy to edit later.
 const EXAM_MAP = {
-  "1":   { sections: [1, 2, 3, 4],
-           title: "Exam 1",
-           explain: "Focus on vectors, matrices, linear systems, subspaces/span/bases, linear transformations, and determinants. Inverses (Section 4) are more strongly associated with Exam 2, but Section 4 still contains relevant transformation/determinant material." },
-  "2":   { sections: [4, 5, 6],
-           title: "Exam 2",
-           explain: "Emphasis on inverses, eigenvalues/eigenvectors, multiplicity, eigenbases, complex eigenvalues, diagonalization, projections, components, and the cross product." },
-  "3":   { sections: [7, 8],
-           title: "Exam 3",
-           explain: "Curves, scalar functions, partial derivatives, gradients, optimization, vector fields, divergence/curl, conservative fields, line integrals, and path independence." },
-  "4":   { sections: [9, 10],
-           title: "Exam 4",
-           explain: "Double integrals, change of variables, Green's Theorem, surfaces, and scalar/vector surface integrals plus Stokes' Theorem. Triple integrals and final-review material in Section 10 lean toward the final." },
-  "final": { sections: [1,2,3,4,5,6,7,8,9,10],
-             title: "Final Exam",
-             explain: "Comprehensive review across all 10 sections of the course." }
+  // Lecture ranges from the professor (Fall 2026); the final is cumulative. Sections are only used to
+  // highlight topic cards; review sets are drawn by lecture.
+  "1":     { lectures: [1, 9],   sections: [1, 2, 3, 4], title: "Exam 1",
+             explain: "Lectures 1 to 9: vectors, matrices, transposes, linear systems, Gaussian elimination, linear independence, subspaces, linear transformations, and determinants." },
+  "2":     { lectures: [10, 17], sections: [4, 5, 6],    title: "Exam 2",
+             explain: "Lectures 10 to 17: matrix inverses, eigenvalues and eigenvectors, multiplicity, eigenbases, complex eigenvalues, diagonalization, projections, and the cross product." },
+  "3":     { lectures: [18, 26], sections: [7, 8],       title: "Exam 3",
+             explain: "Lectures 18 to 26: curves, scalar functions, partial derivatives, the gradient, optimization, vector fields, divergence and curl, line integrals, and path independence." },
+  "4":     { lectures: [27, 35], sections: [9, 10],      title: "Exam 4",
+             explain: "Lectures 27 to 35: double and triple integrals, change of variables, Green's Theorem, surfaces, scalar and vector surface integrals, Stokes' Theorem, and the Divergence Theorem." },
+  "final": { lectures: [1, 36],  sections: [1,2,3,4,5,6,7,8,9,10], title: "Final Exam",
+             explain: "Cumulative: every lecture of the course." }
 };
 
 // localStorage namespace
@@ -4585,7 +4905,6 @@ function lsGetMap(key) {
   return (v && typeof v === "object" && !Array.isArray(v)) ? v : {};
 }
 function getStatusMap()  { return lsGetMap(LS.STATUS); }
-function getScratchMap() { return lsGetMap(LS.SCRATCH); }
 function setStatus(problemId, status) {
   const map = getStatusMap();
   if (status === null) delete map[problemId];
@@ -4595,13 +4914,6 @@ function setStatus(problemId, status) {
   if (typeof updateReviewNavBadge === "function") updateReviewNavBadge();
 }
 function getStatus(problemId) { return getStatusMap()[problemId] || null; }
-function setScratch(problemId, text) {
-  const map = getScratchMap();
-  if (!text) delete map[problemId];
-  else map[problemId] = text;
-  lsSet(LS.SCRATCH, map);
-}
-function getScratch(problemId) { return getScratchMap()[problemId] || ""; }
 
 /* ============================================================
    DATA LOADING & NORMALIZATION
@@ -5028,6 +5340,18 @@ function markNav(route) {
 }
 
 /* ============================================================
+   OFFLINE SUPPORT
+   sw.js keeps a copy of the site and the problem library, so anything
+   already opened keeps working without wifi. Registered on the live https
+   site only; add ?sw=1 to test it on a local server.
+   ============================================================ */
+if ("serviceWorker" in navigator && (location.protocol === "https:" || /[?&]sw=1\b/.test(location.search))) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+window.addEventListener("offline", () => showToast("You're offline. The practice library still works.", "neutral", 3200));
+window.addEventListener("online", () => showToast("Back online", "neutral", 1800));
+
+/* ============================================================
    USAGE ANALYTICS (GoatCounter — anonymous, cookieless)
    One page-view per hash-route, so we can see how many students
    visit, roughly how long they stay, and which sections/problems
@@ -5267,6 +5591,20 @@ const COURSE_LECTURES = [
   [36, "2026-12-04", "Wrap-up",                     []],
 ];
 const FINALS_END = "2026-12-11";
+
+// problem id -> the lectures it goes with, and a short tag like "Lecture 15" for the UI
+const LECTURES_BY_PROBLEM = (() => {
+  const m = new Map();
+  COURSE_LECTURES.forEach(([n, date, topic, ids]) => ids.forEach(id => { if (!m.has(id)) m.set(id, []); m.get(id).push({ n, topic }); }));
+  return m;
+})();
+function lectureOf(id) {
+  const L = LECTURES_BY_PROBLEM.get(id);
+  if (!L || !L.length) return null;
+  const a = L[0], b = L[L.length - 1];
+  return { first: a.n, short: a === b ? `Lecture ${a.n}` : `Lectures ${a.n}\u2013${b.n}`,
+           topic: a === b ? a.topic : a.topic + " / " + b.topic };
+}
 
 function localDate(s) { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); }
 function mondayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
@@ -5524,6 +5862,7 @@ function renderProblemList() {
       <div class="prob-row-main">
         <div class="prob-row-title">${String(idx+1).padStart(2,'0')}. ${escapeHtml(p.title)}</div>
         <div class="prob-row-sub">
+          ${lectureOf(p.id) ? `<span class="lec-tag">${lectureOf(p.id).short}</span>` : ""}
           ${p.estimatedMinutes ? `<span>~${p.estimatedMinutes} min</span>` : ""}
           ${(p.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join("")}
         </div>
@@ -6008,6 +6347,29 @@ const CONCEPT = {
   }),
 
   /* ---------- Eigenvector — invariant direction ---------- */
+  /* ---------- complex eigenvalues: turn and stretch, no fixed direction ---------- */
+  complexEigen: () => ({
+    kicker: "Visual idea",
+    title:  "Complex eigenvalues: A turns every direction",
+    svg: cvFrame(`
+      <line x1="160" y1="20" x2="160" y2="205" stroke="var(--border)" stroke-width="1"/>
+      <line x1="30" y1="122" x2="290" y2="122" stroke="var(--border)" stroke-width="1"/>
+      <circle cx="160" cy="122" r="50" fill="none" stroke="var(--border-strong)" stroke-width="1" stroke-dasharray="3 4"/>
+      <path d="M189.1 114.7 A30 30 0 0 0 179.3 99.0" fill="none" stroke="var(--ink-mute)" stroke-width="1.2" marker-end="url(#cv-cx-arrM)"/>
+      <path d="M178.8 86.7 A40 40 0 0 0 154.4 82.4" fill="none" stroke="var(--ink-mute)" stroke-width="1.2" marker-end="url(#cv-cx-arrM)"/>
+      <line x1="160" y1="122" x2="209.5" y2="115.0" stroke="var(--ink)" stroke-width="2.2" marker-end="url(#cv-cx-arrI)"/>
+      <line x1="160" y1="122" x2="195.8" y2="68.9" stroke="var(--red)" stroke-width="2.3" marker-end="url(#cv-cx-arrR)"/>
+      <line x1="160" y1="122" x2="140.2" y2="42.4" stroke="var(--red)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#cv-cx-arrR)"/>
+      <circle cx="160" cy="122" r="3" fill="var(--ink)"/>
+      ${cvLabel(217.5, 119.0, "v", {fill:"var(--ink)", size:14})}
+      ${cvLabel(203.8, 64.9, "Av", {fill:"var(--red)", size:13})}
+      ${cvLabel(132.2, 36.4, "A²v", {fill:"var(--red)", size:13, anchor:"end"})}
+      ${cvNote(160, 212, "each step turns by the same angle and stretches by |λ|", {anchor:"middle", size:11})}
+    `, {prefix:"cv-cx", t:"Complex eigenvalues"}),
+    formula: "\\lambda = a \\pm b\\,i,\\qquad |\\lambda| = \\sqrt{a^2+b^2}",
+    caption: "No real direction stays on its own line, so A has no real eigenvectors. In suitable coordinates A is a rotation by the angle of λ combined with a stretch by |λ|."
+  }),
+
   eigenvector: () => ({
     kicker: "Visual idea",
     title:  "An eigenvector keeps its direction under A",
@@ -6758,7 +7120,34 @@ const Viz3D = (() => {
     for (const q of pts) d += proj(q).d;
     d /= pts.length;
     if (p.type === "label") d += 1000;     // labels always draw on top
-    return d;
+    return d + (p.bias || 0);
+  }
+
+  /* Painter's algorithm only sorts well when pieces are small, so long lines and arrow shafts
+     are cut into short segments, and marks (lines, arrows, points) get a small nudge toward the
+     camera so a curve or vector lying on a surface is never lost under that surface's own tile.
+     The floor grid and flat "decal" regions (a parallelogram, a solid's faces) draw first. */
+  const SEG = 0.12, MARK_BIAS = 0.08;
+  const lerp3 = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+  function prepare(prims) {
+    const floor = [], decal = [], main = [];
+    for (const p of prims) {
+      if (p.floor) { floor.push(p); continue; }
+      if (p.decal) { decal.push(p); continue; }
+      if ((p.type === "line" || p.type === "arrow") && !p.dash) {
+        const L = vlen(sub(p.b, p.a)), n = Math.max(1, Math.ceil(L / SEG));
+        for (let i = 0; i < n; i++) {
+          const seg = { type: "line", a: lerp3(p.a, p.b, i / n), b: lerp3(p.a, p.b, (i + 1) / n), color: p.color,
+                        lw: p.lw || (p.type === "arrow" ? 2 : 1.2), opacity: p.opacity, bias: MARK_BIAS };
+          if (p.type === "arrow" && i === n - 1) { seg.trim = p.head || 9; }
+          main.push(seg);
+        }
+        if (p.type === "arrow") main.push(Object.assign({}, p, { type: "head", a: lerp3(p.a, p.b, 0.96), bias: MARK_BIAS + 0.02 }));
+        continue;
+      }
+      main.push(p.type === "poly" ? p : Object.assign({ bias: MARK_BIAS }, p));
+    }
+    return { floor, decal, main };
   }
 
   function drawPrim(ctx, p, proj, T) {
@@ -6780,16 +7169,21 @@ const Viz3D = (() => {
         ctx.strokeStyle = p.stroke || fill;
         ctx.lineWidth = p.lw || 0.75;
         ctx.stroke();
-      } else {
-        // hairline in the fill color to hide seams between adjacent quads
+      } else if ((p.opacity == null ? 1 : p.opacity) >= 0.95) {
+        // hairline in the fill color to hide seams between adjacent opaque quads
         ctx.strokeStyle = fill;
         ctx.lineWidth = 0.6;
         ctx.stroke();
       }
     } else if (p.type === "line") {
       const A = proj(p.a), B = proj(p.b);
+      let bx = B.x, by = B.y;
+      if (p.trim) {                                   // last piece of a shaft stops under its arrowhead
+        const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, cut = Math.min(L, p.trim * Math.min(1.25, B.f) * 0.7);
+        bx -= dx / L * cut; by -= dy / L * cut;
+      }
       ctx.beginPath();
-      ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
+      ctx.moveTo(A.x, A.y); ctx.lineTo(bx, by);
       ctx.strokeStyle = p.color;
       ctx.lineWidth = p.lw || 1.2;
       ctx.setLineDash(p.dash || []);
@@ -6809,6 +7203,23 @@ const Viz3D = (() => {
       ctx.setLineDash(p.dash || []);
       ctx.stroke();
       ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(B.x, B.y);
+      ctx.lineTo(B.x - ux * hs - uy * hs * 0.42, B.y - uy * hs + ux * hs * 0.42);
+      ctx.lineTo(B.x - ux * hs + uy * hs * 0.42, B.y - uy * hs - ux * hs * 0.42);
+      ctx.closePath();
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      if (p.label) {
+        ctx.font = `italic 500 ${p.size || 14.5}px Fraunces, Georgia, serif`;
+        ctx.fillStyle = p.labelColor || p.color;
+        ctx.textAlign = "left";
+        ctx.fillText(p.label, B.x + ux * 9 + (p.ldx || 0), B.y + uy * 9 + 4 + (p.ldy || 0));
+      }
+    } else if (p.type === "head") {
+      const A = proj(p.a), B = proj(p.b);
+      const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+      const hs = (p.head || 9) * Math.min(1.25, B.f);
       ctx.beginPath();
       ctx.moveTo(B.x, B.y);
       ctx.lineTo(B.x - ux * hs - uy * hs * 0.42, B.y - uy * hs + ux * hs * 0.42);
@@ -6842,8 +7253,8 @@ const Viz3D = (() => {
   function floorGrid(R, step, T, z = 0) {
     const out = [];
     for (let v = -R; v <= R + 1e-9; v += step) {
-      out.push({ type: "line", a: [v, -R, z], b: [v, R, z], color: T.border, lw: 0.8 });
-      out.push({ type: "line", a: [-R, v, z], b: [R, v, z], color: T.border, lw: 0.8 });
+      out.push({ type: "line", a: [v, -R, z], b: [v, R, z], color: T.border, lw: 0.8, floor: true });
+      out.push({ type: "line", a: [-R, v, z], b: [R, v, z], color: T.border, lw: 0.8, floor: true });
     }
     return out;
   }
@@ -6871,14 +7282,14 @@ const Viz3D = (() => {
     }
     return out;
   }
-  function ringSegs(c, R, z, color, lw, dash, n = 56, opacity) {
+  function ringSegs(c, R, z, color, lw, dash, n = 56, opacity, floor) {
     const out = [];
     for (let i = 0; i < n; i++) {
       const t0 = (i / n) * Math.PI * 2, t1 = ((i + 1) / n) * Math.PI * 2;
       out.push({ type: "line",
         a: [c[0] + R * Math.cos(t0), c[1] + R * Math.sin(t0), z],
         b: [c[0] + R * Math.cos(t1), c[1] + R * Math.sin(t1), z],
-        color, lw, dash, opacity });
+        color, lw, dash, opacity, floor });
     }
     return out;
   }
@@ -6900,7 +7311,7 @@ const Viz3D = (() => {
       const w = scl(norm(cross(u, v)), 1.25);
       return { prims: [
         ...floorGrid(1.5, 0.5, T),
-        { type: "poly", pts: [[0,0,0], u, add(u, v), v], fill: T.redTint, opacity: 0.85, stroke: T.redSoft, lw: 1 },
+        { type: "poly", pts: [[0,0,0], u, add(u, v), v], fill: T.redTint, opacity: 0.85, stroke: T.redSoft, lw: 1, decal: true },
         { type: "arrow", a: [0,0,0], b: u, color: T.ink, lw: 2.4, label: "u" },
         { type: "arrow", a: [0,0,0], b: v, color: T.ink, lw: 2.4, label: "v" },
         { type: "arrow", a: [0,0,0], b: w, color: T.red, lw: 2.8, label: "u × v" },
@@ -6918,7 +7329,7 @@ const Viz3D = (() => {
       ];
       return { prims: [
         ...floorGrid(1.5, 0.5, T),
-        ...faces.map(pts => ({ type: "poly", pts, fill: T.redTint, opacity: 0.82, shade: true, stroke: T.redSoft, lw: 1 })),
+        ...faces.map(pts => ({ type: "poly", pts, fill: T.redTint, opacity: 0.6, shade: true, stroke: T.redSoft, lw: 1, decal: true })),
         { type: "arrow", a: [0,0,0], b: a, color: T.red,  lw: 2.6, label: "a" },
         { type: "arrow", a: [0,0,0], b: b, color: T.ink,  lw: 2.6, label: "b" },
         { type: "arrow", a: [0,0,0], b: c, color: T.gold, lw: 2.6, label: "c" },
@@ -6933,12 +7344,12 @@ const Viz3D = (() => {
       return { prims: [
         ...axesPrims(1.5, T),
         ...meshQuads(plane, -1.05, 1.05, -1.05, 1.05, 6, 6,
-          { fill: T.redTint, opacity: 0.55, shade: false, stroke: T.redSoft, lw: 0.7 }),
+          { fill: T.redTint, opacity: 0.55, shade: false, stroke: T.redSoft, lw: 0.7, decal: true }),
         { type: "arrow", a: [0,0,0], b: u, color: T.red, lw: 2.6, label: "u" },
         { type: "arrow", a: [0,0,0], b: v, color: T.ink, lw: 2.6, label: "v" },
         { type: "arrow", a: [0,0,0], b: w, color: T.gold, lw: 2.2, dash: [6, 4], label: "au + bv" },
         { type: "point", p: [0,0,0], color: T.ink, r: 3.2 },
-        { type: "label", p: scl(add(u, v), 0.95), text: "span{u, v}", color: T.redDeep, size: 13, dy: -10 },
+        { type: "label", p: add(scl(u, 0.9), scl(v, -0.95)), text: "span{u, v}", color: T.redDeep, size: 13, anchor: "center", dy: 16 },
       ], yaw: -0.45, pitch: 0.4 };
     },
 
@@ -6982,8 +7393,8 @@ const Viz3D = (() => {
         { type: "line", a: tp(-0.5, 0.5),  b: tp(-0.5, -0.5), color: T.red, lw: 1.4 },
         { type: "arrow", a: [a, b, z0 + 0.012], b: add([a, b, z0], n), color: T.redDeep, lw: 2.5, label: "n" },
         { type: "point", p: [a, b, z0 + 0.012], color: T.redDeep, r: 3.8 },
-        { type: "label", p: [a, b, z0], text: "(a, b, f(a,b))", color: T.redDeep, size: 11.5, italic: false, anchor: "end", dx: -10, dy: 22 },
-      ], yaw: -0.5, pitch: 0.38 };
+        { type: "label", p: [a, b, z0], text: "(a, b, f(a, b))", color: T.redDeep, size: 11.5, italic: false, anchor: "center", dy: 48 },
+      ], yaw: -0.5, pitch: 0.38, lift: 14 };
     },
 
     gradient() {
@@ -6997,13 +7408,13 @@ const Viz3D = (() => {
       return { prims: [
         ...floorGrid(1.5, 0.75, T),
         ...meshQuads((x, y) => [x, y, f(x, y)], -1.4, 1.4, -1.4, 1.4, 16, 16,
-          { fill: "#F4EFE7", shade: true, stroke: "#D8D0C0", lw: 0.45, opacity: 0.6 }),
+          { fill: "#F4EFE7", shade: true, stroke: "#D8D0C0", lw: 0.45, opacity: 0.38 }),
         ...rings.flatMap((R, i) => ringSegs([0, 0], R, 0, i === 0 ? T.inkSoft : T.inkFaint, 1.4)),
         { type: "line", a: P, b: [P[0], P[1], f(P[0], P[1])], color: T.inkMute, lw: 1, dash: [3, 3] },
         { type: "arrow", a: P, b: G, color: T.red, lw: 2.7, label: "∇f" },
         { type: "point", p: P, color: T.ink, r: 3.6 },
         { type: "label", p: P, text: "P", color: T.ink, size: 13, dx: 6, dy: 16 },
-        { type: "label", p: [rings[2] * 0.72, -rings[2] * 0.72, 0], text: "level curves", color: T.inkMute, size: 11, italic: false, dy: 14 },
+        { type: "label", p: [-rings[0] * Math.cos(th0), -rings[0] * Math.sin(th0), 0], text: "level curves", color: T.inkMute, size: 11, italic: false, anchor: "center", dy: 16 },
       ], yaw: -0.4, pitch: 0.55 };
     },
 
@@ -7017,9 +7428,9 @@ const Viz3D = (() => {
         ...meshQuads((x, y) => [x, y, f(x, y)], -1.4, 1.4, -1.4, 1.4, 16, 16,
           { fill: "#F4EFE7", shade: true, stroke: "#D8D0C0", lw: 0.45, opacity: 0.8 }),
         ...rings.flatMap((R, i) => ringSegs([0, 0], R, levels[i] + 0.02, T.redDeep, 1.7, undefined, 56, 0.9)),
-        ...rings.flatMap(R => ringSegs([0, 0], R, -0.02, T.inkMute, 1.1, [4, 3])),
+        ...rings.flatMap(R => ringSegs([0, 0], R, -0.02, T.inkMute, 1.1, [4, 3], 56, undefined, true)),
         { type: "label", p: [0, 0, 1.42], text: "f(x, y)", color: T.inkSoft, size: 12.5, anchor: "center" },
-        { type: "label", p: [rings[2], -rings[2] * 0.4, -0.02], text: "contours", color: T.inkMute, size: 11, italic: false, dx: 6, dy: 14 },
+        { type: "label", p: [0, -rings[0] - 0.12, -0.02], text: "contours", color: T.inkMute, size: 11, italic: false, anchor: "center", dy: 16 },
       ], yaw: -0.4, pitch: 0.5 };
     },
 
@@ -7031,12 +7442,12 @@ const Viz3D = (() => {
       const tan = scl(norm([-Math.sin(t0), Math.cos(t0), 0.145]), 0.85);
       return { prims: [
         ...floorGrid(1.5, 0.75, T, -0.95),
-        ...ringSegs([0, 0], 1, -0.95, T.inkFaint, 1, [3, 4]),
+        ...ringSegs([0, 0], 1, -0.95, T.inkFaint, 1, [3, 4], 56, undefined, true),
         ...axesPrims(1.45, T),
         ...curveSegs(r, 0, 4 * Math.PI, 90, T.red, 2.4),
         { type: "arrow", a: p0, b: add(p0, tan), color: T.ink, lw: 2.5, label: "r′(t)" },
         { type: "point", p: p0, color: T.redDeep, r: 3.8 },
-        { type: "label", p: p0, text: "r(t)", color: T.redDeep, size: 13, dx: -8, dy: 18 },
+        { type: "label", p: r(4 * Math.PI), text: "r(t)", color: T.redDeep, size: 13, dx: 8, dy: -6 },
       ], yaw: -0.5, pitch: 0.42 };
     },
 
@@ -7101,13 +7512,13 @@ const Viz3D = (() => {
       const O = [0,0,0], X = [L,0,0], Y = [0,L,0], Z = [0,0,L];
       return { prims: [
         ...floorGrid(1.6, 0.8, T),
-        { type: "poly", pts: [O, X, Y], fill: T.redSoft, opacity: 0.85, shade: true, stroke: T.red, lw: 1 },
-        { type: "poly", pts: [O, X, Z], fill: "#FFFFFF",  opacity: 0.6,  shade: true, stroke: T.red, lw: 1 },
-        { type: "poly", pts: [O, Y, Z], fill: "#FFFFFF",  opacity: 0.6,  shade: true, stroke: T.red, lw: 1 },
-        { type: "poly", pts: [X, Y, Z], fill: T.redTint,  opacity: 0.85, shade: true, stroke: T.red, lw: 1.3 },
+        { type: "poly", pts: [O, X, Y], fill: T.redSoft, opacity: 0.85, shade: true, stroke: T.red, lw: 1, decal: true },
+        { type: "poly", pts: [O, X, Z], fill: "#FFFFFF",  opacity: 0.6,  shade: true, stroke: T.red, lw: 1, decal: true },
+        { type: "poly", pts: [O, Y, Z], fill: "#FFFFFF",  opacity: 0.6,  shade: true, stroke: T.red, lw: 1, decal: true },
+        { type: "poly", pts: [X, Y, Z], fill: T.redTint,  opacity: 0.85, shade: true, stroke: T.red, lw: 1.3, decal: true },
         ...axesPrims(1.95, T),
         { type: "label", p: scl(add(add(X, Y), Z), 0.36), text: "E", color: T.redDeep, size: 15 },
-        { type: "label", p: [L * 0.45, L * 0.45, 0], text: "shadow region D", color: T.inkMute, size: 10.5, italic: false, anchor: "center", dy: 16 },
+        { type: "label", p: [L * 0.2, L * 0.2, 0], text: "D", color: T.inkMute, size: 13, anchor: "center", dy: 4 },
       ], yaw: -0.42, pitch: 0.42 };
     },
 
@@ -7122,6 +7533,7 @@ const Viz3D = (() => {
 
     const T = theme();
     const scene = sceneFn();
+    const layers = prepare(scene.prims);
     const canvas = document.createElement("canvas");
     canvas.className = "viz3d-canvas";
     canvas.setAttribute("role", "img");
@@ -7158,27 +7570,23 @@ const Viz3D = (() => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       const proj = projector(cam, w, h);
+      const byDepth = list => list.map(p => ({ p, d: primDepth(p, proj) })).sort((a, b) => a.d - b.d).forEach(it => drawPrim(ctx, it.p, proj, T));
+      layers.floor.forEach(p => drawPrim(ctx, p, proj, T));
+      byDepth(layers.decal);
       // dynamic scenes contribute time-varying primitives (reduced motion gets a fixed pose)
-      const prims = isDynamic
-        ? scene.prims.concat(scene.dynamic(reducedMotion ? 4 : (tSec || 0)) || [])
-        : scene.prims;
-      prims
-        .map(p => ({ p, d: primDepth(p, proj) }))
-        .sort((a, b) => a.d - b.d)
-        .forEach(it => drawPrim(ctx, it.p, proj, T));
+      byDepth(isDynamic ? layers.main.concat(prepare(scene.dynamic(reducedMotion ? 4 : (tSec || 0)) || []).main) : layers.main);
     }
-    let lastDraw = 0;
+    let lastTs = 0;
     function loop(ts) {
       if (!canvas.isConnected) return;   // view was re-rendered — stop quietly
+      const dt = lastTs ? Math.min(0.05, (ts - lastTs) / 1000) : 0;
+      lastTs = ts;
       const animating = auto || (isDynamic && !reducedMotion);
       if (visible && (animating || needsFrame)) {
-        // cap continuous animation near 30fps; on-demand frames (drag/resize) draw immediately
-        if (needsFrame || ts - lastDraw >= 30) {
-          if (auto) cam.yaw += 0.006 * (scene.spin != null ? scene.spin : 1);
-          drawFrame(ts / 1000);
-          needsFrame = false;
-          lastDraw = ts;
-        }
+        // turn by elapsed time (not per frame) so the spin is even at any frame rate
+        if (auto) cam.yaw += dt * 0.2 * (scene.spin != null ? scene.spin : 1);
+        drawFrame(ts / 1000);
+        needsFrame = false;
       }
       requestAnimationFrame(loop);
     }
@@ -7300,6 +7708,7 @@ function pickConceptVisual(p) {
   // partial derivatives & chain rule fall through to no visual
 
   // Linear algebra: geometry-rich first
+  if (has("complex eigen")) return CONCEPT.complexEigen();
   if (has("eigen")) return CONCEPT.eigenvector();
   if (has("cross product", "scalar triple product", "parallelepiped", "signed volume", "parallelogram and triangle area")) {
     if (has("scalar triple product", "parallelepiped", "signed volume")) return CONCEPT.tripleProduct();
@@ -7406,51 +7815,6 @@ function renderProblem(problemId) {
   const next = idx < section.problems.length - 1 ? section.problems[idx + 1] : null;
 
   const status  = getStatus(p.id);
-  const scratch = getScratch(p.id);
-
-  // Build reveal blocks dynamically
-  const hintCount = (p.hints || []).length;
-  const hintBlocks = (p.hints || []).map((h, i) => revealBlock({
-    label: hintCount > 1 ? `Hint ${i + 1} of ${hintCount}` : "Hint",
-    n: i + 1,
-    body: `<div class="math-block">${h}</div>`
-  })).join("");
-
-  const setupBlock = p.setupLatex ? revealBlock({
-    label: "Setup",
-    n: "S",
-    body: `<div class="math-block">${p.setupLatex}</div>`
-  }) : "";
-
-  const solutionBody = (p.solutionSteps || []).map((step, i) => `
-    <div class="sol-step">
-      <div class="sol-step-label">
-        <span class="n">${i + 1}</span>
-        <span>${escapeHtml(step.label || `Step ${i + 1}`)}</span>
-      </div>
-      <div class="math-block">${step.latex || step.text || ""}</div>
-    </div>`).join("");
-
-  const solutionBlock = (p.solutionSteps && p.solutionSteps.length) ? revealBlock({
-    label: "Worked Solution",
-    n: "✓",
-    body: solutionBody
-  }) : "";
-
-  const answerBlock = p.finalAnswerLatex ? revealBlock({
-    label: "Final Answer",
-    n: "=",
-    body: `<div class="final-answer-box">
-             <div class="final-answer-label">Final Answer</div>
-             <div class="math-block">${p.finalAnswerLatex}</div>
-           </div>`
-  }) : "";
-
-  const similarBlock = p.similarProblemPrompt ? revealBlock({
-    label: "Try a Similar Problem",
-    n: "↻",
-    body: `<div class="math-block" style="color:var(--ink-soft);">${p.similarProblemPrompt}</div>`
-  }) : "";
 
   // Mailto for report
   const subject = encodeURIComponent(`21-254 Practice Lab Issue: ${p.id}`);
@@ -7466,6 +7830,7 @@ function renderProblem(problemId) {
     <div class="study-metabar">
       ${p.difficulty ? `<span class="pill ${classForDifficulty(p.difficulty)}">${escapeHtml(p.difficulty)}</span>` : ""}
       ${p.estimatedMinutes ? `<span class="pill">~${p.estimatedMinutes} min</span>` : ""}
+      ${lectureOf(p.id) ? `<span class="pill pill-lec" title="Matching lecture on the Fall 2026 schedule">${lectureOf(p.id).short} · ${escapeHtml(lectureOf(p.id).topic)}</span>` : ""}
       ${p.topic ? `<span class="pill">${escapeHtml(p.topic)}</span>` : ""}
       ${status === "got" ? `<span class="pill status-got">Got it</span>` : ""}
       ${status === "review" ? `<span class="pill status-review">Review</span>` : ""}
@@ -7507,29 +7872,13 @@ function renderProblem(problemId) {
         <div class="math-block">${p.thinkFirst}</div>
       </div>` : ""}
 
-    <div class="scratch">
-      <label for="scratchBox">Write your attempt here before revealing the solution.</label>
-      <textarea id="scratchBox" placeholder="Your work, ideas, or false starts — saved locally to your browser.">${escapeHtml(scratch)}</textarea>
-    </div>
-
-    <div class="reveal-next-wrap">
-      <button class="reveal-next-btn" id="revealNextBtn" type="button" hidden>
-        <span class="rn-icon" aria-hidden="true">+</span>
-        <span class="rn-label">Reveal next</span>
-        <span class="rn-arrow" aria-hidden="true">→</span>
-      </button>
-    </div>
-
-    ${hintBlocks}
-    ${setupBlock}
-    ${solutionBlock}
-    ${answerBlock}
-    ${similarBlock}
+    ${guideHtml(p)}
 
     <div class="study-actions">
       <button class="${statusButtons(status).got.cls}" id="markGot">${statusButtons(status).got.html}</button>
       <button class="${statusButtons(status).rev.cls}" id="markReview">${statusButtons(status).rev.html}</button>
       <button class="btn btn-ghost btn-sm" id="clearStatus"${status ? "" : " hidden"}>Clear status</button>
+      <button class="btn btn-ghost btn-sm" id="copyLinkBtn" type="button">Copy link</button>
       <a class="btn btn-ghost btn-sm" href="${mailto}" id="reportBtn" aria-label="Report an issue with this problem">
         Report Issue
       </a>
@@ -7543,6 +7892,7 @@ function renderProblem(problemId) {
       <dl class="side-meta">
         <dt>ID</dt><dd style="font-family: var(--font-mono); font-size: 12.5px;">${escapeHtml(p.id)}</dd>
         ${p.unit ? `<dt>Unit</dt><dd>${escapeHtml(p.unit)}</dd>` : ""}
+        ${lectureOf(p.id) ? `<dt>Lecture</dt><dd>${lectureOf(p.id).short.replace(/^Lectures? /, "")} · ${escapeHtml(lectureOf(p.id).topic)}</dd>` : ""}
         ${p.difficulty ? `<dt>Level</dt><dd>${escapeHtml(p.difficulty)}</dd>` : ""}
         ${p.estimatedMinutes ? `<dt>Est. time</dt><dd>${p.estimatedMinutes} min</dd>` : ""}
         ${p.examFlavor ? `<dt>Style</dt><dd>${escapeHtml(p.examFlavor)}</dd>` : ""}
@@ -7578,105 +7928,189 @@ function renderProblem(problemId) {
   typesetMath($("#view-problem"));
 }
 
-function revealBlock({ label, n, body }) {
+/* ============================================================
+   GUIDED SOLUTION
+   One path through a problem: hints, then the setup, the worked steps and the
+   final answer. Students open one step at a time along a rail that shows where
+   they are and what is left. Steps they have opened are remembered for this
+   visit, so leaving a problem and coming back keeps their place.
+   ============================================================ */
+const GuideMemory = new Map();                 // problem id -> { shown: [i...], passed: [i...] }
+let GuideCtl = null;                           // the guide on screen (keyboard shortcuts use it)
+const GUIDE_PHASES = [["hint", "Hints"], ["setup", "Setup"], ["step", "Worked solution"], ["answer", "Answer"]];
+const G_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const G_AGAIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>';
+
+// The public address, so a copied link works for anyone (even when copied from a local copy)
+const SITE_URL = "https://sonnnnnion.github.io/21-254-si-practice/";
+function copyText(text) {
+  const fallback = () => {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select(); const ok = document.execCommand("copy"); ta.remove(); return ok;
+    } catch (_) { return false; }
+  };
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(() => true, () => fallback());
+  return Promise.resolve(fallback());
+}
+
+function guideSteps(p) {
+  const steps = [], hints = p.hints || [], sol = p.solutionSteps || [];
+  hints.forEach((h, i) => steps.push({ kind: "hint", n: i + 1, kick: hints.length > 1 ? `Hint ${i + 1} of ${hints.length}` : "Hint", html: h }));
+  if (p.setupLatex) steps.push({ kind: "setup", n: "S", kick: "Setup", html: p.setupLatex });
+  sol.forEach((st, i) => steps.push({ kind: "step", n: i + 1, kick: `Step ${i + 1} of ${sol.length}`, name: st.label || "", html: st.latex || st.text || "" }));
+  if (p.finalAnswerLatex) steps.push({ kind: "answer", n: G_CHECK, kick: "Final answer", html: p.finalAnswerLatex });
+  return steps;
+}
+
+function guideHtml(p) {
+  const steps = guideSteps(p);
+  if (!steps.length) return "";
+  const phases = GUIDE_PHASES.filter(([k]) => steps.some(s => s.kind === k));
+  const cls = { hint: "g-hint", setup: "g-setup", step: "g-step-k", answer: "g-answer" };
+  const items = steps.map((s, i) => `
+      <li class="g-step ${cls[s.kind]}" data-kind="${s.kind}" data-i="${i}" aria-hidden="true">
+        <div class="g-inner">
+          <span class="g-node" aria-hidden="true">${s.n}</span>
+          <div class="g-title"><div class="g-kick">${escapeHtml(s.kick)}</div>${s.name ? `<div class="g-name">${escapeHtml(s.name)}</div>` : ""}</div>
+          <div class="g-content">${s.kind === "answer"
+            ? `<div class="final-answer-box"><div class="math-block">${s.html}</div></div>`
+            : `<div class="math-block">${s.html}</div>`}</div>
+        </div>
+      </li>`).join("");
   return `
-    <div class="reveal-block">
-      <button class="reveal-trigger" type="button" aria-expanded="false">
-        <span class="left">
-          <span class="icon">${escapeHtml(String(n))}</span>
-          <span class="label">${escapeHtml(label)}</span>
-        </span>
-        <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
-      <div class="reveal-body">
-        <div class="reveal-body-inner">${body}</div>
+    <section class="guide" id="guide" aria-label="Guided solution">
+      <div class="guide-head">
+        <div>
+          <div class="guide-kicker">Guided solution</div>
+          <p class="guide-sub">Work it out first, then open one step at a time.</p>
+        </div>
+        <div class="guide-tools">
+          <button class="g-link" id="guideAll" type="button">Show all</button>
+          <button class="g-link" id="guideReset" type="button" hidden>Start over</button>
+        </div>
       </div>
-    </div>`;
+      <div class="guide-track" aria-hidden="true">
+        ${phases.map(([k, name]) => `<div class="gt-seg" data-kind="${k}"><div class="gt-bar"><i></i></div><span>${name}</span></div>`).join("")}
+      </div>
+      <ol class="g-rail" aria-live="polite">${items}</ol>
+      <div class="g-next-row" id="guideNextRow">
+        <span class="g-ghost" aria-hidden="true"></span>
+        <button class="btn btn-red g-next" id="guideNext" type="button"><span class="g-label">Show a hint</span> <span class="arrow" aria-hidden="true">→</span></button>
+        <button class="g-link" id="guideSkip" type="button">Skip to the solution</button>
+      </div>
+      <div class="g-end" id="guideEnd" hidden>
+        <span class="g-node" aria-hidden="true">${G_AGAIN}</span>
+        ${p.similarProblemPrompt
+          ? `<div class="g-kick">Try one more</div><div class="g-content"><div class="math-block">${p.similarProblemPrompt}</div></div>
+             <p class="g-end-note">Then mark this one below: Got it, or Need review.</p>`
+          : `<div class="g-kick">That's the whole solution</div><p class="g-end-note">Mark this one below: Got it, or Need review.</p>`}
+      </div>
+    </section>`;
+}
+
+function wireGuide(p) {
+  GuideCtl = null;
+  const guide = document.getElementById("guide");
+  if (!guide) return;
+  const steps = Array.from(guide.querySelectorAll(".g-step")), kinds = steps.map(el => el.dataset.kind), total = steps.length;
+  const mem = GuideMemory.get(p.id) || { shown: [], passed: [] };
+  const shown = new Set(mem.shown), passed = new Set(mem.passed);
+  const row = $("#guideNextRow"), next = $("#guideNext"), label = next.querySelector(".g-label"), skip = $("#guideSkip");
+  const all = $("#guideAll"), reset = $("#guideReset"), end = $("#guideEnd");
+  const segs = Array.from(guide.querySelectorAll(".gt-seg"));
+  const hasSolution = kinds.some(k => k !== "hint");
+
+  const nextIndex = () => { for (let i = 0; i < total; i++) if (!shown.has(i) && !passed.has(i)) return i; return -1; };
+  const save = () => GuideMemory.set(p.id, { shown: [...shown], passed: [...passed] });
+  function labelFor(i) {
+    const k = kinds[i], el = steps[i];
+    if (k === "hint") { const n = kinds.filter(x => x === "hint").length; return n > 1 ? `Show hint ${el.querySelector(".g-node").textContent}` : "Show a hint"; }
+    if (k === "setup") return "Show the setup";
+    if (k === "step") { const n = kinds.filter(x => x === "step").length, s = el.querySelector(".g-node").textContent;
+                        return s === "1" ? "Start the worked solution" : `Next step (${s} of ${n})`; }
+    return "Reveal the final answer";
+  }
+  function paint(fresh, stagger) {
+    fresh = fresh || [];
+    steps.forEach((el, i) => {
+      const on = shown.has(i);
+      el.classList.toggle("shown", on);
+      el.setAttribute("aria-hidden", on ? "false" : "true");
+      const k = fresh.indexOf(i);
+      if (k >= 0) {
+        const d = stagger ? k * 90 : 0;
+        el.style.setProperty("--d", d + "ms");
+        el.style.transitionDelay = d ? d + "ms" : "";
+        el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter");
+        clearTimeout(el._gT); el._gT = setTimeout(() => { el.classList.remove("enter"); el.style.transitionDelay = ""; }, d + 1600);
+      }
+    });
+    const ni = nextIndex();
+    let last = -1; shown.forEach(i => { if (i > last) last = i; });
+    steps.forEach((el, i) => el.classList.toggle("tail", i === last && ni === -1));
+    row.hidden = ni === -1;
+    if (ni !== -1) {
+      const txt = labelFor(ni);
+      if (label.textContent !== txt) { label.textContent = txt; label.classList.remove("swap"); void label.offsetWidth; label.classList.add("swap"); }
+      skip.hidden = !(kinds[ni] === "hint" && hasSolution);
+    }
+    const wasEnd = !end.hidden;
+    end.hidden = ni !== -1 || shown.size === 0;
+    if (!end.hidden && !wasEnd && fresh.length) { end.classList.remove("enter"); void end.offsetWidth; end.classList.add("enter"); }
+    all.hidden = shown.size === total;
+    reset.hidden = shown.size === 0;
+    segs.forEach(seg => {
+      const k = seg.dataset.kind, idx = kinds.map((x, i) => x === k ? i : -1).filter(i => i >= 0);
+      const on = idx.filter(i => shown.has(i)).length;
+      seg.querySelector("i").style.setProperty("--fill", (100 * on / idx.length).toFixed(1) + "%");
+      seg.classList.toggle("on", on > 0);
+      seg.classList.toggle("now", ni !== -1 && kinds[ni] === k);
+    });
+  }
+  // keep the newly opened step (and the button under it) in view, without jumping past its start
+  function follow(i) {
+    const el = steps[i], inner = el.querySelector(".g-inner");
+    requestAnimationFrame(() => {
+      const top = el.getBoundingClientRect().top, h = inner.scrollHeight, rowH = row.hidden ? 0 : 56;
+      const overflow = top + h + rowH + 24 - window.innerHeight, room = top - 96;
+      if (overflow > 0 && room > 0) window.scrollBy({ top: Math.min(overflow, room), behavior: "smooth" });
+    });
+  }
+  function advance() {
+    const i = nextIndex(); if (i === -1) return false;
+    shown.add(i); save(); paint([i]); follow(i);
+    return true;
+  }
+  function showAll() {
+    const fresh = []; for (let i = 0; i < total; i++) if (!shown.has(i)) { shown.add(i); fresh.push(i); }
+    passed.clear(); save(); paint(fresh, true);
+  }
+  function startOver() {
+    shown.clear(); passed.clear(); save(); paint();
+    const top = guide.getBoundingClientRect().top;
+    if (top < 80) window.scrollBy({ top: top - 96, behavior: "smooth" });
+  }
+  next.addEventListener("click", advance);
+  skip.addEventListener("click", () => { kinds.forEach((k, i) => { if (k === "hint" && !shown.has(i)) passed.add(i); }); advance(); });
+  all.addEventListener("click", showAll);
+  reset.addEventListener("click", startOver);
+
+  // first paint (restored steps appear without animating in)
+  guide.classList.add("no-anim"); paint();
+  requestAnimationFrame(() => requestAnimationFrame(() => guide.classList.remove("no-anim")));
+  GuideCtl = { advance, toggleAll: () => (shown.size < total ? showAll() : startOver()) };
 }
 
 function wireProblemView(p, prev, next) {
-  // Helper: get the next un-opened block's display label
-  function readableLabel(block) {
-    const trig = block.querySelector(".reveal-trigger");
-    if (!trig) return "";
-    // The trigger has a structure like: [icon] [label-text] [chev].
-    // Pull the .label or fall back to scanning text nodes.
-    const labelEl = trig.querySelector(".label, .reveal-label, strong");
-    if (labelEl) return labelEl.textContent.trim();
-    // Fallback: take all text minus the icon/chev
-    return (trig.textContent || "")
-      .replace(/[+▾▼↓→\u2304\u25BC]/g, "")
-      .trim()
-      .split(/\s+/)
-      .slice(0, 4)
-      .join(" ");
-  }
+  wireGuide(p);
 
-  function updateRevealNextButton() {
-    const btn = document.getElementById("revealNextBtn");
-    if (!btn) return;
-    const blocks = $$("#view-problem .reveal-block");
-    const nextBlock = blocks.find(b => !b.classList.contains("open"));
-    if (!nextBlock) {
-      btn.hidden = true;
-      return;
-    }
-    const label = readableLabel(nextBlock);
-    const lbl = btn.querySelector(".rn-label");
-    if (lbl) lbl.textContent = label ? `Reveal ${label}` : "Reveal next";
-    btn.hidden = false;
-  }
-
-  // Reveal toggles with smooth height animation
-  $$("#view-problem .reveal-block").forEach(block => {
-    const trigger = block.querySelector(".reveal-trigger");
-    const body    = block.querySelector(".reveal-body");
-    trigger.addEventListener("click", () => {
-      const open = block.classList.toggle("open");
-      trigger.setAttribute("aria-expanded", open ? "true" : "false");
-      if (open) {
-        body.style.maxHeight = body.scrollHeight + "px";
-        setTimeout(() => {
-          body.style.maxHeight = body.scrollHeight + "px";
-        }, 480);
-      } else {
-        body.style.maxHeight = "0px";
-      }
-      updateRevealNextButton();
-    });
+  $("#copyLinkBtn")?.addEventListener("click", () => {
+    copyText(SITE_URL + "#/problem/" + p.id).then(ok => showToast(ok ? "Link copied" : "Couldn't copy the link", ok ? "got" : "neutral", 1600));
   });
 
-  // Reveal-next button: open the next un-opened block + scroll
-  $("#revealNextBtn")?.addEventListener("click", () => {
-    const blocks = $$("#view-problem .reveal-block");
-    const target = blocks.find(b => !b.classList.contains("open"));
-    if (!target) return;
-    target.querySelector(".reveal-trigger")?.click();
-    setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
-  });
-
-  updateRevealNextButton();
-
-  // Scratch persistence — toast briefly each time a save batch flushes
-  const ta = $("#scratchBox");
-  if (ta) {
-    let saveT;
-    let lastSavedValue = ta.value;
-    ta.addEventListener("input", () => {
-      clearTimeout(saveT);
-      saveT = setTimeout(() => {
-        if (ta.value !== lastSavedValue) {
-          setScratch(p.id, ta.value);
-          lastSavedValue = ta.value;
-          showToast("Notes saved", "neutral", 1500);
-        }
-      }, 500);
-    });
-  }
-
-  // Status actions update in place: open hints/solutions and typeset math stay put
+  // Status actions update in place: the guide's open steps and typeset math stay put
   $("#markGot")?.addEventListener("click", () => {
     const next = getStatus(p.id) === "got" ? null : "got";
     setStatus(p.id, next);
@@ -7724,27 +8158,57 @@ function renderExamSetup() {
   $$("[data-size-pick]").forEach(b => {
     b.classList.toggle("selected", Number(b.dataset.sizePick) === State.examSize);
   });
+  renderExamCover();
   // If a set is already generated, render it
   if (State.examSet) renderExamSet();
   else $("#examSetContainer").innerHTML = "";
 }
 
+// Problems for an exam, grouped by lecture (course order)
+function examPool(choice) {
+  const cfg = EXAM_MAP[choice], groups = [], seen = new Set();
+  if (!cfg) return groups;
+  const [lo, hi] = cfg.lectures;
+  COURSE_LECTURES.forEach(([n, date, topic, ids]) => {
+    if (n < lo || n > hi) return;
+    const ps = ids.map(id => State.problemsById.get(id)).filter(p => p && !seen.has(p.id));
+    ps.forEach(p => seen.add(p.id));
+    if (ps.length) groups.push({ n, topic, problems: ps });
+  });
+  return groups;
+}
+
+function renderExamCover() {
+  const box = $("#examCover");
+  if (!box) return;
+  const cfg = EXAM_MAP[State.examChoice], groups = examPool(State.examChoice);
+  if (!cfg || !groups.length) { box.innerHTML = ""; return; }
+  const count = groups.reduce((t, g) => t + g.problems.length, 0);
+  const [lo, hi] = cfg.lectures, last = Math.min(hi, groups[groups.length - 1].n);
+  box.innerHTML = `<div class="ec-head"><strong>${State.examChoice === "final" ? "All lectures" : `Lectures ${lo}\u2013${last}`}</strong>` +
+    `<span>${count} problems in the library</span></div>` +
+    `<div class="ec-topics">${groups.map(g => `<span>${escapeHtml(g.topic)}</span>`).join("")}</div>`;
+}
+
 function generateExamSet() {
   const cfg = EXAM_MAP[State.examChoice];
   if (!cfg) return;
-  const pool = [];
-  cfg.sections.forEach(pos => {
-    const sec = State.sectionsByPos.get(pos);
-    if (sec) sec.problems.forEach(p => pool.push(p));
-  });
-  if (!pool.length) {
+  const groups = examPool(State.examChoice);
+  if (!groups.length) {
     $("#examSetContainer").innerHTML = `<div class="error-state">
       <h3>No problems available</h3>
-      <div>The matched sections don't have problems loaded yet.</div></div>`;
+      <div>The problems for these lectures haven't loaded yet.</div></div>`;
     return;
   }
-  const n = Math.min(State.examSize, pool.length);
-  State.examSet = shuffle(pool).slice(0, n);
+  // Spread the set across lectures: shuffle each lecture's problems, visit lectures in a random
+  // order, take one from each in turn, then show the set in course order.
+  const bags = shuffle(groups.map(g => ({ n: g.n, left: shuffle(g.problems) })));
+  const total = groups.reduce((t, g) => t + g.problems.length, 0), n = Math.min(State.examSize, total), picked = [];
+  while (picked.length < n) {
+    for (const bag of bags) { if (picked.length >= n) break; const p = bag.left.pop(); if (p) picked.push(p); }
+  }
+  const order = p => { const L = lectureOf(p.id); return L ? L.first : 99; };
+  State.examSet = picked.sort((a, b) => order(a) - order(b));
   $("#examReshuffle").style.display = "";
   renderExamSet();
 }
@@ -7758,7 +8222,7 @@ function renderExamSet() {
       <div>
         <div class="kicker">${escapeHtml(cfg.title)} · ${set.length} problems</div>
         <h2>Your review set</h2>
-        <p>Drawn from sections ${cfg.sections.join(", ")}. Each problem opens in the full study view.</p>
+        <p>${escapeHtml(cfg.explain.split(":")[0])}, in course order. Each problem opens in the full study view.</p>
       </div>
     </div>
     <div class="prob-list">
@@ -7769,7 +8233,7 @@ function renderExamSet() {
           <div class="prob-row-main">
             <div class="prob-row-title">${String(i+1).padStart(2,'0')}. ${escapeHtml(p.title)}</div>
             <div class="prob-row-sub">
-              <span>Section ${p.sectionPos}</span>
+              ${lectureOf(p.id) ? `<span class="lec-tag">${lectureOf(p.id).short} · ${escapeHtml(lectureOf(p.id).topic)}</span>` : `<span>Section ${p.sectionPos}</span>`}
               ${p.estimatedMinutes ? `<span>~${p.estimatedMinutes} min</span>` : ""}
               ${(p.skills || []).slice(0, 2).map(s => `<span>${escapeHtml(s)}</span>`).join("")}
             </div>
@@ -7838,6 +8302,7 @@ function renderReview() {
           <div class="prob-row-main">
             <div class="prob-row-title">${String(i+1).padStart(2,'0')}. ${escapeHtml(p.title)}</div>
             <div class="prob-row-sub">
+              ${lectureOf(p.id) ? `<span class="lec-tag">${lectureOf(p.id).short}</span>` : ""}
               <span>Section ${p.sectionPos} · ${escapeHtml(p.section)}</span>
               ${p.estimatedMinutes ? `<span>~${p.estimatedMinutes} min</span>` : ""}
               ${(p.skills || []).slice(0, 2).map(s => `<span>${escapeHtml(s)}</span>`).join("")}
@@ -8049,33 +8514,14 @@ function handleGlobalKey(e) {
     }
     case "h":
     case "H": {
-      // Reveal the next un-opened reveal block, in order
-      const blocks = $$("#view-problem .reveal-block");
-      const next = blocks.find(b => !b.classList.contains("open"));
-      if (next) {
-        e.preventDefault();
-        // Use the dedicated button if it's wired (handles scroll), else click trigger
-        const btn = $("#revealNextBtn");
-        if (btn && !btn.hidden) btn.click();
-        else {
-          next.querySelector(".reveal-trigger")?.click();
-          setTimeout(() => next.scrollIntoView({behavior: "smooth", block: "center"}), 100);
-        }
-      }
+      // Open the next step of the guided solution
+      if (GuideCtl) { e.preventDefault(); GuideCtl.advance(); }
       break;
     }
     case "a":
     case "A": {
-      // Toggle ALL reveal blocks. If any are closed, open all; else close all.
-      const blocks = $$("#view-problem .reveal-block");
-      if (!blocks.length) break;
-      e.preventDefault();
-      const anyClosed = blocks.some(b => !b.classList.contains("open"));
-      blocks.forEach(b => {
-        const isOpen = b.classList.contains("open");
-        const shouldOpen = anyClosed;
-        if (isOpen !== shouldOpen) b.querySelector(".reveal-trigger")?.click();
-      });
+      // Show the whole solution, or start over if it is all open
+      if (GuideCtl) { e.preventDefault(); GuideCtl.toggleAll(); }
       break;
     }
     case "g":
@@ -8111,7 +8557,7 @@ function toggleAboutModal() {
              resource for CMU 21-254: Linear Algebra and Vector Calculus for Engineers.</p>
           <p>The problems are <strong>original practice problems</strong> designed for review.
              They are not official course materials, and nothing here affects your grade.</p>
-          <p>Your progress, scratch work, and review flags are saved <strong>only in this browser</strong>
+          <p>Your progress and review flags are saved <strong>only in this browser</strong>
              (localStorage). There's no login and no data collection.</p>
           <p>Spot something wrong or confusing? Every problem has a <strong>Report Issue</strong> button
              that opens an email with the problem ID pre-filled — flagging errors is the best way to
@@ -8143,8 +8589,8 @@ function toggleShortcutsHelp() {
         </div>
         <dl class="shortcuts-list">
           <dt><kbd>N</kbd> <kbd>P</kbd></dt><dd>Next / previous problem (<kbd>→</kbd> <kbd>←</kbd> also work)</dd>
-          <dt><kbd>H</kbd></dt><dd>Reveal next hint / setup / solution / answer</dd>
-          <dt><kbd>A</kbd></dt><dd>Reveal all / collapse all blocks</dd>
+          <dt><kbd>H</kbd></dt><dd>Next step of the guided solution</dd>
+          <dt><kbd>A</kbd></dt><dd>Show the whole solution / start over</dd>
           <dt><kbd>G</kbd></dt><dd>Toggle “Got it”</dd>
           <dt><kbd>R</kbd></dt><dd>Toggle “Need Review”</dd>
           <dt><kbd>/</kbd></dt><dd>Focus the search box (on a section page)</dd>
