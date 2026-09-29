@@ -81,7 +81,7 @@
     "drawInstructions": [
      "Draw a half-turn helix around the z-axis.",
      "Label radius 2 and upward motion z=t.",
-     "Draw tangent arrows and label speed sqrt(5)."
+     "Draw tangent arrows and label the speed \\(\\sqrt{5}\\)."
     ]
    },
    "walkthrough": [
@@ -318,7 +318,7 @@
     "drawInstructions": [
      "Draw multiple possible paths from (1,0) to (2,1).",
      "Label them all with the same value because the field is conservative.",
-     "Write phi(end)-phi(start)=6."
+     "Write \\(\\phi(\\text{end})-\\phi(\\text{start})=6\\)."
     ]
    },
    "walkthrough": [

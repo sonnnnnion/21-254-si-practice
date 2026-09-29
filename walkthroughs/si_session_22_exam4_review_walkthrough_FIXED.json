@@ -89,7 +89,7 @@
      "Draw the rectangle in the xy-plane.",
      "Draw the slanted plane z=x+2y above it.",
      "Label the surface S and the base region D.",
-     "Write dS=sqrt(1+1^2+2^2)dA=sqrt(6)dA.",
+     "Write \\(dS=\\sqrt{1+1^2+2^2}\\,dA=\\sqrt{6}\\,dA\\).",
      "Explain that z becomes x+2y on the surface."
     ]
    },
@@ -218,7 +218,7 @@
      "Draw upward normal arrows.",
      "Draw counterclockwise arrows on the circular boundary when viewed from above.",
      "Write curl F=<0,0,2>.",
-     "Write dot with upward normal gives 2, then multiply by disk area 4pi."
+     "Write: dot with the upward normal gives 2, then multiply by the disk area \\(4\\pi\\)."
     ]
    },
    "walkthrough": [
@@ -283,8 +283,8 @@
      "Draw a cylinder of radius 2.",
      "Draw the lower surface z=0.",
      "Draw the upper surface z=r^2 rising upward from the center.",
-     "Write bounds: 0<=theta<=2pi, 0<=r<=2, 0<=z<=r^2.",
-     "Write dV=r dz dr dtheta."
+     "Write bounds: \\(0\\le\\theta\\le 2\\pi,\\ 0\\le r\\le 2,\\ 0\\le z\\le r^2\\).",
+     "Write \\(dV=r\\,dz\\,dr\\,d\\theta\\)."
     ]
    },
    "walkthrough": [

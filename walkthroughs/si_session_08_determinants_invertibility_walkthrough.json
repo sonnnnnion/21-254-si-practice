@@ -16,7 +16,7 @@
  "sessionGoal": "Students should be able to compute determinants, use determinant properties, and decide when a matrix is invertible.",
  "quickStartIfUnprepared": [
   "Start with: determinant zero means the matrix collapses space and is not invertible.",
-  "Write: det(A) nonzero means invertible for square matrices.",
+  "Write: \\(\\det(A)\\) nonzero means invertible for square matrices.",
   "Review row-operation effects on determinants.",
   "Do Problem 1 for direct computation.",
   "Do Problem 2 for determinant properties.",
@@ -30,7 +30,7 @@
   "Row swaps, row scaling, and row replacement affect determinants in different ways."
  ],
  "boardPlan": [
-  "Write the invertible matrix test: det(A) != 0 means invertible.",
+  "Write the invertible matrix test: \\(\\det(A)\\neq 0\\) means invertible.",
   "Write the three row-operation effects.",
   "Problem 1: compute a 3 by 3 determinant using expansion or row reduction.",
   "Problem 2: track determinant changes from row operations.",
@@ -107,7 +107,7 @@
      "Write the 3 by 3 matrix large on the board.",
      "Choose the first row for cofactor expansion because it has a zero.",
      "Circle the zero entry to show why that term disappears.",
-     "After finding det(A)=-15, write nonzero -> invertible."
+     "After finding \\(\\det(A)=-15\\), write nonzero \\(\\Rightarrow\\) invertible."
     ]
    },
    "walkthrough": [
@@ -170,7 +170,7 @@
     ],
     "finalDeterminant": -20,
     "drawInstructions": [
-     "Draw a three-step determinant tracker: 4 -> -4 -> -20 -> -20.",
+     "Draw a three-step determinant tracker: \\(4\\to -4\\to -20\\to -20\\).",
      "Label row swap as times -1.",
      "Label row scaling as times 5.",
      "Label row replacement as no change."
@@ -217,7 +217,7 @@
     "State invertibility condition"
    ],
    "studentPromptLatex": "For what values of \\(k\\) is\n\\[A(k)=\\begin{bmatrix}1&2&k\\\\0&1&3\\\\2&0&1\\end{bmatrix}\\]\ninvertible?",
-   "whatToSayBefore": "Tell students: invertible means determinant nonzero. So find det(A(k)), set it not equal to zero.",
+   "whatToSayBefore": "Tell students: invertible means determinant nonzero. So find \\(\\det(A(k))\\), set it not equal to zero.",
    "visualSpec": {
     "type": "parameter_determinant_invertibility",
     "matrixWithParameter": [
@@ -243,7 +243,7 @@
     ],
     "invertibleCondition": "k != 13/2",
     "drawInstructions": [
-     "Write det(A(k)) at the top.",
+     "Write \\(\\det(A(k))\\) at the top.",
      "After computing 13-2k, draw a number line and mark k=13/2 as the bad value.",
      "Say: every other value is okay."
     ]
@@ -251,7 +251,7 @@
    "walkthrough": [
     {
      "label": "Use determinant test",
-     "latex": "A square matrix is invertible exactly when its determinant is nonzero."
+     "latex": "A square matrix \\(A\\) is invertible exactly when its determinant is nonzero: \\(\\det(A)\\neq 0\\)."
     },
     {
      "label": "Compute the determinant",

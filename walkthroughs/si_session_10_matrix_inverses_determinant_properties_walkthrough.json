@@ -30,28 +30,28 @@
   "Determinant properties are shortcuts. Use them before doing arithmetic."
  ],
  "boardPlan": [
-  "Write: invertible ⇔ det(A) ≠ 0 ⇔ Ax=b has one solution for every b.",
+  "Write: invertible \\(\\Leftrightarrow \\det(A)\\neq 0 \\Leftrightarrow Ax=b\\) has one solution for every \\(b\\).",
   "Review the 2 by 2 inverse formula.",
   "Do Problem 1: inverse plus solving Ax=b.",
   "Do Problem 2: determinant properties only, no row reduction.",
-  "Do Problem 3: find when a parameter makes det(A)=0."
+  "Do Problem 3: find when a parameter makes \\(\\det(A)=0\\)."
  ],
  "keyFormulas": [
   "For A=\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}, A^{-1}=\\frac{1}{ad-bc}\\begin{bmatrix}d&-b\\\\-c&a\\end{bmatrix}.",
-  "If A is n by n, det(cA)=c^n det(A).",
-  "det(A^T)=det(A).",
-  "det(A^{-1})=1/det(A).",
-  "det(AB)=det(A)det(B)."
+  "If \\(A\\) is \\(n\\times n\\), \\(\\det(cA)=c^n\\det(A)\\).",
+  "\\(\\det(A^T)=\\det(A)\\).",
+  "\\(\\det(A^{-1})=1/\\det(A)\\).",
+  "\\(\\det(AB)=\\det(A)\\det(B)\\)."
  ],
  "commonMistakes": [
-  "Forgetting the n in det(cA)=c^n det(A).",
-  "Writing det(A+B)=det(A)+det(B), which is not a rule.",
+  "Forgetting the \\(n\\) in \\(\\det(cA)=c^n\\det(A)\\).",
+  "Writing \\(\\det(A+B)=\\det(A)+\\det(B)\\), which is not a rule.",
   "Trying to invert a matrix before checking whether the determinant is zero.",
   "Mixing up A^{-1}b with bA^{-1}; vectors go on the correct side."
  ],
  "notationWarnings": [
   "Use A^{-1}, not 1/A, for a matrix inverse.",
-  "Write det(A), not |A|, if students might confuse it with absolute value.",
+  "Write \\(\\det(A)\\), not \\(|A|\\), if students might confuse it with absolute value.",
   "For a 2 by 2 inverse, keep the sign changes in the off-diagonal entries."
  ],
  "problems": [
@@ -83,7 +83,7 @@
     "drawInstructions": [
      "Draw Ax=b as: A sends unknown x to known b.",
      "Draw A^{-1} as the step that sends b back to x.",
-     "Emphasize that the inverse exists because det(A)=1, not 0."
+     "Emphasize that the inverse exists because \\(\\det(A)=1\\), not 0."
     ]
    },
    "walkthrough": [
@@ -132,7 +132,7 @@
     "expression": "det(2 A^T A^{-1})",
     "drawInstructions": [
      "Write the expression as a product of three determinant pieces.",
-     "Circle the scalar rule det(2B)=2^3 det(B).",
+     "Circle the scalar rule \\(\\det(2B)=2^3\\det(B)\\).",
      "Point out that A^T and A have the same determinant."
     ]
    },
@@ -156,9 +156,9 @@
    ],
    "finalAnswerLatex": "\\[\\det(2A^TA^{-1})=8.\\]",
    "commonMistakes": [
-    "Using det(2A)=2det(A) instead of det(2A)=2^3det(A).",
-    "Forgetting that det(A^T)=det(A).",
-    "Thinking det(A^{-1})=-det(A) instead of 1/det(A)."
+    "Using \\(\\det(2A)=2\\det(A)\\) instead of \\(\\det(2A)=2^3\\det(A)\\).",
+    "Forgetting that \\(\\det(A^T)=\\det(A)\\).",
+    "Thinking \\(\\det(A^{-1})=-\\det(A)\\) instead of \\(1/\\det(A)\\)."
    ],
    "practiceLabPointer": {
     "section": 4,
@@ -199,7 +199,7 @@
     ],
     "drawInstructions": [
      "Highlight the first column because it makes expansion easy.",
-     "Write det(A(k)) as a 2 by 2 determinant after expansion.",
+     "Write \\(\\det(A(k))\\) as a 2 by 2 determinant after expansion.",
      "Mark the values where the determinant becomes zero."
     ]
    },
@@ -223,7 +223,7 @@
    ],
    "finalAnswerLatex": "\\[A(k)\\text{ is not invertible when }k=2\\text{ or }k=-2.\\]",
    "commonMistakes": [
-    "Solving det(A)=1 instead of det(A)=0.",
+    "Solving \\(\\det(A)=1\\) instead of \\(\\det(A)=0\\).",
     "Forgetting that not invertible means singular.",
     "Expanding along a hard row or column instead of using the zeros."
    ],
@@ -237,7 +237,7 @@
  "wrapUpQuestions": [
   "What are three equivalent ways to say a matrix is invertible?",
   "When should you use determinant properties instead of row reducing?",
-  "Why does det(cA) depend on the matrix size?"
+  "Why does \\(\\det(cA)\\) depend on the matrix size?"
  ],
  "linksToWebsite": {
   "sections": [

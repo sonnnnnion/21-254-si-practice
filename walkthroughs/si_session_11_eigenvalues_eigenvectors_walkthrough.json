@@ -24,20 +24,20 @@
  "sayThisFirst": [
   "An eigenvector is a direction that does not rotate under A.",
   "The eigenvalue is the stretch factor in that direction.",
-  "To find eigenvalues, solve det(A-λI)=0.",
+  "To find eigenvalues, solve \\(\\det(A-\\lambda I)=0\\).",
   "To find eigenvectors, plug each λ into A-λI and solve the homogeneous system."
  ],
  "boardPlan": [
   "Write Av=λv and explain it in one sentence.",
-  "Write det(A-λI)=0.",
+  "Write \\(\\det(A-\\lambda I)=0\\).",
   "Do the triangular example first.",
   "Do one full 2 by 2 example.",
   "End with the shortcut: to test a given v, compute Av and see if it is a multiple of v."
  ],
  "keyFormulas": [
   "Eigenvalue equation: Av=λv with v≠0.",
-  "Characteristic equation: det(A-λI)=0.",
-  "Eigenspace: Nul(A-λI).",
+  "Characteristic equation: \\(\\det(A-\\lambda I)=0\\).",
+  "Eigenspace: \\(\\operatorname{Nul}(A-\\lambda I)\\).",
   "Triangular matrix eigenvalues are the diagonal entries."
  ],
  "commonMistakes": [
@@ -48,7 +48,7 @@
  ],
  "notationWarnings": [
   "Use λ for eigenvalues and v for eigenvectors.",
-  "Write Nul(A-λI), not just A-λI, when describing the eigenspace.",
+  "Write \\(\\operatorname{Nul}(A-\\lambda I)\\), not just \\(A-\\lambda I\\), when describing the eigenspace.",
   "Always say eigenvectors are nonzero."
  ],
  "problems": [
@@ -256,7 +256,7 @@
  ],
  "wrapUpQuestions": [
   "What does Av=λv mean in words?",
-  "Why do we solve det(A-λI)=0?",
+  "Why do we solve \\(\\det(A-\\lambda I)=0\\)?",
   "Why is the zero vector not an eigenvector?"
  ],
  "linksToWebsite": {

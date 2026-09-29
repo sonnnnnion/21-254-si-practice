@@ -16,7 +16,7 @@
  "sessionGoal": "Students should be able to build standard matrices, compute transformations, and connect one-to-one/onto with pivots and matrix shape.",
  "quickStartIfUnprepared": [
   "Start with: a linear transformation is controlled by what it does to basis vectors.",
-  "Write: A=[T(e1) T(e2) ...].",
+  "Write: \\(A=[\\,T(e_1)\\ \\ T(e_2)\\ \\cdots\\,]\\).",
   "Remind students that columns are images of basis vectors.",
   "Do Problem 1 to build confidence.",
   "Do Problem 2 to connect transformations with kernel/range.",
@@ -25,16 +25,16 @@
  "sayThisFirst": [
   "A linear transformation is a function that respects adding and scaling.",
   "The standard matrix is built from where the standard basis vectors go.",
-  "The columns of the matrix are T(e1), T(e2), and so on.",
+  "The columns of the matrix are \\(T(e_1)\\), \\(T(e_2)\\), and so on.",
   "Kernel means inputs that go to zero.",
   "Range means outputs the transformation can hit."
  ],
  "boardPlan": [
-  "Write A=[T(e1) T(e2) ...] at the top.",
+  "Write \\(A=[\\,T(e_1)\\ \\ T(e_2)\\ \\cdots\\,]\\) at the top.",
   "Draw a small before/after picture: input vector goes in, output vector comes out.",
-  "Problem 1: build a 2 by 2 matrix from T(e1), T(e2).",
-  "Problem 2: find kernel and range for a map R3 to R2.",
-  "Problem 3: use linearity when the given vectors are not e1 and e2."
+  "Problem 1: build a 2 by 2 matrix from \\(T(e_1)\\), \\(T(e_2)\\).",
+  "Problem 2: find kernel and range for a map from \\(\\mathbb{R}^3\\) to \\(\\mathbb{R}^2\\).",
+  "Problem 3: use linearity when the given vectors are not \\(e_1\\) and \\(e_2\\)."
  ],
  "keyFormulas": [
   {
@@ -59,9 +59,9 @@
   }
  ],
  "commonMistakes": [
-  "Putting T(e1) and T(e2) as rows instead of columns.",
+  "Putting \\(T(e_1)\\) and \\(T(e_2)\\) as rows instead of columns.",
   "Mixing up kernel and range.",
-  "Saying a transformation from R3 to R2 can be one-to-one without checking pivots.",
+  "Saying a transformation from \\(\\mathbb{R}^3\\) to \\(\\mathbb{R}^2\\) can be one-to-one without checking pivots.",
   "Forgetting that linearity lets you break T(au+bv) into aT(u)+bT(v)."
  ],
  "notationWarnings": [
@@ -116,10 +116,10 @@
     ],
     "determinant": 11,
     "drawInstructions": [
-     "Draw e1 and e2 in the input plane.",
-     "Draw their images T(e1) and T(e2) in the output plane.",
+     "Draw \\(e_1\\) and \\(e_2\\) in the input plane.",
+     "Draw their images \\(T(e_1)\\) and \\(T(e_2)\\) in the output plane.",
      "Write the output vectors as columns of A.",
-     "Show that det(A)=11, so the map does not collapse area to zero."
+     "Show that \\(\\det(A)=11\\), so the map does not collapse area to zero."
     ]
    },
    "walkthrough": [
@@ -237,7 +237,7 @@
     "Find transformation values from given data"
    ],
    "studentPromptLatex": "Suppose \\(T:\\mathbb{R}^2\\to\\mathbb{R}^3\\) is linear and\n\\[T(1,2)=\\begin{bmatrix}4\\\\1\\\\0\\end{bmatrix},\\qquad T(0,1)=\\begin{bmatrix}-1\\\\3\\\\2\\end{bmatrix}.\\]\nFind \\(T(3,5)\\).",
-   "whatToSayBefore": "Tell students: we are not given T(e1) directly. First write (3,5) using the vectors we do know.",
+   "whatToSayBefore": "Tell students: we are not given \\(T(e_1)\\) directly. First write \\((3,5)\\) using the vectors we do know.",
    "visualSpec": {
     "type": "linearity_from_known_vectors",
     "knownInputs": {
@@ -279,7 +279,7 @@
      "Draw u=(1,2), v=(0,1), and target (3,5) in the input plane.",
      "Show (3,5)=3u-v.",
      "Then write T(3,5)=3T(u)-T(v).",
-     "Draw the output as a vector in R3 only conceptually; exact 3D drawing is not necessary."
+     "Draw the output as a vector in \\(\\mathbb{R}^3\\) only conceptually; exact 3D drawing is not necessary."
     ]
    },
    "walkthrough": [
@@ -300,7 +300,7 @@
    "commonMistakes": [
     "Trying to plug (3,5) into a formula that was never given.",
     "Forgetting the negative sign when using -T(0,1).",
-    "Assuming the given input vectors are e1 and e2. They are not."
+    "Assuming the given input vectors are \\(e_1\\) and \\(e_2\\). They are not."
    ],
    "practiceLabPointer": {
     "section": 4,

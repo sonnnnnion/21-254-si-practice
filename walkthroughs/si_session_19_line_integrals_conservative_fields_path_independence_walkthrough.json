@@ -202,7 +202,7 @@
     "drawInstructions": [
      "Draw two different paths from (0,1) to (2,-1).",
      "Label both paths with the same endpoint value difference.",
-     "Write integral = phi(end)-phi(start).",
+     "Write \\(\\int_C F\\cdot dr=\\phi(\\text{end})-\\phi(\\text{start})\\).",
      "Emphasize path independence."
     ]
    },

@@ -90,7 +90,7 @@
      "(3,4)": 3
     },
     "drawInstructions": [
-     "Draw the rectangle 0<=x<=3, 0<=y<=4.",
+     "Draw the rectangle \\(0\\le x\\le 3,\\ 0\\le y\\le 4\\).",
      "Mark the interior point (1,2).",
      "Circle the four corners.",
      "Write 'inside + edges + corners' as the checklist.",

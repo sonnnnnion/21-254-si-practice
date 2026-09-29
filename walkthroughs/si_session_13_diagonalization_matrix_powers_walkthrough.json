@@ -14,7 +14,7 @@
   6
  ],
  "estimatedDurationMinutes": 50,
- "sessionGoal": "Students should be able to write A=PDP^{-1} when enough eigenvectors exist and use it to compute powers efficiently.",
+ "sessionGoal": "Students should be able to write A = PDP⁻¹ when enough eigenvectors exist and use it to compute powers efficiently.",
  "quickStartIfUnprepared": [
   "Start with the sentence: diagonalization changes to an eigenvector coordinate system.",
   "Do Problem 1 as the main full diagonalization example.",
@@ -54,7 +54,7 @@
  "problems": [
   {
    "problemId": "si13-p1",
-   "title": "Diagonalize a 2 by 2 matrix and compute A^3",
+   "title": "Diagonalize a 2 by 2 matrix and compute \\(A^3\\)",
    "difficulty": "Core",
    "estimatedMinutes": 15,
    "skills": [
@@ -135,7 +135,7 @@
   },
   {
    "problemId": "si13-p2",
-   "title": "Use eigenvectors to compute A^n x",
+   "title": "Use eigenvectors to compute \\(A^nx\\)",
    "difficulty": "Core",
    "estimatedMinutes": 12,
    "skills": [
@@ -167,8 +167,8 @@
     ],
     "drawInstructions": [
      "Draw x as a combination of the two eigenvector directions.",
-     "Label the v1 component gets multiplied by 3^n.",
-     "Label the v2 component gets multiplied by (-1)^n."
+     "Label: the \\(v_1\\) component gets multiplied by \\(3^n\\).",
+     "Label: the \\(v_2\\) component gets multiplied by \\((-1)^n\\)."
     ]
    },
    "walkthrough": [

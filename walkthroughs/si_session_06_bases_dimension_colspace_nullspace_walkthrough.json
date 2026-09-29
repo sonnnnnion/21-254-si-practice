@@ -17,7 +17,7 @@
  "quickStartIfUnprepared": [
   "Write: basis = spanning set with no redundancy.",
   "Write: rank = number of pivots, nullity = number of free variables.",
-  "Emphasize: for Col(A), use pivot columns from the original A, not the RREF columns.",
+  "Emphasize: for \\(\\operatorname{Col}(A)\\), use pivot columns from the original \\(A\\), not the RREF columns.",
   "Do Problem 1 slowly. It is the most important one.",
   "If time is short, do Problem 1 and Problem 3."
  ],
@@ -30,9 +30,9 @@
  ],
  "boardPlan": [
   "At the top, write: basis = span + independent.",
-  "Write the rank-nullity formula: rank(A)+nullity(A)=number of columns of A.",
-  "Explain that RREF is for finding pivots and equations, but original columns are used for Col(A).",
-  "Use Problem 1 to find Col(A), Nul(A), rank, and nullity from one matrix.",
+  "Write the rank-nullity formula: \\(\\operatorname{rank}(A)+\\operatorname{nullity}(A)=\\) number of columns of \\(A\\).",
+  "Explain that RREF is for finding pivots and equations, but original columns are used for \\(\\operatorname{Col}(A)\\).",
+  "Use Problem 1 to find \\(\\operatorname{Col}(A)\\), \\(\\operatorname{Nul}(A)\\), rank, and nullity from one matrix.",
   "Use Problem 2 to show coordinates in a basis.",
   "Use Problem 3 to show a subspace basis from equations."
  ],
@@ -59,7 +59,7 @@
   }
  ],
  "commonMistakes": [
-  "Using columns of RREF as a basis for Col(A). Use pivot columns from the original A.",
+  "Using columns of RREF as a basis for \\(\\operatorname{Col}(A)\\). Use pivot columns from the original \\(A\\).",
   "Forgetting that null space vectors have one entry for each column of A.",
   "Confusing rank with the number of rows.",
   "Confusing nullity with the number of zero rows.",
@@ -150,13 +150,13 @@
      "Draw the RREF matrix and circle the pivots in columns 1 and 2.",
      "Put a box around columns 1 and 2 of the original matrix A.",
      "Write x_3=s and x_4=t to show where the null-space parameters come from.",
-     "Draw a simple split: pivot columns describe Col(A), free variables describe Nul(A)."
+     "Draw a simple split: pivot columns describe \\(\\operatorname{Col}(A)\\), free variables describe \\(\\operatorname{Nul}(A)\\)."
     ]
    },
    "walkthrough": [
     {
      "label": "Find pivot columns",
-     "latex": "The pivots are in columns 1 and 2 of the RREF. So the pivot columns of the original matrix are the first two columns of A."
+     "latex": "The pivots are in columns 1 and 2 of the RREF. So the pivot columns of the original matrix are the first two columns of \\(A\\)."
     },
     {
      "label": "Write the column-space basis",
@@ -177,7 +177,7 @@
    ],
    "finalAnswerLatex": "\\operatorname{rank}(A)=2,\\quad \\operatorname{nullity}(A)=2,\\quad \\operatorname{Col}(A)\\text{ basis }=\\left\\{\\begin{bmatrix}1\\\\2\\\\0\\\\1\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\1\\\\-1\\end{bmatrix}\\right\\},\\quad \\operatorname{Nul}(A)\\text{ basis }=\\left\\{\\begin{bmatrix}-2\\\\-1\\\\1\\\\0\\end{bmatrix},\\begin{bmatrix}1\\\\-2\\\\0\\\\1\\end{bmatrix}\\right\\}.",
    "commonMistakes": [
-    "Using columns 1 and 2 of the RREF as the Col(A) basis instead of original A.",
+    "Using columns 1 and 2 of the RREF as the \\(\\operatorname{Col}(A)\\) basis instead of the original \\(A\\).",
     "Forgetting that the null-space basis vectors must have 4 entries.",
     "Calling the zero rows the nullity. Nullity is the number of free variables."
    ],
@@ -230,9 +230,9 @@
     ],
     "determinant": -1,
     "drawInstructions": [
-     "Draw three independent directions from the origin labeled b1, b2, b3.",
+     "Draw three independent directions from the origin labeled \\(b_1, b_2, b_3\\).",
      "Draw v as a target vector.",
-     "Write v = c1 b1 + c2 b2 + c3 b3.",
+     "Write \\(v=c_1b_1+c_2b_2+c_3b_3\\).",
      "Emphasize that [v]_B is the list of coefficients, not the same drawing as v."
     ]
    },
@@ -305,7 +305,7 @@
      ]
     ],
     "drawInstructions": [
-     "Do not try to draw R4 exactly.",
+     "Do not try to draw \\(\\mathbb{R}^4\\) exactly.",
      "Draw a small parameter table with x=s and y=t.",
      "Show that z and w are controlled by s and t.",
      "Say this subspace has two independent directions, so dimension 2."
@@ -329,9 +329,9 @@
      "latex": "A basis is\n\\[\\{(1,0,1,-2),(0,1,1,-1)\\}.\\]\nThere are two basis vectors, so \\(\\dim(W)=2\\)."
     }
    ],
-   "finalAnswerLatex": "A basis for W is \\{(1,0,1,-2),(0,1,1,-1)\\},\\qquad \\dim(W)=2.",
+   "finalAnswerLatex": "A basis for \\(W\\) is \\(\\{(1,0,1,-2),(0,1,1,-1)\\}\\), so \\(\\dim(W)=2\\).",
    "commonMistakes": [
-    "Trying to draw R4 literally instead of using parameters.",
+    "Trying to draw \\(\\mathbb{R}^4\\) literally instead of using parameters.",
     "Forgetting that the vector has four components.",
     "Not checking that the equations are homogeneous before calling it a subspace."
    ],
@@ -343,7 +343,7 @@
   }
  ],
  "wrapUpQuestions": [
-  "For Col(A), do we use the original matrix or the RREF columns?",
+  "For \\(\\operatorname{Col}(A)\\), do we use the original matrix or the RREF columns?",
   "What does rank count?",
   "What does nullity count?",
   "What is the difference between v and [v]_B?"

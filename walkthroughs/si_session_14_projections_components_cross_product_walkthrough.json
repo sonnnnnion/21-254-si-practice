@@ -56,7 +56,7 @@
  "problems": [
   {
    "problemId": "si14-p1",
-   "title": "Projection and perpendicular component in R^2",
+   "title": "Projection and perpendicular component in \\(\\mathbb{R}^2\\)",
    "difficulty": "Warm-up",
    "estimatedMinutes": 10,
    "skills": [
@@ -130,7 +130,7 @@
    "difficulty": "Core",
    "estimatedMinutes": 14,
    "skills": [
-    "Projection in R^3",
+    "Projection in \\(\\mathbb{R}^3\\)",
     "Point-to-line distance",
     "Perpendicular component"
    ],

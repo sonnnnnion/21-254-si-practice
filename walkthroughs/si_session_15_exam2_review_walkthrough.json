@@ -86,7 +86,7 @@
      4
     ],
     "drawInstructions": [
-     "Draw the flow b -> A^{-1}b -> x.",
+     "Draw the flow \\(b\\to A^{-1}b\\to x\\).",
      "Emphasize that A^{-1} undoes A.",
      "Write determinant nonzero means the map can be undone."
     ]
@@ -217,8 +217,8 @@
      1
     ],
     "drawInstructions": [
-     "Draw x as a combination of v1 and v2.",
-     "Label x=2v1+v2.",
+     "Draw \\(x\\) as a combination of \\(v_1\\) and \\(v_2\\).",
+     "Label \\(x=2v_1+v_2\\).",
      "Under A^3, label the new vector as 2(4^3)v1+1(2^3)v2."
     ]
    },
@@ -250,7 +250,7 @@
   },
   {
    "problemId": "si15-p4",
-   "title": "Projection in R^3",
+   "title": "Projection in \\(\\mathbb{R}^3\\)",
    "difficulty": "Core",
    "estimatedMinutes": 10,
    "skills": [

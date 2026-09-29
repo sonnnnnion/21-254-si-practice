@@ -6,6 +6,18 @@
 <meta name="description" content="21-254 Practice Lab — original practice problems for CMU's Linear Algebra and Vector Calculus for Engineers." />
 <title>21-254 Practice Lab</title>
 
+<!-- Link previews (Canvas, GroupMe, Discord, iMessage, Slack) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="21-254 Practice Lab" />
+<meta property="og:title" content="21-254 Practice Lab" />
+<meta property="og:description" content="Practice problems for CMU's Linear Algebra and Vector Calculus for Engineers, with guided hints and full worked solutions. Unofficial practice resource." />
+<meta property="og:url" content="https://sonnnnnion.github.io/21-254-si-practice/" />
+<meta property="og:image" content="https://sonnnnnion.github.io/21-254-si-practice/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="21-254 Practice Lab: a vector field circulating around a closed curve C" />
+<meta name="twitter:card" content="summary_large_image" />
+
 <!-- Favicon: stylized ∇ (nabla / gradient) on a soft red-tint pad -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%23FCEFF1'/%3E%3Cpath d='M14 16 L50 16 L32 52 Z' fill='none' stroke='%23C8102E' stroke-width='6' stroke-linejoin='round' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='52' r='3.4' fill='%23C8102E'/%3E%3C/svg%3E" />
 <link rel="apple-touch-icon" href="icon-192.png" />
@@ -431,6 +443,46 @@
     margin-left: 2px;
   }
 
+  /* "This week in 21-254": lecture-matched practice links (takes the old stat row's slot) */
+  .week-strip { margin: 22px 0 0; padding: 14px 0 0; border-top: 1px solid var(--border); max-width: 480px; }
+  .week-kicker { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); margin: 0 0 7px; line-height: 1.2; }
+  .week-kicker b { color: var(--red); font-weight: 700; }
+  .week-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .week-chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; line-height: 1.35; border-radius: 999px;
+    background: var(--red-tint); border: 1px solid #F2C6CD; color: var(--red-deep);
+    font-size: 12.5px; font-weight: 600; text-decoration: none;
+    transition: transform .18s var(--ease), background .18s var(--ease);
+  }
+  .week-chip:hover { transform: translateY(-1px); background: var(--red-soft); }
+  .week-chip .arr { transition: transform .18s var(--ease); }
+  .week-chip:hover .arr { transform: translateX(2px); }
+  @media (max-height: 880px) { body.is-home .week-strip { margin-top: 16px; padding-top: 12px; } }
+  @media (max-height: 790px) { body.is-home .week-strip { margin-top: 12px; padding-top: 10px; } body.is-home .week-kicker { margin-bottom: 6px; } }
+
+  /* QR landing page (#/si) */
+  .si-welcome { max-width: 760px; margin: 8px auto 0; padding: 20px 0 8px; }
+  .si-title {
+    font-family: var(--font-display); font-weight: 600; font-size: clamp(32px, 4.6vw, 52px);
+    line-height: 1.05; letter-spacing: -.02em; margin: 14px 0 12px; color: var(--ink);
+    font-variation-settings: "opsz" 120, "SOFT" 30;
+  }
+  .si-title .accent { color: var(--red); font-style: italic; font-weight: 500; }
+  .si-lectures { display: grid; gap: 14px; margin: 26px 0 22px; }
+  .si-lecture { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+  .si-lecture-kicker { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  .si-lecture-topic { font-family: var(--font-display); font-size: 21px; font-weight: 500; color: var(--ink); margin: 4px 0 8px; }
+  .si-prob {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 12px; margin-top: 6px; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--surface-2); color: var(--ink); text-decoration: none;
+    transition: border-color .18s var(--ease), transform .18s var(--ease);
+  }
+  .si-prob:hover { border-color: var(--red); transform: translateY(-1px); }
+  .si-prob-title { font-size: 14.5px; font-weight: 600; min-width: 0; }
+  .si-prob-meta { font-size: 12px; color: var(--ink-mute); white-space: nowrap; }
+  .si-empty { color: var(--ink-soft); font-size: 15px; line-height: 1.55; }
+
   .home-right { position: relative; min-width: 0; }
 
 
@@ -446,20 +498,21 @@
     box-shadow: var(--sh-1, 0 1px 0 rgba(31,41,51,0.02), 0 8px 26px -16px rgba(31,41,51,0.18));
   }
 
-  /* Hero motion — curve draws in, arrows fade in with stagger, tangents pulse */
+  /* Hero motion: the field is visible from the first frame (faint), then brightens
+     with a quick ripple while the curve draws in; everything settles in about 1s. */
   .hero-art .hero-curve {
     stroke-dasharray: 900;
     stroke-dashoffset: 900;
-    animation: hero-draw 1.6s cubic-bezier(.4,.0,.2,1) 0.25s forwards;
+    animation: hero-draw 1.1s cubic-bezier(.4,.0,.2,1) 0.05s forwards;
   }
   @keyframes hero-draw { to { stroke-dashoffset: 0; } }
   .hero-art .hero-curve-cap {
     opacity: 0;
-    animation: hero-fade-in 0.4s ease-out 1.8s forwards;
+    animation: hero-fade-in 0.4s ease-out 1.1s forwards;
   }
   .hero-art .hero-field-arrow {
-    opacity: 0;
-    animation: hero-fade-in 0.5s ease-out forwards;
+    opacity: 0.16;
+    animation: hero-fade-in 0.45s ease-out forwards;
   }
   @keyframes hero-fade-in { to { opacity: var(--final-opacity, 0.55); } }
   .hero-art .hero-tangent {
@@ -473,16 +526,16 @@
     0%, 100% { opacity: 0.8; }
     50%      { opacity: 1; }
   }
-  .hero-art .hero-tangent-1 { animation-delay: 1.0s, 2.2s; }
-  .hero-art .hero-tangent-2 { animation-delay: 1.25s, 2.6s; }
-  .hero-art .hero-tangent-3 { animation-delay: 1.5s, 3.0s; }
+  .hero-art .hero-tangent-1 { animation-delay: 0.55s, 1.4s; }
+  .hero-art .hero-tangent-2 { animation-delay: 0.7s, 1.8s; }
+  .hero-art .hero-tangent-3 { animation-delay: 0.85s, 2.2s; }
   .hero-art .hero-grad-label {
     opacity: 0;
-    animation: hero-fade-in 0.45s ease-out 2.0s forwards;
+    animation: hero-fade-in 0.45s ease-out 1.15s forwards;
     --final-opacity: 1;
   }
   /* Circulation comet: animated by default, static under reduced motion */
-  .hero-art .flow-comet  { opacity: 0; animation: hero-fade-in 0.6s ease-out 1.7s forwards; --final-opacity: 1; }
+  .hero-art .flow-comet  { opacity: 0; animation: hero-fade-in 0.6s ease-out 1.05s forwards; --final-opacity: 1; }
   .hero-art .flow-static { display: none; }
 
   @media (max-width: 880px) {
@@ -503,7 +556,7 @@
     margin-top: 18px;
   }
   @media (max-width: 880px) {
-    .home-modules { grid-template-columns: 1fr; }
+    .home-modules { grid-template-columns: minmax(0, 1fr); }   /* minmax(0,…) lets the resume title ellipsize instead of widening the page */
   }
   .module {
     background: var(--surface);
@@ -708,6 +761,91 @@
   .cooked-cell.heat-2 { background: #EFA76D; color: #6B2807; }
   .cooked-cell.heat-3 { background: #DD5A3A; color: #FFF4EF; }
   .cooked-cell.heat-4 { background: #9A0B22; color: #FFE8EC; }
+
+  /* ---------- Section glyphs: one line-art family for tiles and section headers ----------
+     Drawable strokes carry pathLength="1", so "draw in" = dashoffset 1 -> 0. */
+  .glyph { display: block; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+  .glyph .g { opacity: .72; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .glyph .g-acc { opacity: 1; }
+  .glyph .g-dash { stroke-dasharray: 1.6 1.9; opacity: .55; }
+  .glyph .g-dot { fill: currentColor; stroke: none; }
+  @keyframes glyphDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes glyphFade { from { opacity: 0; } }
+  .glyph-anim .g:not(.g-dash):not(.g-dot) { animation: glyphDraw var(--gd, .6s) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--gs, 70ms) + var(--g0, 0ms)); }
+  .glyph-anim .g-dash, .glyph-anim .g-dot { animation: glyphFade var(--gd, .6s) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--gs, 70ms) + var(--g0, 0ms) + 120ms); }
+
+  .cooked-cell .glyph { position: absolute; top: 9px; right: 9px; width: 22px; height: 22px; opacity: .55;
+    transition: opacity .25s var(--ease), transform .35s var(--ease-out); }
+  .cooked-cell:hover .glyph, .cooked-cell:focus-visible .glyph { opacity: 1; transform: translateY(-1px); }
+  .cooked-cell:hover .glyph .g:not(.g-dash):not(.g-dot),
+  .cooked-cell:focus-visible .glyph .g:not(.g-dash):not(.g-dot) { animation: glyphDraw .55s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 70ms); }
+  .cooked-cell:hover .glyph .g-dash, .cooked-cell:hover .glyph .g-dot,
+  .cooked-cell:focus-visible .glyph .g-dash, .cooked-cell:focus-visible .glyph .g-dot { animation: glyphFade .45s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 70ms + 140ms); }
+
+  /* A tile whose progress changed since the last visit gets one soft lift */
+  .cooked-cell.nudge { animation: tileNudge 1.5s var(--ease-out) .35s both; }
+  @keyframes tileNudge {
+    0%   { box-shadow: 0 0 0 0 rgba(200,16,46,0); transform: none; }
+    28%  { box-shadow: 0 0 0 3px rgba(200,16,46,.30), 0 10px 22px -12px rgba(31,41,51,.4); transform: translateY(-3px); }
+    100% { box-shadow: 0 0 0 0 rgba(200,16,46,0); transform: none; }
+  }
+
+  /* ---------- Section page header art (same glyph, large and faint) ---------- */
+  .section-detail-head { position: relative; }
+  .section-detail-head > :not(.section-art) { position: relative; z-index: 1; }
+  .section-art { position: absolute; right: 4px; top: -34px; width: 220px; height: 220px; pointer-events: none; color: var(--ink); z-index: 0; }
+  .section-art .glyph { width: 100%; height: 100%; stroke-width: .15; }
+  .section-art .g { opacity: .17; }
+  .section-art .g-acc { stroke: var(--red); opacity: .42; }
+  .section-art .g-dash { stroke-dasharray: .45 .6; opacity: .2; }
+  .section-art .g-dot { opacity: .2; }
+  .section-art .g-dot.g-acc { fill: var(--red); opacity: .42; }
+  .section-art .glyph-anim { --gd: 1.1s; --gs: 110ms; --g0: 140ms; }
+  @media (min-width: 721px) {
+    #sectionDetailTitle, #sectionDetailDesc { max-width: min(680px, calc(100% - 200px)) !important; }
+  }
+  @media (max-width: 720px) {
+    /* small, tucked beside the breadcrumb and kicker so it never crosses the title */
+    .section-art { width: 66px; height: 66px; top: -48px; right: 2px; }
+    .section-art .glyph { stroke-width: .38; }
+  }
+
+  /* ---------- Got-it moment ---------- */
+  #markGot { min-width: 9.6em; justify-content: center; }
+  #markReview { min-width: 12.6em; justify-content: center; }
+  .got-check { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  #markGot.pop { animation: gotPop .45s var(--ease-out); }
+  #markGot.pop .got-check path { animation: glyphDraw .4s var(--ease-out) .08s both; }
+  @keyframes gotPop { 0% { transform: scale(1); } 40% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+  /* Section map in the problem sidebar: one segment per problem */
+  .sec-map { display: flex; gap: 3px; margin-top: 12px; }
+  .sec-map-seg { position: relative; flex: 1 1 0; height: 7px; border-radius: 4px; background: var(--border);
+    transition: transform .2s var(--ease); }
+  .sec-map-seg::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--ink);
+    transform: scaleX(0); transform-origin: left center; transition: transform .6s var(--ease-out), background .3s var(--ease); }
+  .sec-map-seg.is-got::after { transform: scaleX(1); }
+  .sec-map-seg.is-review::after { transform: scaleX(1); background: var(--gold); }
+  .sec-map-seg.is-current { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--red); }
+  .sec-map-seg:hover { transform: scaleY(1.45); }
+  .sec-map-cap { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--ink-mute); }
+  .sec-map-cap b { color: var(--ink); font-weight: 600; }
+  .sec-map-key { display: flex; gap: 12px; margin-top: 6px; font-size: 11px; color: var(--ink-faint); }
+  .sec-map-key i { display: inline-block; width: 12px; height: 5px; border-radius: 3px; margin-right: 5px; vertical-align: 1px; background: var(--ink); }
+  .sec-map-key i.k-rev { background: var(--gold); }
+  .sec-map-key i.k-cur { background: var(--border); box-shadow: 0 0 0 1.5px var(--red); }
+
+  /* ---------- Illustrated empty states ---------- */
+  .empty-art { display: block; width: 176px; height: 96px; margin: 0 auto 16px; overflow: visible;
+    fill: none; stroke: var(--ink-mute); stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+  .empty-art .ea { animation: eaIn .6s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 40ms + 60ms); }
+  .empty-art .ea-soft { stroke-opacity: .42; }
+  .empty-art .ea-dot { fill: var(--ink-faint); stroke: none; }
+  .empty-art .ea-red { stroke: var(--red); }
+  .empty-art .ea-redfill { fill: var(--red); stroke: none; }
+  @keyframes eaIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  .empty.empty-sm { padding: 36px 20px; }
+  .empty.empty-sm .empty-art { width: 150px; height: 82px; }
 
   @media (max-width: 720px) {
     .cooked-grid { grid-template-columns: repeat(2, 1fr); }
@@ -2275,6 +2413,20 @@
     font-weight: 500;
   }
 
+  .walk-usage {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    margin: -8px 0 24px; padding: 16px 20px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  }
+  .wu-body { display: grid; gap: 8px; min-width: 0; }
+  .wu-kicker { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  .wu-stats { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+  .wu-stat { display: grid; gap: 2px; }
+  .wu-num { font-family: var(--font-display); font-size: 26px; line-height: 1; color: var(--ink); font-weight: 500; }
+  .wu-lab { font-size: 12.5px; color: var(--ink-mute); }
+  .wu-note { margin: 0; font-size: 12.5px; color: var(--ink-mute); line-height: 1.45; max-width: 560px; }
+  .wu-link { white-space: nowrap; }
+
   .walk-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -3489,20 +3641,10 @@
             <button class="btn btn-ghost" data-route="/exam">Exam Mode</button>
           </div>
 
-          <dl class="hero-stats" aria-label="At a glance">
-            <div class="hero-stat">
-              <dt>Sections</dt>
-              <dd><span id="heroStatSections">—</span></dd>
-            </div>
-            <div class="hero-stat">
-              <dt>Problems</dt>
-              <dd><span id="heroStatProblems">—</span></dd>
-            </div>
-            <div class="hero-stat">
-              <dt>Your Progress</dt>
-              <dd><span id="heroStatGot">0</span><span class="hero-stat-of">/<span id="heroStatTotal">—</span></span></dd>
-            </div>
-          </dl>
+          <div class="week-strip" id="weekStrip" hidden>
+            <div class="week-kicker" id="weekKicker"></div>
+            <div class="week-chips" id="weekChips"></div>
+          </div>
         </div>
 
         <div class="home-right" aria-hidden="true">
@@ -3523,35 +3665,35 @@
 
             <!-- swirling vector field  F = (-y, x) -->
             <g>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.15s" x1="59.0" y1="50.2" x2="51.0" y2="59.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.18s" x1="125.1" y1="51.4" x2="114.9" y2="58.6" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.21s" x1="191.2" y1="54.0" x2="178.8" y2="56.0" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.24s" x1="255.9" y1="57.1" x2="244.1" y2="52.9" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.27s" x1="319.7" y1="59.2" x2="310.3" y2="50.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.30s" x1="359.0" y1="59.8" x2="351.0" y2="50.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.33s" x1="57.4" y1="109.2" x2="52.6" y2="120.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.36s" x1="123.7" y1="110.0" x2="116.3" y2="120.0" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.39s" x1="191.0" y1="113.1" x2="179.0" y2="116.9" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.42s" x1="255.1" y1="118.6" x2="244.9" y2="111.4" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.45s" x1="318.1" y1="120.4" x2="311.9" y2="109.6" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.48s" x1="357.4" y1="120.8" x2="352.6" y2="109.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.51s" x1="55.0" y1="171.8" x2="55.0" y2="184.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.54s" x1="120.0" y1="171.8" x2="120.0" y2="184.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.57s" x1="250.0" y1="184.2" x2="250.0" y2="171.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.60s" x1="315.0" y1="184.2" x2="315.0" y2="171.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.63s" x1="355.0" y1="184.2" x2="355.0" y2="171.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.66s" x1="52.6" y1="234.2" x2="57.4" y2="245.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.69s" x1="116.3" y1="235.0" x2="123.7" y2="245.0" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.72s" x1="179.1" y1="238.1" x2="190.9" y2="241.9" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.75s" x1="244.9" y1="243.7" x2="255.1" y2="236.3" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.78s" x1="311.9" y1="245.4" x2="318.1" y2="234.6" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.81s" x1="352.6" y1="245.8" x2="357.4" y2="234.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.84s" x1="51.1" y1="295.2" x2="58.9" y2="304.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.87s" x1="114.9" y1="296.4" x2="125.1" y2="303.6" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.90s" x1="178.8" y1="299.0" x2="191.2" y2="301.0" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.93s" x1="244.1" y1="302.2" x2="255.9" y2="297.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.96s" x1="310.4" y1="304.2" x2="319.6" y2="295.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
-              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.99s" x1="351.1" y1="304.8" x2="358.9" y2="295.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.07s" x1="59.0" y1="50.2" x2="51.0" y2="59.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.09s" x1="125.1" y1="51.4" x2="114.9" y2="58.6" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.1s" x1="191.2" y1="54.0" x2="178.8" y2="56.0" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.12s" x1="255.9" y1="57.1" x2="244.1" y2="52.9" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.14s" x1="319.7" y1="59.2" x2="310.3" y2="50.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.15s" x1="359.0" y1="59.8" x2="351.0" y2="50.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.17s" x1="57.4" y1="109.2" x2="52.6" y2="120.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.18s" x1="123.7" y1="110.0" x2="116.3" y2="120.0" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.2s" x1="191.0" y1="113.1" x2="179.0" y2="116.9" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.21s" x1="255.1" y1="118.6" x2="244.9" y2="111.4" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.23s" x1="318.1" y1="120.4" x2="311.9" y2="109.6" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.24s" x1="357.4" y1="120.8" x2="352.6" y2="109.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.26s" x1="55.0" y1="171.8" x2="55.0" y2="184.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.27s" x1="120.0" y1="171.8" x2="120.0" y2="184.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.28s" x1="250.0" y1="184.2" x2="250.0" y2="171.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.3s" x1="315.0" y1="184.2" x2="315.0" y2="171.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.32s" x1="355.0" y1="184.2" x2="355.0" y2="171.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.33s" x1="52.6" y1="234.2" x2="57.4" y2="245.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.34s" x1="116.3" y1="235.0" x2="123.7" y2="245.0" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.36s" x1="179.1" y1="238.1" x2="190.9" y2="241.9" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.38s" x1="244.9" y1="243.7" x2="255.1" y2="236.3" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.39s" x1="311.9" y1="245.4" x2="318.1" y2="234.6" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.41s" x1="352.6" y1="245.8" x2="357.4" y2="234.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.42s" x1="51.1" y1="295.2" x2="58.9" y2="304.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.43s" x1="114.9" y1="296.4" x2="125.1" y2="303.6" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.45s" x1="178.8" y1="299.0" x2="191.2" y2="301.0" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.47s" x1="244.1" y1="302.2" x2="255.9" y2="297.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.48s" x1="310.4" y1="304.2" x2="319.6" y2="295.8" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
+              <line class="hero-field-arrow" style="--final-opacity:.42; animation-delay:0.49s" x1="351.1" y1="304.8" x2="358.9" y2="295.2" stroke="#6B7682" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hero-arrM)"/>
             </g>
 
             <!-- closed curve C, drawn in -->
@@ -3654,6 +3796,7 @@
     <section class="view" id="view-section">
       <button class="breadcrumb" data-route="/topics"><span class="arr">→</span> Back to topics</button>
       <div class="section-detail-head">
+        <div class="section-art" id="sectionArt" aria-hidden="true"></div>
         <div class="kicker" id="sectionDetailKicker"></div>
         <h2 id="sectionDetailTitle" style="font-family:var(--font-display); font-size:clamp(26px,3.4vw,36px); letter-spacing:-.022em; margin:0 0 8px; font-weight:600; color:var(--ink); line-height:1.1;"></h2>
         <p id="sectionDetailDesc" style="margin:0 0 12px; color:var(--ink-mute); max-width:680px;"></p>
@@ -3772,12 +3915,34 @@
     <!-- ============================================================
          VIEW: SI WALKTHROUGHS — Dashboard
          ============================================================ -->
+    <section class="view" id="view-si">
+      <div class="si-welcome">
+        <span class="hero-eyebrow"><span class="mark" aria-hidden="true">∇</span>From your SI session</span>
+        <h1 class="si-title">Keep practicing <span class="accent">this week</span></h1>
+        <p class="hero-sub">Problems matched to what lecture is covering right now, each with guided hints and a full worked solution.</p>
+        <div class="si-lectures" id="siLectures"></div>
+        <div class="hero-actions">
+          <button class="btn btn-red" data-route="/topics">Browse all topics <span class="arrow">→</span></button>
+          <button class="btn btn-ghost" data-route="/home">Home page</button>
+        </div>
+      </div>
+    </section>
+
     <section class="view" id="view-walkthroughs">
       <div class="walk-head">
         <div class="walk-kicker">SI Leader Mode</div>
         <h1 class="walk-title">SI <em>Walkthroughs</em></h1>
         <p class="walk-sub">Whiteboard-ready teaching guides for 21-254 Practice Lab.</p>
         <div class="walk-note">Leader-facing teaching guides. Not student worksheets.</div>
+      </div>
+
+      <div class="walk-usage">
+        <div class="wu-body">
+          <div class="wu-kicker">Site usage</div>
+          <div class="wu-stats" id="walkUsageStats" hidden></div>
+          <p class="wu-note">Anonymous, cookie-free counts from GoatCounter. They include your own visits and can lag a few hours.</p>
+        </div>
+        <a class="btn btn-ghost btn-sm wu-link" href="https://mbocksta.goatcounter.com" target="_blank" rel="noopener">Open full dashboard &rarr;</a>
       </div>
 
       <div id="walkLoadStatus"></div>
@@ -3847,7 +4012,7 @@
       <span class="shortcuts-kicker">Scan to open</span>
       <button class="shortcuts-close" id="qrClose" aria-label="Close">×</button>
     </div>
-    <div class="qr-wrap"><svg class="qr-svg" viewBox="0 0 37 37" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR code to the 21-254 Practice Lab home page"><path fill="#FFFFFF" d="M0 0h37v37h-37z"/><path stroke="#1F2933" stroke-width="1" d="M2 2.5h7m3 0h1m1 0h2m2 0h2m4 0h1m3 0h7m-33 1h1m5 0h1m1 0h1m1 0h2m4 0h1m1 0h1m1 0h1m3 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m5 0h1m1 0h1m4 0h3m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h3m1 0h4m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m3 0h3m1 0h3m3 0h1m2 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m3 0h4m1 0h1m3 0h1m1 0h2m1 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h3m4 0h2m1 0h3m-21 1h1m5 0h1m1 0h1m2 0h3m3 0h1m1 0h1m2 0h1m1 0h3m2 0h3m-31 1h4m2 0h2m1 0h1m1 0h2m1 0h5m2 0h2m4 0h4m-32 1h2m1 0h1m2 0h2m2 0h8m2 0h1m3 0h3m1 0h1m1 0h1m-31 1h4m1 0h1m2 0h6m1 0h6m1 0h2m1 0h1m1 0h4m1 0h1m-33 1h2m1 0h1m1 0h2m1 0h4m1 0h1m3 0h1m1 0h1m6 0h2m3 0h2m-33 1h1m2 0h1m13 0h2m2 0h1m1 0h1m1 0h2m2 0h4m-33 1h1m2 0h1m2 0h1m1 0h1m1 0h1m3 0h3m1 0h1m1 0h1m1 0h1m2 0h2m2 0h3m-29 1h3m2 0h1m1 0h1m3 0h1m1 0h1m1 0h1m1 0h1m1 0h4m4 0h1m1 0h1m-33 1h2m1 0h1m1 0h2m2 0h1m3 0h3m1 0h1m4 0h1m1 0h2m1 0h3m2 0h1m-30 1h2m4 0h2m1 0h1m2 0h2m2 0h2m2 0h1m1 0h2m2 0h4m-33 1h1m1 0h1m1 0h4m3 0h3m1 0h1m1 0h5m1 0h5m1 0h4m-33 1h2m1 0h1m4 0h1m5 0h1m4 0h2m1 0h2m4 0h4m-31 1h1m2 0h3m2 0h2m3 0h1m3 0h2m3 0h3m1 0h3m1 0h2m-33 1h2m1 0h3m3 0h1m1 0h1m9 0h3m1 0h1m1 0h4m-31 1h1m1 0h7m2 0h1m1 0h2m4 0h1m1 0h1m6 0h1m1 0h2m-32 1h1m1 0h1m1 0h1m2 0h2m1 0h4m1 0h2m2 0h2m1 0h1m1 0h3m3 0h1m-31 1h2m4 0h2m2 0h1m5 0h1m3 0h1m2 0h7m1 0h2m-25 1h1m6 0h5m1 0h1m2 0h1m3 0h1m1 0h1m1 0h1m-33 1h7m5 0h4m1 0h1m4 0h3m1 0h1m1 0h1m1 0h1m-31 1h1m5 0h1m2 0h2m2 0h3m1 0h3m3 0h2m3 0h5m-33 1h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h2m1 0h1m2 0h1m1 0h1m2 0h6m-30 1h1m1 0h3m1 0h1m2 0h1m3 0h1m4 0h1m2 0h1m1 0h1m1 0h1m1 0h3m1 0h2m-33 1h1m1 0h3m1 0h1m3 0h1m1 0h1m1 0h2m2 0h3m4 0h1m1 0h2m1 0h3m-33 1h1m5 0h1m3 0h4m4 0h1m3 0h1m4 0h4m-31 1h7m1 0h1m1 0h2m3 0h1m1 0h2m3 0h3m1 0h2m1 0h1m1 0h1"/></svg></div>
+    <div class="qr-wrap"><svg class="qr-svg" viewBox="0 0 37 37" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR code to the 21-254 Practice Lab welcome page"><path fill="#FFFFFF" d="M0 0h37v37h-37z"/><path stroke="#1F2933" stroke-width="1" d="M2 2.5h7m3 0h2m3 0h2m2 0h1m1 0h3m2 0h7m-33 1h1m5 0h1m2 0h1m1 0h2m2 0h1m1 0h1m2 0h4m2 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m4 0h1m2 0h2m1 0h2m7 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m2 0h1m3 0h1m4 0h1m3 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m5 0h2m2 0h1m1 0h4m1 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m1 0h1m3 0h1m3 0h2m2 0h1m3 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-24 1h2m1 0h1m4 0h1m3 0h4m-25 1h1m2 0h1m1 0h2m1 0h1m2 0h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h3m1 0h1m-27 1h1m1 0h2m2 0h1m1 0h4m1 0h1m5 0h2m2 0h4m4 0h1m-33 1h5m1 0h1m3 0h2m4 0h2m1 0h1m1 0h1m2 0h1m2 0h2m1 0h3m-31 1h1m1 0h1m2 0h2m5 0h1m1 0h2m3 0h4m1 0h1m1 0h2m1 0h1m-32 1h2m1 0h1m2 0h2m4 0h1m2 0h1m4 0h2m1 0h1m1 0h2m2 0h1m2 0h1m-33 1h1m8 0h1m2 0h2m1 0h2m2 0h2m1 0h1m1 0h5m2 0h2m-32 1h2m1 0h1m1 0h1m1 0h1m2 0h1m1 0h2m2 0h2m1 0h2m1 0h1m1 0h4m1 0h2m-30 1h1m4 0h1m3 0h1m1 0h3m1 0h1m3 0h1m4 0h4m1 0h1m-32 1h1m2 0h2m1 0h2m1 0h3m1 0h1m3 0h1m1 0h4m1 0h1m1 0h1m1 0h2m1 0h1m-31 1h1m5 0h1m1 0h1m3 0h1m2 0h1m1 0h1m2 0h1m1 0h2m2 0h1m1 0h1m-29 1h2m2 0h2m1 0h2m1 0h3m4 0h1m1 0h1m3 0h1m1 0h1m3 0h1m1 0h1m-33 1h2m1 0h2m2 0h1m1 0h1m3 0h9m2 0h1m2 0h1m3 0h1m-30 1h1m3 0h4m5 0h8m1 0h2m5 0h2m-32 1h1m3 0h1m2 0h1m1 0h4m1 0h4m1 0h1m3 0h1m1 0h1m4 0h2m-33 1h3m1 0h3m1 0h2m1 0h3m1 0h1m3 0h1m5 0h4m1 0h1m1 0h1m-32 1h1m1 0h1m4 0h2m1 0h1m2 0h1m1 0h1m1 0h1m2 0h2m4 0h1m3 0h2m-33 1h1m1 0h1m1 0h3m1 0h4m1 0h5m1 0h3m2 0h5m2 0h2m-25 1h1m4 0h1m5 0h1m2 0h3m3 0h2m2 0h1m-33 1h7m2 0h1m2 0h3m1 0h1m4 0h1m2 0h1m1 0h1m1 0h3m-31 1h1m5 0h1m1 0h2m1 0h1m4 0h1m3 0h3m1 0h1m3 0h1m-29 1h1m1 0h3m1 0h1m3 0h2m2 0h3m3 0h2m2 0h6m1 0h2m-33 1h1m1 0h3m1 0h1m1 0h4m3 0h1m4 0h1m2 0h2m1 0h1m1 0h3m-31 1h1m1 0h3m1 0h1m2 0h1m1 0h1m5 0h2m2 0h1m1 0h1m4 0h3m1 0h1m-33 1h1m5 0h1m2 0h1m1 0h1m2 0h4m1 0h1m1 0h1m1 0h2m-25 1h7m1 0h1m3 0h3m1 0h1m1 0h1m2 0h1m2 0h1m1 0h1m1 0h1m2 0h1"/></svg></div>
     <div class="qr-url">sonnnnnion.github.io/21-254-si-practice</div>
     <p class="qr-note">Point your phone camera here to open the 21-254 Practice Lab.</p>
   </div>
@@ -4017,6 +4182,106 @@ async function fetchFirst(urls) {
 
 // Normalize one problem object so the UI doesn't need to care about
 // minor field-name variations.
+const SECTION_GLYPHS = {
+  1: '<path class="g" style="--i:0" d="M5 18L16 15" pathLength="1"/><path class="g" style="--i:1" d="M13.37 14.4L16 15L14.03 16.85" pathLength="1"/><path class="g" style="--i:1" d="M5 18L8 6" pathLength="1"/><path class="g" style="--i:2" d="M6.19 8.01L8 6L8.65 8.62" pathLength="1"/><path class="g g-acc" style="--i:2" d="M5 18L19 3" pathLength="1"/><path class="g g-acc" style="--i:3" d="M16.45 3.88L19 3L18.3 5.61" pathLength="1"/>',
+  2: '<path class="g" style="--i:0" d="M3.5 5H9V10.5H14.5V16H20.5" pathLength="1"/><path class="g g-dot g-acc" style="--i:1" d="M5.25 7.9a1.05 1.05 0 1 0 2.1 0a1.05 1.05 0 1 0 -2.1 0"/><path class="g g-dot g-acc" style="--i:2" d="M10.75 13.4a1.05 1.05 0 1 0 2.1 0a1.05 1.05 0 1 0 -2.1 0"/><path class="g g-dot g-acc" style="--i:3" d="M16.25 18.9a1.05 1.05 0 1 0 2.1 0a1.05 1.05 0 1 0 -2.1 0"/>',
+  3: '<path class="g" style="--i:0" d="M2.5 15L11 20L21.5 13.5L13 8.5Z" pathLength="1"/><path class="g g-acc" style="--i:1" d="M11.6 14.3L18 13.2" pathLength="1"/><path class="g g-acc" style="--i:2" d="M15.44 12.35L18 13.2L15.87 14.85" pathLength="1"/><path class="g g-acc" style="--i:2" d="M11.6 14.3L10.2 9.9" pathLength="1"/><path class="g g-acc" style="--i:3" d="M9.71 12.56L10.2 9.9L12.13 11.79" pathLength="1"/><path class="g g-dot g-acc" style="--i:3" d="M10.85 14.3a0.75 0.75 0 1 0 1.5 0a0.75 0.75 0 1 0 -1.5 0"/>',
+  4: '<path class="g g-dash" style="--i:0" d="M4 20H11V13H4Z"/><path class="g g-acc" style="--i:1" d="M4 20L13 17L17 4L8 7Z" pathLength="1"/><path class="g g-dot" style="--i:2" d="M3.1 20a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0"/>',
+  5: '<path class="g g-dash" style="--i:0" d="M3 21L21 3"/><path class="g" style="--i:1" d="M6.5 17.5L18.5 5.5" pathLength="1"/><path class="g" style="--i:2" d="M15.92 6.29L18.5 5.5L17.71 8.08" pathLength="1"/><path class="g g-acc" style="--i:3" d="M6.5 17.5L11.5 12.5" pathLength="1"/><path class="g g-acc" style="--i:4" d="M8.63 13.38L11.5 12.5L10.62 15.37" pathLength="1"/>',
+  6: '<path class="g" style="--i:0" d="M2.5 18.5H21.5" pathLength="1"/><path class="g" style="--i:1" d="M4 18.5L15 6" pathLength="1"/><path class="g" style="--i:2" d="M12.47 6.95L15 6L14.38 8.63" pathLength="1"/><path class="g g-dash" style="--i:3" d="M15 6V18.5"/><path class="g g-acc" style="--i:4" d="M4 18.5L15 18.5" pathLength="1"/><path class="g g-acc" style="--i:5" d="M12.62 17.23L15 18.5L12.62 19.77" pathLength="1"/><path class="g" style="--i:5" d="M12.6 18.5V16.1H15" pathLength="1"/>',
+  7: '<path class="g" style="--i:0" d="M3 14a7 5 0 1 0 14 0a7 5 0 1 0 -14 0" pathLength="1"/><path class="g" style="--i:1" d="M6.6 14a3.4 2.3 0 1 0 6.8 0a3.4 2.3 0 1 0 -6.8 0" pathLength="1"/><path class="g g-acc" style="--i:2" d="M14.5 10.17L18.1 4.17" pathLength="1"/><path class="g g-acc" style="--i:3" d="M15.79 5.56L18.1 4.17L17.96 6.86" pathLength="1"/><path class="g g-dot g-acc" style="--i:4" d="M13.6 10.17a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0"/>',
+  8: '<path class="g" style="--i:0" d="M3.5 7L7.5 5.2" pathLength="1"/><path class="g" style="--i:1" d="M5.4 5.06L7.5 5.2L6.21 6.86" pathLength="1"/><path class="g" style="--i:1" d="M11 5.6L15 3.8" pathLength="1"/><path class="g" style="--i:2" d="M12.9 3.66L15 3.8L13.71 5.46" pathLength="1"/><path class="g g-acc" style="--i:2" d="M3.5 19C8 8 14 21 20.2 9" pathLength="1"/><path class="g g-acc" style="--i:3" d="M17.98 10.54L20.2 9L20.23 11.7" pathLength="1"/>',
+  9: '<path class="g g-acc" style="--i:0" d="M12 4.5C7.5 4.5 4.5 7 4 11C3.5 15.5 6.5 19 11 19.5C15.5 20 19.5 17 20 12.5C20.5 8.5 17.5 4.5 12 4.5" pathLength="1"/><path class="g g-acc" style="--i:2" d="M12.76 5.76L10.2 4.62L12.57 3.14" pathLength="1"/><path class="g g-dash" style="--i:1" d="M8.5 14L13 9.5"/><path class="g g-dash" style="--i:1" d="M10.5 16.5L16 11"/>',
+  10: '<path class="g" style="--i:0" d="M3 17C4 7.5 20 7.5 21 17" pathLength="1"/><path class="g g-acc" style="--i:1" d="M3 17C3 20.3 21 20.3 21 17" pathLength="1"/><path class="g g-dash" style="--i:1" d="M3 17C3 13.9 21 13.9 21 17"/><path class="g g-acc" style="--i:2" d="M11.02 18.25L13.2 19.47L10.97 20.6" pathLength="1"/><path class="g" style="--i:3" d="M12 9.9L12 3" pathLength="1"/><path class="g" style="--i:4" d="M10.73 5.38L12 3L13.27 5.38" pathLength="1"/><path class="g g-dot" style="--i:5" d="M11.1 9.9a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0"/>',
+};
+function sectionGlyph(pos, extraClass) {
+  const g = SECTION_GLYPHS[pos];
+  return g ? '<svg class="glyph' + (extraClass ? " " + extraClass : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + g + '</svg>' : "";
+}
+
+/* Empty-state illustrations: a calm, uniform field (nothing flagged) and an empty
+   filter region with every point outside it (no matches). */
+function emptyArt(kind) {
+  const arrow = (x, y, dx, dy, cls, i) => {
+    const L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, s = 4.2, a = 0.5;
+    const hx = (c, sn) => (x + dx - (ux * c - uy * sn) * s).toFixed(1), hy = (c, sn) => (y + dy - (ux * sn + uy * c) * s).toFixed(1);
+    return '<path class="ea ' + cls + '" style="--i:' + i + '" d="M' + x + ' ' + y + 'L' + (x + dx) + ' ' + (y + dy) +
+           'M' + hx(Math.cos(a), Math.sin(a)) + ' ' + hy(Math.cos(a), Math.sin(a)) + 'L' + (x + dx) + ' ' + (y + dy) +
+           'L' + hx(Math.cos(-a), Math.sin(-a)) + ' ' + hy(Math.cos(-a), Math.sin(-a)) + '"/>';
+  };
+  let body = "", i = 0;
+  if (kind === "calm") {
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 6; c++) {
+      if (r === 1 && (c === 3 || c === 4)) continue;
+      body += arrow(12 + c * 29, 24 + r * 25, 13, -3.5, "ea-soft", i++);
+    }
+    body += '<circle class="ea ea-red ea-soft" style="--i:' + (i + 2) + '" cx="120" cy="46" r="9"/>' +
+            '<circle class="ea ea-redfill" style="--i:' + (i + 3) + '" cx="120" cy="46" r="3.4"/>';
+  } else {
+    body += '<path class="ea ea-soft" style="--i:0" d="M14 84H166M14 84V8"/>';
+    [[30, 30], [38, 66], [142, 22], [154, 56], [100, 76], [22, 50], [134, 74]].forEach(([x, y]) => {
+      body += '<circle class="ea ea-dot" style="--i:' + (++i) + '" cx="' + x + '" cy="' + y + '" r="2.6"/>';
+    });
+    body += '<rect class="ea ea-red" style="--i:' + (i + 2) + '" x="60" y="24" width="64" height="40" rx="7" stroke-dasharray="5 4"/>';
+  }
+  return '<svg class="empty-art" viewBox="0 0 180 96" aria-hidden="true" focusable="false">' + body + '</svg>';
+}
+
+// Count a number up/down in place (falls back to the final value if frames are paused)
+function tweenNumber(el, from, to, suffix, ms) {
+  if (!el) return;
+  ms = ms || 900; suffix = suffix || "";
+  const token = (el._tween = (el._tween || 0) + 1);
+  const finish = () => { if (el._tween === token) el.textContent = to + suffix; };
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (from === to || reduce) return finish();
+  const t0 = performance.now(), ease = t => 1 - Math.pow(1 - t, 3);
+  const step = now => {
+    if (el._tween !== token) return;
+    const t = Math.min(1, (now - t0) / ms);
+    el.textContent = Math.round(from + (to - from) * ease(t)) + suffix;
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+  setTimeout(finish, ms + 80);
+}
+
+/* Scroll memory. Each history entry gets a key; Back/Forward returns to that entry's
+   exact scroll position, and list pages reopen where you left them. Detail pages
+   start at the top. Jumps are instant (html uses smooth scrolling for in-page links,
+   which made every route change glide or stall). */
+const NAV_BOOT = Date.now().toString(36);
+const LIST_ROUTE = /^\/(topics|section\/\d+|review|walkthroughs)$/;
+const scrollByEntry = new Map(), scrollByRoute = new Map();
+let navSeq = 0, currentNavKey = null, currentNavRoute = null;
+try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (_) {}
+function beginNavigation(route) {
+  if (currentNavKey) scrollByEntry.set(currentNavKey, window.scrollY);
+  if (currentNavRoute) scrollByRoute.set(currentNavRoute, window.scrollY);
+  const st = history.state;
+  let target = 0;
+  if (st && typeof st.navKey === "string" && st.navKey.indexOf(NAV_BOOT + ":") === 0) {
+    currentNavKey = st.navKey;                         // Back / Forward (or a re-render of this entry)
+    target = scrollByEntry.get(currentNavKey) || 0;
+  } else {
+    currentNavKey = NAV_BOOT + ":" + (++navSeq);
+    try { history.replaceState({ navKey: currentNavKey }, "", location.href); } catch (_) {}
+    target = LIST_ROUTE.test(route) ? (scrollByRoute.get(route) || 0) : 0;
+  }
+  currentNavRoute = route;
+  return target;
+}
+function jumpTo(y) {
+  // The new view was just rendered: flush layout first, or Chrome defers the scroll to
+  // the next frame, by which time smooth scrolling is back on and the jump glides/stalls.
+  const html = document.documentElement;
+  html.style.scrollBehavior = "auto";
+  void html.scrollHeight;
+  try { window.scrollTo({ top: y, left: 0, behavior: "instant" }); } catch (_) { window.scrollTo(0, y); }
+  clearTimeout(jumpTo._t);
+  jumpTo._t = setTimeout(() => { html.style.scrollBehavior = ""; }, 60);
+}
+
 function normalizeProse(s) {
   if (!s || typeof s !== "string") return s;
   // 1) Some source files contain literal "\n" (backslash + n) rather than real
@@ -4251,6 +4516,7 @@ function currentRoute() {
 
 function handleRoute() {
   const route = currentRoute();
+  const scrollTarget = beginNavigation(route);
   const parts = route.split("/").filter(Boolean);
   const head = parts[0] || "home";
 
@@ -4274,6 +4540,7 @@ function handleRoute() {
   }
   else if (head === "exam")    { $("#view-exam").classList.add("active"); markNav("/exam"); renderExamSetup(); }
   else if (head === "review")  { $("#view-review").classList.add("active"); markNav("/review"); renderReview(); }
+  else if (head === "si")      { $("#view-si").classList.add("active"); markNav("/home"); renderSiWelcome(); }
   else if (head === "walkthroughs" && !parts[1]) {
     // Visiting #/walkthroughs marks the SI leader as unlocked for this browser session
     setWalkUnlocked(true);
@@ -4287,8 +4554,8 @@ function handleRoute() {
   }
   else { navigate("/home", { replace: true }); }
 
-  // Scroll to top on every route change
-  window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  // New pages open at the top; Back/Forward and list pages return to where you were
+  jumpTo(scrollTarget);
 
   // Anonymous usage ping (GoatCounter) — one count per route
   countRoute();
@@ -4335,6 +4602,7 @@ function computeStats() {
   return { sections: State.sectionsData.length, problems: totalProblems, got, review };
 }
 
+const HomeAnim = { ringPct: null, gotNum: null, tilePct: {} };
 function updateStats() {
   const s = computeStats();
   // Hero stat row (top of home page)
@@ -4353,15 +4621,23 @@ function updateStats() {
   const pct = s.problems ? Math.round((s.got / s.problems) * 100) : 0;
   const ring = document.getElementById("progressRingFill");
   const txt  = document.getElementById("progressRingText");
-  if (ring) {
-    const circumference = 2 * Math.PI * 50;
-    ring.setAttribute("stroke-dasharray", circumference.toFixed(2));
-    ring.setAttribute("stroke-dashoffset", (circumference * (1 - pct / 100)).toFixed(2));
+  const fromPct = HomeAnim.ringPct == null ? 0 : HomeAnim.ringPct;
+  if (ring && HomeAnim.ringPct !== pct) {
+    // Start from what was last shown, then ease to the new value
+    const C = 2 * Math.PI * 50;
+    ring.setAttribute("stroke-dasharray", C.toFixed(2));
+    ring.style.transition = "none";
+    ring.style.strokeDashoffset = (C * (1 - fromPct / 100)).toFixed(2);
+    ring.getBoundingClientRect();
+    ring.style.transition = "";
+    ring.style.strokeDashoffset = (C * (1 - pct / 100)).toFixed(2);
   }
-  if (txt) txt.textContent = `${pct}%`;
+  if (txt && HomeAnim.ringPct !== pct) tweenNumber(txt, fromPct, pct, "%");
+  HomeAnim.ringPct = pct;
   const gotNum = document.getElementById("progressGotNum");
   const totNum = document.getElementById("progressTotalNum");
-  if (gotNum) gotNum.textContent = s.got;
+  if (gotNum && HomeAnim.gotNum !== s.got) tweenNumber(gotNum, HomeAnim.gotNum == null ? 0 : HomeAnim.gotNum, s.got, "");
+  HomeAnim.gotNum = s.got;
   if (totNum) totNum.textContent = `/ ${s.problems || "—"}`;
 }
 
@@ -4437,15 +4713,27 @@ function renderCookedGrid() {
     const lvl = score ? bucketCooked(score, allScores) : 1;
     const titleShort = s.title.length > 38 ? s.title.slice(0, 36).trim() + "…" : s.title;
     const prog = sectionProgress(s);
+    const fromPct = HomeAnim.tilePct[s.pos] == null ? 0 : HomeAnim.tilePct[s.pos];
     return `
-      <button class="cooked-cell heat-${lvl}" data-route="/section/${s.pos}"
-              style="--prog: ${prog.pct}%"
+      <button class="cooked-cell heat-${lvl}" data-route="/section/${s.pos}" data-pos="${s.pos}" data-prog="${prog.pct}"
+              style="--prog: ${fromPct}%"
               aria-label="Section ${s.pos}: ${escapeHtml(s.title)} — ${COOKED_FOOT[lvl]}, ${prog.got} of ${prog.total} complete">
         <div class="sec-num">${String(s.pos).padStart(2,'0')}</div>
         <div class="sec-title">${escapeHtml(titleShort)}</div>
         <div class="sec-foot">${avg ? `~${Math.round(avg)} min · ${COOKED_FOOT[lvl]}` : COOKED_FOOT[lvl]}${prog.got ? ` · ${prog.got}/${prog.total}` : ""}</div>
+        ${sectionGlyph(s.pos)}
       </button>`;
   }).join("");
+
+  // Progress bars grow from the last value you saw; a tile that changed gets a nudge
+  grid.getBoundingClientRect();
+  grid.querySelectorAll(".cooked-cell[data-pos]").forEach(cell => {
+    const pos = Number(cell.dataset.pos), to = Number(cell.dataset.prog);
+    const before = HomeAnim.tilePct[pos];
+    cell.style.setProperty("--prog", to + "%");
+    if (before != null && before !== to) cell.classList.add("nudge");
+    HomeAnim.tilePct[pos] = to;
+  });
 }
 
 function renderResumeLink() {
@@ -4472,7 +4760,114 @@ function renderResumeLink() {
   }
 }
 
+/* ============================================================
+   FALL 2026 LECTURE SCHEDULE (from the 21-254 syllabus)
+   [lecture #, date, topic, practice problem ids]. Drives the home page
+   "This week" strip and the SI QR landing page (#/si).
+   ============================================================ */
+const COURSE_LECTURES = [
+  [1,  "2026-08-24", "Vectors",                     ["vecmat-001", "vecmat-002"]],
+  [2,  "2026-08-26", "Matrices",                    ["vecmat-003", "vecmat-004", "vecmat-009"]],
+  [3,  "2026-08-28", "Transposes",                  ["vecmat-005", "vecmat-006", "vecmat-007", "vecmat-008"]],
+  [4,  "2026-08-31", "Linear systems",              ["rref-008", "rref-003", "rref-004"]],
+  [5,  "2026-09-02", "Gaussian elimination",        ["rref-001", "rref-007", "rref-002", "rref-005", "rref-006"]],
+  [6,  "2026-09-04", "Linear independence",         ["basis-001", "basis-002", "basis-007"]],
+  [7,  "2026-09-09", "Subspaces",                   ["basis-003", "basis-006", "basis-004", "basis-005", "basis-008", "basis-009"]],
+  [8,  "2026-09-11", "Linear transformations",      ["transdet-002", "transdet-007", "transdet-001"]],
+  [9,  "2026-09-14", "Determinants",                ["transdet-003", "transdet-006", "transdet-005", "transdet-008"]],
+  [10, "2026-09-16", "Matrix inverses",             ["transdet-004", "transdet-009"]],
+  [11, "2026-09-18", "Eigenvalues and eigenvectors",["eig-001", "eig-003", "eig-005"]],
+  [12, "2026-09-21", "Eigenvalue multiplicity",     ["eig-002", "eig-008"]],
+  [13, "2026-09-23", "Eigenbases",                  ["eig-004", "eig-007", "eig-010", "eig-009"]],
+  [14, "2026-09-28", "Complex eigenvalues",         ["eig-006"]],
+  [15, "2026-09-30", "Diagonalization",             ["diagprojcross-001", "diagprojcross-002", "diagprojcross-003", "diagprojcross-004"]],
+  [16, "2026-10-02", "Projections",                 ["diagprojcross-005", "diagprojcross-006", "diagprojcross-007"]],
+  [17, "2026-10-05", "Cross product",               ["diagprojcross-008", "diagprojcross-009", "diagprojcross-010"]],
+  [18, "2026-10-07", "Curves",                      ["curvgradopt-001", "curvgradopt-002"]],
+  [19, "2026-10-09", "Scalar functions",            ["curvgradopt-003"]],
+  [20, "2026-10-19", "Partial derivatives",         ["curvgradopt-004", "curvgradopt-005"]],
+  [21, "2026-10-21", "Gradient",                    ["curvgradopt-006", "curvgradopt-008", "curvgradopt-007"]],
+  [22, "2026-10-26", "Optimization",                ["curvgradopt-009", "curvgradopt-010"]],
+  [23, "2026-10-28", "Vector fields",               ["vecfieldline-001"]],
+  [24, "2026-10-30", "Divergence and curl",         ["vecfieldline-002", "vecfieldline-001"]],
+  [25, "2026-11-02", "Line integrals",              ["vecfieldline-005", "vecfieldline-006", "vecfieldline-008"]],
+  [26, "2026-11-04", "Path independence",           ["vecfieldline-003", "vecfieldline-009", "vecfieldline-007", "vecfieldline-004", "vecfieldline-010"]],
+  [27, "2026-11-06", "Double integrals",            ["doublegreen-001", "doublegreen-002", "doublegreen-003"]],
+  [28, "2026-11-09", "Triple integrals",            ["surfstokes-007", "surfstokes-008"]],
+  [29, "2026-11-11", "Change of variables",         ["doublegreen-006", "doublegreen-007", "doublegreen-004", "doublegreen-005"]],
+  [30, "2026-11-16", "Green's Theorem",             ["doublegreen-008", "doublegreen-009", "doublegreen-010"]],
+  [31, "2026-11-18", "Surfaces",                    ["surfstokes-001"]],
+  [32, "2026-11-20", "Scalar surface integrals",    ["surfstokes-002"]],
+  [33, "2026-11-23", "Vector surface integrals",    ["surfstokes-003", "surfstokes-004"]],
+  [34, "2026-11-30", "Stokes' Theorem",             ["surfstokes-005", "surfstokes-006"]],
+  [35, "2026-12-02", "Divergence Theorem",          ["surfstokes-009", "surfstokes-010"]],
+  [36, "2026-12-04", "Wrap-up",                     []],
+];
+const FINALS_END = "2026-12-11";
+
+function localDate(s) { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); }
+function mondayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
+
+// Lectures to feature right now: this week's, or the next teaching week during a
+// break / before the term. Returns null once finals are over.
+function currentLectures(now = new Date()) {
+  const L = COURSE_LECTURES.map(([n, date, topic, ids]) => ({ n, date: localDate(date), topic, ids }))
+                           .filter(l => l.ids.length);
+  const inWeek = start => { const end = new Date(start); end.setDate(start.getDate() + 7);
+                            return L.filter(l => l.date >= start && l.date < end); };
+  const beforeTerm = now < L[0].date;
+  let list = inWeek(mondayOf(now));
+  if (list.length) return { mode: beforeTerm ? "first" : "week", list };
+  const next = L.find(l => l.date >= now);
+  if (next) return { mode: beforeTerm ? "first" : "next", list: inWeek(mondayOf(next.date)) };
+  const endOfFinals = localDate(FINALS_END); endOfFinals.setDate(endOfFinals.getDate() + 1);
+  return now < endOfFinals ? { mode: "finals", list: [] } : null;
+}
+function lectureRange(list) {
+  const a = list[0].n, b = list[list.length - 1].n;
+  return list.length === 1 ? "Lecture " + a : "Lectures " + a + "\u2013" + b;
+}
+
+function renderWeekStrip() {
+  const strip = $("#weekStrip");
+  if (!strip) return;
+  const cur = currentLectures();
+  if (!cur) { strip.hidden = true; return; }
+  const label = { week: "This week", next: "Up next", first: "First week", finals: "Finals week" }[cur.mode];
+  $("#weekKicker").innerHTML = "<b>" + label + "</b>" + (cur.list.length ? " &middot; " + lectureRange(cur.list) : " &middot; review everything");
+  $("#weekChips").innerHTML = cur.list.length
+    ? cur.list.map(l => '<a class="week-chip" href="#/problem/' + l.ids[0] + '">' + escapeHtml(l.topic) + ' <span class="arr" aria-hidden="true">&rarr;</span></a>').join("")
+    : '<a class="week-chip" href="#/exam">Exam Mode <span class="arr" aria-hidden="true">&rarr;</span></a>' +
+      '<a class="week-chip" href="#/topics">All topics <span class="arr" aria-hidden="true">&rarr;</span></a>';
+  strip.hidden = false;
+}
+
+function renderSiWelcome() {
+  const box = $("#siLectures");
+  if (!box) return;
+  const cur = currentLectures();
+  if (!cur || !cur.list.length) {
+    box.innerHTML = '<p class="si-empty">Lectures are done for the term. Exam Mode builds a mixed review set from every section.</p>' +
+                    '<div><a class="week-chip" href="#/exam">Open Exam Mode <span class="arr" aria-hidden="true">&rarr;</span></a></div>';
+    return;
+  }
+  const fmt = d => d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  box.innerHTML = cur.list.map(l => {
+    const probs = l.ids.slice(0, 2).map(id => State.problemsById.get(id)).filter(Boolean);
+    return '<div class="si-lecture">' +
+      '<div class="si-lecture-kicker">Lecture ' + l.n + ' &middot; ' + fmt(l.date) + '</div>' +
+      '<div class="si-lecture-topic">' + escapeHtml(l.topic) + '</div>' +
+      (probs.length ? probs.map(p =>
+        '<a class="si-prob" href="#/problem/' + p.id + '"><span class="si-prob-title">' + escapeHtml(p.title) + '</span>' +
+        '<span class="si-prob-meta">' + escapeHtml(p.difficulty || "") + (p.estimatedMinutes ? ' &middot; ~' + p.estimatedMinutes + ' min' : '') + '</span></a>'
+      ).join("") : '<div class="skeleton" style="height: 44px; margin-top: 6px;"></div>') +
+    '</div>';
+  }).join("");
+  typesetMath(box);                    // a few titles contain LaTeX
+}
+
 function renderHome() {
+  renderWeekStrip();
   updateStats();
   renderCookedGrid();
   renderResumeLink();
@@ -4613,6 +5008,8 @@ function renderSection(pos) {
   lsSet(LS.LAST_SECTION, pos);
 
   $("#sectionDetailKicker").textContent = `Section ${String(pos).padStart(2,'0')}`;
+  const art = $("#sectionArt");
+  if (art) { art.innerHTML = sectionGlyph(pos, "glyph-anim"); }
   $("#sectionDetailTitle").textContent  = section.title;
   $("#sectionDetailDesc").textContent   = section.short || "";
 
@@ -4671,7 +5068,7 @@ function renderProblemList() {
   if (!problems.length) {
     list.innerHTML = `
       <div class="empty">
-        <div class="empty-icon">∅</div>
+        ${emptyArt("region")}
         <h3>No problems match your filters</h3>
         <p>Try clearing the search or relaxing the difficulty / status filter.</p>
       </div>`;
@@ -6411,8 +6808,22 @@ Object.entries(CONCEPT_VIZ3D).forEach(([key, sceneName]) => {
    Order matters: most specific patterns first.
    ============================================================ */
 
+// Explicit picks for problems where keyword matching lands on the wrong idea,
+// e.g. "verify a basis using a determinant" matching the area-scaling sketch,
+// or a non-conservative field getting the "every path gives the same value" one.
+const VISUAL_OVERRIDES = {
+  "basis-001":        "linearIndep",
+  "basis-002":        "linearIndep",
+  "basis-005":        "basisCoords",
+  "transdet-001":     "transformation",
+  "vecfieldline-008": "lineIntegral",
+  "vecfieldline-009": "lineIntegral",
+};
+
 function pickConceptVisual(p) {
   if (!p) return null;
+  const forced = VISUAL_OVERRIDES[p.id];
+  if (forced && CONCEPT[forced]) return CONCEPT[forced]();
   const skills = (p.skills || []).map(s => String(s).toLowerCase());
   const title  = String(p.title || "").toLowerCase();
   const text   = String(p.problemLatex || "").toLowerCase();
@@ -6478,6 +6889,46 @@ function pickConceptVisual(p) {
 /* ============================================================
    RENDER: PROBLEM (study view)
    ============================================================ */
+
+const GOT_CHECK = '<svg class="got-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.4 8.5l3 3 6.2-6.8" pathLength="1"/></svg>';
+function statusButtons(status) {
+  return {
+    got: { cls: "btn " + (status === "got" ? "btn-primary" : "btn-ghost"),
+           html: status === "got" ? GOT_CHECK + "<span>Got it</span>" : "Mark as Got It" },
+    rev: { cls: "btn " + (status === "review" ? "btn-red" : "btn-ghost"),
+           html: status === "review" ? "★ Flagged for review" : "Mark as Need Review" },
+  };
+}
+function sectionMapHtml(section, currentId) {
+  const map = getStatusMap();
+  const segs = section.problems.map((q, i) => {
+    const st = map[q.id];
+    const cls = "sec-map-seg" + (st === "got" ? " is-got" : st === "review" ? " is-review" : "") + (q.id === currentId ? " is-current" : "");
+    return '<a class="' + cls + '" href="#/problem/' + q.id + '" aria-label="Problem ' + (i + 1) + (st === "got" ? ", got it" : st === "review" ? ", flagged for review" : "") + '"></a>';
+  }).join("");
+  const idx = section.problems.findIndex(q => q.id === currentId);
+  const got = sectionProgress(section).got;
+  return '<div class="sec-map" role="navigation" aria-label="Problems in this section">' + segs + '</div>' +
+    '<div class="sec-map-cap"><span>Problem <b>' + (idx + 1) + '</b> of ' + section.problems.length + '</span>' +
+    '<span id="secMapGot"><b>' + got + '</b> got it</span></div>' +
+    '<div class="sec-map-key" aria-hidden="true"><span><i></i>Got it</span><span><i class="k-rev"></i>Review</span><span><i class="k-cur"></i>This one</span></div>';
+}
+function paintStatus(p, status, celebrate) {
+  const s = statusButtons(status);
+  const got = $("#markGot"), rev = $("#markReview"), clr = $("#clearStatus");
+  if (got) { got.className = s.got.cls; got.innerHTML = s.got.html; }
+  if (rev) { rev.className = s.rev.cls; rev.innerHTML = s.rev.html; }
+  if (clr) clr.hidden = !status;
+  const seg = document.querySelector("#view-problem .sec-map-seg.is-current");
+  if (seg) {
+    seg.classList.toggle("is-got", status === "got");
+    seg.classList.toggle("is-review", status === "review");
+  }
+  const section = State.sectionsByPos.get(p.sectionPos);
+  const cap = $("#secMapGot");
+  if (cap && section) cap.innerHTML = "<b>" + sectionProgress(section).got + "</b> got it";
+  if (celebrate && status === "got" && got) { got.classList.remove("pop"); void got.offsetWidth; got.classList.add("pop"); }
+}
 
 function renderProblem(problemId) {
   const p = State.problemsById.get(problemId);
@@ -6634,13 +7085,9 @@ function renderProblem(problemId) {
     ${similarBlock}
 
     <div class="study-actions">
-      <button class="btn ${status === 'got' ? 'btn-primary' : 'btn-ghost'}" id="markGot">
-        ${status === "got" ? "✓ Got it" : "Mark as Got It"}
-      </button>
-      <button class="btn ${status === 'review' ? 'btn-red' : 'btn-ghost'}" id="markReview">
-        ${status === "review" ? "★ Flagged for review" : "Mark as Need Review"}
-      </button>
-      ${status ? `<button class="btn btn-ghost btn-sm" id="clearStatus">Clear status</button>` : ""}
+      <button class="${statusButtons(status).got.cls}" id="markGot">${statusButtons(status).got.html}</button>
+      <button class="${statusButtons(status).rev.cls}" id="markReview">${statusButtons(status).rev.html}</button>
+      <button class="btn btn-ghost btn-sm" id="clearStatus"${status ? "" : " hidden"}>Clear status</button>
       <a class="btn btn-ghost btn-sm" href="${mailto}" id="reportBtn" aria-label="Report an issue with this problem">
         Report Issue
       </a>
@@ -6665,9 +7112,7 @@ function renderProblem(problemId) {
         <button class="btn btn-ghost btn-sm" id="studyPrev" ${prev ? `data-go="${prev.id}"` : "disabled"}>← Prev</button>
         <button class="btn btn-ghost btn-sm" id="studyNext" ${next ? `data-go="${next.id}"` : "disabled"}>Next →</button>
       </div>
-      <div style="margin-top:10px; font-size:12.5px; color:var(--ink-mute);">
-        ${idx + 1} of ${section.problems.length} in section
-      </div>
+      ${sectionMapHtml(section, p.id)}
       <button class="shortcuts-hint" id="shortcutsTrigger" type="button" aria-label="Show keyboard shortcuts">
         Tip: press <kbd>?</kbd> for keyboard shortcuts
       </button>
@@ -6789,25 +7234,23 @@ function wireProblemView(p, prev, next) {
     });
   }
 
-  // Status actions
+  // Status actions update in place: open hints/solutions and typeset math stay put
   $("#markGot")?.addEventListener("click", () => {
-    const cur = getStatus(p.id);
-    const next = cur === "got" ? null : "got";
+    const next = getStatus(p.id) === "got" ? null : "got";
     setStatus(p.id, next);
     showToast(next === "got" ? "Marked as Got It" : "Removed Got It", next === "got" ? "got" : "neutral");
-    renderProblem(p.id);
+    paintStatus(p, next, true);
   });
   $("#markReview")?.addEventListener("click", () => {
-    const cur = getStatus(p.id);
-    const next = cur === "review" ? null : "review";
+    const next = getStatus(p.id) === "review" ? null : "review";
     setStatus(p.id, next);
     showToast(next === "review" ? "Added to Need Review" : "Removed from Need Review");
-    renderProblem(p.id);
+    paintStatus(p, next, false);
   });
   $("#clearStatus")?.addEventListener("click", () => {
     setStatus(p.id, null);
     showToast("Status cleared", "neutral");
-    renderProblem(p.id);
+    paintStatus(p, null, false);
   });
 
   // Sidebar nav
@@ -6937,7 +7380,7 @@ function renderReview() {
   if (!review.length) {
     content.innerHTML = `
       <div class="empty" style="text-align:center; padding: 48px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md);">
-        <div style="font-size: 32px; margin-bottom: 10px; color: var(--ink-faint);">★</div>
+        ${emptyArt("calm")}
         <h3 style="font-family: var(--font-display); font-weight: 500; margin: 0 0 8px;">No problems flagged for review</h3>
         <p style="color: var(--ink-mute); margin: 0 auto 18px; max-width: 440px; line-height: 1.55;">
           On any problem, hit <kbd style="padding: 1px 6px; font-size: 12px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 4px;">R</kbd> or use the &ldquo;Mark as Need Review&rdquo; button to build your study list.
@@ -7444,7 +7887,35 @@ async function loadAllWalkthroughs() {
 
 /* ---------- Dashboard render ---------- */
 
+/* SI-only "Site usage" card. Uses GoatCounter's public count feed, which works
+   only when "Allow adding visitor counts on your website" is on in GoatCounter's
+   settings; otherwise the numbers stay hidden and the dashboard link remains. */
+const GC_SITE = "https://mbocksta.goatcounter.com";
+let usageRequested = false;
+async function loadSiteUsage() {
+  const box = $("#walkUsageStats");
+  if (!box || usageRequested) return;
+  usageRequested = true;
+  const count = async (path, query) => {
+    const r = await fetch(GC_SITE + "/counter/" + path + ".json" + (query || ""), { cache: "no-store" });
+    if (r.status === 404) return "0";                       // path never visited yet
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    return String(j.count != null ? j.count : "0");
+  };
+  try {
+    const all = await count("TOTAL");            // one probe: if the feed is off, stop at a single request
+    const [week, qr] = await Promise.all([count("TOTAL", "?start=week"), count("/si")]);
+    const stat = (n, label) => '<div class="wu-stat"><span class="wu-num">' + escapeHtml(n) + '</span><span class="wu-lab">' + label + '</span></div>';
+    box.innerHTML = stat(all, "visits, all time") + stat(week, "visits, last 7 days") + stat(qr, "arrived via the SI QR code");
+    box.hidden = false;
+  } catch (_) {
+    box.hidden = true;
+  }
+}
+
 async function renderWalkthroughs() {
+  loadSiteUsage();
   const grid = $("#walkGrid");
   const status = $("#walkLoadStatus");
   if (!WalkState.loaded) {
@@ -7523,7 +7994,8 @@ function paintWalkGrid() {
   count.textContent = filtered.length + " of " + totalN + " session" + (totalN === 1 ? "" : "s");
 
   if (!filtered.length) {
-    grid.innerHTML = '<div class="walk-empty">No sessions match those filters.</div>';
+    grid.innerHTML = '<div class="empty empty-sm" style="grid-column: 1 / -1;">' + emptyArt("region") +
+      '<h3>No sessions match those filters</h3><p>Try clearing the search or choosing All sessions.</p></div>';
     return;
   }
 
@@ -7923,10 +8395,21 @@ function exitPresenterMode() {
 /* Render a string that may contain LaTeX (explicit \(...\) delimiters, bare
    backslash commands like \frac/\nabla/\overrightarrow, or implicit math
    syntax like f_x / x^2 / <a,b,c>). Plain prose is HTML-escaped untouched. */
+// A field meant for a formula sometimes holds a plain sentence. Wrapped as math
+// it renders as run-together italics ("Thepivotsare..."), so send it to the
+// text path instead. Real formulas here have no English words outside \text{}.
+function looksLikeProse(str) {
+  const bare = str.replace(/\\(text|mathrm|operatorname|mbox)\s*\{[^{}]*\}/g, " ")
+                  .replace(/\\begin\{\w+\}(\{[^{}]*\})?|\\end\{\w+\}/g, " ")
+                  .replace(/\\[a-zA-Z]+/g, " ");
+  return (bare.match(/\b[A-Za-z]{3,}\b/g) || []).length >= 2;
+}
+
 function texInline(s) {
   if (s == null) return "";
   const str = String(s).trim();
   if (!str) return "";
+  if (!/\\[\(\[]/.test(str) && looksLikeProse(str)) return renderTextOrLatex(str);
   // Has explicit math delimiters (\( or \[ — and by extension their closing
   // partners somewhere later) -> pass through; MathJax processes the delimiters
   if (/\\[\(\[]/.test(str)) {
@@ -7940,6 +8423,7 @@ function texBlock(s) {
   if (s == null) return "";
   const str = String(s).trim();
   if (!str) return "";
+  if (!/\\[\(\[]/.test(str) && looksLikeProse(str)) return renderTextOrLatex(str);
   // Already has delimiters (inline or display) -> pass through
   if (/\\[\(\[]/.test(str)) {
     return '<span class="tex2jax_process">' + str + '</span>';
@@ -8013,7 +8497,7 @@ function wrapInlineMath(str) {
       return escapeHtml(tok);
     }
 
-    const hasSubSup    = /[a-zA-Z0-9][_\^][a-zA-Z0-9{]/.test(tok);
+    const hasSubSup    = /[a-zA-Z0-9)\]}][_\^][a-zA-Z0-9{(]/.test(tok);   // also (λ-2)^2
     const hasAngleVec  = /<[a-zA-Z0-9_\^\-+,.\s]*?,[a-zA-Z0-9_\^\-+,.\s]*?>/.test(tok);
     const hasBackslash = /\\[a-zA-Z]/.test(tok);
     if (!hasSubSup && !hasAngleVec && !hasBackslash) return escapeHtml(tok);
@@ -8025,6 +8509,10 @@ function wrapInlineMath(str) {
     let body  = trailMatch[1];
     let trail = trailMatch[2] || "";
     if (trail && /(^|[^\\])(\\\\)*\\$/.test(body)) { body += trail[0]; trail = trail.slice(1); }
+    // Likewise keep a ")" or "]" that closes a bracket opened inside the math:
+    // "det(A^T)=det(A)." must not end the math at "det(A".
+    const unclosed = s => (s.match(/[(\[]/g) || []).length - (s.match(/[)\]]/g) || []).length;
+    while (trail && /^[)\]]/.test(trail) && unclosed(body) > 0) { body += trail[0]; trail = trail.slice(1); }
 
     // Convert literal <a,b,c> to \langle a,b,c\rangle inside the math body.
     // Trailing space after \rangle ensures it terminates cleanly before
@@ -8346,7 +8834,17 @@ function renderVisualSpec(spec) {
 }
 
 function prettyTypeName(t) {
-  return (t || "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  const SUP = { "2": "\u00b2", "3": "\u00b3", "4": "\u2074", "n": "\u207f" };
+  const SMALL = new Set(["to", "of", "and", "in", "on", "for", "a", "an", "the", "vs", "with", "by"]);
+  const ACRONYM = { rref: "RREF", pdp: "PDP" };
+  return (t || "").split("_").filter(Boolean).map((w, i) => {
+    const lw = w.toLowerCase();
+    if (/^r[234n]$/.test(lw)) return "\u211d" + SUP[lw[1]];      // r3 -> ℝ³
+    if (/^\dd$/.test(lw)) return lw.toUpperCase();                // 2d -> 2D
+    if (ACRONYM[lw]) return ACRONYM[lw];
+    if (i > 0 && SMALL.has(lw)) return lw;
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }).join(" ");
 }
 
 /* ---------- Data block (always shown, never invented) ---------- */
@@ -8374,6 +8872,8 @@ function renderVisualDataBlock(spec) {
 }
 
 function prettyKeyName(k) {
+  const sub = /^([a-zA-Z])(\d+)$/.exec(String(k));                  // v1 -> v₁, a3 -> a₃
+  if (sub) return sub[1] + sub[2].replace(/\d/g, d => "\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089"[d]);
   return String(k)
     .replace(/([a-z\d])([A-Z])/g, "$1 $2")          // camelCase boundary: finalRref -> final Rref
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")      // ACRONYMWord: RREFmatrix -> RREF matrix
@@ -8381,8 +8881,36 @@ function prettyKeyName(k) {
     .replace(/^./, c => c.toUpperCase());
 }
 
+// Visual-spec values are also read by the drawing code (e.g. polar bounds "2pi"),
+// so the data stays plain text and only the displayed copy is formatted:
+// 2pi -> 2π, 1/sqrt(2) -> 1/√2, 0<=t<=1 -> 0 ≤ t ≤ 1, v3 -> v₃, R1 <- R1 -> R₁ ← R₁.
+// Leading words stay prose ("inside cylinder r<=2"); anything else wordy is left alone.
+function asciiMathValue(s) {
+  s = String(s).trim();
+  if (/\\[\(\[]/.test(s)) return null;
+  const TRIGGER = /(^|[^A-Za-z])\d*pi(?![A-Za-z])|sqrt\(|<=|>=|!=|\s<-\s|->|(^|[^A-Za-z])(theta|phi|lambda)(?![A-Za-z])|(^|[^A-Za-z])det\(|(^|[^A-Za-z])[a-zA-Z]\d+(?![\dA-Za-z])/;
+  if (!TRIGGER.test(s)) return null;
+  const m = /^((?:[A-Za-z]{3,}\s+)*)(.*)$/.exec(s);
+  const prose = m[1], rest = m[2];
+  if (!rest || /[A-Za-z]{3,}/.test(rest.replace(/sqrt|det|theta|phi|lambda|pi/g, ""))) return null;
+  const tex = rest
+    .replace(/<([^<>]*,[^<>]*)>/g, "\\langle $1\\rangle ")          // <-y,x,z> is a vector, not "<-"
+    .replace(/sqrt\(([^()]*)\)/g, "\\sqrt{$1}")
+    .replace(/(^|[^A-Za-z\\])(\d*)pi\/(\d+)/g, "$1\\frac{$2\\pi}{$3}")
+    .replace(/(^|[^A-Za-z\\])(\d*)pi(?![A-Za-z])/g, "$1$2\\pi ")
+    .replace(/(^|[^A-Za-z\\])(theta|phi|lambda)(?![A-Za-z])/g, "$1\\$2 ")
+    .replace(/(^|[^A-Za-z\\])det\(/g, "$1\\det(")
+    .replace(/<=/g, "\\le ").replace(/>=/g, "\\ge ").replace(/!=/g, "\\neq ")
+    .replace(/(\s)<-(\s)/g, "$1\\leftarrow$2").replace(/->/g, "\\to ")
+    .replace(/(^|[^A-Za-z\\])([a-zA-Z])(\d+)(?!\d)/g, "$1$2_{$3}")
+    .replace(/,\s+/g, ",\\ ");
+  return escapeHtml(prose) + '<span class="tex2jax_process">\\(' + escapeHtml(tex) + '\\)</span>';
+}
+
 function formatSpecValue(key, v) {
   if (typeof v === "string") {
+    const pretty = asciiMathValue(v);
+    if (pretty) return pretty;
     // Defer to renderTextOrLatex which handles \(...\) delimited LaTeX,
     // bare backslash commands, AND implicit math (f_x, <a,b,c>, x^2)
     return renderTextOrLatex(v);

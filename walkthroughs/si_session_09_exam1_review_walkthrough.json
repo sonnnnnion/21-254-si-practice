@@ -58,7 +58,7 @@
   },
   {
    "topic": "Determinants",
-   "whatToRecognize": "Use det(A) to decide invertibility and track row operation effects."
+   "whatToRecognize": "Use \\(\\det(A)\\) to decide invertibility and track row operation effects."
   }
  ],
  "keyFormulas": [
@@ -70,7 +70,7 @@
  ],
  "commonMistakes": [
   "Not saying what type of problem it is before starting algebra.",
-  "Using RREF columns as a basis for Col(A).",
+  "Using RREF columns as a basis for \\(\\operatorname{Col}(A)\\).",
   "Mixing up span membership with linear independence.",
   "Forgetting that T(e_i) values become columns.",
   "For determinant parameter problems, giving the bad value instead of the invertible condition."
@@ -79,7 +79,7 @@
   "Use \\overrightarrow{AB} for vectors between points.",
   "Use [A|b] for augmented matrices.",
   "Use \\operatorname{span}, \\operatorname{Col}(A), \\operatorname{Nul}(A), and \\ker(T) clearly.",
-  "Do not call det(A) a matrix. It is a scalar."
+  "Do not call \\(\\det(A)\\) a matrix. It is a scalar."
  ],
  "problems": [
   {
@@ -191,7 +191,7 @@
     "solution": "(-1-2t, 4+3t, t)",
     "drawInstructions": [
      "Circle pivots in columns 1 and 2.",
-     "Write x3=t above the free column.",
+     "Write \\(x_3=t\\) above the free column.",
      "Translate the first two rows into equations.",
      "Box the final parametric vector form."
     ]
@@ -216,7 +216,7 @@
    ],
    "finalAnswerLatex": "(x_1,x_2,x_3)=(-1-2t,4+3t,t),\\quad t\\in\\mathbb{R}.",
    "commonMistakes": [
-    "Forgetting to introduce a parameter for x3.",
+    "Forgetting to introduce a parameter for \\(x_3\\).",
     "Thinking the zero row means no solution. It does not.",
     "Leaving the answer as equations without a clear solution set."
    ],
@@ -280,15 +280,15 @@
     ],
     "spanDimension": 2,
     "drawInstructions": [
-     "Draw a plane through the origin spanned by v1 and v2.",
-     "Draw v3 inside the same plane and label v3=2v1+v2.",
+     "Draw a plane through the origin spanned by \\(v_1\\) and \\(v_2\\).",
+     "Draw \\(v_3\\) inside the same plane and label \\(v_3=2v_1+v_2\\).",
      "Draw b inside the same plane and label b=3v1+2v2.",
-     "Emphasize that v3 is redundant, so v1 and v2 form a basis for the span."
+     "Emphasize that \\(v_3\\) is redundant, so \\(v_1\\) and \\(v_2\\) form a basis for the span."
     ]
    },
    "walkthrough": [
     {
-     "label": "Notice the relation for v3",
+     "label": "Notice the relation for \\(v_3\\)",
      "latex": "\\[2v_1+v_2=2(1,0,2)+(0,1,-1)=(2,1,3)=v_3.\\]\nSo \\(v_3\\) is redundant."
     },
     {
@@ -308,7 +308,7 @@
    "commonMistakes": [
     "Answering span membership but forgetting independence.",
     "Thinking dependent means b is not in the span. These are different questions.",
-    "Giving all three vectors as a basis even though v3 is redundant."
+    "Giving all three vectors as a basis even though \\(v_3\\) is redundant."
    ],
    "practiceLabPointer": {
     "section": 3,
@@ -352,7 +352,7 @@
     "areaScaleFactor": 5,
     "drawInstructions": [
      "Draw the unit square and its image as a parallelogram with area scale 5.",
-     "Write det(A)=-5, so orientation flips and area scales by 5.",
+     "Write \\(\\det(A)=-5\\), so orientation flips and area scales by 5.",
      "Show T(2,-1) as a separate matrix-vector multiplication."
     ]
    },
@@ -374,7 +374,7 @@
    "commonMistakes": [
     "Forgetting absolute value for area scale.",
     "Saying area scale is -5. Area cannot be negative.",
-    "Forgetting that determinant nonzero implies both one-to-one and onto for R2 to R2."
+    "Forgetting that determinant nonzero implies both one-to-one and onto for \\(\\mathbb{R}^2\\) to \\(\\mathbb{R}^2\\)."
    ],
    "practiceLabPointer": {
     "section": 4,
@@ -418,7 +418,7 @@
     ],
     "invertibleCondition": "k != -1/4",
     "drawInstructions": [
-     "Write det(M(k)) first.",
+     "Write \\(\\det(M(k))\\) first.",
      "After computing -4k-1, set it equal to zero to find the bad value.",
      "Draw a number line with k=-1/4 marked as the only excluded value."
     ]

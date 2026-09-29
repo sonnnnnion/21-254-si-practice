@@ -36,7 +36,7 @@
  ],
  "keyFormulas": [
   "AM(λ) = multiplicity of λ as a root of the characteristic polynomial.",
-  "GM(λ) = dim Nul(A-λI).",
+  "\\(\\operatorname{GM}(\\lambda)=\\dim\\operatorname{Nul}(A-\\lambda I)\\).",
   "Always 1 ≤ GM(λ) ≤ AM(λ).",
   "An n by n matrix has an eigenbasis if it has n linearly independent eigenvectors."
  ],

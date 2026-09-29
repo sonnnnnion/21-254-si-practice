@@ -52,7 +52,7 @@
   "Using row vectors and column vectors inconsistently when setting up the matrix."
  ],
  "notationWarnings": [
-  "Write \\operatorname{span}\\{v_1,v_2\\}, not just span v1 v2.",
+  "Write \\(\\operatorname{span}\\{v_1,v_2\\}\\), not just \\(\\operatorname{span} v_1 v_2\\).",
   "Linear independence uses the equation c_1v_1+\\cdots+c_kv_k=0. The right side is zero.",
   "For span membership, the equation is c_1v_1+\\cdots+c_kv_k=b. The right side is the target vector.",
   "If vectors are columns of a matrix, keep them as columns when solving."
@@ -154,7 +154,7 @@
    "whatToSayBefore": "This problem has two different questions. Span membership asks if we can make b. Independence asks if the vectors themselves have redundancy.",
    "visualSpec": {
     "type": "three_vectors_span_r3",
-    "purpose": "Show three vectors from the origin and connect determinant nonzero with spanning all of R^3.",
+    "purpose": "Show three vectors from the origin and connect determinant nonzero with spanning all of \\(\\mathbb{R}^3\\).",
     "ambientSpace": "R^3",
     "vectors": {
      "v1": [
@@ -185,13 +185,13 @@
     },
     "determinant": -1,
     "boardSketchInstructions": [
-     "Draw three arrows from the origin and label them v1, v2, and v3.",
+     "Draw three arrows from the origin and label them \\(v_1\\), \\(v_2\\), and \\(v_3\\).",
      "Do not try to draw the coordinates perfectly; the important point is that the determinant is nonzero.",
-     "Write the matrix with v1, v2, v3 as columns.",
-     "Show that det(A) = -1, so the three vectors are independent and span R^3.",
-     "Write b = -v1 + 2v3 after solving."
+     "Write the matrix with \\(v_1, v_2, v_3\\) as columns.",
+     "Show that \\(\\det(A)=-1\\), so the three vectors are independent and span \\(\\mathbb{R}^3\\).",
+     "Write \\(b=-v_1+2v_3\\) after solving."
     ],
-    "accuracyNote": "With the vectors as columns, det(A)=-1, so they are independent. The target vector satisfies b=-v1+2v3."
+    "accuracyNote": "With the vectors as columns, \\(\\det(A)=-1\\), so they are independent. The target vector satisfies \\(b=-v_1+2v_3\\)."
    },
    "walkthrough": [
     {
@@ -222,9 +222,9 @@
    ],
    "finalAnswerLatex": "b\\in\\operatorname{span}\\{v_1,v_2,v_3\\}\\text{ because }b=-v_1+2v_3.\\text{ Also, }v_1,v_2,v_3\\text{ are linearly independent because }\\det A=-1\\neq 0.",
    "commonMistakes": [
-    "Putting v1, v2, v3 as rows instead of columns without thinking about what the coefficients multiply.",
+    "Putting \\(v_1, v_2, v_3\\) as rows instead of columns without thinking about what the coefficients multiply.",
     "Stopping after showing b is in the span and forgetting to answer independence.",
-    "Thinking that c2=0 means the set is dependent. It does not. This coefficient solution was for b, not for zero."
+    "Thinking that \\(c_2=0\\) means the set is dependent. It does not. This coefficient solution was for \\(b\\), not for zero."
    ],
    "practiceLabPointer": "Practice Lab Section 3: Span membership and linear independence"
   },
@@ -266,13 +266,13 @@
     "dependentValue": "k=7/2",
     "dependenceRelation": "a_1-4a_2+2a_3=0",
     "boardSketchInstructions": [
-     "Draw a small parallelepiped from three vectors and label its volume det(A).",
+     "Draw a small parallelepiped from three vectors and label its volume \\(\\det(A)\\).",
      "Say: if the volume is zero, the vectors collapse into a plane and are dependent.",
-     "Write A with a1, a2, a3 as columns.",
-     "Compute det(A)=7-2k and set it equal to zero.",
-     "At k=7/2, write the relation a1 - 4a2 + 2a3 = 0."
+     "Write \\(A\\) with \\(a_1, a_2, a_3\\) as columns.",
+     "Compute \\(\\det(A)=7-2k\\) and set it equal to zero.",
+     "At \\(k=7/2\\), write the relation \\(a_1-4a_2+2a_3=0\\)."
     ],
-    "accuracyNote": "The determinant of A=[a1 a2 a3] is 7-2k, so dependence occurs at k=7/2. At that value, a1-4a2+2a3=0."
+    "accuracyNote": "The determinant of \\(A=[\\,a_1\\ a_2\\ a_3\\,]\\) is \\(7-2k\\), so dependence occurs at \\(k=7/2\\). At that value, \\(a_1-4a_2+2a_3=0\\)."
    },
    "walkthrough": [
     {

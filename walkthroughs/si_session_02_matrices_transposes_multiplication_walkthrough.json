@@ -247,7 +247,7 @@
    "whatToSayBefore": "This problem is about order. The transpose of a product reverses the order.",
    "visualSpec": {
     "type": "transpose_product_order_reversal",
-    "purpose": "Show that the product AC is 2×2 and that transposing the product matches C^T A^T.",
+    "purpose": "Show that the product \\(AC\\) is \\(2\\times 2\\) and that transposing the product matches \\(C^TA^T\\).",
     "matrices": {
      "A": [
       [
@@ -380,7 +380,7 @@
    "whatToSayBefore": "Do not try to multiply A twenty-five times. First find a pattern.",
    "visualSpec": {
     "type": "matrix_power_pattern",
-    "purpose": "Show the alternating pattern created by A^2=I.",
+    "purpose": "Show the alternating pattern created by \\(A^2=I\\).",
     "matrices": {
      "A": [
       [
@@ -445,7 +445,7 @@
      "Write: even powers → I, odd powers → A.",
      "Then substitute into the expression."
     ],
-    "accuracyNote": "The power pattern is exact because A^2=I."
+    "accuracyNote": "The power pattern is exact because \\(A^2=I\\)."
    },
    "walkthrough": [
     {

@@ -93,7 +93,7 @@
      "Shade the region.",
      "Show vertical slices for the original order.",
      "Show horizontal slices for the reversed order.",
-     "Label reversed bounds: 0<=y<=2 and 0<=x<=y."
+     "Label reversed bounds: \\(0\\le y\\le 2\\) and \\(0\\le x\\le y\\)."
     ]
    },
    "walkthrough": [
@@ -152,9 +152,9 @@
     "integralValue": "4pi",
     "drawInstructions": [
      "Draw the upper half disk of radius 2.",
-     "Label theta from 0 to pi.",
+     "Label \\(\\theta\\) from \\(0\\) to \\(\\pi\\).",
      "Label r from 0 to 2.",
-     "Write x^2+y^2=r^2 and dA=r dr dtheta."
+     "Write \\(x^2+y^2=r^2\\) and \\(dA=r\\,dr\\,d\\theta\\)."
     ]
    },
    "walkthrough": [
@@ -209,7 +209,7 @@
     "integrand": "Q_x-P_y=4y",
     "integralValue": 24,
     "drawInstructions": [
-     "Draw the rectangle 0<=x<=3, 0<=y<=2.",
+     "Draw the rectangle \\(0\\le x\\le 3,\\ 0\\le y\\le 2\\).",
      "Put counterclockwise arrows on the boundary.",
      "Identify P=x-y^2 and Q=2xy.",
      "Write Q_x-P_y=2y-(-2y)=4y.",
