@@ -457,31 +457,13 @@
   .week-chip:hover { transform: translateY(-1px); background: var(--red-soft); }
   .week-chip .arr { transition: transform .18s var(--ease); }
   .week-chip:hover .arr { transform: translateX(2px); }
+  .week-note { margin: 8px 0 0; font-size: 11.5px; line-height: 1.4; color: var(--ink-mute); }
   @media (max-height: 880px) { body.is-home .week-strip { margin-top: 16px; padding-top: 12px; } }
-  @media (max-height: 790px) { body.is-home .week-strip { margin-top: 12px; padding-top: 10px; } body.is-home .week-kicker { margin-bottom: 6px; } }
-
-  /* QR landing page (#/si) */
-  .si-welcome { max-width: 760px; margin: 8px auto 0; padding: 20px 0 8px; }
-  .si-title {
-    font-family: var(--font-display); font-weight: 600; font-size: clamp(32px, 4.6vw, 52px);
-    line-height: 1.05; letter-spacing: -.02em; margin: 14px 0 12px; color: var(--ink);
-    font-variation-settings: "opsz" 120, "SOFT" 30;
+  @media (max-height: 790px) {
+    body.is-home .week-strip { margin-top: 10px; padding-top: 9px; }
+    body.is-home .week-kicker { margin-bottom: 6px; }
+    body.is-home .week-note { margin-top: 6px; }
   }
-  .si-title .accent { color: var(--red); font-style: italic; font-weight: 500; }
-  .si-lectures { display: grid; gap: 14px; margin: 26px 0 22px; }
-  .si-lecture { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
-  .si-lecture-kicker { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-  .si-lecture-topic { font-family: var(--font-display); font-size: 21px; font-weight: 500; color: var(--ink); margin: 4px 0 8px; }
-  .si-prob {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    padding: 10px 12px; margin-top: 6px; border: 1px solid var(--border); border-radius: 10px;
-    background: var(--surface-2); color: var(--ink); text-decoration: none;
-    transition: border-color .18s var(--ease), transform .18s var(--ease);
-  }
-  .si-prob:hover { border-color: var(--red); transform: translateY(-1px); }
-  .si-prob-title { font-size: 14.5px; font-weight: 600; min-width: 0; }
-  .si-prob-meta { font-size: 12px; color: var(--ink-mute); white-space: nowrap; }
-  .si-empty { color: var(--ink-soft); font-size: 15px; line-height: 1.55; }
 
   .home-right { position: relative; min-width: 0; }
 
@@ -767,20 +749,21 @@
   .glyph { display: block; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
   .glyph .g { opacity: .72; stroke-dasharray: 1; stroke-dashoffset: 0; }
   .glyph .g-acc { opacity: 1; }
-  .glyph .g-dash { stroke-dasharray: 1.6 1.9; opacity: .55; }
+  .glyph .g-dash { stroke-dasharray: .01 2.7; opacity: .75; }   /* round-capped dots: crisp at 22px */
   .glyph .g-dot { fill: currentColor; stroke: none; }
+  .glyph .g-fill { opacity: .22; }
   @keyframes glyphDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
   @keyframes glyphFade { from { opacity: 0; } }
-  .glyph-anim .g:not(.g-dash):not(.g-dot) { animation: glyphDraw var(--gd, .6s) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--gs, 70ms) + var(--g0, 0ms)); }
+  .glyph-anim .g:not(.g-dash):not(.g-dot) { animation: glyphDraw var(--gd, .6s) var(--ge, var(--ease-out)) both; animation-delay: calc(var(--i, 0) * var(--gs, 70ms) + var(--g0, 0ms)); }
   .glyph-anim .g-dash, .glyph-anim .g-dot { animation: glyphFade var(--gd, .6s) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--gs, 70ms) + var(--g0, 0ms) + 120ms); }
 
   .cooked-cell .glyph { position: absolute; top: 9px; right: 9px; width: 22px; height: 22px; opacity: .55;
     transition: opacity .25s var(--ease), transform .35s var(--ease-out); }
   .cooked-cell:hover .glyph, .cooked-cell:focus-visible .glyph { opacity: 1; transform: translateY(-1px); }
   .cooked-cell:hover .glyph .g:not(.g-dash):not(.g-dot),
-  .cooked-cell:focus-visible .glyph .g:not(.g-dash):not(.g-dot) { animation: glyphDraw .55s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 70ms); }
+  .cooked-cell:focus-visible .glyph .g:not(.g-dash):not(.g-dot) { animation: glyphDraw .7s cubic-bezier(.45,.05,.25,1) both; animation-delay: calc(var(--i, 0) * 70ms); }
   .cooked-cell:hover .glyph .g-dash, .cooked-cell:hover .glyph .g-dot,
-  .cooked-cell:focus-visible .glyph .g-dash, .cooked-cell:focus-visible .glyph .g-dot { animation: glyphFade .45s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 70ms + 140ms); }
+  .cooked-cell:focus-visible .glyph .g-dash, .cooked-cell:focus-visible .glyph .g-dot { animation: glyphFade .5s ease both; animation-delay: calc(var(--i, 0) * 70ms + 180ms); }
 
   /* A tile whose progress changed since the last visit gets one soft lift */
   .cooked-cell.nudge { animation: tileNudge 1.5s var(--ease-out) .35s both; }
@@ -794,13 +777,16 @@
   .section-detail-head { position: relative; }
   .section-detail-head > :not(.section-art) { position: relative; z-index: 1; }
   .section-art { position: absolute; right: 4px; top: -34px; width: 220px; height: 220px; pointer-events: none; color: var(--ink); z-index: 0; }
-  .section-art .glyph { width: 100%; height: 100%; stroke-width: .15; }
-  .section-art .g { opacity: .17; }
-  .section-art .g-acc { stroke: var(--red); opacity: .42; }
-  .section-art .g-dash { stroke-dasharray: .45 .6; opacity: .2; }
+  .section-art .glyph { width: 100%; height: 100%; stroke-width: .14; }
+  .section-art .g { opacity: .16; }
+  .section-art .g-acc { stroke: var(--red); opacity: .34; }
+  .section-art .g-dash { stroke-dasharray: .01 .55; opacity: .4; }
   .section-art .g-dot { opacity: .2; }
-  .section-art .g-dot.g-acc { fill: var(--red); opacity: .42; }
-  .section-art .glyph-anim { --gd: 1.1s; --gs: 110ms; --g0: 140ms; }
+  .section-art .g-fill { opacity: .05; }
+  .section-art .g-dot.g-acc { fill: var(--red); opacity: .4; }
+  /* a slow, even draw (no snap at the start); each arrowhead fades in as its line arrives */
+  .section-art .glyph-anim { --gd: 1.5s; --gs: 130ms; --g0: 120ms; --ge: cubic-bezier(.45,.05,.25,1); }
+  .section-art .glyph-anim .g-head { animation: glyphFade .5s ease both; animation-delay: calc(var(--i, 0) * var(--gs) + var(--g0) + var(--gd) * .78); }
   @media (min-width: 721px) {
     #sectionDetailTitle, #sectionDetailDesc { max-width: min(680px, calc(100% - 200px)) !important; }
   }
@@ -808,6 +794,7 @@
     /* small, tucked beside the breadcrumb and kicker so it never crosses the title */
     .section-art { width: 66px; height: 66px; top: -48px; right: 2px; }
     .section-art .glyph { stroke-width: .38; }
+    .section-art .g-dash { stroke-dasharray: .01 1.1; }
   }
 
   /* ---------- Got-it moment ---------- */
@@ -874,6 +861,11 @@
     body.is-home .hero-stats { margin-top: 16px; padding-top: 12px; }
     body.is-home .home-left .hero-actions { margin-top: 14px; }
     body.is-home .hero-chips { margin-top: 12px; }
+  }
+  @media (max-height: 790px) {
+    body.is-home .home-title { margin: 8px 0 8px; }
+    body.is-home .hero-sub { margin-top: 8px; }
+    body.is-home .hero-chips { margin-top: 10px; }
   }
   @media (max-height: 760px) {
     body.is-home .hero-art { max-height: 240px; }
@@ -3644,11 +3636,12 @@
           <div class="week-strip" id="weekStrip" hidden>
             <div class="week-kicker" id="weekKicker"></div>
             <div class="week-chips" id="weekChips"></div>
+            <p class="week-note" id="weekNote"></p>
           </div>
         </div>
 
         <div class="home-right" aria-hidden="true">
-          <svg class="hero-art" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img"
+          <svg class="hero-art" id="heroArt" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img"
                aria-label="A particle circulating around a closed curve through a vector field — the line integral of F around C">
             <defs>
               <pattern id="home-grid" width="32" height="32" patternUnits="userSpaceOnUse">
@@ -3726,6 +3719,466 @@
             <text class="hero-grad-label" x="22" y="346" font-family="'Manrope', sans-serif" font-size="10.5" fill="#6B7682">vector field F</text>
           </svg>
         </div>
+        <script>
+/* ============================================================
+   ROTATING HERO VISUALS
+   Five course pictures share the hero frame; each visit shows the next one
+   (first-ever visit: the original circulation picture). Clicking the picture
+   also moves on. The new pictures are pure functions of time, drawn with
+   requestAnimationFrame only while the home page is on screen; with reduced
+   motion each shows one still frame.
+   ============================================================ */
+(function () {
+  "use strict";
+  const svg = document.getElementById("heroArt");
+  if (!svg) return;
+  const TEST = window.HERO_TEST || null;                 // harness only: { h, t }
+  const RED = "#C8102E", DEEP = "#9A0B22", GREY = "#6B7682", INK = "#1F2933";
+  const TAU = Math.PI * 2;
+  const reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const clamp01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
+  const smooth = (a, b, x) => { const u = clamp01((x - a) / (b - a)); return u * u * (3 - 2 * u); };
+  const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const n2 = v => Math.round(v * 100) / 100;
+  const P = (x, y) => n2(x) + " " + n2(y);
+
+  /* ---------- shared frame: grid paper, arrowheads, labels ---------- */
+  function defs(extra) {
+    const mk = (id, fill, w, op) => '<marker id="' + id + '" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="' + w +
+      '" markerHeight="' + w + '" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="' + fill + '"' + (op ? ' opacity="' + op + '"' : "") + '/></marker>';
+    return '<defs><pattern id="hx-grid" width="32" height="32" patternUnits="userSpaceOnUse">' +
+      '<path d="M32 0L0 0 0 32" fill="none" stroke="' + INK + '" stroke-width=".35" opacity=".18"/></pattern>' +
+      '<clipPath id="hx-clip"><rect width="400" height="360" rx="20"/></clipPath>' +
+      mk("hx-arrR", RED, 4.6) + mk("hx-arrD", DEEP, 4.6) + mk("hx-arrI", INK, 4.6) + mk("hx-arrM", GREY, 5, .85) +
+      '<radialGradient id="hx-lg"><stop offset=".42" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient>' +
+      '<mask id="hx-quiet" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="360"><rect width="400" height="360" fill="#fff"/>' +
+      '<ellipse cx="302" cy="48" rx="124" ry="40" fill="url(#hx-lg)"/><ellipse cx="92" cy="342" rx="118" ry="26" fill="url(#hx-lg)"/></mask>' +
+      (extra || "") + '</defs><rect width="400" height="360" rx="20" fill="url(#hx-grid)"/>';
+  }
+  function labels(formula, sub, caption) {
+    return '<g data-k="labels" opacity="0">' +
+      '<text x="378" y="46" text-anchor="end" font-family="\'Fraunces\', Georgia, serif" font-size="22" fill="' + INK + '">' + formula + '</text>' +
+      '<text x="378" y="64" text-anchor="end" font-family="\'Manrope\', sans-serif" font-size="10.5" fill="' + GREY + '">' + sub + '</text>' +
+      '<text x="22" y="346" font-family="\'Manrope\', sans-serif" font-size="10.5" fill="' + GREY + '" data-k="caption">' + caption + '</text></g>';
+  }
+  const introLabels = t => smooth(1.0, 1.5, t);
+  const faint = (t, a, b) => .3 + .7 * smooth(a, b, t);   // intro: visible (faint) from the very first frame
+  const it = s => '<tspan font-style="italic">' + s + '</tspan>';
+  const bold = s => '<tspan font-weight="700" font-style="italic">' + s + '</tspan>';
+  const sub = s => '<tspan baseline-shift="sub" font-size="11" fill="' + GREY + '">' + s + '</tspan>';
+  function arrowLine(k, color, marker, w) {
+    return '<line data-k="' + k + '" stroke="' + color + '" stroke-width="' + w + '" stroke-linecap="round" marker-end="url(#' + marker + ')"/>';
+  }
+  function setLine(el, x1, y1, x2, y2) {
+    el.setAttribute("x1", n2(x1)); el.setAttribute("y1", n2(y1)); el.setAttribute("x2", n2(x2)); el.setAttribute("y2", n2(y2));
+  }
+  // a comet-style marker like the circulation picture's particle
+  const particle = k => '<g data-k="' + k + '"><circle r="10" fill="' + RED + '" opacity=".16"/><circle r="5.2" fill="' + RED + '" stroke="#FFFFFF" stroke-width="1.4"/></g>';
+
+  /* ---------- 1. Linear map: the whole grid moves ---------- */
+  const linearMap = {
+    label: "A linear map reshaping the grid: the unit square becomes a parallelogram whose area is det A",
+    poster: 5.4,
+    build() {
+      return defs() +
+        '<g clip-path="url(#hx-clip)"><g mask="url(#hx-quiet)">' +
+          '<path data-k="grid" fill="none" stroke="' + GREY + '" stroke-width="1" opacity="0"/>' +
+          '<path data-k="axes" fill="none" stroke="' + INK + '" stroke-width="1.3" opacity="0"/></g>' +
+          '<path data-k="square" fill="' + RED + '" fill-opacity=".09" stroke="' + RED + '" stroke-opacity=".55" stroke-width="1.3" stroke-linejoin="round" opacity="0"/>' +
+        '</g>' +
+        arrowLine("e1", RED, "hx-arrR", 3) + arrowLine("e2", INK, "hx-arrI", 3) +
+        '<circle data-k="o" cx="158" cy="238" r="3.4" fill="' + INK + '" opacity="0"/>' +
+        '<text data-k="l1" font-family="\'Fraunces\', Georgia, serif" font-size="15" fill="' + RED + '" text-anchor="middle" opacity="0">' + it("A") + bold("e") + '<tspan baseline-shift="sub" font-size="10">1</tspan></text>' +
+        '<text data-k="l2" font-family="\'Fraunces\', Georgia, serif" font-size="15" fill="' + INK + '" text-anchor="middle" opacity="0">' + it("A") + bold("e") + '<tspan baseline-shift="sub" font-size="10">2</tspan></text>' +
+        labels(it("T") + "(" + bold("x") + ") = " + '<tspan font-style="italic" fill="' + RED + '">A</tspan>' + bold("x"),
+               "a linear map moves the whole grid", "det A = 1.00 · how much areas scale");
+    },
+    // I -> A (shear + stretch) -> B (turn + shrink) -> I, with rests between
+    M: [[1, 0, 0, 1], [1.4, 0.7, 0.2, 1.1], [0.8, -0.6, 0.5, 0.75], [1, 0, 0, 1]],
+    seg: [[1.3, 1.9], [1.4, 1.9], [1.4, 1.7]],          // [rest, move] per step
+    matrixAt(t) {
+      let u = Math.max(0, t - 1.2); const total = this.seg.reduce((s, [r, m]) => s + r + m, 0);
+      u %= total;
+      for (let i = 0; i < this.seg.length; i++) {
+        const [r, m] = this.seg[i];
+        if (u < r) return this.M[i];
+        if (u < r + m) { const e = ease((u - r) / m), a = this.M[i], b = this.M[i + 1]; return a.map((v, j) => v + (b[j] - v) * e); }
+        u -= r + m;
+      }
+      return this.M[0];
+    },
+    frame(t, k) {
+      const O = [158, 238], U = 56, M = this.matrixAt(t);
+      const grow = ease(smooth(0.15, 0.95, t));
+      const X = (x, y) => [O[0] + U * (M[0] * x + M[1] * y), O[1] - U * (M[2] * x + M[3] * y)];
+      let g = "";
+      for (let i = -6; i <= 8; i++) { if (i) { const a = X(i, -7), b = X(i, 7); g += "M" + P(a[0], a[1]) + "L" + P(b[0], b[1]); } }
+      for (let j = -7; j <= 7; j++) { if (j) { const a = X(-7, j), b = X(9, j); g += "M" + P(a[0], a[1]) + "L" + P(b[0], b[1]); } }
+      k.grid.setAttribute("d", g); k.grid.setAttribute("opacity", n2(.26 * faint(t, 0, .55)));
+      const xa = X(-7, 0), xb = X(9, 0), ya = X(0, -7), yb = X(0, 7);
+      k.axes.setAttribute("d", "M" + P(xa[0], xa[1]) + "L" + P(xb[0], xb[1]) + "M" + P(ya[0], ya[1]) + "L" + P(yb[0], yb[1]));
+      k.axes.setAttribute("opacity", n2(.42 * faint(t, 0, .55)));
+      const c1 = X(1, 0), c2 = X(1, 1), c3 = X(0, 1);
+      k.square.setAttribute("d", "M" + P(O[0], O[1]) + "L" + P(c1[0], c1[1]) + "L" + P(c2[0], c2[1]) + "L" + P(c3[0], c3[1]) + "Z");
+      k.square.setAttribute("opacity", n2(faint(t, .25, .8)));
+      const e1 = [O[0] + (c1[0] - O[0]) * grow, O[1] + (c1[1] - O[1]) * grow], e2 = [O[0] + (c3[0] - O[0]) * grow, O[1] + (c3[1] - O[1]) * grow];
+      setLine(k.e1, O[0], O[1], e1[0], e1[1]); setLine(k.e2, O[0], O[1], e2[0], e2[1]);
+      k.e1.setAttribute("opacity", n2(smooth(.3, .6, grow))); k.e2.setAttribute("opacity", n2(smooth(.3, .6, grow)));
+      k.o.setAttribute("opacity", n2(faint(t, 0, .4)));
+      // tip labels sit just beyond each arrow, pushed away from the other vector
+      const place = (el, tip, other) => {
+        let dx = tip[0] - O[0], dy = tip[1] - O[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+        let px = -dy, py = dx; if ((other[0] - O[0]) * px + (other[1] - O[1]) * py > 0) { px = -px; py = -py; }
+        el.setAttribute("x", n2(tip[0] + dx * 21 + px * 12)); el.setAttribute("y", n2(tip[1] + dy * 21 + py * 12 + 5));
+        el.setAttribute("opacity", n2(smooth(.8, 1.2, t)));
+      };
+      place(k.l1, c1, c3); place(k.l2, c3, c1);
+      k.caption.textContent = "det A = " + (M[0] * M[3] - M[1] * M[2]).toFixed(2) + " · how much areas scale";
+      k.labels.setAttribute("opacity", n2(introLabels(t)));
+    },
+  };
+
+  /* ---------- 2. Eigenvectors: A v lines up with v ---------- */
+  const eigen = {
+    label: "A vector v sweeping the unit circle while Av traces an ellipse; along the eigenvector lines Av is a multiple of v",
+    poster: 3.35,
+    C: [200, 192], R: 60,
+    A: [1.5, 0.7, 0.7, 1.5],                        // eigenvalues 2.2 on (1,1), 0.8 on (1,-1)
+    build() {
+      const [cx, cy] = this.C, R = this.R, A = this.A;
+      let ticks = "";
+      for (let i = 0; i < 36; i++) {
+        const a = TAU * i / 36, x = Math.cos(a), y = Math.sin(a);
+        const ax = A[0] * x + A[1] * y, ay = A[2] * x + A[3] * y;
+        ticks += "M" + P(cx + R * x, cy - R * y) + "L" + P(cx + R * ax, cy - R * ay);
+      }
+      const eline = (k, dx, dy) => '<line data-k="' + k + '" x1="' + n2(cx - 158 * dx) + '" y1="' + n2(cy + 158 * dy) + '" x2="' + n2(cx + 158 * dx) +
+        '" y2="' + n2(cy - 158 * dy) + '" stroke="' + GREY + '" stroke-width="2" stroke-linecap="round" stroke-dasharray=".01 6" opacity="0"/>';
+      const s = Math.SQRT1_2;
+      return defs() +
+        '<path data-k="ticks" d="' + ticks + '" fill="none" stroke="' + GREY + '" stroke-width="1" opacity="0"/>' +
+        eline("d1", s, s) + eline("d2", s, -s) +
+        '<circle data-k="circle" cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="' + GREY + '" stroke-width="1.4" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" opacity=".7"/>' +
+        '<ellipse data-k="ell" cx="' + cx + '" cy="' + cy + '" rx="' + n2(2.2 * R) + '" ry="' + n2(0.8 * R) + '" transform="rotate(-45 ' + cx + ' ' + cy + ')" fill="' + RED +
+          '" fill-opacity="0" stroke="' + RED + '" stroke-opacity=".5" stroke-width="1.6" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>' +
+        arrowLine("v", INK, "hx-arrI", 2.4) + arrowLine("av", RED, "hx-arrR", 3) +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="3.4" fill="' + INK + '" data-k="o" opacity="0"/>' +
+        '<text data-k="lv" font-family="\'Fraunces\', Georgia, serif" font-size="15" fill="' + INK + '" text-anchor="middle" opacity="0">' + bold("v") + '</text>' +
+        '<text data-k="lav" font-family="\'Fraunces\', Georgia, serif" font-size="15" fill="' + RED + '" text-anchor="middle" opacity="0">' + it("A") + bold("v") + '</text>' +
+        '<g data-k="lam" opacity="0"><rect data-k="lamBg" rx="9" height="18" fill="#FFFFFF" stroke="' + RED + '" stroke-opacity=".35"/>' +
+          '<text data-k="lamT" font-family="\'Manrope\', sans-serif" font-size="11" font-weight="700" fill="' + DEEP + '" text-anchor="middle"></text></g>' +
+        labels(it("A") + bold("v") + ' = <tspan font-style="italic" fill="' + RED + '">λ</tspan>' + bold("v"),
+               "eigenvectors keep their direction", "the unit circle and its image under A");
+    },
+    frame(t, k) {
+      const [cx, cy] = this.C, R = this.R, A = this.A;
+      // v sweeps counterclockwise, easing to a near-stop at each eigen-direction
+      const w = TAU / 16, u = w * Math.max(0, t - .6) + .38;
+      const th = u - .2 * Math.sin(4 * (u - Math.PI / 4));
+      const grow = ease(smooth(.2, 1.0, t));
+      const vx = Math.cos(th), vy = Math.sin(th), ax = A[0] * vx + A[1] * vy, ay = A[2] * vx + A[3] * vy;
+      setLine(k.v, cx, cy, cx + R * vx * grow, cy - R * vy * grow);
+      setLine(k.av, cx, cy, cx + R * ax * grow, cy - R * ay * grow);
+      k.v.setAttribute("opacity", t > .2 ? 1 : 0); k.av.setAttribute("opacity", t > .2 ? 1 : 0);
+      k.circle.setAttribute("stroke-dashoffset", n2(100 * (1 - ease(smooth(0, .8, t)))));
+      k.ell.setAttribute("stroke-dashoffset", n2(100 * (1 - ease(smooth(.25, 1.1, t)))));
+      k.ell.setAttribute("fill-opacity", n2(.045 * smooth(.7, 1.2, t)));
+      k.ticks.setAttribute("opacity", n2(.2 * faint(t, .3, .9)));
+      k.o.setAttribute("opacity", n2(faint(t, 0, .4)));
+      // how closely v sits on each eigenline
+      const s = Math.SQRT1_2, c1 = Math.abs(vx * s + vy * s), c2 = Math.abs(vx * s - vy * s);
+      const a1 = smooth(.992, .9998, c1) * smooth(1.1, 1.4, t), a2 = smooth(.992, .9998, c2) * smooth(1.1, 1.4, t);
+      k.d1.setAttribute("stroke", a1 > .02 ? RED : GREY); k.d2.setAttribute("stroke", a2 > .02 ? RED : GREY);
+      k.d1.setAttribute("opacity", n2((.32 + .5 * a1) * faint(t, .3, .9))); k.d2.setAttribute("opacity", n2((.32 + .5 * a2) * faint(t, .3, .9)));
+      // labels ride just past each tip; as v and Av line up they slide to the upper side of the
+      // shared line, so neither sits on the other arrow (the lambda pill takes the lower side)
+      const a = Math.max(a1, a2), lam = a1 >= a2 ? "2.2" : "0.8";
+      const tipLabel = (el, x, y, off) => {
+        const L = Math.hypot(x, y) || 1, ux = x / L, uy = -y / L;
+        let px = -uy, py = ux; if (py > 0) { px = -px; py = -py; }
+        el.setAttribute("x", n2(cx + R * x + ux * off * (1 - .9 * a) + px * 19 * a));
+        el.setAttribute("y", n2(cy - R * y + uy * off * (1 - .9 * a) + py * 19 * a + 5));
+      };
+      tipLabel(k.lv, vx, vy, 17); tipLabel(k.lav, ax, ay, 20);
+      const sep = Math.hypot(R * (ax - vx), R * (ay - vy));          // v's label would crowd Av's when the tips are close
+      k.lv.setAttribute("opacity", n2(smooth(.8, 1.2, t) * smooth(18, 34, sep)));
+      k.lav.setAttribute("opacity", n2(smooth(.8, 1.2, t)));
+      if (a > .001) {
+        k.lamT.textContent = "λ = " + lam;
+        const L = Math.hypot(ax, ay), ux = ax / L, uy = -ay / L;          // screen direction of Av
+        let px = -uy, py = ux; if (py < 0) { px = -px; py = -py; }         // the side facing down the page
+        const bx = cx + R * ax + ux * 12 + px * 30, by = cy - R * ay + uy * 12 + py * 30;
+        k.lamT.setAttribute("x", n2(bx)); k.lamT.setAttribute("y", n2(by + 4));
+        k.lamBg.setAttribute("x", n2(bx - 27)); k.lamBg.setAttribute("y", n2(by - 9)); k.lamBg.setAttribute("width", 54);
+      }
+      k.lam.setAttribute("opacity", n2(a));
+      k.labels.setAttribute("opacity", n2(introLabels(t)));
+    },
+  };
+
+  /* ---------- 3. Gradient ascent on a contour map ---------- */
+  const ascent = {
+    label: "Level curves of a function with two hills; a point climbs along the gradient, crossing each level curve at a right angle",
+    poster: 3.1,
+    peaks: [[262, 146, 1, 74], [116, 242, .64, 54]],
+    f(x, y) { let v = 0; for (const [px, py, h, s] of this.peaks) v += h * Math.exp(-((x - px) ** 2 + (y - py) ** 2) / (2 * s * s)); return v; },
+    grad(x, y) {
+      let gx = 0, gy = 0;
+      for (const [px, py, h, s] of this.peaks) {
+        const e = h * Math.exp(-((x - px) ** 2 + (y - py) ** 2) / (2 * s * s)) / (s * s);
+        gx -= e * (x - px); gy -= e * (y - py);
+      }
+      return [gx, gy];
+    },
+    contours() {
+      const st = 4, nx = 100, ny = 90, F = [];
+      for (let j = 0; j <= ny; j++) { const row = []; for (let i = 0; i <= nx; i++) row.push(this.f(i * st, j * st)); F.push(row); }
+      const levels = [.08, .16, .25, .34, .43, .52, .61, .7, .79, .88];
+      return levels.map(L => {
+        let d = "";
+        const lerp = (a, b, va, vb) => a + (b - a) * (L - va) / (vb - va);
+        for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+          const v0 = F[j][i], v1 = F[j][i + 1], v2 = F[j + 1][i + 1], v3 = F[j + 1][i];
+          const x0 = i * st, y0 = j * st, pts = [];
+          if ((v0 < L) !== (v1 < L)) pts.push([lerp(x0, x0 + st, v0, v1), y0]);
+          if ((v1 < L) !== (v2 < L)) pts.push([x0 + st, lerp(y0, y0 + st, v1, v2)]);
+          if ((v3 < L) !== (v2 < L)) pts.push([lerp(x0, x0 + st, v3, v2), y0 + st]);
+          if ((v0 < L) !== (v3 < L)) pts.push([x0, lerp(y0, y0 + st, v0, v3)]);
+          if (pts.length === 2) d += "M" + P(pts[0][0], pts[0][1]) + "L" + P(pts[1][0], pts[1][1]);
+          else if (pts.length === 4) d += "M" + P(pts[0][0], pts[0][1]) + "L" + P(pts[1][0], pts[1][1]) + "M" + P(pts[2][0], pts[2][1]) + "L" + P(pts[3][0], pts[3][1]);
+        }
+        return { L, d };
+      });
+    },
+    path(x, y) {                                     // steepest-ascent path, 1.5px steps, until the top
+      const pts = [[x, y]];
+      for (let n = 0; n < 900; n++) {
+        const [gx, gy] = this.grad(x, y), g = Math.hypot(gx, gy);
+        if (g < 2e-5) break;
+        x += 1.5 * gx / g; y += 1.5 * gy / g; pts.push([x, y]);
+        if (pts.length > 20) { const q = pts[pts.length - 20]; if (Math.hypot(q[0] - x, q[1] - y) < 6) break; }
+      }
+      const len = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+      return { pts, len, L: len[len.length - 1] };
+    },
+    build() {
+      this.runs = [[12, 44], [232, 352], [12, 92], [330, 352]].map(([x, y]) => this.path(x, y));
+      const cs = this.contours();
+      const shade = L => { const u = smooth(.35, .9, L); return u > 0 ? RED : GREY; };
+      let arrows = "";
+      for (let y = 34; y < 360; y += 48) for (let x = 28; x < 400; x += 48) {
+        const [gx, gy] = this.grad(x, y), g = Math.hypot(gx, gy);
+        if (g < 9e-4) continue;
+        const len = 7 + Math.min(11, g * 1900), ux = gx / g, uy = gy / g;
+        arrows += '<line x1="' + n2(x - ux * len / 2) + '" y1="' + n2(y - uy * len / 2) + '" x2="' + n2(x + ux * len / 2) + '" y2="' + n2(y + uy * len / 2) +
+          '" stroke="' + GREY + '" stroke-width="1.25" stroke-linecap="round" marker-end="url(#hx-arrM)"/>';
+      }
+      return defs('<radialGradient id="hx-peak" r=".5"><stop offset="0" stop-color="' + RED + '" stop-opacity=".13"/><stop offset="1" stop-color="' + RED + '" stop-opacity="0"/></radialGradient>') +
+        '<circle cx="262" cy="146" r="92" fill="url(#hx-peak)" data-k="glow" opacity="0"/>' +
+        '<g mask="url(#hx-quiet)">' + cs.map((c, i) => '<path data-k="c' + i + '" d="' + c.d + '" fill="none" stroke="' + shade(c.L) + '" stroke-width="' + (1.1 + .5 * c.L).toFixed(2) +
+          '" stroke-linecap="round" opacity="0"/>').join("") +
+        '<g data-k="field" opacity="0">' + arrows + '</g></g>' +
+        '<path data-k="trail" fill="none" stroke="' + RED + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>' +
+        arrowLine("g", DEEP, "hx-arrD", 2.6) + particle("p") +
+        '<g data-k="top" opacity="0"><circle data-k="ring" r="9" fill="none" stroke="' + RED + '" stroke-width="1.5"/></g>' +
+        labels("∇" + '<tspan font-style="italic" fill="' + RED + '">f</tspan>', "steepest ascent, square to every level curve", "level curves of f(x, y)");
+    },
+    frame(t, k) {
+      const cs = 10;
+      for (let i = 0; i < cs; i++) {
+        const base = .16 + .05 * i;
+        k["c" + i].setAttribute("opacity", n2(base * faint(t, .04 * i, .04 * i + .45)));
+      }
+      k.glow.setAttribute("opacity", n2(faint(t, .3, 1)));
+      k.field.setAttribute("opacity", n2(.36 * faint(t, .2, .7)));
+      // runs: climb, rest at the top, fade the trail, next start
+      const speed = 78, rest = 1.1, fade = .55;
+      const dur = this.runs.map(r => r.L / speed + rest + fade), total = dur.reduce((a, b) => a + b, 0);
+      let u = Math.max(0, t - .75) % total, r = 0;
+      while (u > dur[r]) { u -= dur[r]; r++; }
+      const run = this.runs[r], climb = run.L / speed;
+      const s = ease(clamp01(u / climb)) * run.L;
+      let i = 1; while (i < run.len.length - 1 && run.len[i] < s) i++;
+      const a = run.pts[i - 1], b = run.pts[i], seg = (run.len[i] - run.len[i - 1]) || 1, w = clamp01((s - run.len[i - 1]) / seg);
+      const x = a[0] + (b[0] - a[0]) * w, y = a[1] + (b[1] - a[1]) * w;
+      if (k.trail.dataset.run !== String(r)) {
+        k.trail.dataset.run = String(r);
+        k.trail.setAttribute("d", "M" + run.pts.filter((_, n) => n % 3 === 0 || n === run.pts.length - 1).map(p => P(p[0], p[1])).join("L"));
+      }
+      const appear = smooth(0, .25, u) * (1 - smooth(climb + rest, climb + rest + fade, u)) * smooth(.75, 1.05, t);
+      k.trail.setAttribute("stroke-dashoffset", n2(1000 * (1 - s / run.L)));
+      k.trail.setAttribute("opacity", n2(.85 * appear));
+      k.p.setAttribute("transform", "translate(" + P(x, y) + ")"); k.p.setAttribute("opacity", n2(appear));
+      const [gx, gy] = this.grad(x, y), g = Math.hypot(gx, gy), gl = 26 * smooth(0, .3, g * 900) * (1 - smooth(climb * .92, climb, u));
+      setLine(k.g, x, y, x + (g ? gx / g : 0) * gl, y + (g ? gy / g : 0) * gl);
+      k.g.setAttribute("opacity", n2(appear * smooth(4, 8, gl)));
+      const top = smooth(climb * .97, climb + .25, u) * (1 - smooth(climb + rest * .6, climb + rest + fade, u));
+      const ringR = 8 + 10 * smooth(climb, climb + rest, u);
+      k.top.setAttribute("transform", "translate(" + P(x, y) + ")"); k.ring.setAttribute("r", n2(ringR));
+      k.top.setAttribute("opacity", n2(top * (1 - smooth(climb + .2, climb + rest, u)) * .8));
+      k.labels.setAttribute("opacity", n2(introLabels(t)));
+    },
+  };
+
+  /* ---------- 4. Flux out of a region (divergence theorem) ---------- */
+  const flux = {
+    label: "Fluid streaming out of two sources inside a region R and across its boundary C; the outward normals n measure the flux",
+    poster: 4.6,
+    src: [[172, 206, 1], [242, 166, .7]],
+    F(x, y) { let fx = 0, fy = 0; for (const [sx, sy, q] of this.src) { const dx = x - sx, dy = y - sy, r2 = dx * dx + dy * dy + 30; fx += q * dx / r2; fy += q * dy / r2; } return [fx, fy]; },
+    boundary(n) {
+      const pts = [];
+      for (let i = 0; i < n; i++) {
+        const a = TAU * i / n, r = 100 + 9 * Math.sin(2 * a + .7) + 7 * Math.sin(3 * a - 1.2);
+        pts.push([204 + 1.28 * r * Math.cos(a), 190 + .96 * r * Math.sin(a)]);
+      }
+      return pts;
+    },
+    inside(x, y, poly) {
+      let c = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const [xi, yi] = poly[i], [xj, yj] = poly[j];
+        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+      }
+      return c;
+    },
+    at(ln, q) {                                       // position q seconds along a streamline
+      let lo = 0, hi = ln.pts.length - 1;
+      while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (ln.pts[mid][2] < q) lo = mid; else hi = mid; }
+      const a = ln.pts[lo], b = ln.pts[hi], w = clamp01((q - a[2]) / ((b[2] - a[2]) || 1));
+      return [a[0] + (b[0] - a[0]) * w, a[1] + (b[1] - a[1]) * w, a[3]];
+    },
+    build() {
+      const poly = this.boundary(160);
+      // streamlines of F from each source; the flow is quick near a source and slows as it spreads
+      this.lines = [];
+      this.src.forEach(([sx, sy], si) => {
+        const n = si ? 12 : 18, off = si ? .25 : 0;
+        for (let m = 0; m < n; m++) {
+          const a = TAU * (m + off) / n; let x = sx + 7 * Math.cos(a), y = sy + 7 * Math.sin(a);
+          const pts = [[x, y, 0, 1]]; let time = 0, ok = false;
+          for (let step = 0; step < 700; step++) {
+            const [fx, fy] = this.F(x, y), g = Math.hypot(fx, fy);
+            if (g < 1e-4) break;
+            const v = Math.min(92, Math.max(22, 2900 * g));   // px per second
+            x += 2 * fx / g; y += 2 * fy / g; time += 2 / v;
+            pts.push([x, y, time, this.inside(x, y, poly) ? 1 : 0]);
+            if (x < -14 || x > 414 || y < -14 || y > 374) { ok = true; break; }
+          }
+          if (ok) this.lines.push({ pts, T: time });
+        }
+      });
+      this.comets = [];
+      this.lines.forEach((ln, li) => { for (let c = 0; c < 2; c++) this.comets.push({ li, ph: (c / 2 + (li * .618) % 1) % 1 }); });
+      const stream = this.lines.map(ln => "M" + ln.pts.filter((_, i) => i % 3 === 0 || i === ln.pts.length - 1).map(p => P(p[0], p[1])).join("L")).join("");
+      const d = "M" + poly.map(p => P(p[0], p[1])).join("L") + "Z";
+      const normalAt = i => {
+        const a = poly[(i + 159) % 160], b = poly[(i + 1) % 160]; let tx = b[0] - a[0], ty = b[1] - a[1]; const L = Math.hypot(tx, ty);
+        return [poly[i], ty / L, -tx / L];            // boundary runs clockwise on screen, so (ty, -tx) points out
+      };
+      let normals = "";
+      [4, 26, 50, 72, 122, 144].forEach(i => {
+        const [p, nx, ny] = normalAt(i);
+        normals += '<line x1="' + n2(p[0]) + '" y1="' + n2(p[1]) + '" x2="' + n2(p[0] + nx * 22) + '" y2="' + n2(p[1] + ny * 22) +
+          '" stroke="' + DEEP + '" stroke-width="2.2" stroke-linecap="round" marker-end="url(#hx-arrD)"/>';
+        if (i === 26) normals += '<text x="' + n2(p[0] + nx * 37 + 3) + '" y="' + n2(p[1] + ny * 37 + 5) + '" font-family="\'Fraunces\', Georgia, serif" font-size="15" fill="' + DEEP + '" text-anchor="middle">' + bold("n") + '</text>';
+      });
+      const [cp, cnx, cny] = normalAt(100);
+      let rl = [120, 236];                             // "R": inside, clear of the edge and the sources
+      for (const c of [[120, 236], [112, 222], [132, 250], [106, 206], [150, 262]]) {
+        const edge = Math.min(...poly.map(q => Math.hypot(q[0] - c[0], q[1] - c[1])));
+        if (this.inside(c[0], c[1], poly) && edge > 16 && this.src.every(([sx, sy]) => Math.hypot(sx - c[0], sy - c[1]) > 34)) { rl = c; break; }
+      }
+      const pmark = this.src.map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r="12" fill="' + RED + '" opacity=".12"/><circle cx="' + x + '" cy="' + y + '" r="4" fill="' + RED + '"/>').join("");
+      let comets = ""; for (let i = 0; i < this.comets.length; i++) comets += '<line stroke-width="2.3" stroke-linecap="round"/>';
+      return defs() +
+        '<path data-k="region" d="' + d + '" fill="' + RED + '" fill-opacity=".05" stroke="none" opacity="0"/>' +
+        '<path data-k="stream" d="' + stream + '" fill="none" stroke="' + GREY + '" stroke-width="1" stroke-linecap="round" opacity="0" mask="url(#hx-quiet)"/>' +
+        '<g data-k="comets">' + comets + '</g>' +
+        '<path data-k="curve" d="' + d + '" fill="none" stroke="' + RED + '" stroke-width="3" stroke-linejoin="round" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>' +
+        '<g data-k="normals" opacity="0">' + normals + '</g>' +
+        '<g data-k="srcs" opacity="0">' + pmark + '</g>' +
+        '<g data-k="names" opacity="0"><text x="' + n2(cp[0] + cnx * 16) + '" y="' + n2(cp[1] + cny * 16 + 5) + '" text-anchor="middle" font-family="\'Fraunces\', Georgia, serif" font-size="15" font-style="italic" fill="' + RED + '">C</text>' +
+        '<text x="' + rl[0] + '" y="' + rl[1] + '" text-anchor="middle" font-family="\'Fraunces\', Georgia, serif" font-size="15" font-style="italic" fill="' + GREY + '">R</text></g>' +
+        labels("∮" + sub("C") + ' <tspan font-style="italic" fill="' + RED + '">F</tspan> · ' + bold("n") + " " + it("ds"),
+               "flux out through C", "sources inside the region R");
+    },
+    frame(t, k) {
+      if (!k.lines) k.lines = Array.from(k.comets.querySelectorAll("line"));
+      k.region.setAttribute("opacity", n2(faint(t, .5, 1.1)));
+      k.stream.setAttribute("opacity", n2(.2 * faint(t, .1, .8)));
+      k.curve.setAttribute("stroke-dashoffset", n2(1000 * (1 - ease(smooth(.05, 1.1, t)))));
+      k.normals.setAttribute("opacity", n2(smooth(1.0, 1.4, t) * (.8 + .2 * Math.sin(t * 2.2))));
+      k.srcs.setAttribute("opacity", n2(faint(t, 0, .4)));
+      k.names.setAttribute("opacity", n2(introLabels(t)));
+      const on = smooth(.35, 1.0, t);
+      for (let i = 0; i < this.comets.length; i++) {
+        const c = this.comets[i], ln = this.lines[c.li], el = k.lines[i];
+        const q = (t + c.ph * ln.T) % ln.T;
+        const [x, y, inside] = this.at(ln, q), [x0, y0] = this.at(ln, Math.max(0, q - .15));
+        const edge = Math.min(x + 14, 414 - x, y + 14, 374 - y);
+        setLine(el, x0, y0, x, y);
+        el.setAttribute("stroke", inside ? RED : GREY);
+        el.setAttribute("opacity", n2(on * smooth(0, .1, q / ln.T) * smooth(0, 44, edge) * (inside ? .9 : .6)));
+      }
+      k.labels.setAttribute("opacity", n2(introLabels(t)));
+    },
+  };
+
+  /* ---------- rotation, mounting and the clock ---------- */
+  const ORIGINAL = { html: svg.innerHTML, label: svg.getAttribute("aria-label") };
+  const HEROES = [null, linearMap, eigen, ascent, flux];
+  let idx = 0, hero = null, keys = null, t0 = null, raf = 0, timer = 0;
+  try {
+    const prev = parseInt(localStorage.getItem("pl254:hero"), 10);
+    idx = Number.isInteger(prev) ? (prev + 1) % HEROES.length : 0;
+    localStorage.setItem("pl254:hero", String(idx));
+  } catch (_) { idx = 0; }
+  if (TEST) idx = TEST.h;
+
+  function mount(i) {
+    hero = HEROES[i];
+    if (!hero) { svg.innerHTML = ORIGINAL.html; svg.setAttribute("aria-label", ORIGINAL.label); keys = null; return; }
+    svg.innerHTML = hero.build();
+    svg.setAttribute("aria-label", hero.label);
+    keys = {}; svg.querySelectorAll("[data-k]").forEach(el => { keys[el.dataset.k] = el; });
+    hero.frame(reduce ? hero.poster : TEST ? TEST.t : 0, keys);
+    t0 = null;
+  }
+  // Hidden tabs get no animation frames at all; on return, resume where the picture left off
+  function visible() { return svg.getClientRects().length > 0; }
+  let hiddenAt = null;
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) hiddenAt = performance.now();
+    else if (hiddenAt !== null) { if (t0 !== null) t0 += performance.now() - hiddenAt; hiddenAt = null; }
+  });
+  function tick(now) {
+    raf = 0;
+    if (!hero || !keys || reduce || TEST) return;
+    if (!visible()) { t0 = null; timer = setTimeout(() => { timer = 0; raf = requestAnimationFrame(tick); }, 400); return; }
+    if (t0 === null) t0 = now;                          // (re)entering home replays the intro, like the CSS one
+    hero.frame((now - t0) / 1000, keys);
+    raf = requestAnimationFrame(tick);
+  }
+  function start() { if (!raf && !timer && hero && !reduce && !TEST) raf = requestAnimationFrame(tick); }
+  mount(idx); start();
+
+  // click / tap: move on to the next picture
+  svg.style.cursor = "pointer";
+  svg.addEventListener("click", () => {
+    if (svg.dataset.swapping) return;
+    svg.dataset.swapping = "1";
+    svg.style.transition = "opacity .22s ease"; svg.style.opacity = "0";
+    setTimeout(() => {
+      idx = (idx + 1) % HEROES.length;
+      try { localStorage.setItem("pl254:hero", String(idx)); } catch (_) {}
+      mount(idx); start();
+      svg.style.opacity = "1";
+      setTimeout(() => { delete svg.dataset.swapping; }, 240);
+    }, 230);
+  });
+})();
+        </script>
       </div>
 
       <div id="homeError"></div>
@@ -3915,19 +4368,6 @@
     <!-- ============================================================
          VIEW: SI WALKTHROUGHS — Dashboard
          ============================================================ -->
-    <section class="view" id="view-si">
-      <div class="si-welcome">
-        <span class="hero-eyebrow"><span class="mark" aria-hidden="true">∇</span>From your SI session</span>
-        <h1 class="si-title">Keep practicing <span class="accent">this week</span></h1>
-        <p class="hero-sub">Problems matched to what lecture is covering right now, each with guided hints and a full worked solution.</p>
-        <div class="si-lectures" id="siLectures"></div>
-        <div class="hero-actions">
-          <button class="btn btn-red" data-route="/topics">Browse all topics <span class="arrow">→</span></button>
-          <button class="btn btn-ghost" data-route="/home">Home page</button>
-        </div>
-      </div>
-    </section>
-
     <section class="view" id="view-walkthroughs">
       <div class="walk-head">
         <div class="walk-kicker">SI Leader Mode</div>
@@ -4012,7 +4452,7 @@
       <span class="shortcuts-kicker">Scan to open</span>
       <button class="shortcuts-close" id="qrClose" aria-label="Close">×</button>
     </div>
-    <div class="qr-wrap"><svg class="qr-svg" viewBox="0 0 37 37" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR code to the 21-254 Practice Lab welcome page"><path fill="#FFFFFF" d="M0 0h37v37h-37z"/><path stroke="#1F2933" stroke-width="1" d="M2 2.5h7m3 0h2m3 0h2m2 0h1m1 0h3m2 0h7m-33 1h1m5 0h1m2 0h1m1 0h2m2 0h1m1 0h1m2 0h4m2 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m4 0h1m2 0h2m1 0h2m7 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m2 0h1m3 0h1m4 0h1m3 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m5 0h2m2 0h1m1 0h4m1 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m1 0h1m3 0h1m3 0h2m2 0h1m3 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-24 1h2m1 0h1m4 0h1m3 0h4m-25 1h1m2 0h1m1 0h2m1 0h1m2 0h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h3m1 0h1m-27 1h1m1 0h2m2 0h1m1 0h4m1 0h1m5 0h2m2 0h4m4 0h1m-33 1h5m1 0h1m3 0h2m4 0h2m1 0h1m1 0h1m2 0h1m2 0h2m1 0h3m-31 1h1m1 0h1m2 0h2m5 0h1m1 0h2m3 0h4m1 0h1m1 0h2m1 0h1m-32 1h2m1 0h1m2 0h2m4 0h1m2 0h1m4 0h2m1 0h1m1 0h2m2 0h1m2 0h1m-33 1h1m8 0h1m2 0h2m1 0h2m2 0h2m1 0h1m1 0h5m2 0h2m-32 1h2m1 0h1m1 0h1m1 0h1m2 0h1m1 0h2m2 0h2m1 0h2m1 0h1m1 0h4m1 0h2m-30 1h1m4 0h1m3 0h1m1 0h3m1 0h1m3 0h1m4 0h4m1 0h1m-32 1h1m2 0h2m1 0h2m1 0h3m1 0h1m3 0h1m1 0h4m1 0h1m1 0h1m1 0h2m1 0h1m-31 1h1m5 0h1m1 0h1m3 0h1m2 0h1m1 0h1m2 0h1m1 0h2m2 0h1m1 0h1m-29 1h2m2 0h2m1 0h2m1 0h3m4 0h1m1 0h1m3 0h1m1 0h1m3 0h1m1 0h1m-33 1h2m1 0h2m2 0h1m1 0h1m3 0h9m2 0h1m2 0h1m3 0h1m-30 1h1m3 0h4m5 0h8m1 0h2m5 0h2m-32 1h1m3 0h1m2 0h1m1 0h4m1 0h4m1 0h1m3 0h1m1 0h1m4 0h2m-33 1h3m1 0h3m1 0h2m1 0h3m1 0h1m3 0h1m5 0h4m1 0h1m1 0h1m-32 1h1m1 0h1m4 0h2m1 0h1m2 0h1m1 0h1m1 0h1m2 0h2m4 0h1m3 0h2m-33 1h1m1 0h1m1 0h3m1 0h4m1 0h5m1 0h3m2 0h5m2 0h2m-25 1h1m4 0h1m5 0h1m2 0h3m3 0h2m2 0h1m-33 1h7m2 0h1m2 0h3m1 0h1m4 0h1m2 0h1m1 0h1m1 0h3m-31 1h1m5 0h1m1 0h2m1 0h1m4 0h1m3 0h3m1 0h1m3 0h1m-29 1h1m1 0h3m1 0h1m3 0h2m2 0h3m3 0h2m2 0h6m1 0h2m-33 1h1m1 0h3m1 0h1m1 0h4m3 0h1m4 0h1m2 0h2m1 0h1m1 0h3m-31 1h1m1 0h3m1 0h1m2 0h1m1 0h1m5 0h2m2 0h1m1 0h1m4 0h3m1 0h1m-33 1h1m5 0h1m2 0h1m1 0h1m2 0h4m1 0h1m1 0h1m1 0h2m-25 1h7m1 0h1m3 0h3m1 0h1m1 0h1m2 0h1m2 0h1m1 0h1m1 0h1m2 0h1"/></svg></div>
+    <div class="qr-wrap"><svg class="qr-svg" viewBox="0 0 37 37" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR code to the 21-254 Practice Lab"><path fill="#FFFFFF" d="M0 0h37v37h-37z"/><path stroke="#1F2933" stroke-width="1" d="M2 2.5h7m2 0h1m6 0h1m5 0h1m3 0h7m-33 1h1m5 0h1m1 0h4m1 0h2m1 0h2m2 0h1m3 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h3m2 0h1m2 0h3m2 0h3m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h2m2 0h1m3 0h3m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m3 0h3m2 0h1m2 0h1m4 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m2 0h2m1 0h2m2 0h1m4 0h2m1 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h2m8 0h1m-19 1h1m5 0h1m1 0h3m1 0h2m1 0h1m1 0h1m4 0h1m1 0h3m2 0h3m-31 1h1m2 0h1m3 0h1m2 0h1m3 0h2m1 0h2m2 0h2m4 0h4m-32 1h3m1 0h1m1 0h1m1 0h1m1 0h1m4 0h2m1 0h1m1 0h1m3 0h3m1 0h1m1 0h1m-29 1h1m2 0h1m1 0h1m2 0h2m2 0h3m2 0h2m1 0h2m1 0h1m1 0h4m1 0h1m-32 1h2m1 0h1m1 0h1m1 0h2m2 0h3m1 0h5m5 0h2m3 0h2m-33 1h2m2 0h1m3 0h1m1 0h2m2 0h1m1 0h2m3 0h1m1 0h1m1 0h2m2 0h4m-33 1h4m1 0h4m4 0h2m3 0h1m3 0h1m2 0h2m2 0h3m-23 1h1m5 0h1m2 0h3m1 0h4m4 0h1m1 0h1m-32 1h1m1 0h1m2 0h2m3 0h1m2 0h1m2 0h1m4 0h1m1 0h2m1 0h3m2 0h1m-31 1h3m2 0h2m2 0h1m1 0h1m1 0h3m1 0h2m2 0h1m1 0h2m2 0h4m-33 1h2m1 0h1m2 0h1m3 0h1m1 0h1m1 0h2m3 0h3m1 0h5m1 0h4m-32 1h1m1 0h1m1 0h1m2 0h3m1 0h2m3 0h4m1 0h2m4 0h4m-29 1h5m4 0h2m2 0h1m2 0h2m2 0h3m1 0h3m1 0h2m-33 1h1m1 0h3m2 0h1m3 0h1m4 0h1m1 0h2m1 0h3m1 0h1m1 0h4m-31 1h1m1 0h1m1 0h1m1 0h1m3 0h7m3 0h2m6 0h1m1 0h2m-32 1h1m1 0h3m2 0h1m2 0h2m2 0h1m7 0h1m1 0h3m3 0h3m-33 1h3m3 0h2m3 0h1m1 0h1m1 0h2m2 0h2m2 0h7m1 0h2m-25 1h4m2 0h3m1 0h2m1 0h1m2 0h1m3 0h1m1 0h1m1 0h1m-33 1h7m2 0h1m1 0h1m1 0h1m1 0h1m2 0h1m3 0h3m1 0h1m1 0h1m1 0h1m-31 1h1m5 0h1m2 0h1m1 0h1m2 0h2m3 0h1m3 0h2m3 0h5m-33 1h1m1 0h3m1 0h1m3 0h1m1 0h3m3 0h3m3 0h6m-30 1h1m1 0h3m1 0h1m2 0h2m1 0h2m2 0h1m2 0h5m1 0h1m1 0h3m1 0h2m-33 1h1m1 0h3m1 0h1m3 0h4m2 0h1m1 0h2m5 0h1m1 0h2m1 0h3m-33 1h1m5 0h1m6 0h1m1 0h2m1 0h3m1 0h1m4 0h4m-31 1h7m1 0h2m1 0h4m2 0h3m2 0h3m1 0h2m1 0h1m1 0h1"/></svg></div>
     <div class="qr-url">sonnnnnion.github.io/21-254-si-practice</div>
     <p class="qr-note">Point your phone camera here to open the 21-254 Practice Lab.</p>
   </div>
@@ -4185,8 +4625,8 @@ async function fetchFirst(urls) {
 const SECTION_GLYPHS = {
   1: '<path class="g" style="--i:0" d="M5 18L16 15" pathLength="1"/><path class="g" style="--i:1" d="M13.37 14.4L16 15L14.03 16.85" pathLength="1"/><path class="g" style="--i:1" d="M5 18L8 6" pathLength="1"/><path class="g" style="--i:2" d="M6.19 8.01L8 6L8.65 8.62" pathLength="1"/><path class="g g-acc" style="--i:2" d="M5 18L19 3" pathLength="1"/><path class="g g-acc" style="--i:3" d="M16.45 3.88L19 3L18.3 5.61" pathLength="1"/>',
   2: '<path class="g" style="--i:0" d="M3.5 5H9V10.5H14.5V16H20.5" pathLength="1"/><path class="g g-dot g-acc" style="--i:1" d="M5.25 7.9a1.05 1.05 0 1 0 2.1 0a1.05 1.05 0 1 0 -2.1 0"/><path class="g g-dot g-acc" style="--i:2" d="M10.75 13.4a1.05 1.05 0 1 0 2.1 0a1.05 1.05 0 1 0 -2.1 0"/><path class="g g-dot g-acc" style="--i:3" d="M16.25 18.9a1.05 1.05 0 1 0 2.1 0a1.05 1.05 0 1 0 -2.1 0"/>',
-  3: '<path class="g" style="--i:0" d="M2.5 15L11 20L21.5 13.5L13 8.5Z" pathLength="1"/><path class="g g-acc" style="--i:1" d="M11.6 14.3L18 13.2" pathLength="1"/><path class="g g-acc" style="--i:2" d="M15.44 12.35L18 13.2L15.87 14.85" pathLength="1"/><path class="g g-acc" style="--i:2" d="M11.6 14.3L10.2 9.9" pathLength="1"/><path class="g g-acc" style="--i:3" d="M9.71 12.56L10.2 9.9L12.13 11.79" pathLength="1"/><path class="g g-dot g-acc" style="--i:3" d="M10.85 14.3a0.75 0.75 0 1 0 1.5 0a0.75 0.75 0 1 0 -1.5 0"/>',
-  4: '<path class="g g-dash" style="--i:0" d="M4 20H11V13H4Z"/><path class="g g-acc" style="--i:1" d="M4 20L13 17L17 4L8 7Z" pathLength="1"/><path class="g g-dot" style="--i:2" d="M3.1 20a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0"/>',
+  3: '<path class="g g-dot g-fill" style="--i:0" d="M12 12L20.6 16.7L12 21.4L3.4 16.7Z"/><path class="g" style="--i:0" d="M12 12L20.6 16.7" pathLength="1"/><path class="g" style="--i:1" d="M19.17 14.53L20.6 16.7L18 16.67" pathLength="1"/><path class="g" style="--i:1" d="M12 12L3.4 16.7" pathLength="1"/><path class="g" style="--i:2" d="M6 16.67L3.4 16.7L4.83 14.53" pathLength="1"/><path class="g g-acc" style="--i:2" d="M12 12L12 2.6" pathLength="1"/><path class="g g-acc" style="--i:3" d="M10.78 4.9L12 2.6L13.22 4.9" pathLength="1"/><path class="g g-dot g-acc" style="--i:3" d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/>',
+  4: '<path class="g" style="--i:0" d="M9.7 19.05L15.2 4.05" pathLength="1"/><path class="g" style="--i:0" d="M6.45 13.3L18.45 9.8" pathLength="1"/><path class="g g-acc" style="--i:1" d="M3.7 20.8L15.7 17.3L21.2 2.3L9.2 5.8Z" pathLength="1"/><path class="g g-dot g-acc" style="--i:2" d="M2.75 20.8a0.95 0.95 0 1 0 1.9 0a0.95 0.95 0 1 0 -1.9 0"/>',
   5: '<path class="g g-dash" style="--i:0" d="M3 21L21 3"/><path class="g" style="--i:1" d="M6.5 17.5L18.5 5.5" pathLength="1"/><path class="g" style="--i:2" d="M15.92 6.29L18.5 5.5L17.71 8.08" pathLength="1"/><path class="g g-acc" style="--i:3" d="M6.5 17.5L11.5 12.5" pathLength="1"/><path class="g g-acc" style="--i:4" d="M8.63 13.38L11.5 12.5L10.62 15.37" pathLength="1"/>',
   6: '<path class="g" style="--i:0" d="M2.5 18.5H21.5" pathLength="1"/><path class="g" style="--i:1" d="M4 18.5L15 6" pathLength="1"/><path class="g" style="--i:2" d="M12.47 6.95L15 6L14.38 8.63" pathLength="1"/><path class="g g-dash" style="--i:3" d="M15 6V18.5"/><path class="g g-acc" style="--i:4" d="M4 18.5L15 18.5" pathLength="1"/><path class="g g-acc" style="--i:5" d="M12.62 17.23L15 18.5L12.62 19.77" pathLength="1"/><path class="g" style="--i:5" d="M12.6 18.5V16.1H15" pathLength="1"/>',
   7: '<path class="g" style="--i:0" d="M3 14a7 5 0 1 0 14 0a7 5 0 1 0 -14 0" pathLength="1"/><path class="g" style="--i:1" d="M6.6 14a3.4 2.3 0 1 0 6.8 0a3.4 2.3 0 1 0 -6.8 0" pathLength="1"/><path class="g g-acc" style="--i:2" d="M14.5 10.17L18.1 4.17" pathLength="1"/><path class="g g-acc" style="--i:3" d="M15.79 5.56L18.1 4.17L17.96 6.86" pathLength="1"/><path class="g g-dot g-acc" style="--i:4" d="M13.6 10.17a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0"/>',
@@ -4194,8 +4634,22 @@ const SECTION_GLYPHS = {
   9: '<path class="g g-acc" style="--i:0" d="M12 4.5C7.5 4.5 4.5 7 4 11C3.5 15.5 6.5 19 11 19.5C15.5 20 19.5 17 20 12.5C20.5 8.5 17.5 4.5 12 4.5" pathLength="1"/><path class="g g-acc" style="--i:2" d="M12.76 5.76L10.2 4.62L12.57 3.14" pathLength="1"/><path class="g g-dash" style="--i:1" d="M8.5 14L13 9.5"/><path class="g g-dash" style="--i:1" d="M10.5 16.5L16 11"/>',
   10: '<path class="g" style="--i:0" d="M3 17C4 7.5 20 7.5 21 17" pathLength="1"/><path class="g g-acc" style="--i:1" d="M3 17C3 20.3 21 20.3 21 17" pathLength="1"/><path class="g g-dash" style="--i:1" d="M3 17C3 13.9 21 13.9 21 17"/><path class="g g-acc" style="--i:2" d="M11.02 18.25L13.2 19.47L10.97 20.6" pathLength="1"/><path class="g" style="--i:3" d="M12 9.9L12 3" pathLength="1"/><path class="g" style="--i:4" d="M10.73 5.38L12 3L13.27 5.38" pathLength="1"/><path class="g g-dot" style="--i:5" d="M11.1 9.9a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0"/>',
 };
-function sectionGlyph(pos, extraClass) {
-  const g = SECTION_GLYPHS[pos];
+/* The same drawings for the large, faint section-header art: small filled arrowheads (like
+   the hero) instead of chevrons, and lighter dots. Both sets come from tools/make_glyphs.py. */
+const SECTION_ART = {
+  1: '<path class="g" style="--i:0" d="M5 18L15.48 15.14" pathLength="1"/><path class="g g-dot g-head" style="--i:1" d="M16 15L15.24 15.64L15.02 14.83Z"/><path class="g" style="--i:1" d="M5 18L7.87 6.52" pathLength="1"/><path class="g g-dot g-head" style="--i:2" d="M8 6L8.19 6.97L7.37 6.77Z"/><path class="g g-acc" style="--i:2" d="M5 18L18.63 3.39" pathLength="1"/><path class="g g-dot g-head g-acc" style="--i:3" d="M19 3L18.69 3.94L18.08 3.37Z"/>',
+  2: '<path class="g" style="--i:0" d="M3.5 5H9V10.5H14.5V16H20.5" pathLength="1"/><path class="g g-dot g-acc" style="--i:1" d="M5.77 7.9a0.53 0.53 0 1 0 1.05 0a0.53 0.53 0 1 0 -1.05 0"/><path class="g g-dot g-acc" style="--i:2" d="M11.28 13.4a0.53 0.53 0 1 0 1.05 0a0.53 0.53 0 1 0 -1.05 0"/><path class="g g-dot g-acc" style="--i:3" d="M16.78 18.9a0.53 0.53 0 1 0 1.05 0a0.53 0.53 0 1 0 -1.05 0"/>',
+  3: '<path class="g g-dot g-fill" style="--i:0" d="M12 12L20.6 16.7L12 21.4L3.4 16.7Z"/><path class="g" style="--i:0" d="M12 12L20.13 16.44" pathLength="1"/><path class="g g-dot g-head" style="--i:1" d="M20.6 16.7L19.61 16.64L20.01 15.9Z"/><path class="g" style="--i:1" d="M12 12L3.87 16.44" pathLength="1"/><path class="g g-dot g-head" style="--i:2" d="M3.4 16.7L3.99 15.9L4.39 16.64Z"/><path class="g g-acc" style="--i:2" d="M12 12L12 3.14" pathLength="1"/><path class="g g-dot g-head g-acc" style="--i:3" d="M12 2.6L12.42 3.5L11.58 3.5Z"/><path class="g g-dot g-acc" style="--i:3" d="M11.5 12a0.5 0.5 0 1 0 1 0a0.5 0.5 0 1 0 -1 0"/>',
+  4: '<path class="g" style="--i:0" d="M9.7 19.05L15.2 4.05" pathLength="1"/><path class="g" style="--i:0" d="M6.45 13.3L18.45 9.8" pathLength="1"/><path class="g g-acc" style="--i:1" d="M3.7 20.8L15.7 17.3L21.2 2.3L9.2 5.8Z" pathLength="1"/><path class="g g-dot g-acc" style="--i:2" d="M3.23 20.8a0.47 0.47 0 1 0 0.95 0a0.47 0.47 0 1 0 -0.95 0"/>',
+  5: '<path class="g g-dash" style="--i:0" d="M3 21L21 3"/><path class="g" style="--i:1" d="M6.5 17.5L18.12 5.88" pathLength="1"/><path class="g g-dot g-head" style="--i:2" d="M18.5 5.5L18.16 6.43L17.57 5.84Z"/><path class="g g-acc" style="--i:3" d="M6.5 17.5L11.12 12.88" pathLength="1"/><path class="g g-dot g-head g-acc" style="--i:4" d="M11.5 12.5L11.16 13.43L10.57 12.84Z"/>',
+  6: '<path class="g" style="--i:0" d="M2.5 18.5H21.5" pathLength="1"/><path class="g" style="--i:1" d="M4 18.5L14.64 6.41" pathLength="1"/><path class="g g-dot g-head" style="--i:2" d="M15 6L14.72 6.95L14.09 6.4Z"/><path class="g g-dash" style="--i:3" d="M15 6V18.5"/><path class="g g-acc" style="--i:4" d="M4 18.5L14.46 18.5" pathLength="1"/><path class="g g-dot g-head g-acc" style="--i:5" d="M15 18.5L14.1 18.92L14.1 18.08Z"/><path class="g" style="--i:5" d="M12.6 18.5V16.1H15" pathLength="1"/>',
+  7: '<path class="g" style="--i:0" d="M3 14a7 5 0 1 0 14 0a7 5 0 1 0 -14 0" pathLength="1"/><path class="g" style="--i:1" d="M6.6 14a3.4 2.3 0 1 0 6.8 0a3.4 2.3 0 1 0 -6.8 0" pathLength="1"/><path class="g g-acc" style="--i:2" d="M14.5 10.17L17.82 4.63" pathLength="1"/><path class="g g-dot g-head g-acc" style="--i:3" d="M18.1 4.17L18 5.15L17.28 4.72Z"/><path class="g g-dot g-acc" style="--i:4" d="M14.05 10.17a0.45 0.45 0 1 0 0.9 0a0.45 0.45 0 1 0 -0.9 0"/>',
+  8: '<path class="g" style="--i:0" d="M3.5 7L7.01 5.42" pathLength="1"/><path class="g g-dot g-head" style="--i:1" d="M7.5 5.2L6.85 5.95L6.51 5.19Z"/><path class="g" style="--i:1" d="M11 5.6L14.51 4.02" pathLength="1"/><path class="g g-dot g-head" style="--i:2" d="M15 3.8L14.35 4.55L14.01 3.79Z"/><path class="g g-acc" style="--i:2" d="M3.5 19C8 8 14 21 20.2 9" pathLength="1"/><path class="g g-dot g-head g-acc" style="--i:3" d="M20.2 9L20.16 9.99L19.41 9.61Z"/>',
+  9: '<path class="g g-acc" style="--i:0" d="M12 4.5C7.5 4.5 4.5 7 4 11C3.5 15.5 6.5 19 11 19.5C15.5 20 19.5 17 20 12.5C20.5 8.5 17.5 4.5 12 4.5" pathLength="1"/><path class="g g-dot g-head g-acc" style="--i:2" d="M10.2 4.62L11.07 4.14L11.13 4.98Z"/><path class="g g-dash" style="--i:1" d="M8.5 14L13 9.5"/><path class="g g-dash" style="--i:1" d="M10.5 16.5L16 11"/>',
+  10: '<path class="g" style="--i:0" d="M3 17C4 7.5 20 7.5 21 17" pathLength="1"/><path class="g g-acc" style="--i:1" d="M3 17C3 20.3 21 20.3 21 17" pathLength="1"/><path class="g g-dash" style="--i:1" d="M3 17C3 13.9 21 13.9 21 17"/><path class="g g-dot g-head g-acc" style="--i:2" d="M13.2 19.47L12.29 19.87L12.31 19.03Z"/><path class="g" style="--i:3" d="M12 9.9L12 3.54" pathLength="1"/><path class="g g-dot g-head" style="--i:4" d="M12 3L12.42 3.9L11.58 3.9Z"/><path class="g g-dot" style="--i:5" d="M11.55 9.9a0.45 0.45 0 1 0 0.9 0a0.45 0.45 0 1 0 -0.9 0"/>',
+};
+function sectionGlyph(pos, extraClass, large) {
+  const g = (large ? SECTION_ART : SECTION_GLYPHS)[pos];
   return g ? '<svg class="glyph' + (extraClass ? " " + extraClass : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + g + '</svg>' : "";
 }
 
@@ -4250,6 +4704,14 @@ function tweenNumber(el, from, to, suffix, ms) {
    exact scroll position, and list pages reopen where you left them. Detail pages
    start at the top. Jumps are instant (html uses smooth scrolling for in-page links,
    which made every route change glide or stall). */
+/* Scans of the SI QR code (…/?qr) land on the home page like any other visit. The
+   landing view is counted as "/qr" (see countRoute) so SI can see how many students
+   came from the code, and the query is removed at once so it never lingers in the
+   address bar or in bookmarks. #/si was briefly the QR target; it is treated the same. */
+const QR_ARRIVAL = /(^|&)qr(=|&|$)/.test(location.search.slice(1)) || location.hash === "#/si";
+if (QR_ARRIVAL) {
+  try { history.replaceState(null, "", location.pathname + (location.hash === "#/si" ? "" : location.hash)); } catch (_) {}
+}
 const NAV_BOOT = Date.now().toString(36);
 const LIST_ROUTE = /^\/(topics|section\/\d+|review|walkthroughs)$/;
 const scrollByEntry = new Map(), scrollByRoute = new Map();
@@ -4540,7 +5002,6 @@ function handleRoute() {
   }
   else if (head === "exam")    { $("#view-exam").classList.add("active"); markNav("/exam"); renderExamSetup(); }
   else if (head === "review")  { $("#view-review").classList.add("active"); markNav("/review"); renderReview(); }
-  else if (head === "si")      { $("#view-si").classList.add("active"); markNav("/home"); renderSiWelcome(); }
   else if (head === "walkthroughs" && !parts[1]) {
     // Visiting #/walkthroughs marks the SI leader as unlocked for this browser session
     setWalkUnlocked(true);
@@ -4572,13 +5033,15 @@ function markNav(route) {
    visit, roughly how long they stay, and which sections/problems
    they use. No cookies, no personal data. Endpoint is set in <head>.
    ============================================================ */
-let lastCountedPath = null;
+let lastCountedPath = null, qrCounted = false;
 function countRoute() {
   const p = location.hash ? location.hash.replace(/^#/, "") : "/home";
   if (p === lastCountedPath) return;                 // de-dupe repeated handleRoute() calls
   if (window.goatcounter && typeof window.goatcounter.count === "function") {
     lastCountedPath = p;
-    window.goatcounter.count({ path: p });
+    const viaQr = QR_ARRIVAL && !qrCounted;          // the first view of a QR scan
+    qrCounted = true;
+    window.goatcounter.count({ path: viaQr ? "/qr" : p });
   }
 }
 // count.js loads async; fire the first page-view as soon as it is ready
@@ -4763,7 +5226,7 @@ function renderResumeLink() {
 /* ============================================================
    FALL 2026 LECTURE SCHEDULE (from the 21-254 syllabus)
    [lecture #, date, topic, practice problem ids]. Drives the home page
-   "This week" strip and the SI QR landing page (#/si).
+   "This week" strip.
    ============================================================ */
 const COURSE_LECTURES = [
   [1,  "2026-08-24", "Vectors",                     ["vecmat-001", "vecmat-002"]],
@@ -4839,31 +5302,10 @@ function renderWeekStrip() {
     ? cur.list.map(l => '<a class="week-chip" href="#/problem/' + l.ids[0] + '">' + escapeHtml(l.topic) + ' <span class="arr" aria-hidden="true">&rarr;</span></a>').join("")
     : '<a class="week-chip" href="#/exam">Exam Mode <span class="arr" aria-hidden="true">&rarr;</span></a>' +
       '<a class="week-chip" href="#/topics">All topics <span class="arr" aria-hidden="true">&rarr;</span></a>';
+  $("#weekNote").textContent = cur.list.length
+    ? "Recommended review for Fall 2026. Always confirm with the course calendar."
+    : "Recommended review. Always confirm what each exam covers with the course calendar.";
   strip.hidden = false;
-}
-
-function renderSiWelcome() {
-  const box = $("#siLectures");
-  if (!box) return;
-  const cur = currentLectures();
-  if (!cur || !cur.list.length) {
-    box.innerHTML = '<p class="si-empty">Lectures are done for the term. Exam Mode builds a mixed review set from every section.</p>' +
-                    '<div><a class="week-chip" href="#/exam">Open Exam Mode <span class="arr" aria-hidden="true">&rarr;</span></a></div>';
-    return;
-  }
-  const fmt = d => d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
-  box.innerHTML = cur.list.map(l => {
-    const probs = l.ids.slice(0, 2).map(id => State.problemsById.get(id)).filter(Boolean);
-    return '<div class="si-lecture">' +
-      '<div class="si-lecture-kicker">Lecture ' + l.n + ' &middot; ' + fmt(l.date) + '</div>' +
-      '<div class="si-lecture-topic">' + escapeHtml(l.topic) + '</div>' +
-      (probs.length ? probs.map(p =>
-        '<a class="si-prob" href="#/problem/' + p.id + '"><span class="si-prob-title">' + escapeHtml(p.title) + '</span>' +
-        '<span class="si-prob-meta">' + escapeHtml(p.difficulty || "") + (p.estimatedMinutes ? ' &middot; ~' + p.estimatedMinutes + ' min' : '') + '</span></a>'
-      ).join("") : '<div class="skeleton" style="height: 44px; margin-top: 6px;"></div>') +
-    '</div>';
-  }).join("");
-  typesetMath(box);                    // a few titles contain LaTeX
 }
 
 function renderHome() {
@@ -5009,7 +5451,7 @@ function renderSection(pos) {
 
   $("#sectionDetailKicker").textContent = `Section ${String(pos).padStart(2,'0')}`;
   const art = $("#sectionArt");
-  if (art) { art.innerHTML = sectionGlyph(pos, "glyph-anim"); }
+  if (art) { art.innerHTML = sectionGlyph(pos, "glyph-anim", true); }
   $("#sectionDetailTitle").textContent  = section.title;
   $("#sectionDetailDesc").textContent   = section.short || "";
 
@@ -7905,7 +8347,7 @@ async function loadSiteUsage() {
   };
   try {
     const all = await count("TOTAL");            // one probe: if the feed is off, stop at a single request
-    const [week, qr] = await Promise.all([count("TOTAL", "?start=week"), count("/si")]);
+    const [week, qr] = await Promise.all([count("TOTAL", "?start=week"), count("/qr")]);
     const stat = (n, label) => '<div class="wu-stat"><span class="wu-num">' + escapeHtml(n) + '</span><span class="wu-lab">' + label + '</span></div>';
     box.innerHTML = stat(all, "visits, all time") + stat(week, "visits, last 7 days") + stat(qr, "arrived via the SI QR code");
     box.hidden = false;
