@@ -1824,6 +1824,8 @@
   .rp-undo { margin-top: 10px; font: inherit; font-size: 12.5px; color: var(--ink-mute); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
   .rp-undo:hover { color: var(--ink); }
   @media (prefers-reduced-motion: reduce) { .report-panel.enter { animation: none; } }
+  .pr-card { max-width: 520px; }
+  .pr-where { margin: 0 0 12px; font-size: 13.5px; color: var(--ink-soft); }
 
   /* Sidebar */
   .study-side {
@@ -2100,6 +2102,13 @@
     font-weight: 600;
   }
   footer .foot-brand .num { color: var(--red); }
+  footer .foot-lead { font-size: 13.5px; color: var(--ink-soft); }
+  footer .foot-lead strong { color: var(--ink); font-weight: 700; }
+  footer .foot-report { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 12px; margin: 12px auto 4px; font-size: 13px; color: var(--ink-mute); }
+  .foot-report-btn { font: 650 13px var(--font-sans); color: var(--red-deep); background: var(--red-tint); border: 1px solid rgba(200,16,46,.35);
+    border-radius: 999px; padding: 6px 14px; cursor: pointer; transition: background .14s, border-color .14s; }
+  .foot-report-btn:hover { background: #F9E1E5; border-color: var(--red); text-decoration: none; }
+  .foot-report-btn:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 2px; }
   footer .foot-ai {
     max-width: 560px;
     margin: 6px auto 0;
@@ -3772,6 +3781,53 @@
       background: linear-gradient(var(--bg) calc(100% - 14px), rgba(251, 248, 244, 0)); }
   }
   .vz-nw { white-space: nowrap; }
+  /* index: the six concept pictures lead */
+  .vz-group.is-lead { margin-top: 18px; }
+  .vz-group.is-lead .vz-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 900px) { .vz-group.is-lead .vz-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 540px) { .vz-group.is-lead .vz-cards { grid-template-columns: minmax(0, 1fr); } }
+  .vz-group.is-lead .vz-card-title { font-size: 16px; }
+  .vz-top-right { display: flex; align-items: center; gap: 12px; }
+  /* draggable pictures: the page doesn't scroll under a finger that is dragging a vector */
+  .vz-stage.vz-draggable { touch-action: none; }
+  .vz-stage.vz-draggable:focus { outline: none; }
+  .vz-stage.vz-draggable:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 3px; }
+  .vz-stage.dragging { cursor: grabbing !important; }
+  /* full screen, for projecting in a session */
+  body.vz-fullscreen #vizRoot { background: var(--bg); padding: 18px 28px 24px; overflow: auto; }
+  body.vz-fullscreen .vz-main { grid-template-columns: minmax(0, 1fr) 360px; }
+  body.vz-fullscreen .vz-stage-wrap { max-width: calc((100vh - 96px) * 4 / 3); justify-self: center; width: 100%; }
+  body.vz-fullscreen .vz-panel { position: static; max-height: calc(100vh - 96px); overflow: auto; }
+  body.vz-fullscreen .vz-pager { display: none; }
+  /* panel pieces for the interactive pictures */
+  .vz-ptop { display: grid; gap: 10px; margin: 0 0 14px; }
+  .vz-ptop-k { font-size: 11px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 5px; }
+  .vz-seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 99px; }
+  .vz-seg button { border: 0; background: none; padding: 5px 13px; border-radius: 99px; font: 600 12.5px var(--font-sans); color: var(--ink-soft); cursor: pointer; }
+  .vz-seg button.on { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(31,41,51,.18); }
+  .vz-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .vz-chip.on { border-color: var(--gold); background: #FBF4E4; color: #6E5518; }
+  .vz-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .vz-steps button { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 7px 9px; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--surface); cursor: pointer; font: 600 12px/1.25 var(--font-sans); color: var(--ink-soft); text-align: left; }
+  .vz-steps button span { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; color: var(--ink-mute); }
+  .vz-steps button.on { border-color: var(--ink); background: #fff; color: var(--ink); box-shadow: var(--sh-1); }
+  .vz-steps button.on span { color: var(--red-deep); }
+  .vz-w { font-family: var(--font-display); font-size: 15.5px; margin: 0 0 8px; }
+  .vz-do { font-size: 13px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 10px; }
+  .vz-check { list-style: none; margin: 0 0 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); }
+  .vz-check-h { font-size: 11px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); margin: 0 0 6px; }
+  .vz-check li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 4px; padding: 3px 0; font-size: 13.5px; line-height: 1.4; }
+  .vz-check .mk { font-weight: 800; text-align: center; }
+  .vz-check .mk.yes { color: #2F7A4A; } .vz-check .mk.no { color: var(--red); } .vz-check .mk.open { color: var(--ink-faint); }
+  .vz-check .why { display: block; font-size: 12px; color: var(--ink-mute); margin-top: 1px; }
+  .vz-check li.no .why { color: var(--red-deep); }
+  .vz-conclude { margin: 0 0 10px; padding: 9px 11px; border-radius: 8px; font-size: 13.5px; font-weight: 600; line-height: 1.45; }
+  .vz-conclude.yes { background: #EAF4EE; color: #245F3A; border-left: 3px solid #2F7A4A; }
+  .vz-conclude.no { background: var(--red-tint); color: var(--red-deep); border-left: 3px solid var(--red); }
+  .vz-btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+  .vz-logic { font-size: 12px; line-height: 1.5; color: var(--ink-mute); margin: 0; }
+  .vz-logic b { color: var(--ink-soft); }
 
   /* ============================================================
      SESSION GUIDE (SI walkthroughs with a teaching script)
@@ -5299,7 +5355,7 @@
         <div class="wu-body">
           <div class="wu-kicker">Reported issues</div>
           <div class="wr-list" id="walkReports" hidden></div>
-          <p class="wu-note">Students flag a problem with its <strong>Report issue</strong> button (anonymous). Mark one fixed and it stays hidden until someone reports it again.</p>
+          <p class="wu-note">Students flag a problem with its <strong>Report a problem</strong> button, or any page from the footer (anonymous). Mark one fixed and it stays hidden until someone reports it again.</p>
         </div>
       </div>
       </div>
@@ -5344,8 +5400,9 @@
 
 <footer>
   <div class="foot-brand"><span class="num">21-254</span> Practice Lab</div>
-  <div>Original practice problems. Not official course materials.</div>
-  <div class="foot-ai"><strong>AI-Disclosure Notice:</strong> Problems, hints, and solutions were built by AI on the author's own 21-254 practice materials. An occasional error is possible, so make sure to use the <strong>Report issue</strong> button to improve the quality of the site!</div>
+  <div class="foot-lead"><strong>Independent SI practice resource.</strong> Original practice problems, not official course materials.</div>
+  <div class="foot-report"><button type="button" class="foot-report-btn" id="reportFooterBtn">Report a problem</button><span>Spot something that looks wrong? It gets reviewed and corrected.</span></div>
+  <div class="foot-ai">Problems, hints, and solutions were developed with the assistance of AI and may contain occasional errors.</div>
   <div class="foot-ai">Anonymous, cookie-free usage statistics. No personal data is collected.</div>
   <div class="foot-links">
     <button type="button" id="aboutTrigger">About this resource</button>
@@ -10933,6 +10990,7 @@ const REPORT_KINDS = {
   typo: "A typo",
   confusing: "It's confusing",
   display: "Math or a picture looks broken",
+  other: "Something else",
 };
 function getReport(id) { return lsGetMap(LS.REPORTED)[id] || null; }
 function setReport(id, kind) {
@@ -10978,7 +11036,7 @@ function wireReport(p) {
   const paint = () => {
     const r = getReport(p.id);
     btn.classList.toggle("is-reported", !!r);
-    btn.innerHTML = r ? "Reported &#10003;" : "Report issue";
+    btn.innerHTML = r ? "Reported &#10003;" : "Report a problem";
     ask.hidden = !!r; done.hidden = !r;
     let pill = $("#reportPill");
     if (r && !pill) {
@@ -11010,6 +11068,98 @@ function wireReport(p) {
     send.disabled = true; paint();
     showToast("Tag removed", "neutral", 1400);
   });
+}
+
+/* Report a problem, from the footer. On a problem page it opens that problem's own report panel;
+   anywhere else it flags the page itself (id "page-…", e.g. page-visualize-subspace), through the same
+   anonymous report/<id> events, so the SI leader sees page reports in the same Reported issues list. */
+function reportPageId() {
+  const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/").filter(Boolean), h = parts[0] || "home";
+  if (h === "visualize") return "page-visualize" + (parts[1] && VZ_BY_ID[parts[1]] ? "-" + parts[1] : "");
+  if (h === "walkthroughs") return "page-walkthroughs" + (/^si-\d+$/.test(parts[1] || "") ? "-" + parts[1] : "");
+  if (h === "section" && /^\d+$/.test(parts[1] || "")) return "page-section-" + parts[1];
+  return "page-" + (["topics", "exam", "review"].includes(h) ? h : "home");
+}
+function reportPageLabel(id) {
+  const k = id.replace(/^page-/, "");
+  if (k.startsWith("visualize-")) { const v = VZ_BY_ID[k.slice(10)]; return "Visualize: " + (v ? v.title : k.slice(10)); }
+  if (k.startsWith("walkthroughs-si-")) return "SI guide, session " + parseInt(k.slice(16), 10);
+  if (k.startsWith("section-")) return "Section " + k.slice(8) + " problem list";
+  return { home: "Home page", topics: "Practice page", exam: "Exam mode", review: "Need review", walkthroughs: "SI walkthroughs", visualize: "Visualize page" }[k] || k;
+}
+function reportPageRoute(id) {
+  const k = id.replace(/^page-/, "");
+  if (k.startsWith("visualize-")) return "/visualize/" + k.slice(10);
+  if (k.startsWith("walkthroughs-")) return "/walkthroughs/" + k.slice(13);
+  if (k.startsWith("section-")) return "/section/" + k.slice(8);
+  return "/" + k;
+}
+// every page that can be reported, so the leader's list can ask GoatCounter about each one
+function reportPageIds() {
+  const ids = ["home", "topics", "exam", "review", "walkthroughs", "visualize"].map(k => "page-" + k);
+  VZ_LIST.forEach(v => ids.push("page-visualize-" + v.id));
+  for (let n = 1; n <= 22; n++) ids.push("page-walkthroughs-si-" + String(n).padStart(2, "0"));
+  SECTIONS.forEach(x => ids.push("page-section-" + x.pos));
+  return ids;
+}
+function openPageReport() {
+  const onProblem = $("#reportBtn") && $("#view-problem")?.classList.contains("active");
+  if (onProblem) {                                       // the problem's own panel, opened and brought into view
+    const btn = $("#reportBtn"), panel = $("#reportPanel");
+    if (panel && panel.hidden) btn.click();
+    (panel || btn).scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  const id = reportPageId(), label = reportPageLabel(id), p = { id };
+  const mailto = "mailto:mbocksta@andrew.cmu.edu?subject=" + encodeURIComponent("21-254 Practice Lab: a problem on " + label) +
+    "&body=" + encodeURIComponent("Page: " + location.href + "\n\nWhat looks wrong:\n");
+  let modal = $("#pageReport");
+  if (modal) modal.remove();
+  modal = document.createElement("div");
+  modal.id = "pageReport"; modal.className = "shortcuts-help";
+  const r = getReport(id);
+  modal.innerHTML = `
+    <div class="shortcuts-card pr-card" role="dialog" aria-modal="true" aria-labelledby="prTitle">
+      <div class="shortcuts-head">
+        <span class="shortcuts-kicker" id="prTitle">Report a problem</span>
+        <button class="shortcuts-close" aria-label="Close">×</button>
+      </div>
+      <p class="pr-where">On: <strong>${escapeHtml(label)}</strong></p>
+      <div class="rp-ask"${r ? " hidden" : ""}>
+        <div class="rp-head">What looks wrong?</div>
+        <div class="rp-chips" role="radiogroup" aria-label="Kind of problem">
+          ${Object.entries(REPORT_KINDS).map(([k, t]) => `<button type="button" class="rp-chip" role="radio" aria-checked="false" data-kind="${k}">${t}</button>`).join("")}
+        </div>
+        <div class="rp-foot">
+          <button class="btn btn-red btn-sm" id="prSend" type="button" disabled>Send report</button>
+          <a class="rp-mail" href="${mailto}">Email details instead</a>
+        </div>
+        <p class="rp-note">Anonymous. It flags this page for review, and the SI leader corrects it. To say exactly what's wrong, email the details.</p>
+      </div>
+      <div class="rp-done"${r ? "" : " hidden"}>
+        <div class="rp-head">Thanks, this page is flagged for review.</div>
+        <p class="rp-note">To explain what's wrong, <a class="rp-mail" href="${mailto}">email the details</a>.</p>
+        <button class="rp-undo" id="prUndo" type="button">Remove my flag</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  const ask = modal.querySelector(".rp-ask"), done = modal.querySelector(".rp-done"), send = modal.querySelector("#prSend"), chips = [...modal.querySelectorAll(".rp-chip")];
+  let kind = null;
+  const close = () => { modal.remove(); $("#reportFooterBtn")?.focus(); };
+  modal.addEventListener("click", e => { if (e.target === modal || e.target.classList.contains("shortcuts-close")) close(); });
+  chips.forEach(c => c.addEventListener("click", () => {
+    kind = c.dataset.kind;
+    chips.forEach(x => { const on = x === c; x.classList.toggle("on", on); x.setAttribute("aria-checked", String(on)); });
+    send.disabled = false;
+  }));
+  send.addEventListener("click", () => {
+    if (!kind) return;
+    setReport(id, kind); sendReportEvent(p, kind);
+    ask.hidden = true; done.hidden = false;
+    showToast("Reported. Thanks for flagging it!", "got", 1800);
+  });
+  modal.querySelector("#prUndo").addEventListener("click", () => { setReport(id, null); ask.hidden = false; done.hidden = true; kind = null; chips.forEach(x => { x.classList.remove("on"); x.setAttribute("aria-checked", "false"); }); send.disabled = true; });
+  (r ? modal.querySelector("#prUndo") : chips[0])?.focus();
 }
 
 function statusButtons(status) {
@@ -11152,7 +11302,7 @@ function renderProblem(problemId) {
       <button class="${statusButtons(status).rev.cls}" id="markReview">${statusButtons(status).rev.html}</button>
       <button class="btn btn-ghost btn-sm" id="clearStatus"${status ? "" : " hidden"}>Clear status</button>
       <button class="btn btn-ghost btn-sm" id="copyLinkBtn" type="button">Copy link</button>
-      <button class="btn btn-ghost btn-sm${getReport(p.id) ? " is-reported" : ""}" id="reportBtn" type="button" aria-expanded="false" aria-controls="reportPanel">${getReport(p.id) ? "Reported &#10003;" : "Report issue"}</button>
+      <button class="btn btn-ghost btn-sm${getReport(p.id) ? " is-reported" : ""}" id="reportBtn" type="button" aria-expanded="false" aria-controls="reportPanel">${getReport(p.id) ? "Reported &#10003;" : "Report a problem"}</button>
     </div>
     ${reportPanelHtml(p, mailto)}
   `;
@@ -11728,7 +11878,10 @@ const VZ_LIST = [], VZ_BY_ID = {};
 const VZ_W = 600, VZ_H = 450;
 const VZ = { red: "#C8102E", deep: "#9A0B22", ink: "#1F2933", grey: "#6B7682", faint: "#95A0AB", gold: "#B89642",
              tint: "#FCEFF1", soft: "#F7DEE2", paper: "#FBF8F4" };
-const VZ_GROUPS = ["Vectors and matrices", "Eigenvalues", "Calculus of several variables", "Vector calculus"];
+const VZ_GROUPS = ["Linear algebra concepts", "More linear algebra", "Eigenvalues", "Calculus of several variables", "Vector calculus"];
+// the order of the index and of the previous / next pager
+const VZ_ORDER = ["subspace", "span", "independence", "matrix", "det", "nullcol",
+  "vectors", "systems", "projection", "cross", "eigen", "powers", "curves", "gradient", "critical", "fields", "work", "riemann", "polar"];
 function vzAdd(def) { VZ_LIST.push(def); VZ_BY_ID[def.id] = def; }
 const q2 = v => Math.round(v * 100) / 100;
 function vzNum(v, d = 2) {
@@ -11844,17 +11997,17 @@ function renderVisualize(id) {
         <div>
           <div class="kicker">Visualize</div>
           <h2>See the ideas move</h2>
-          <p>Pictures of the core ideas with sliders instead of paragraphs. Drag, watch what changes, and what stays put.</p>
+          <p>Interactive pictures of the core ideas. Drag the vectors, move the sliders, and watch what changes and what stays put.</p>
         </div>
       </div>
-      ${VZ_GROUPS.map(g => {
+      ${VZ_GROUPS.map((g, gi) => {
         const items = VZ_LIST.filter(v => v.group === g);
         if (!items.length) return "";
-        return `<div class="vz-group"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map(v => `
+        return `<div class="vz-group${gi ? "" : " is-lead"}"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map(v => `
           <a class="vz-card" href="#/visualize/${v.id}">
             <svg class="vz-thumb" viewBox="0 0 ${VZ_W} ${VZ_H}" aria-hidden="true">${vzDefs(v.defs)}<g clip-path="url(#vz-clip)">${vzThumb(v)}</g></svg>
-            <span class="vz-card-title">${escapeHtml(v.title)}</span>
-            <span class="vz-card-blurb">${escapeHtml(v.blurb)}</span>
+            <span class="vz-card-title">${escapeHtml(v.card || v.title)}</span>
+            <span class="vz-card-blurb">${escapeHtml(v.tagline || v.blurb)}</span>
           </a>`).join("")}</div></div>`;
       }).join("")}`;
     typesetMath(root);                                       // blurbs carry inline math
@@ -11866,13 +12019,17 @@ function renderVisualize(id) {
   root.innerHTML = `
     <div class="vz-top">
       <button class="btn btn-ghost btn-sm" data-route="/visualize">&larr; All visualizations</button>
-      <span class="vz-crumb">${escapeHtml(def.group)} &middot; ${i + 1} of ${VZ_LIST.length}</span>
+      <span class="vz-top-right">
+        <span class="vz-crumb">${escapeHtml(def.group)} &middot; ${i + 1} of ${VZ_LIST.length}</span>
+        ${document.fullscreenEnabled ? `<button class="btn btn-ghost btn-sm vz-full" id="vzFull" type="button" aria-pressed="false">Full screen</button>` : ""}
+      </span>
     </div>
     <div class="vz-main">
       <div class="vz-stage-wrap"><svg class="vz-stage" id="vzStage" viewBox="0 0 ${VZ_W} ${VZ_H}" role="img" aria-label="${escapeHtml(def.title)}"></svg></div>
       <aside class="vz-panel">
         <h1 class="vz-title">${escapeHtml(def.title)}</h1>
         <p class="vz-blurb">${escapeHtml(def.blurb)}</p>
+        ${def.panelTop ? `<div class="vz-ptop" id="vzPTop">${def.panelTop()}</div>` : ""}
         <div class="vz-controls" id="vzControls">${vzControlsHtml(def)}</div>
         ${def.presets ? `<div class="vz-presets">${def.presets.map((p, k) => `<button class="vz-chip" type="button" data-preset="${k}">${escapeHtml(p[0])}</button>`).join("")}</div>` : ""}
         <div class="vz-readout" id="vzReadout" aria-live="polite"></div>
@@ -11894,20 +12051,94 @@ function renderVisualize(id) {
     vzChanged();
   });
   panel.addEventListener("click", e => {
+    if (def.onClick && def.onClick(e.target, VzView.st)) { VzView.tweens = null; vzSetPlay(null); vzChanged(); return; }
     const chip = e.target.closest("[data-preset]");
     if (chip) { vzPreset(def.presets[Number(chip.dataset.preset)][1]); return; }
     const play = e.target.closest("[data-play]");
     if (play) vzSetPlay(VzView.playing === play.dataset.play ? null : play.dataset.play);
   });
+  vzWireDrag(def);
+  const full = document.getElementById("vzFull");
+  if (full) full.addEventListener("click", () => {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else root.requestFullscreen().catch(() => {});
+  });
   vzChanged();
   vzStart();
+}
+document.addEventListener("fullscreenchange", () => {
+  const on = !!document.fullscreenElement, b = document.getElementById("vzFull");
+  document.body.classList.toggle("vz-fullscreen", on);
+  if (b) { b.textContent = on ? "Exit full screen" : "Full screen"; b.setAttribute("aria-pressed", String(on)); }
+});
+
+/* Dragging. A picture with def.handles(st) -> [{ k, x, y }] (stage units) can be dragged: the nearest
+   handle within reach follows the pointer through def.dragTo(st, k, x, y), which keeps it where it is
+   allowed to go (on a line, in a set, snapped to a grid). Arrow keys nudge the last handle touched,
+   so every drag also works from the keyboard. */
+function vzWireDrag(def) {
+  const stage = document.getElementById("vzStage");
+  if (!stage || !def.handles) return;
+  stage.classList.add("vz-draggable");
+  stage.setAttribute("tabindex", "0");
+  stage.setAttribute("aria-label", def.title + ": drag the handles, or use the arrow keys (Tab picks a handle)");
+  const toStage = e => { const r = stage.getBoundingClientRect(); return [(e.clientX - r.left) * VZ_W / r.width, (e.clientY - r.top) * VZ_H / r.height]; };
+  const near = (x, y) => {
+    const r = stage.getBoundingClientRect(), reach = 26 * VZ_W / r.width;   // 26 screen px whatever the size
+    let best = null, bd = Infinity;
+    def.handles(VzView.st).forEach(h => { const d = Math.hypot(h.x - x, h.y - y); if (d < bd) { bd = d; best = h; } });
+    return best && bd <= Math.max(reach, 18) ? best : null;
+  };
+  let drag = null;
+  stage.addEventListener("pointerdown", e => {
+    const [x, y] = toStage(e), h = near(x, y);
+    if (!h) return;
+    e.preventDefault();
+    drag = { k: h.k, dx: h.x - x, dy: h.y - y, id: e.pointerId };
+    try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+    VzView.hot = h.k; VzView.active = h.k; VzView.tweens = null; vzSetPlay(null);
+    stage.classList.add("dragging"); vzChanged();
+  });
+  stage.addEventListener("pointermove", e => {
+    const [x, y] = toStage(e);
+    if (!drag) { const h = near(x, y), k = h ? h.k : null; if (k !== VzView.hot) { VzView.hot = k; stage.style.cursor = k ? "grab" : ""; vzChanged(); } return; }
+    def.dragTo(VzView.st, drag.k, x + drag.dx, y + drag.dy);
+    vzChanged();
+  });
+  const end = e => {
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    drag = null; stage.classList.remove("dragging");
+    if (def.dragEnd) def.dragEnd(VzView.st);
+    vzChanged();
+  };
+  stage.addEventListener("pointerup", end); stage.addEventListener("pointercancel", end);
+  stage.addEventListener("pointerleave", () => { if (!drag && VzView.hot) { VzView.hot = null; stage.style.cursor = ""; vzChanged(); } });
+  stage.addEventListener("keydown", e => {
+    const hs = def.handles(VzView.st);
+    if (!hs.length) return;
+    if (e.key === "Tab" && hs.length > 1) {                 // Tab moves between handles while the picture has focus
+      const i = hs.findIndex(h => h.k === VzView.active), j = i + (e.shiftKey ? -1 : 1);
+      if (j >= 0 && j < hs.length) { e.preventDefault(); VzView.active = VzView.hot = hs[j].k; vzChanged(); }
+      return;
+    }
+    const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (!d) return;
+    e.preventDefault();
+    const h = hs.find(q => q.k === VzView.active) || hs[0], step = e.shiftKey ? 4 : 12;
+    VzView.active = VzView.hot = h.k;
+    def.dragTo(VzView.st, h.k, h.x + d[0] * step, h.y + d[1] * step, true);
+    if (def.dragEnd) def.dragEnd(VzView.st);
+    vzChanged();
+  });
+  stage.addEventListener("focus", () => { if (!VzView.active) { VzView.active = def.handles(VzView.st)[0]?.k || null; } VzView.hot = VzView.active; vzChanged(); });
+  stage.addEventListener("blur", () => { VzView.hot = null; vzChanged(); });
 }
 
 function vzControlsHtml(def) {
   const st = def.state;
   return def.controls.map(c => {
-    if (c.type === "toggle") return `<label class="vz-toggle"><input type="checkbox" data-k="${c.k}" ${st[c.k] ? "checked" : ""}><span>${c.label}</span></label>`;
-    return `<div class="vz-sl">
+    if (c.type === "toggle") return `<label class="vz-toggle" data-ctl="${c.k}"><input type="checkbox" id="vz-${c.k}" data-k="${c.k}" ${st[c.k] ? "checked" : ""}><span>${c.label}</span></label>`;
+    return `<div class="vz-sl" data-ctl="${c.k}">
       <div class="vz-sl-top"><label class="vz-sl-name" for="vz-${c.k}">${c.label}</label>
         <span class="vz-sl-right">${c.noPlay ? "" : `<button class="vz-play" type="button" data-play="${c.k}" aria-label="Play ${escapeHtml(c.aria || c.label)}"><span>Play</span></button>`}<output id="vzo-${c.k}">${vzCtlText(c, st[c.k])}</output></span></div>
       <input type="range" id="vz-${c.k}" data-k="${c.k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${st[c.k]}">
@@ -11947,8 +12178,10 @@ function vzChanged() { VzView.stale = true; vzSyncControls(); vzDraw(performance
 
 function vzSyncControls() {
   const def = VzView.def, st = VzView.st;
+  if (def.sync) def.sync(st, document.querySelector(".vz-panel"));
   def.controls.forEach(c => {
     const el = document.getElementById("vz-" + c.k), out = document.getElementById("vzo-" + c.k);
+    if (c.show) { const w = document.querySelector('[data-ctl="' + c.k + '"]'); if (w) w.hidden = !c.show(st); }
     if (!el) return;
     if (c.type === "toggle") el.checked = !!st[c.k];
     else { if (Number(el.value) !== st[c.k]) el.value = st[c.k]; if (out) out.textContent = vzCtlText(c, st[c.k]); }
@@ -11994,21 +12227,23 @@ function vzTick(now) {
   }
   if (VzView.playing && VzView.phase) {
     const ph = VzView.phase, c = ph.c, dt = Math.min(0.05, (now - (VzView.lastNow || now)) / 1000);
+    // a control with snap: true plays through its own steps (c = −0.25, 0, 0.25, …), so labels stay clean
+    const put = v => { ph.v = v; VzView.st[c.k] = c.snap ? Math.round(v / c.step) * c.step : v; };
     if (ph.name === "rewind") {                           // glide back to the left end
       const dur = Math.abs(ph.from - c.min) < 1e-9 ? 0 : 420, u = dur ? vzClamp((now - ph.t0) / dur, 0, 1) : 1;
-      VzView.st[c.k] = ph.from + (c.min - ph.from) * vzEase(u);
+      put(ph.from + (c.min - ph.from) * vzEase(u));
       if (u >= 1) VzView.phase = { name: "run", c };
     } else if (ph.name === "run") {
-      let v = VzView.st[c.k] + vzSpeed(c) * dt;
+      let v = (ph.v != null ? ph.v : VzView.st[c.k]) + vzSpeed(c) * dt;
       if (v >= c.max) { if (vzWraps(c)) v = c.min + (v - c.max); else { v = c.max; VzView.phase = { name: "hold", t0: now, c }; } }
-      VzView.st[c.k] = v;
+      put(v);
     } else if (ph.name === "sweep") {                    // back and forth, slowing into each end
-      const v0 = VzView.st[c.k], span = c.max - c.min, edge = span * .14;
+      const v0 = ph.v != null ? ph.v : VzView.st[c.k], span = c.max - c.min, edge = span * .14;
       const ahead = ph.dir > 0 ? c.max - v0 : v0 - c.min, behind = span - ahead;
       const ease = (.16 + .84 * vzClamp(ahead / edge, 0, 1)) * (.3 + .7 * vzClamp(behind / edge, 0, 1));
       let v = v0 + ph.dir * vzSpeed(c) * ease * dt;
       if (v >= c.max) { v = c.max; ph.dir = -1; } else if (v <= c.min) { v = c.min; ph.dir = 1; }
-      VzView.st[c.k] = v;
+      put(v);
     } else if (now - ph.t0 > 900) VzView.phase = { name: "rewind", t0: now, from: VzView.st[c.k], c };
     VzView.stale = true; vzSyncControls();
   }
@@ -12022,60 +12257,15 @@ function vzStart() {
 }
 function vzStop() { if (VzView.raf) cancelAnimationFrame(VzView.raf); VzView.raf = 0; VzView.def = null; }
 
-/* ---------- 1. Linear combinations and span ---------- */
-vzAdd({
-  id: "span", group: "Vectors and matrices", title: "Linear combinations and span",
-  blurb: "Every point \\(c_1\\mathbf v_1+c_2\\mathbf v_2\\) you can reach. Two independent vectors reach the whole plane.",
-  tryIt: "Swing \\(\\mathbf v_2\\) onto the line of \\(\\mathbf v_1\\) (angle 0° or 180°) and the whole grid collapses to one line.",
-  state: { c1: 1.3, c2: 0.9, th: 62 },
-  controls: [
-    { k: "c1", label: "c₁", min: -2.5, max: 2.5, step: 0.05 },
-    { k: "c2", label: "c₂", min: -2.5, max: 2.5, step: 0.05 },
-    { k: "th", label: "angle from v₁ to v₂", min: 0, max: 180, step: 1, unit: "°", digits: 0 },
-  ],
-  presets: [["Independent", { th: 62 }], ["Nearly parallel", { th: 12 }], ["Parallel", { th: 0 }], ["Opposite", { th: 180 }]],
-  vecs(s) {
-    const a1 = vzRad(14), a2 = a1 + vzRad(s.th);
-    return [[1.55 * Math.cos(a1), 1.55 * Math.sin(a1)], [1.2 * Math.cos(a2), 1.2 * Math.sin(a2)]];
-  },
-  draw(s) {
-    const P = vzPlane(270, 262, 52), [v1, v2] = this.vecs(s), dep = Math.abs(Math.sin(vzRad(s.th))) < 0.012;
-    let o = P.axes(.22);
-    if (dep) o += P.line([0, 0], v1, `stroke="${VZ.red}" stroke-width="7" stroke-opacity=".16" stroke-linecap="round"`);
-    else {
-      let g = "";
-      for (let k = -8; k <= 8; k++) {
-        g += P.line([k * v1[0], k * v1[1]], v2, `stroke="${VZ.red}" stroke-opacity="${k ? .16 : .3}" stroke-width="1"`);
-        g += P.line([k * v2[0], k * v2[1]], v1, `stroke="${VZ.red}" stroke-opacity="${k ? .16 : .3}" stroke-width="1"`);
-      }
-      o += g;
-    }
-    const a = [s.c1 * v1[0], s.c1 * v1[1]], w = [a[0] + s.c2 * v2[0], a[1] + s.c2 * v2[1]], b = [s.c2 * v2[0], s.c2 * v2[1]];
-    o += `<path d="M${q2(P.X(b[0]))} ${q2(P.Y(b[1]))}L${q2(P.X(w[0]))} ${q2(P.Y(w[1]))}" stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="4 5" fill="none"/>`;
-    o += P.arrow([0, 0], v1, "R", 1.6) + P.arrow([0, 0], v2, "I", 1.6);
-    o += P.arrow([0, 0], a, "R", 2.8) + P.arrow(a, w, "I", 2.8) + P.arrow([0, 0], w, "D", 3.2);
-    o += P.dot([0, 0], 3.6);
-    const side = (v, k) => { const L = Math.hypot(v[0], v[1]); return [v[0] - k * v[1] / L * .3, v[1] + k * v[0] / L * .3]; };
-    const l1 = side(v1, -1), l2 = side(v2, 1);
-    o += vzLabel(P.X(l1[0]), P.Y(l1[1]) + 5, vzB("v", "1"), VZ.red, 15) + vzLabel(P.X(l2[0]), P.Y(l2[1]) + 5, vzB("v", "2"), VZ.ink, 15);
-    o += P.tip([0, 0], w, vzB("w"), VZ.deep, 18);
-    return o;
-  },
-  readout(s) {
-    const [v1, v2] = this.vecs(s), dep = Math.abs(Math.sin(vzRad(s.th))) < 0.012;
-    const w = [s.c1 * v1[0] + s.c2 * v2[0], s.c1 * v1[1] + s.c2 * v2[1]];
-    return `<div class="vz-eq"><b>w</b> = ${vzNum(s.c1)}<b>v</b>₁ + ${vzNum(s.c2)}<b>v</b>₂ = (${vzNum(w[0])}, ${vzNum(w[1])})</div>
-      <div class="vz-status ${dep ? "warn" : "ok"}">${dep ? "v₁ and v₂ are parallel: their span is only a line." : "v₁ and v₂ are independent: their span is the whole plane."}</div>`;
-  },
-});
-
 /* ---------- 2. A matrix moves the whole plane ---------- */
 vzAdd({
-  id: "matrix", group: "Vectors and matrices", title: "A matrix is a transformation",
-  blurb: "The columns of \\(A\\) are where \\(\\mathbf e_1\\) and \\(\\mathbf e_2\\) land. Everything else follows along, and \\(\\det A\\) is how areas scale.",
+  id: "matrix", group: "Linear algebra concepts", title: "A matrix is a transformation", card: "Linear transformations",
+  tagline: "See what matrices actually do to space.",
+  blurb: "The columns of \\(A\\) are where \\(\\mathbf e_1\\) and \\(\\mathbf e_2\\) land. Everything else follows along. Drag the column tips, or slide from before to after.",
   tryIt: "Pick Reflection and watch the flag flip over: \\(\\det A\\) turns negative.",
-  state: { a: 1.2, b: 0.6, c: 0.2, d: 1.1 },
+  state: { a: 1.2, b: 0.6, c: 0.2, d: 1.1, t: 1 },
   controls: [
+    { k: "t", label: "before → after", min: 0, max: 1, step: .01, fmt: v => vzNum(v * 100, 0) + "%", play: .45, progress: true, aria: "before to after" },
     { k: "a", label: "a (row 1, col 1)", min: -2, max: 2, step: 0.05, fmt: v => vzExact(v) },
     { k: "b", label: "b (row 1, col 2)", min: -2, max: 2, step: 0.05, fmt: v => vzExact(v) },
     { k: "c", label: "c (row 2, col 1)", min: -2, max: 2, step: 0.05, fmt: v => vzExact(v) },
@@ -12083,8 +12273,14 @@ vzAdd({
   ],
   presets: [["Identity", { a: 1, b: 0, c: 0, d: 1 }], ["Shear", { a: 1, b: 1, c: 0, d: 1 }], ["Rotate 45°", { a: Math.SQRT1_2, b: -Math.SQRT1_2, c: Math.SQRT1_2, d: Math.SQRT1_2 }],
             ["Reflection", { a: 1, b: 0, c: 0, d: -1 }], ["Stretch", { a: 1.8, b: 0, c: 0, d: .6 }], ["Squash (det 0)", { a: 1, b: .5, c: 2, d: 1 }]],
-  draw(s) {
-    const P = vzPlane(300, 240, 58), M = (x, y) => [s.a * x + s.b * y, s.c * x + s.d * y], det = s.a * s.d - s.b * s.c;
+  handles(s) { return s.t < .999 ? [] : [{ k: "e1", x: 300 + 58 * s.a, y: 240 - 58 * s.c }, { k: "e2", x: 300 + 58 * s.b, y: 240 - 58 * s.d }]; },
+  dragTo(s, k, x, y) {
+    const p = [vzClamp(vzSnap((x - 300) / 58), -2, 2), vzClamp(vzSnap((240 - y) / 58), -2, 2)];
+    if (k === "e1") { s.a = p[0]; s.c = p[1]; } else { s.b = p[0]; s.d = p[1]; }
+  },
+  draw(s, t, thumb) {
+    const tt = s.t == null ? 1 : s.t, A = { a: 1 + (s.a - 1) * tt, b: s.b * tt, c: s.c * tt, d: 1 + (s.d - 1) * tt };   // (1 − t) I + t A
+    const P = vzPlane(300, 240, 58), M = (x, y) => [A.a * x + A.b * y, A.c * x + A.d * y], det = A.a * A.d - A.b * A.c;
     let g = "";
     for (let k = -9; k <= 9; k++) {
       const e1 = M(1, 0), e2 = M(0, 1);
@@ -12098,6 +12294,7 @@ vzAdd({
     const flag = [[.2, .15], [.2, .85], [.62, .85], [.62, .68], [.36, .68], [.36, .15]].map(p => M(p[0], p[1]));
     o += P.poly(flag, `fill="${VZ.ink}" fill-opacity=".55" stroke="none"`);
     const e1 = M(1, 0), e2 = M(0, 1);
+    if (!thumb && tt >= .999) o += vzGrip(P.X(e1[0]), P.Y(e1[1]), VZ.red, VzView.hot === "e1") + vzGrip(P.X(e2[0]), P.Y(e2[1]), VZ.ink, VzView.hot === "e2");
     o += P.arrow([0, 0], e1, "R", 3) + P.arrow([0, 0], e2, "I", 3) + P.dot([0, 0], 3.6);
     o += P.tip([0, 0], e1, "A" + vzB("e", "1"), VZ.red, 18) + P.tip([0, 0], e2, "A" + vzB("e", "2"), VZ.ink, 18);
     return o;
@@ -12115,7 +12312,7 @@ vzAdd({
 
 /* ---------- 3. Two equations, two lines ---------- */
 vzAdd({
-  id: "systems", group: "Vectors and matrices", title: "Solving a 2×2 system",
+  id: "systems", group: "More linear algebra", title: "Solving a 2×2 system",
   blurb: "Each equation is a line; a solution is a point on both. Lines meet once, never, or everywhere.",
   tryIt: "Make the lines nearly parallel: the solution runs far away and moves wildly with tiny changes.",
   state: { t1: 30, c1: 1.2, t2: 115, c2: 0.8 },
@@ -12177,7 +12374,7 @@ vzAdd({
 
 /* ---------- 4. Projection onto a line ---------- */
 vzAdd({
-  id: "projection", group: "Vectors and matrices", title: "Projection and the dot product",
+  id: "projection", group: "More linear algebra", title: "Projection and the dot product",
   blurb: "The shadow of \\(\\mathbf b\\) on the line through \\(\\mathbf u\\). Its signed length is \\(\\mathbf b\\cdot\\hat{\\mathbf u}\\), and what is left over is perpendicular.",
   tryIt: "Swing \\(\\mathbf b\\) past 90° from \\(\\mathbf u\\): the dot product turns negative and the shadow points backwards.",
   state: { tb: 58, lb: 2.4, tu: 12 },
@@ -12222,7 +12419,7 @@ vzAdd({
 
 /* ---------- 5. Cross product (3D) ---------- */
 vzAdd({
-  id: "cross", group: "Vectors and matrices", title: "The cross product",
+  id: "cross", group: "More linear algebra", title: "The cross product",
   blurb: "\\(\\mathbf u\\times\\mathbf v\\) stands straight out of the plane of \\(\\mathbf u\\) and \\(\\mathbf v\\), and its length is the area they span.",
   tryIt: "Sweep the angle past 180°: the area shrinks to zero, then \\(\\mathbf u\\times\\mathbf v\\) flips underneath.",
   state: { th: 70, lv: 1.2, yaw: -30 },
@@ -12778,6 +12975,713 @@ vzAdd({
       <div class="vz-status">Every cell is stretched by its own r. That factor is the Jacobian: ∬ f dA = ∬ f(r cos θ, r sin θ) r dr dθ.</div>`;
   },
 });
+/* ============================================================
+   INTERACTIVE LINEAR ALGEBRA: shared pieces
+   ============================================================ */
+VZ.green = "#2F7A4A"; VZ_COL.N = VZ.green;
+const vzSnap = (v, step = .25) => Math.round(v / step) * step;
+const vzShort = v => { const r = Math.round(v * 10000) / 10000 || 0; return (r < 0 ? "−" : "") + Math.abs(r); };   // 1.5, −2, 0.25, 3.125
+const vzTup = p => "(" + p.map(vzShort).join(", ") + ")";
+// the ring that marks a draggable tip (brighter while hovered or dragged)
+// (drawn before the arrow, so the arrowhead sits on top of it)
+function vzGrip(x, y, col, hot) {
+  return `<circle cx="${q2(x)}" cy="${q2(y)}" r="${hot ? 16 : 13}" fill="${col}" fill-opacity="${hot ? .16 : .07}" stroke="${col}" stroke-opacity="${hot ? .6 : .32}" stroke-width="${hot ? 1.6 : 1.2}" stroke-dasharray="${hot ? "none" : "3 3"}"/>`;
+}
+// a small key in the bottom-left corner: [[kind, color, label]], kind "fill" | "line" | "dot"
+function vzKey(items, x = 16, y = 432) {
+  let o = "", cx = x;
+  items.forEach(([kind, col, label]) => {
+    if (kind === "fill") o += `<rect x="${cx}" y="${y - 10}" width="16" height="11" rx="3" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-opacity=".7"/>`;
+    else if (kind === "dot") o += `<circle cx="${cx + 8}" cy="${y - 4.5}" r="4.5" fill="${col}"/>`;
+    else o += `<line x1="${cx}" y1="${y - 4.5}" x2="${cx + 16}" y2="${y - 4.5}" stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;
+    o += vzNote(cx + 22, y, label, "start", VZ.ink);
+    cx += 22 + label.length * 6.6 + 16;
+  });
+  return o;
+}
+// a pill label ("in W", "not in W") beside a point
+function vzPill(x, y, text, col) {
+  const w = text.length * 6.9 + 14;
+  return `<g><rect x="${q2(x - w / 2)}" y="${q2(y - 10)}" width="${q2(w)}" height="19" rx="9.5" fill="${col}"/>` +
+    `<text x="${q2(x)}" y="${q2(y + 4)}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="11.5" font-weight="700" fill="#fff">${text}</text></g>`;
+}
+// where a label goes so it clears an arrow: past the tip, nudged to the side
+function vzSideTip(P, a, b, html, col, gap = 20) {
+  const X1 = P.X(a[0]), Y1 = P.Y(a[1]), X2 = P.X(b[0]), Y2 = P.Y(b[1]), L = Math.hypot(X2 - X1, Y2 - Y1) || 1;
+  const ux = (X2 - X1) / L, uy = (Y2 - Y1) / L;
+  return vzLabel(X2 + ux * gap - uy * 6, Y2 + uy * gap + ux * 6 + 5, html, col, 16);
+}
+
+/* ---------- Subspace playground ---------- */
+// Each set: how to draw it, which points belong (has), where a dragged point may go (snap: the nearest
+// allowed point, on a quarter grid), the truth of the three conditions, and one short reason for each.
+const VZ_SETS = {
+  2: [
+    { chip: "x + y = 0", w: "W = {(x, y) : x + y = 0}, a line through 0",
+      has: p => Math.abs(p[0] + p[1]) < 1e-9,
+      snap: p => { const t = vzSnap((p[0] - p[1]) / 2); return [t, -t]; },
+      draw: P => P.line([0, 0], [1, -1], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`),
+      truth: [1, 1, 1], u: [-1.5, 1.5], v: [2.5, -2.5],
+      why: ["0 + 0 = 0, so 0 is on the line.", "If u₁ + u₂ = 0 and v₁ + v₂ = 0, then (u₁ + v₁) + (u₂ + v₂) = 0 + 0 = 0.", "If v₁ + v₂ = 0, then cv₁ + cv₂ = c(v₁ + v₂) = 0."] },
+    { chip: "y = x + 1", w: "W = {(x, y) : y = x + 1}, a line that misses 0",
+      has: p => Math.abs(p[1] - p[0] - 1) < 1e-9,
+      snap: p => { const t = vzSnap((p[0] + p[1] - 1) / 2); return [t, t + 1]; },
+      draw: P => P.line([0, 1], [1, 1], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`),
+      truth: [0, 0, 0], u: [1, 2], v: [-2.5, -1.5],
+      why: ["0 ≠ 0 + 1, so 0 is not on the line.", "u₂ = u₁ + 1 and v₂ = v₁ + 1 give u₂ + v₂ = (u₁ + v₁) + 2, not + 1.", "cv₂ = cv₁ + c, which is cv₁ + 1 only when c = 1."] },
+    { chip: "Quadrant", w: "W = {(x, y) : x ≥ 0 and y ≥ 0}, the first quadrant",
+      has: p => p[0] > -1e-9 && p[1] > -1e-9,
+      snap: p => [Math.max(0, vzSnap(p[0])), Math.max(0, vzSnap(p[1]))],
+      draw: P => P.poly([[0, 0], [9, 0], [9, 9], [0, 9]], `fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="2.4" stroke-opacity=".75"`),
+      truth: [1, 1, 0], u: [2, 1], v: [1, 2.5],
+      why: ["(0, 0) has both coordinates ≥ 0.", "Adding numbers that are ≥ 0 gives a number ≥ 0.", "c = −1 sends (1, 2) to (−1, −2), outside the quadrant."] },
+    { chip: "Disk", w: "W = {(x, y) : x² + y² ≤ 4}, a disk of radius 2",
+      has: p => Math.hypot(p[0], p[1]) <= 2 + 1e-9,
+      snap: p => { const q = [vzSnap(p[0]), vzSnap(p[1])], r = Math.hypot(q[0], q[1]); return r > 2 ? [p[0] * 2 / Math.hypot(p[0], p[1]), p[1] * 2 / Math.hypot(p[0], p[1])] : q; },
+      draw: P => `<circle cx="${P.X(0)}" cy="${P.Y(0)}" r="${2 * P.u}" fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="2.4" stroke-opacity=".75"/>`,
+      truth: [1, 0, 0], u: [1, 0.5], v: [-0.5, 1],
+      why: ["‖0‖ = 0 ≤ 2.", "(2, 0) and (0, 2) are in W, but (2, 2) has length 2√2 > 2.", "c = 3 sends (1, 0) to (3, 0), which has length 3 > 2."] },
+    { chip: "The axes", w: "W = {(x, y) : xy = 0}, the two axes together",
+      has: p => Math.abs(p[0]) < 1e-9 || Math.abs(p[1]) < 1e-9,
+      snap: p => Math.abs(p[0]) >= Math.abs(p[1]) ? [vzSnap(p[0]), 0] : [0, vzSnap(p[1])],
+      draw: P => P.line([0, 0], [1, 0], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`) + P.line([0, 0], [0, 1], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`),
+      truth: [1, 0, 1], u: [2, 0], v: [-1, 0],
+      why: ["0 lies on both axes.", "(1, 0) + (0, 1) = (1, 1), which is on neither axis.", "A multiple of a point on an axis stays on that axis."] },
+    { chip: "{0}", w: "W = {0}, just the zero vector",
+      has: p => Math.abs(p[0]) < 1e-9 && Math.abs(p[1]) < 1e-9,
+      snap: () => [0, 0],
+      draw: P => `<circle cx="${P.X(0)}" cy="${P.Y(0)}" r="11" fill="${VZ.gold}" fill-opacity=".3" stroke="${VZ.gold}" stroke-width="2"/>`,
+      truth: [1, 1, 1], u: [0, 0], v: [0, 0],
+      why: ["W is exactly {0}.", "0 + 0 = 0.", "c · 0 = 0 for every c."] },
+    { chip: "All of ℝ²", w: "W = ℝ², the whole plane",
+      has: () => true,
+      snap: p => [vzSnap(p[0]), vzSnap(p[1])],
+      draw: () => `<rect width="${VZ_W}" height="${VZ_H}" fill="${VZ.gold}" fill-opacity=".1"/>`,
+      truth: [1, 1, 1], u: [2, 1.5], v: [1.5, -1],
+      why: ["0 is a vector in ℝ².", "The sum of two vectors in ℝ² is in ℝ².", "A multiple of a vector in ℝ² is in ℝ²."] },
+  ],
+  3: [
+    { chip: "span{v₁, v₂}", w: "W = span{(1, 0, 1), (0, 1, 1)}, the plane x + y − z = 0", kind: "plane", p0: [0, 0, 0], a: [1, 0, 1], b: [0, 1, 1],
+      has: p => Math.abs(p[0] + p[1] - p[2]) < 1e-9, truth: [1, 1, 1], u: [1, 0, 1], v: [-0.5, 1, 0.5],
+      why: ["0 + 0 − 0 = 0.", "The equation is linear: (u₁ + v₁) + (u₂ + v₂) − (u₃ + v₃) = 0 + 0.", "c(v₁ + v₂ − v₃) = c · 0 = 0."] },
+    { chip: "z = 1", w: "W = {(x, y, z) : z = 1}, a plane that misses 0", kind: "plane", p0: [0, 0, 1], a: [1, 0, 0], b: [0, 1, 0],
+      has: p => Math.abs(p[2] - 1) < 1e-9, truth: [0, 0, 0], u: [1, 0.5, 1], v: [-0.5, 1, 1],
+      why: ["0 has z = 0, not 1.", "z-coordinates add: 1 + 1 = 2, so u + v sits at height 2.", "cv has z = c, which is 1 only when c = 1."] },
+    { chip: "span{(1, 2, 2)}", w: "W = span{(1, 2, 2)}, a line through 0", kind: "line", d: [1, 2, 2],
+      has: p => Math.hypot(p[1] - 2 * p[0], p[2] - 2 * p[0]) < 1e-9, truth: [1, 1, 1], u: [0.5, 1, 1], v: [-0.25, -0.5, -0.5],
+      why: ["0 = 0 · (1, 2, 2).", "a(1, 2, 2) + b(1, 2, 2) = (a + b)(1, 2, 2).", "c · a(1, 2, 2) = (ca)(1, 2, 2)."] },
+    { chip: "Plane ∪ axis", w: "W = the xy-plane together with the z-axis", kind: "union", p0: [0, 0, 0], a: [1, 0, 0], b: [0, 1, 0],
+      has: p => Math.abs(p[2]) < 1e-9 || (Math.abs(p[0]) < 1e-9 && Math.abs(p[1]) < 1e-9), truth: [1, 0, 1], u: [1.5, 0, 0], v: [0, 1, 0],
+      why: ["0 is in the xy-plane.", "(1, 0, 0) + (0, 0, 1) = (1, 0, 1), which is in neither piece.", "Scaling a point keeps it in the same piece."] },
+  ],
+};
+const VZ_STEP_DO = [
+  "Is the zero vector in W? Look at the origin, then check it.",
+  "Drag the tips of u and v. They can only move inside W. Is u + v still in W?",
+  "Drag v inside W and slide c through negatives, 0 and fractions. Is cv still in W?",
+];
+
+vzAdd({
+  id: "subspace", group: "Linear algebra concepts", title: "Subspace playground", card: "Subspaces",
+  tagline: "Test whether sets actually satisfy the subspace definition.",
+  blurb: "Pick a set \\(W\\), then test the three conditions yourself: drag vectors that lie in \\(W\\) and watch whether their sum and their multiples stay inside.",
+  state: { dim: 2, set: 2, step: 0, c: 1.5, yaw: -35, ux: 2, uy: 1, uz: 0, vx: 1, vy: 2.5, vz: 0, z0: 0, f1: 0, f2: 0, n1: 0, n2: 0, x1: "", x2: "", done: 0 },
+  thumb: { set: 2, step: 2, c: -1, vx: 1.5, vy: 2 },
+  controls: [
+    { k: "c", label: "scalar c", min: -3, max: 3, step: .25, show: s => s.step === 2, play: 1.6, aria: "c", fmt: v => vzShort(v), snap: true },
+    { k: "yaw", label: "turn the view", min: -80, max: 80, step: 1, unit: "°", digits: 0, show: s => s.dim === 3, noPlay: true },
+  ],
+  W(s) { return VZ_SETS[s.dim][s.set]; },
+  u(s) { return s.dim === 3 ? [s.ux, s.uy, s.uz] : [s.ux, s.uy]; },
+  v(s) { return s.dim === 3 ? [s.vx, s.vy, s.vz] : [s.vx, s.vy]; },
+  // the example on screen: which vector is tested and whether it stays in W
+  ev(s) {
+    const W = this.W(s), u = this.u(s), v = this.v(s);
+    if (s.step === 1) { const r = u.map((x, i) => x + v[i]); return { r, inW: W.has(r) }; }
+    if (s.step === 2) { const r = v.map(x => s.c * x); return { r, inW: W.has(r) }; }
+    return { r: u.map(() => 0), inW: W.has(u.map(() => 0)) };
+  },
+  pick(s, set) {                                         // a new set: its starting vectors, nothing found yet
+    const W = VZ_SETS[s.dim][set];
+    Object.assign(s, { set, ux: W.u[0], uy: W.u[1], uz: W.u[2] || 0, vx: W.v[0], vy: W.v[1], vz: W.v[2] || 0, c: 1.5, z0: 0, f1: 0, f2: 0, n1: 0, n2: 0, x1: "", x2: "", done: 0, _key: "" });
+  },
+  panelTop() {
+    return `<div><div class="vz-ptop-k">Space</div><div class="vz-seg" role="group" aria-label="Space"><button type="button" data-dim="2">ℝ²</button><button type="button" data-dim="3">ℝ³</button></div></div>
+      <div><div class="vz-ptop-k">Choose a set W</div><div class="vz-chips" id="vzSets"></div></div>
+      <div class="vz-w" id="vzW"></div>
+      <div class="vz-steps" role="tablist" aria-label="Condition to test">
+        <button type="button" role="tab" data-step="0"><span>1</span>Zero vector</button>
+        <button type="button" role="tab" data-step="1"><span>2</span>Addition</button>
+        <button type="button" role="tab" data-step="2"><span>3</span>Scalar multiple</button>
+      </div>
+      <p class="vz-do" id="vzDo"></p>`;
+  },
+  sync(s, panel) {
+    if (!panel) return;
+    const sets = panel.querySelector("#vzSets");
+    if (sets && sets.dataset.dim !== String(s.dim)) {
+      sets.dataset.dim = String(s.dim);
+      sets.innerHTML = VZ_SETS[s.dim].map((W, i) => `<button type="button" class="vz-chip" data-set="${i}" aria-pressed="false">${escapeHtml(W.chip)}</button>`).join("");
+    }
+    panel.querySelectorAll("[data-set]").forEach(b => { const on = +b.dataset.set === s.set; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    panel.querySelectorAll("[data-dim]").forEach(b => b.classList.toggle("on", +b.dataset.dim === s.dim));
+    panel.querySelectorAll("[data-step]").forEach(b => { const on = +b.dataset.step === s.step; b.classList.toggle("on", on); b.setAttribute("aria-selected", String(on)); });
+    const w = panel.querySelector("#vzW"), d = panel.querySelector("#vzDo"), W = this.W(s);
+    if (w && w.textContent !== W.w) w.textContent = W.w;
+    if (d && d.textContent !== VZ_STEP_DO[s.step]) d.textContent = VZ_STEP_DO[s.step];
+  },
+  onClick(el, s) {
+    const b = el.closest("[data-dim], [data-set], [data-step], [data-act]");
+    if (!b) return false;
+    if (b.dataset.dim) { if (+b.dataset.dim === s.dim) return false; s.dim = +b.dataset.dim; this.pick(s, 0); return true; }
+    if (b.dataset.set) { this.pick(s, +b.dataset.set); return true; }
+    if (b.dataset.step) { s.step = +b.dataset.step; return true; }
+    const act = b.dataset.act;
+    if (act === "zero") s.z0 = 1;
+    else if (act === "check") { s.done = 1; s.z0 = 1; }
+    else if (act === "reset") this.pick(s, s.set);
+    return true;
+  },
+  // record what the student has seen: a counterexample, or how many examples held
+  note(s) {
+    if (s.step === 0) return;
+    const e = this.ev(s), u = this.u(s), v = this.v(s), key = s.step === 1 ? vzTup(u) + vzTup(v) : vzShort(s.c) + vzTup(v);
+    if (s._key === key) return;
+    s._key = key;
+    if (s.step === 1) { s.n1++; if (!e.inW && s.f1 !== 2) { s.f1 = 2; s.x1 = `u = ${vzTup(u)}, v = ${vzTup(v)}: u + v = ${vzTup(e.r)} is not in W.`; } else if (!s.f1) s.f1 = 1; }
+    else { s.n2++; if (!e.inW && s.f2 !== 2) { s.f2 = 2; s.x2 = `c = ${vzShort(s.c)}, v = ${vzTup(v)}: cv = ${vzTup(e.r)} is not in W.`; } else if (!s.f2) s.f2 = 1; }
+  },
+
+  /* ----- the plane (ℝ²) or the 3-D view (ℝ³) ----- */
+  P2: vzPlane(300, 228, 60),
+  cam(s) { return vzCam(300, 262, 58, vzRad(s.yaw), .42); },
+  proj(s, p) { const q = this.cam(s)(p[0], p[1], p[2]); return [q[0], q[1]]; },
+  handles(s) {
+    if (s.step === 0 || this.W(s).chip === "{0}") return [];
+    const hs = [], put = (k, p) => { const q = s.dim === 3 ? this.proj(s, p) : [this.P2.X(p[0]), this.P2.Y(p[1])]; hs.push({ k, x: q[0], y: q[1] }); };
+    if (s.step === 1) put("u", this.u(s));
+    put("v", this.v(s));
+    return hs;
+  },
+  dragTo(s, k, x, y) {
+    const W = this.W(s);
+    let p;
+    if (s.dim === 2) {
+      const w = [vzClamp((x - this.P2.cx) / this.P2.u, -4.75, 4.75), vzClamp((this.P2.cy - y) / this.P2.u, -3.5, 3.5)];
+      p = W.snap(w);
+    } else {
+      const O = this.proj(s, [0, 0, 0]), M = e => { const q = this.proj(s, e); return [q[0] - O[0], q[1] - O[1]]; };
+      const onPlane = (p0, a, b) => {
+        const A = M(a), B = M(b), Q = this.proj(s, p0), rx = x - Q[0], ry = y - Q[1], det = A[0] * B[1] - A[1] * B[0];
+        if (Math.abs(det) < 1e-6) return null;
+        const t1 = vzClamp(vzSnap((rx * B[1] - ry * B[0]) / det), -2.5, 2.5), t2 = vzClamp(vzSnap((A[0] * ry - A[1] * rx) / det), -2.5, 2.5);
+        return p0.map((c, i) => c + t1 * a[i] + t2 * b[i]);
+      };
+      const onLine = d => { const D = M(d), t = vzClamp(vzSnap(((x - O[0]) * D[0] + (y - O[1]) * D[1]) / (D[0] * D[0] + D[1] * D[1]), .125), -1.5, 1.5); return d.map(c => c * t); };
+      if (W.kind === "plane") p = onPlane(W.p0, W.a, W.b);
+      else if (W.kind === "line") p = onLine(W.d);
+      else {                                              // the plane, unless the pointer is right on the z-axis
+        const Z = M([0, 0, 1]), t = ((x - O[0]) * Z[0] + (y - O[1]) * Z[1]) / (Z[0] * Z[0] + Z[1] * Z[1]);
+        const dist = Math.hypot(x - O[0] - Z[0] * t, y - O[1] - Z[1] * t);
+        p = dist < 14 && Math.abs(t) > .3 ? [0, 0, vzClamp(vzSnap(t), -2.5, 2.5)] : onPlane(W.p0, W.a, W.b);
+      }
+      if (!p) return;
+    }
+    if (k === "u") { s.ux = p[0]; s.uy = p[1]; s.uz = p[2] || 0; } else { s.vx = p[0]; s.vy = p[1]; s.vz = p[2] || 0; }
+  },
+  draw(s, t, thumb) {
+    const W = this.W(s), e = this.ev(s), u = this.u(s), v = this.v(s), hot = thumb ? null : VzView.hot;
+    if (!thumb) this.note(s);
+    // a result that has just left W gets a ring (drawn by frame)
+    if (!thumb) { if (!e.inW && s._wasIn !== false && s.step) s._outT = t; s._wasIn = e.inW; }
+    const col = e.inW ? VZ.green : VZ.red, key = e.inW ? "N" : "R";
+    let o = "";
+    if (s.dim === 2) {
+      const P = this.P2, pt = p => [P.X(p[0]), P.Y(p[1])];
+      o += P.axes(.28) + W.draw(P);
+      if (s.step === 1) {
+        const r = e.r;
+        o += P.path([u, r], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`) + P.path([v, r], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`);
+        if (!thumb) o += vzGrip(...pt(u), VZ.ink, hot === "u") + vzGrip(...pt(v), VZ.ink, hot === "v");
+        o += P.arrow([0, 0], r, key, 3.4) + P.arrow([0, 0], u, "I", 2.6) + P.arrow([0, 0], v, "I", 2.6);
+        o += vzSideTip(P, [0, 0], u, vzB("u"), VZ.ink, 22) + vzSideTip(P, [0, 0], v, vzB("v"), VZ.ink, 22);
+        o += this.resLabel(P, e, vzB("u") + " + " + vzB("v"));
+      } else if (s.step === 2) {
+        const r = e.r;
+        if (Math.hypot(v[0], v[1]) > .01) o += P.line([0, 0], v, `stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="3 6" opacity=".7"`);
+        if (!thumb) o += vzGrip(...pt(v), VZ.ink, hot === "v");
+        o += P.arrow([0, 0], r, key, 3.4) + P.arrow([0, 0], v, "I", 2.4);
+        o += vzSideTip(P, [0, 0], v, vzB("v"), VZ.ink, 20);
+        o += this.resLabel(P, e, vzShort(s.c) + vzB("v"));
+      }
+      const O = pt([0, 0]);
+      if (s.step === 0) o += this.zeroMark(s, O, W, thumb);
+      else o += `<circle cx="${O[0]}" cy="${O[1]}" r="4" fill="${VZ.ink}"/>`;
+      if (s.step && !thumb) s._tip = pt(e.r);
+    } else o += this.draw3(s, e, thumb, hot);
+    o += vzKey(s.step ? [["fill", VZ.gold, "W"], ["line", VZ.green, "in W"], ["line", VZ.red, "not in W"]] : [["fill", VZ.gold, "W"]]);
+    return o;
+  },
+  // the result's name with its verdict: "u + v ∈ W" (green) or "u + v ∉ W" (red); at 0 it sits below the origin
+  resLabel(P, e, name) {
+    const col = e.inW ? VZ.green : VZ.red, txt = name + (e.inW ? " ∈ " : " ∉ ") + "<tspan font-style=\"italic\">W</tspan>";
+    if (Math.hypot(e.r[0], e.r[1]) < .05) return vzLabel(P.X(0), P.Y(0) + 30, txt, col, 16);
+    return vzSideTip(P, [0, 0], e.r, txt, col, 34);
+  },
+  zeroMark(s, O, W, thumb) {
+    const inW = W.truth[0], shown = s.z0 || thumb;
+    let o = `<circle cx="${O[0]}" cy="${O[1]}" r="5" fill="${VZ.ink}"/>`;
+    o += vzLabel(O[0] - 30, O[1] + 26, "<tspan font-weight=\"700\">0</tspan>", VZ.ink, 17);
+    if (!shown) return o + `<circle cx="${O[0]}" cy="${O[1]}" r="20" fill="none" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="4 4"/>` + vzPill(O[0], O[1] - 38, "is 0 in W?", VZ.grey);
+    return o + `<circle cx="${O[0]}" cy="${O[1]}" r="20" fill="none" stroke="${inW ? VZ.green : VZ.red}" stroke-width="2.4"/>` + vzPill(O[0], O[1] - 38, inW ? "0 is in W" : "0 is not in W", inW ? VZ.green : VZ.red);
+  },
+  draw3(s, e, thumb, hot) {
+    const W = this.W(s), cam = this.cam(s), pr = p => { const q = cam(p[0], p[1], p[2]); return [q[0], q[1]]; };
+    const seg = (a, b, attrs) => { const A = pr(a), B = pr(b); return `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" ${attrs}/>`; };
+    const arrow = (a, b, key, w) => { const A = pr(a), B = pr(b); return vzArrow(A[0], A[1], B[0], B[1], key, w); };
+    const lab = (b, html, col, gap = 20) => { const O = pr([0, 0, 0]), B = pr(b), L = Math.hypot(B[0] - O[0], B[1] - O[1]) || 1; return vzLabel(B[0] + (B[0] - O[0]) / L * gap, B[1] + (B[1] - O[1]) / L * gap + 5, html, col, 16); };
+    const u = this.u(s), v = this.v(s);
+    let o = "";
+    const L = 3.2;
+    [[L, 0, 0, "x"], [0, L, 0, "y"], [0, 0, L, "z"]].forEach(([x, y, z, n]) => {
+      o += seg([-x * .55, -y * .55, -z * .55], [x, y, z], `stroke="${VZ.ink}" stroke-width="1.1" opacity=".3"`);
+      const T = pr([x * 1.07, y * 1.07, z * 1.07]); o += vzLabel(T[0], T[1] + 5, n, VZ.grey, 14);
+    });
+    const patch = (p0, a, b, R) => {
+      const at = (i, j) => pr(p0.map((c, k) => c + i * a[k] + j * b[k]));
+      let d = `<path d="M${[at(-R, -R), at(R, -R), at(R, R), at(-R, R)].map(q => q2(q[0]) + " " + q2(q[1])).join("L")}Z" fill="${VZ.gold}" fill-opacity=".14" stroke="${VZ.gold}" stroke-opacity=".7" stroke-width="1.6"/>`;
+      for (let g = -R + 1; g < R; g++) d += `<path d="M${at(g, -R).map(q2).join(" ")}L${at(g, R).map(q2).join(" ")}M${at(-R, g).map(q2).join(" ")}L${at(R, g).map(q2).join(" ")}" stroke="${VZ.gold}" stroke-opacity=".28" stroke-width="1" fill="none"/>`;
+      return d;
+    };
+    if (W.kind === "plane" || W.kind === "union") o += patch(W.p0, W.a, W.b, 2.6);
+    if (W.kind === "line") o += seg(W.d.map(c => -c * 1.6), W.d.map(c => c * 1.6), `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`);
+    if (W.kind === "union") o += seg([0, 0, -2.2], [0, 0, 2.8], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`);
+    const O = pr([0, 0, 0]), col = e.inW ? VZ.green : VZ.red, key = e.inW ? "N" : "R", r = e.r;
+    if (s.step === 1) {
+      o += seg(u, r, `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`) + seg(v, r, `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`);
+    }
+    if (s.step && !e.inW && (W.kind === "plane")) {       // how far the result sits off the plane
+      const n = [W.a[1] * W.b[2] - W.a[2] * W.b[1], W.a[2] * W.b[0] - W.a[0] * W.b[2], W.a[0] * W.b[1] - W.a[1] * W.b[0]], nn = n[0] * n[0] + n[1] * n[1] + n[2] * n[2];
+      const k = ((r[0] - W.p0[0]) * n[0] + (r[1] - W.p0[1]) * n[1] + (r[2] - W.p0[2]) * n[2]) / nn, foot = r.map((c, i) => c - k * n[i]);
+      o += seg(r, foot, `stroke="${VZ.red}" stroke-width="1.6" stroke-dasharray="3 4"`) + `<circle cx="${q2(pr(foot)[0])}" cy="${q2(pr(foot)[1])}" r="3" fill="${VZ.red}"/>`;
+    }
+    if (s.step && !thumb) o += (s.step === 1 ? vzGrip(...pr(u), VZ.ink, hot === "u") : "") + vzGrip(...pr(v), VZ.ink, hot === "v");
+    if (s.step) o += arrow([0, 0, 0], r, key, 3.4);
+    if (s.step === 1) o += arrow([0, 0, 0], u, "I", 2.6) + lab(u, vzB("u"), VZ.ink);
+    if (s.step) o += arrow([0, 0, 0], v, "I", 2.6) + lab(v, vzB("v"), VZ.ink);
+    if (s.step) { const txt = (s.step === 1 ? vzB("u") + " + " + vzB("v") : vzShort(s.c) + vzB("v")) + (e.inW ? " ∈ " : " ∉ ") + "<tspan font-style=\"italic\">W</tspan>"; o += Math.hypot(...r) > .05 ? lab(r, txt, col, 34) : vzLabel(O[0], O[1] + 30, txt, col, 16); }
+    if (s.step === 0) o += this.zeroMark(s, O, W, thumb);
+    else o += `<circle cx="${q2(O[0])}" cy="${q2(O[1])}" r="4" fill="${VZ.ink}"/>`;
+    if (s.step && !thumb) s._tip = pr(r);
+    return o;
+  },
+  frame(g, s, t) {                                        // the ring when a vector breaks out of W
+    const on = s._outT != null && t - s._outT < .9 && s._tip && s.step;
+    const html = on ? (() => { const u = (t - s._outT) / .9; return `<circle cx="${q2(s._tip[0])}" cy="${q2(s._tip[1])}" r="${q2(8 + 34 * u)}" fill="none" stroke="${VZ.red}" stroke-width="${q2(3 * (1 - u) + .5)}" opacity="${q2(1 - u)}"/>`; })() : "";
+    if (!g) return "";
+    if (g._h !== html) { g._h = html; g.innerHTML = html; }
+    return "";
+  },
+  readout(s) {
+    const W = this.W(s), space = s.dim === 3 ? "ℝ³" : "ℝ²", T = W.truth;
+    const found = [s.z0 ? (T[0] ? 1 : 2) : 0, s.f1, s.f2];
+    const names = ["Contains 0", "Closed under addition", "Closed under scalar multiplication"];
+    const rows = names.map((n, i) => {
+      let mk, cls, why;
+      if (s.done) {
+        mk = T[i] ? "✓" : "✗"; cls = T[i] ? "yes" : "no";
+        why = !T[i] && i === 1 && s.f1 === 2 ? s.x1 : !T[i] && i === 2 && s.f2 === 2 ? s.x2 : W.why[i];
+      } else if (found[i] === 2) { mk = "✗"; cls = "no"; why = i === 0 ? W.why[0] : i === 1 ? s.x1 : s.x2; }
+      else if (found[i] === 1) {
+        mk = "✓"; cls = i === 0 ? "yes" : "open";
+        why = i === 0 ? W.why[0] : `Held for the ${i === 1 ? s.n1 : s.n2} example${(i === 1 ? s.n1 : s.n2) === 1 ? "" : "s"} you tried. That is not a proof yet.`;
+      } else { mk = "?"; cls = "open"; why = "Not tested yet."; }
+      return `<li class="${cls}"><span class="mk ${cls}">${mk}</span><span>${n}<span class="why">${escapeHtml(why)}</span></span></li>`;
+    }).join("");
+    const fails = found.some(f => f === 2);
+    let concl = "";
+    if (s.done) concl = T.every(Boolean) ? `<div class="vz-conclude yes">Therefore, W is a subspace of ${space}.</div>` : `<div class="vz-conclude no">Therefore, W is not a subspace of ${space}.</div>`;
+    else if (found[0] === 2) concl = `<div class="vz-conclude no">0 is not in W, so W is not a subspace of ${space}. That one check settles it.</div>`;
+    else if (fails) concl = `<div class="vz-conclude no">One counterexample is enough: W is not a subspace of ${space}.</div>`;
+    // the example on screen right now, when it breaks out
+    const e = this.ev(s), live = s.step === 1 && !e.inW ? "Closure under addition fails: u and v are in W, but u + v is not in W."
+      : s.step === 2 && !e.inW ? `Closure under scalar multiplication fails: v is in W, but ${vzShort(s.c)}v is not in W.` : "";
+    return `${live ? `<div class="vz-status warn" style="margin:0 0 10px">${live}</div>` : ""}<ul class="vz-check"><li class="vz-check-h" style="display:block">Subspace test</li>${rows}</ul>${concl}
+      <div class="vz-btnrow">
+        ${s.step === 0 && !s.z0 ? `<button class="btn btn-red btn-sm" type="button" data-act="zero">Check the origin</button>` : ""}
+        ${s.done ? "" : `<button class="btn ${s.step === 0 && !s.z0 ? "btn-ghost" : "btn-red"} btn-sm" type="button" data-act="check">Check subspace</button>`}
+        <button class="btn btn-ghost btn-sm" type="button" data-act="reset">Start over</button>
+      </div>
+      <p class="vz-logic"><b>One</b> counterexample proves W is <b>not</b> a subspace. Examples that stay in W never prove that it <b>is</b>: that takes an argument for every u, v in W and every scalar c.</p>`;
+  },
+});
+
+/* ---------- helpers for the draggable-vector pictures ---------- */
+// screen -> world on a vzPlane, clamped to what is on screen, snapped to a quarter grid
+function vzWorld(P, x, y, lim = [5.6, 4.2]) {
+  return [vzClamp(vzSnap((x - P.cx) / P.u), -lim[0], lim[0]), vzClamp(vzSnap((P.cy - y) / P.u), -lim[1], lim[1])];
+}
+// if w is nearly on the line of v (small angle either way), put it exactly on that line: dependence is
+// a knife-edge, so the picture holds it once you are close
+function vzOntoLine(w, v, tol = .07) {
+  const L = Math.hypot(v[0], v[1]), M = Math.hypot(w[0], w[1]);
+  if (L < 1e-9 || M < 1e-9) return w;
+  const sin = (v[0] * w[1] - v[1] * w[0]) / (L * M);
+  if (Math.abs(sin) > tol) return w;
+  const k = (w[0] * v[0] + w[1] * v[1]) / (L * L);
+  return [k * v[0], k * v[1]];
+}
+const vzDet2 = (p, q) => p[0] * q[1] - p[1] * q[0];
+const vzTipGrip = (P, p, col, k) => vzGrip(P.X(p[0]), P.Y(p[1]), col, VzView.hot === k);
+
+/* ---------- Adding and scaling vectors ---------- */
+vzAdd({
+  id: "vectors", group: "More linear algebra", title: "Adding and scaling vectors",
+  tagline: "Tip to tail, and stretching along a line.",
+  blurb: "Drag \\(\\mathbf u\\) and \\(\\mathbf v\\). Their sum closes the parallelogram; \\(c\\mathbf u\\) slides along the line of \\(\\mathbf u\\).",
+  tryIt: "Make \\(c\\) negative: \\(c\\mathbf u\\) flips to the other side of the origin. At \\(c=0\\) it is the zero vector.",
+  state: { ux: 2, uy: 0.75, vx: 0.75, vy: 2, c: 1.5, sum: true, scale: true },
+  controls: [
+    { k: "sum", label: "show u + v", type: "toggle" },
+    { k: "scale", label: "show cu", type: "toggle" },
+    { k: "c", label: "c", min: -2.5, max: 2.5, step: .25, show: s => s.scale, fmt: v => vzShort(v), play: 1.5, snap: true },
+  ],
+  P: vzPlane(300, 250, 52),
+  handles(s) { return [{ k: "u", x: this.P.X(s.ux), y: this.P.Y(s.uy) }, { k: "v", x: this.P.X(s.vx), y: this.P.Y(s.vy) }]; },
+  dragTo(s, k, x, y) { const p = vzWorld(this.P, x, y); s[k + "x"] = p[0]; s[k + "y"] = p[1]; },
+  draw(s, t, thumb) {
+    const P = this.P, u = [s.ux, s.uy], v = [s.vx, s.vy], w = [u[0] + v[0], u[1] + v[1]], cu = [s.c * u[0], s.c * u[1]];
+    let o = P.axes(.26);
+    if (s.scale && Math.hypot(...u) > .01) o += P.line([0, 0], u, `stroke="${VZ.gold}" stroke-width="1.3" stroke-dasharray="3 6" opacity=".8"`);
+    if (s.sum) {
+      o += P.poly([[0, 0], u, w, v], `fill="${VZ.red}" fill-opacity=".06" stroke="none"`);
+      o += P.path([u, w], `stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="6 5" opacity=".7"`) + P.path([v, w], `stroke="${VZ.red}" stroke-width="1.6" stroke-dasharray="6 5" opacity=".7"`);
+      o += P.arrow([0, 0], w, "D", 3.4) + vzSideTip(P, [0, 0], w, vzB("u") + " + " + vzB("v"), VZ.deep, 26);
+    }
+    if (s.scale && Math.hypot(...cu) > .02) o += P.arrow([0, 0], cu, "O", 3.8) + vzSideTip(P, [0, 0], cu, vzShort(s.c) + vzB("u"), "#8A6A12", 26);
+    if (!thumb) o += vzTipGrip(P, u, VZ.red, "u") + vzTipGrip(P, v, VZ.ink, "v");
+    o += P.arrow([0, 0], u, "R", 2.8) + P.arrow([0, 0], v, "I", 2.8) + P.dot([0, 0], 3.6);
+    o += vzSideTip(P, [0, 0], u, vzB("u"), VZ.red, 20) + vzSideTip(P, [0, 0], v, vzB("v"), VZ.ink, 20);
+    return o;
+  },
+  readout(s) {
+    const u = [s.ux, s.uy], v = [s.vx, s.vy];
+    return `<div class="vz-eq"><b>u</b> = ${vzTup(u)}, <b>v</b> = ${vzTup(v)}</div>
+      ${s.sum ? `<div class="vz-eq"><b>u</b> + <b>v</b> = (${vzShort(u[0])} + ${vzShort(v[0])}, ${vzShort(u[1])} + ${vzShort(v[1])}) = <b>${vzTup([u[0] + v[0], u[1] + v[1]])}</b></div>` : ""}
+      ${s.scale ? `<div class="vz-eq">${vzShort(s.c)}<b>u</b> = <b>${vzTup([s.c * u[0], s.c * u[1]])}</b></div>` : ""}
+      <div class="vz-status ok">Add coordinate by coordinate. Scaling multiplies every coordinate by c; a negative c flips the direction.</div>`;
+  },
+});
+
+/* ---------- Span (draggable) ---------- */
+vzAdd({
+  id: "span", group: "Linear algebra concepts", title: "Span", card: "Span",
+  tagline: "See what combinations of vectors can generate.",
+  blurb: "The span is every combination \\(c_1\\mathbf v_1+c_2\\mathbf v_2\\). Drag the vectors and watch what they can reach: a line, or the whole plane.",
+  tryIt: "Drag \\(\\mathbf v_2\\) onto the line of \\(\\mathbf v_1\\): the shaded plane collapses to a single line.",
+  state: { v1x: 2, v1y: 0.5, v2x: 0.5, v2y: 1.5, two: true, c1: 1, c2: 1 },
+  thumb: { c1: 1.2, c2: .8 },
+  controls: [
+    { k: "two", label: "use two vectors", type: "toggle" },
+    { k: "c1", label: "c₁", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), snap: true },
+    { k: "c2", label: "c₂", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), show: s => s.two, snap: true },
+  ],
+  presets: [["Independent", { two: true, v1x: 2, v1y: .5, v2x: .5, v2y: 1.5 }], ["Dependent", { two: true, v1x: 2, v1y: .5, v2x: -1, v2y: -.25 }], ["One vector", { two: false }]],
+  P: vzPlane(300, 240, 50),
+  vs(s) { return [[s.v1x, s.v1y], [s.v2x, s.v2y]]; },
+  kind(s) {                                              // "zero" | "line" | "plane"
+    const [v1, v2] = this.vs(s), z1 = Math.hypot(...v1) < 1e-9, z2 = Math.hypot(...v2) < 1e-9;
+    if (!s.two) return z1 ? "zero" : "line";
+    if (z1 && z2) return "zero";
+    return Math.abs(vzDet2(v1, v2)) < 1e-9 ? "line" : "plane";
+  },
+  handles(s) { const [v1, v2] = this.vs(s), h = [{ k: "v1", x: this.P.X(v1[0]), y: this.P.Y(v1[1]) }]; if (s.two) h.push({ k: "v2", x: this.P.X(v2[0]), y: this.P.Y(v2[1]) }); return h; },
+  dragTo(s, k, x, y) {
+    let p = vzWorld(this.P, x, y);
+    const other = k === "v1" ? [s.v2x, s.v2y] : [s.v1x, s.v1y];
+    if (s.two) p = vzOntoLine(p, other);
+    s[k + "x"] = p[0]; s[k + "y"] = p[1];
+  },
+  draw(s, t, thumb) {
+    const P = this.P, [v1, v2] = this.vs(s), kind = this.kind(s), two = s.two;
+    let o = P.axes(.24);
+    if (kind === "plane") {
+      o += `<rect width="${VZ_W}" height="${VZ_H}" fill="${VZ.red}" fill-opacity=".06"/>`;
+      for (let k = -10; k <= 10; k++) {
+        o += P.line([k * v1[0], k * v1[1]], v2, `stroke="${VZ.red}" stroke-opacity="${k ? .14 : .3}" stroke-width="1"`);
+        o += P.line([k * v2[0], k * v2[1]], v1, `stroke="${VZ.red}" stroke-opacity="${k ? .14 : .3}" stroke-width="1"`);
+      }
+    } else if (kind === "line") {
+      const d = Math.hypot(...v1) > 1e-9 ? v1 : v2;
+      o += P.line([0, 0], d, `stroke="${VZ.red}" stroke-width="9" stroke-opacity=".18" stroke-linecap="round"`);
+    } else o += `<circle cx="${P.X(0)}" cy="${P.Y(0)}" r="10" fill="${VZ.red}" fill-opacity=".2"/>`;
+    const a = [s.c1 * v1[0], s.c1 * v1[1]], b = two ? [s.c2 * v2[0], s.c2 * v2[1]] : [0, 0], w = [a[0] + b[0], a[1] + b[1]];
+    if (two) o += P.path([a, w], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="4 5"`) + P.arrow(a, w, "I", 2.2);
+    o += P.arrow([0, 0], a, "R", 2.2);
+    if (Math.hypot(...w) > .02) o += P.arrow([0, 0], w, "D", 3.4) + vzSideTip(P, [0, 0], w, vzB("w"), VZ.deep, 22);
+    if (!thumb) o += vzTipGrip(P, v1, VZ.red, "v1") + (two ? vzTipGrip(P, v2, VZ.ink, "v2") : "");
+    o += P.arrow([0, 0], v1, "R", 3) + (two ? P.arrow([0, 0], v2, "I", 3) : "") + P.dot([0, 0], 3.6);
+    o += vzSideTip(P, [0, 0], v1, vzB("v", "1"), VZ.red, 20) + (two ? vzSideTip(P, [0, 0], v2, vzB("v", "2"), VZ.ink, 20) : "");
+    o += vzKey([[kind === "line" ? "line" : "fill", VZ.red, kind === "zero" ? "span = {0}" : "the span"], ["line", VZ.deep, "w = a combination"]]);
+    return o;
+  },
+  readout(s) {
+    const [v1, v2] = this.vs(s), kind = this.kind(s), w = [s.c1 * v1[0] + (s.two ? s.c2 * v2[0] : 0), s.c1 * v1[1] + (s.two ? s.c2 * v2[1] : 0)];
+    const combo = s.two ? `${vzShort(s.c1)}<b>v</b>₁ + ${vzShort(s.c2)}<b>v</b>₂` : `${vzShort(s.c1)}<b>v</b>₁`;
+    let msg;
+    if (kind === "zero") msg = "Every combination of zero vectors is 0: the span is just {0}.";
+    else if (!s.two) msg = "One nonzero vector: its span is the line through 0 along v₁.";
+    else if (kind === "line") msg = "v₁ and v₂ lie on one line (one is a multiple of the other), so the span is still only a line.";
+    else msg = "v₁ and v₂ point in different directions: every point of ℝ² is some c₁v₁ + c₂v₂. The span is all of ℝ².";
+    return `<div class="vz-eq"><b>v</b>₁ = ${vzTup(v1)}${s.two ? `, <b>v</b>₂ = ${vzTup(v2)}` : ""}</div>
+      <div class="vz-eq"><b>w</b> = ${combo} = <b>${vzTup(w)}</b></div>
+      <div class="vz-status ${kind === "plane" ? "ok" : "warn"}">${msg}</div>`;
+  },
+});
+
+/* ---------- Linear independence ---------- */
+vzAdd({
+  id: "independence", group: "Linear algebra concepts", title: "Linear independence", card: "Linear independence",
+  tagline: "Watch independence disappear geometrically.",
+  blurb: "Two vectors span a parallelogram whose area is \\(|\\det[\\,\\mathbf v_1\\ \\mathbf v_2\\,]|\\). Bring them into line and it flattens: area 0, determinant 0, dependent.",
+  tryIt: "Press Dependent and watch the parallelogram collapse. Then add a third vector: in \\(\\mathbb R^2\\) it is always a combination of the first two.",
+  state: { v1x: 2, v1y: 0.5, v2x: 0.75, v2y: 1.75, three: false, v3x: -1.5, v3y: 1.5 },
+  controls: [{ k: "three", label: "add a third vector v₃", type: "toggle" }],
+  presets: [["Independent", { v2x: .75, v2y: 1.75 }], ["Almost dependent", { v2x: 2.25, v2y: 1 }], ["Dependent", { v2x: 1, v2y: .25 }]],
+  P: vzPlane(300, 250, 52),
+  vs(s) { return [[s.v1x, s.v1y], [s.v2x, s.v2y], [s.v3x, s.v3y]]; },
+  handles(s) {
+    const P = this.P, [a, b, c] = this.vs(s), h = [{ k: "v1", x: P.X(a[0]), y: P.Y(a[1]) }, { k: "v2", x: P.X(b[0]), y: P.Y(b[1]) }];
+    if (s.three) h.push({ k: "v3", x: P.X(c[0]), y: P.Y(c[1]) });
+    return h;
+  },
+  dragTo(s, k, x, y) {
+    let p = vzWorld(this.P, x, y);
+    if (k !== "v3") p = vzOntoLine(p, k === "v1" ? [s.v2x, s.v2y] : [s.v1x, s.v1y]);
+    s[k + "x"] = p[0]; s[k + "y"] = p[1];
+  },
+  draw(s, t, thumb) {
+    const P = this.P, [v1, v2, v3] = this.vs(s), det = vzDet2(v1, v2), flat = Math.abs(det) < 1e-9, sum = [v1[0] + v2[0], v1[1] + v2[1]];
+    let o = P.axes(.24);
+    if (flat) o += P.path([[0, 0], v1, sum, v2, [0, 0]], `stroke="${VZ.red}" stroke-width="7" stroke-opacity=".3" stroke-linecap="round"`);
+    else {
+      o += P.poly([[0, 0], v1, sum, v2], `fill="${VZ.red}" fill-opacity=".14" stroke="${VZ.red}" stroke-opacity=".55" stroke-width="1.4"`);
+      const m = [sum[0] / 2, sum[1] / 2];
+      o += vzLabel(P.X(m[0]), P.Y(m[1]) + 5, `area ${vzShort(Math.abs(det))}`, VZ.deep, 15);
+    }
+    if (s.three) {
+      if (!flat) {                                          // v3 = a v1 + b v2, drawn tip to tail
+        const a = vzDet2(v3, v2) / det, b = vzDet2(v1, v3) / det, p = [a * v1[0], a * v1[1]];
+        o += P.path([[0, 0], p], `stroke="${VZ.red}" stroke-width="2" stroke-dasharray="5 4"`) + P.path([p, v3], `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray="5 4"`);
+        o += vzLabel(P.X(p[0] / 2), P.Y(p[1] / 2) - 8, vzShort(a) + vzB("v", "1"), VZ.red, 14) + vzLabel(P.X((p[0] + v3[0]) / 2) + 12, P.Y((p[1] + v3[1]) / 2) - 6, vzShort(b) + vzB("v", "2"), VZ.ink, 14);
+      }
+      if (!thumb) o += vzTipGrip(P, v3, VZ.gold, "v3");
+      o += P.arrow([0, 0], v3, "O", 3) + vzSideTip(P, [0, 0], v3, vzB("v", "3"), "#8A6A12", 20);
+    }
+    if (!thumb) o += vzTipGrip(P, v1, VZ.red, "v1") + vzTipGrip(P, v2, VZ.ink, "v2");
+    o += P.arrow([0, 0], v1, "R", 3) + P.arrow([0, 0], v2, "I", 3) + P.dot([0, 0], 3.6);
+    o += vzSideTip(P, [0, 0], v1, vzB("v", "1"), VZ.red, 20) + vzSideTip(P, [0, 0], v2, vzB("v", "2"), VZ.ink, 20);
+    return o;
+  },
+  readout(s) {
+    const [v1, v2, v3] = this.vs(s), det = vzDet2(v1, v2), flat = Math.abs(det) < 1e-9;
+    let msg = flat
+      ? (Math.hypot(...v1) < 1e-9 || Math.hypot(...v2) < 1e-9 ? "One of the vectors is 0, so the set is dependent: 1·0 = 0 is a nontrivial combination." : `Dependent: <b>v</b>₂ = ${vzShort((v2[0] * v1[0] + v2[1] * v1[1]) / (v1[0] * v1[0] + v1[1] * v1[1]))}<b>v</b>₁. The parallelogram is flat, so its area and det are 0.`)
+      : "Independent: the only way to get c₁v₁ + c₂v₂ = 0 is c₁ = c₂ = 0. The parallelogram has area |det| ≠ 0.";
+    if (s.three && !flat) msg += ` With v₃: v₃ = ${vzShort(vzDet2(v3, v2) / det)}v₁ + ${vzShort(vzDet2(v1, v3) / det)}v₂, so {v₁, v₂, v₃} is dependent. Three vectors in ℝ² always are.`;
+    return `<div class="vz-mat"><span class="vz-mat-name">[<b>v</b>₁ <b>v</b>₂] =</span><span class="vz-brk"><table><tr><td>${vzShort(v1[0])}</td><td>${vzShort(v2[0])}</td></tr><tr><td>${vzShort(v1[1])}</td><td>${vzShort(v2[1])}</td></tr></table></span></div>
+      <div class="vz-eq">det = ${vzShort(v1[0])}·${vzShort(v2[1])} − ${vzShort(v2[0])}·${vzShort(v1[1])} = <b>${vzShort(det)}</b></div>
+      <div class="vz-status ${flat ? "warn" : "ok"}">${msg}</div>`;
+  },
+});
+
+/* ---------- Determinants: area scaling ---------- */
+vzAdd({
+  id: "det", group: "Linear algebra concepts", title: "Determinants and area", card: "Determinants",
+  tagline: "Understand the determinant as area scaling.",
+  blurb: "Apply \\(A\\) to the unit square. Every area is multiplied by \\(|\\det A|\\); a negative determinant also flips the orientation.",
+  tryIt: "Pick Reflection and play the slider: the square flattens to zero area on its way to flipping over.",
+  state: { a: 2, b: 0.5, c: 0.5, d: 1.5, t: 1 },
+  thumb: { a: 1.75, b: .75, c: .5, d: -1, t: 1 },                      // a flipped image, unlike the transformation card
+  controls: [
+    { k: "t", label: "apply A", min: 0, max: 1, step: .01, fmt: v => vzNum(v * 100, 0) + "%", play: .45, progress: true, aria: "applying A" },
+    { k: "a", label: "a", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), noPlay: true }, { k: "b", label: "b", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), noPlay: true },
+    { k: "c", label: "c", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), noPlay: true }, { k: "d", label: "d", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), noPlay: true },
+  ],
+  presets: [["Stretch", { a: 2, b: 0, c: 0, d: 1.5 }], ["Shear", { a: 1, b: 1, c: 0, d: 1 }], ["Reflection", { a: -1, b: 0, c: 0, d: 1 }],
+            ["Rotation", { a: 0, b: -1, c: 1, d: 0 }], ["Squash (det 0)", { a: 1, b: 2, c: .5, d: 1 }], ["Double", { a: 2, b: 0, c: 0, d: 2 }]],
+  P: vzPlane(290, 260, 50),
+  M(s) { const t = s.t; return [1 + (s.a - 1) * t, s.b * t, s.c * t, 1 + (s.d - 1) * t]; },   // (1 − t) I + t A
+  handles(s) {
+    if (s.t < .999) return [];
+    const P = this.P; return [{ k: "e1", x: P.X(s.a), y: P.Y(s.c) }, { k: "e2", x: P.X(s.b), y: P.Y(s.d) }];
+  },
+  dragTo(s, k, x, y) { const p = vzWorld(this.P, x, y, [4.2, 4]); if (k === "e1") { s.a = p[0]; s.c = p[1]; } else { s.b = p[0]; s.d = p[1]; } },
+  draw(s, t, thumb) {
+    const P = this.P, [a, b, c, d] = this.M(s), M = p => [a * p[0] + b * p[1], c * p[0] + d * p[1]], det = a * d - b * c, flip = det < -1e-9, flat = Math.abs(det) < .015;
+    let o = P.axes(.18);
+    // the 2 × 2 block of unit cells: each one's image has the same area |det|
+    for (let i = -3; i <= 4; i++) {
+      o += P.path([M([i, -3]), M([i, 4])], `stroke="${VZ.grey}" stroke-width="1" stroke-opacity=".25"`);
+      o += P.path([M([-3, i]), M([4, i])], `stroke="${VZ.grey}" stroke-width="1" stroke-opacity=".25"`);
+    }
+    o += P.poly([[0, 0], [1, 0], [1, 1], [0, 1]], `fill="none" stroke="${VZ.grey}" stroke-width="1.4" stroke-dasharray="4 4" opacity=".8"`);
+    const sq = [[0, 0], M([1, 0]), M([1, 1]), M([0, 1])], col = flip ? VZ.gold : VZ.red;
+    o += P.poly(sq, `fill="${col}" fill-opacity="${flat ? 0 : .2}" stroke="${col}" stroke-width="${flat ? 3.4 : 1.8}" stroke-linejoin="round"`);
+    const flag = [[.2, .15], [.2, .85], [.62, .85], [.62, .68], [.36, .68], [.36, .15]].map(M);
+    o += P.poly(flag, `fill="${VZ.ink}" fill-opacity=".55" stroke="none"`);
+    const e1 = M([1, 0]), e2 = M([0, 1]);
+    if (!thumb && s.t >= .999) o += vzTipGrip(P, e1, VZ.red, "e1") + vzTipGrip(P, e2, VZ.ink, "e2");
+    o += P.arrow([0, 0], e1, "R", 3) + P.arrow([0, 0], e2, "I", 3) + P.dot([0, 0], 3.6);
+    o += vzSideTip(P, [0, 0], e1, "A" + vzB("e", "1"), VZ.red, 20) + vzSideTip(P, [0, 0], e2, "A" + vzB("e", "2"), VZ.ink, 20);
+    const far = M([1, 1]);                                 // the area is named past the square's far corner
+    if (!flat && Math.hypot(...far) > .3) o += vzSideTip(P, [0, 0], far, `area ${vzShort(Math.abs(det))}`, flip ? "#6E5518" : VZ.deep, 30);
+    else if (!flat) o += vzLabel(P.X(0) + 40, P.Y(0) + 40, `area ${vzShort(Math.abs(det))}`, flip ? "#6E5518" : VZ.deep, 15);
+    o += vzKey([["line", VZ.grey, "unit square (area 1)"], ["fill", flip ? VZ.gold : VZ.red, flip ? "its image, flipped" : "its image"]]);
+    return o;
+  },
+  readout(s) {
+    const det = s.a * s.d - s.b * s.c, [a, b, c, d] = this.M(s), dt = a * d - b * c;
+    const msg = Math.abs(det) < 1e-9 ? "det A = 0: the square is squashed flat, so A has no inverse."
+      : det < 0 ? `Areas are multiplied by |det A| = ${vzShort(-det)}, and the orientation flips (the flag is mirrored).`
+      : `Areas are multiplied by det A = ${vzShort(det)}; the orientation is kept.`;
+    return `<div class="vz-mat"><span class="vz-mat-name">A =</span><span class="vz-brk"><table><tr><td>${vzShort(s.a)}</td><td>${vzShort(s.b)}</td></tr><tr><td>${vzShort(s.c)}</td><td>${vzShort(s.d)}</td></tr></table></span></div>
+      <div class="vz-eq">det A = ad − bc = <b>${vzShort(det)}</b></div>
+      ${s.t < .999 ? `<div class="vz-eq">so far (${vzNum(s.t * 100, 0)}% of the way): area × <b>${vzNum(dt)}</b></div>` : ""}
+      <div class="vz-status ${Math.abs(det) < 1e-9 ? "warn" : "ok"}">${msg}</div>`;
+  },
+});
+
+/* ---------- Null space and column space ---------- */
+vzAdd({
+  id: "nullcol", group: "Linear algebra concepts", title: "Null space and column space", card: "Null & column space",
+  tagline: "Connect Ax = 0 and Ax = b to geometry.",
+  blurb: "Left: inputs \\(\\mathbf x\\). Right: outputs \\(A\\mathbf x\\). The null space is everything sent to \\(\\mathbf 0\\); the column space is everything \\(A\\) can reach.",
+  tryIt: "In Ax = b, drag b off the gold line: no input reaches it. Back on the line, a whole line of inputs does.",
+  defs: `<clipPath id="vz-cl"><rect x="0" y="0" width="297" height="450"/></clipPath><clipPath id="vz-cr"><rect x="303" y="0" width="297" height="450"/></clipPath>`,
+  state: { a: 1, b: 2, c: 0.5, d: 1, tab: 0, xx: 1, xy: 1, x1: 1, x2: 0.5, bx: 1, by: 0.5 },
+  controls: [
+    { k: "x1", label: "x₁ (how much of column 1)", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), show: s => s.tab === 1, snap: true },
+    { k: "x2", label: "x₂ (how much of column 2)", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), show: s => s.tab === 1, snap: true },
+  ],
+  presets: [["Rank 1", { a: 1, b: 2, c: .5, d: 1 }], ["Rank 1, other line", { a: 1, b: -1, c: -1, d: 1 }], ["Invertible", { a: 1.5, b: .5, c: .5, d: 1 }], ["Zero matrix", { a: 0, b: 0, c: 0, d: 0 }]],
+  L: vzPlane(150, 248, 34), R: vzPlane(450, 248, 34),
+  panelTop() {
+    return `<div class="vz-steps" role="tablist" aria-label="What to explore">
+      <button type="button" role="tab" data-tab="0"><span>1</span>Ax = 0</button>
+      <button type="button" role="tab" data-tab="1"><span>2</span>Column space</button>
+      <button type="button" role="tab" data-tab="2"><span>3</span>Ax = b</button></div>
+      <p class="vz-do" id="vzDo"></p>`;
+  },
+  DO: ["Drag x on the left. Which inputs land on 0 on the right?", "Slide x₁ and x₂: Ax is x₁(column 1) + x₂(column 2). Drag the columns to change A.", "Drag b on the right. When can Ax = b be solved, and how many solutions are there?"],
+  sync(s, panel) {
+    if (!panel) return;
+    panel.querySelectorAll("[data-tab]").forEach(b => { const on = +b.dataset.tab === s.tab; b.classList.toggle("on", on); b.setAttribute("aria-selected", String(on)); });
+    const d = panel.querySelector("#vzDo"); if (d && d.textContent !== this.DO[s.tab]) d.textContent = this.DO[s.tab];
+  },
+  onClick(el, s) { const b = el.closest("[data-tab]"); if (!b) return false; s.tab = +b.dataset.tab; return true; },
+  info(s) {                                              // rank, a null-space direction, a column-space direction
+    const { a, b, c, d } = s, det = a * d - b * c, zero = Math.max(Math.abs(a), Math.abs(b), Math.abs(c), Math.abs(d)) < 1e-9;
+    const rank = zero ? 0 : Math.abs(det) < 1e-9 ? 1 : 2;
+    let nul = null, col = null;
+    if (rank === 1) { nul = Math.hypot(a, b) > 1e-9 ? [-b, a] : [-d, c]; col = Math.hypot(a, c) > 1e-9 ? [a, c] : [b, d]; }
+    return { rank, det, nul, col };
+  },
+  Ax(s, x) { return [s.a * x[0] + s.b * x[1], s.c * x[0] + s.d * x[1]]; },
+  handles(s) {
+    const L = this.L, R = this.R;
+    if (s.tab === 0) return [{ k: "x", x: L.X(s.xx), y: L.Y(s.xy) }];
+    if (s.tab === 1) return [{ k: "a1", x: R.X(s.a), y: R.Y(s.c) }, { k: "a2", x: R.X(s.b), y: R.Y(s.d) }];
+    return [{ k: "b", x: R.X(s.bx), y: R.Y(s.by) }];
+  },
+  dragTo(s, k, x, y) {
+    const I = this.info(s), lim = [4, 5.5];
+    if (k === "x") { let p = vzWorld(this.L, x, y, lim); if (I.rank === 1) p = vzOntoLine(p, I.nul, .09); s.xx = p[0]; s.xy = p[1]; }
+    else if (k === "b") { let p = vzWorld(this.R, x, y, lim); if (I.rank === 1) p = vzOntoLine(p, I.col, .09); s.bx = p[0]; s.by = p[1]; }
+    else {
+      let p = vzWorld(this.R, x, y, lim); p = vzOntoLine(p, k === "a1" ? [s.b, s.d] : [s.a, s.c]);
+      if (k === "a1") { s.a = p[0]; s.c = p[1]; } else { s.b = p[0]; s.d = p[1]; }
+    }
+  },
+  draw(s, t, thumb) {
+    const L = this.L, R = this.R, I = this.info(s);
+    let left = L.axes(.26), right = R.axes(.26);
+    // column space on the right (gold), null space on the left (red)
+    if (I.rank === 2) right += `<rect x="303" width="297" height="${VZ_H}" fill="${VZ.gold}" fill-opacity=".1"/>`;
+    else if (I.rank === 1) right += R.line([0, 0], I.col, `stroke="${VZ.gold}" stroke-width="7" stroke-opacity=".45" stroke-linecap="round"`);
+    else right += `<circle cx="${R.X(0)}" cy="${R.Y(0)}" r="9" fill="${VZ.gold}" fill-opacity=".45"/>`;
+    const nulShow = s.tab !== 1;
+    if (nulShow) {
+      if (I.rank === 0) left += `<rect width="297" height="${VZ_H}" fill="${VZ.red}" fill-opacity=".08"/>`;
+      else if (I.rank === 1) left += L.line([0, 0], I.nul, `stroke="${VZ.red}" stroke-width="6" stroke-opacity=".35" stroke-linecap="round"`);
+      else left += `<circle cx="${L.X(0)}" cy="${L.Y(0)}" r="8" fill="${VZ.red}" fill-opacity=".35"/>`;
+    }
+    const cols = [[s.a, s.c], [s.b, s.d]];
+    if (s.tab === 0) {
+      const x = [s.xx, s.xy], y = this.Ax(s, x), zero = Math.hypot(...y) < 1e-9;
+      left += (thumb ? "" : vzTipGrip(L, x, VZ.ink, "x")) + L.arrow([0, 0], x, "I", 3) + vzSideTip(L, [0, 0], x, vzB("x"), VZ.ink, 20);
+      if (zero) right += `<circle cx="${R.X(0)}" cy="${R.Y(0)}" r="16" fill="none" stroke="${VZ.red}" stroke-width="2.4"/>` + vzPill(R.X(0), R.Y(0) - 34, "Ax = 0", VZ.red);
+      else right += R.arrow([0, 0], y, "I", 3) + vzSideTip(R, [0, 0], y, "A" + vzB("x"), VZ.ink, 22);
+      if (zero && Math.hypot(...x) > 1e-9) left += vzPill(L.X(x[0]), L.Y(x[1]) + (L.Y(x[1]) < 80 ? 30 : -30), "x in Nul A", VZ.red);
+    } else if (s.tab === 1) {
+      const p = [s.x1 * cols[0][0], s.x1 * cols[0][1]], y = this.Ax(s, [s.x1, s.x2]);
+      if (!thumb) right += vzTipGrip(R, cols[0], VZ.red, "a1") + vzTipGrip(R, cols[1], VZ.gold, "a2");
+      right += R.arrow([0, 0], cols[0], "R", 1.8) + R.arrow([0, 0], cols[1], "O", 1.8);
+      right += R.path([[0, 0], p], `stroke="${VZ.red}" stroke-width="2.4" stroke-dasharray="5 4"`) + R.path([p, y], `stroke="${VZ.gold}" stroke-width="2.4" stroke-dasharray="5 4"`);
+      if (Math.hypot(...y) > .02) right += R.arrow([0, 0], y, "I", 3.2) + vzSideTip(R, [0, 0], y, "A" + vzB("x"), VZ.ink, 22);
+      right += vzSideTip(R, [0, 0], cols[0], vzB("a", "1"), VZ.red, 18) + vzSideTip(R, [0, 0], cols[1], vzB("a", "2"), "#8A6A12", 18);
+      left += L.arrow([0, 0], [s.x1, s.x2], "I", 3) + vzSideTip(L, [0, 0], [s.x1, s.x2], vzB("x"), VZ.ink, 20);
+    } else {
+      const b = [s.bx, s.by], sol = this.solve(s, b), ok = sol.kind !== "none";
+      right += (thumb ? "" : vzTipGrip(R, b, ok ? VZ.green : VZ.red, "b")) + R.arrow([0, 0], b, ok ? "N" : "R", 3) + vzSideTip(R, [0, 0], b, vzB("b"), ok ? VZ.green : VZ.red, 20);
+      if (sol.kind === "point") left += L.arrow([0, 0], sol.x, "N", 3) + `<circle cx="${L.X(sol.x[0])}" cy="${L.Y(sol.x[1])}" r="5" fill="${VZ.green}"/>` + vzSideTip(L, [0, 0], sol.x, vzB("x"), VZ.green, 20);
+      else if (sol.kind === "line") left += L.line(sol.x, I.nul, `stroke="${VZ.green}" stroke-width="3.2" stroke-linecap="round"`) + `<circle cx="${L.X(sol.x[0])}" cy="${L.Y(sol.x[1])}" r="5" fill="${VZ.green}"/>` + vzLabel(L.X(sol.x[0]) + 16, L.Y(sol.x[1]) + 20, vzB("x", "p"), VZ.green, 15);
+      else if (sol.kind === "all") left += `<rect width="297" height="${VZ_H}" fill="${VZ.green}" fill-opacity=".12"/>`;
+      else left += vzPill(150, 70, "no x works", VZ.red);
+    }
+    left += L.dot([0, 0], 3.6); right += R.dot([0, 0], 3.6);
+    let o = `<g clip-path="url(#vz-cl)">${left}</g><g clip-path="url(#vz-cr)">${right}</g>`;
+    o += `<line x1="300" y1="14" x2="300" y2="${VZ_H - 14}" stroke="${VZ.ink}" stroke-opacity=".18" stroke-width="1.5"/>`;
+    const head = (x, t) => `<text x="${x}" y="30" font-family="'Manrope', sans-serif" font-size="16" font-weight="700" fill="${VZ.ink}" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${t}</text>`;
+    o += head(16, "input x") + head(318, "output Ax");
+    const key = s.tab === 1 ? [["fill", VZ.gold, "Col A"]] : s.tab === 0 ? [["fill", VZ.red, "Nul A"], ["fill", VZ.gold, "Col A"]] : [["fill", VZ.gold, "Col A"], ["line", VZ.green, "solutions"]];
+    o += vzKey(key);
+    return o;
+  },
+  solve(s, b) {                                          // the solution set of Ax = b: none, one point, a line, or everything
+    const I = this.info(s);
+    if (I.rank === 2) return { kind: "point", x: [(s.d * b[0] - s.b * b[1]) / I.det, (-s.c * b[0] + s.a * b[1]) / I.det] };
+    if (I.rank === 0) return { kind: Math.hypot(...b) < 1e-9 ? "all" : "none" };
+    if (Math.abs(vzDet2(I.col, b)) > 1e-9) return { kind: "none" };
+    const f = s.a * s.a + s.b * s.b + s.c * s.c + s.d * s.d;   // for rank 1, A⁺ = Aᵀ / (sum of squares): the shortest solution
+    return { kind: "line", x: [(s.a * b[0] + s.c * b[1]) / f, (s.b * b[0] + s.d * b[1]) / f] };
+  },
+  readout(s) {
+    const I = this.info(s), sp = ["{0}", "a line", "all of ℝ²"];
+    const nul = I.rank === 2 ? "{0}" : I.rank === 1 ? `the line through ${vzTup(I.nul)}` : "all of ℝ²", col = I.rank === 2 ? "all of ℝ²" : I.rank === 1 ? `the line through ${vzTup(I.col)}` : "{0}";
+    let now = "";
+    if (s.tab === 0) {
+      const y = this.Ax(s, [s.xx, s.xy]), zero = Math.hypot(...y) < 1e-9;
+      now = zero ? `A${vzTup([s.xx, s.xy])} = 0, so x is in the null space.` : `A${vzTup([s.xx, s.xy])} = ${vzTup(y)}, not 0.` + (I.rank === 1 ? " Drag x onto the red line." : I.rank === 2 ? " Only x = 0 is sent to 0 here." : "");
+    } else if (s.tab === 1) {
+      const y = this.Ax(s, [s.x1, s.x2]);
+      now = `Ax = ${vzShort(s.x1)}·${vzTup([s.a, s.c])} + ${vzShort(s.x2)}·${vzTup([s.b, s.d])} = ${vzTup(y)}. Every output is a combination of the columns, so Col A = span of the columns = ${sp[I.rank]}.`;
+    } else {
+      const sol = this.solve(s, [s.bx, s.by]);
+      now = sol.kind === "none" ? "b is not in Col A, so Ax = b has no solution."
+        : sol.kind === "point" ? `Exactly one solution, x = ${vzTup(sol.x)}: Nul A = {0}.`
+        : sol.kind === "all" ? "b = 0 and A = 0: every x is a solution."
+        : `b is in Col A. The solutions form a line: x = x_p + (anything in Nul A), with x_p = ${vzTup(sol.x)}.`;
+    }
+    return `<div class="vz-mat"><span class="vz-mat-name">A =</span><span class="vz-brk"><table><tr><td>${vzShort(s.a)}</td><td>${vzShort(s.b)}</td></tr><tr><td>${vzShort(s.c)}</td><td>${vzShort(s.d)}</td></tr></table></span></div>
+      <div class="vz-eq">rank A = ${I.rank}, so dim Nul A = ${2 - I.rank}</div>
+      <div class="vz-eq" style="font-size:14px">Nul A: ${nul}<br>Col A: ${col}</div>
+      <div class="vz-status ${s.tab === 2 && this.solve(s, [s.bx, s.by]).kind === "none" ? "warn" : "ok"}">${now}</div>`;
+  },
+});
+
+VZ_LIST.sort((a, b) => VZ_ORDER.indexOf(a.id) - VZ_ORDER.indexOf(b.id));
+
 
 /* ============================================================
    GLOBAL EVENT WIRING
@@ -12867,6 +13771,7 @@ function wireGlobal() {
 
   // About modal (footer)
   $("#aboutTrigger")?.addEventListener("click", toggleAboutModal);
+  $("#reportFooterBtn")?.addEventListener("click", openPageReport);
 
   // QR share button + modal
   const qrModal = $("#qrModal");
@@ -12933,6 +13838,8 @@ function handleGlobalKey(e) {
     if (about && !about.hidden) { about.hidden = true; return; }
     const qr = $("#qrModal");
     if (qr && !qr.hidden) { qr.hidden = true; return; }
+    const pr = $("#pageReport");
+    if (pr) { pr.remove(); return; }
   }
 
   // "/" focuses search on a section page (works only there)
@@ -13027,9 +13934,9 @@ function toggleAboutModal() {
           <p>Your progress and review flags are saved <strong>only in this browser</strong>
              (localStorage). There's no login and no personal data; the site keeps only anonymous,
              cookie-free page counts.</p>
-          <p>Spot something wrong or confusing? Every problem has a <strong>Report issue</strong> button.
-             Pick what looks off and send: the problem gets an "Issue reported" tag, and the SI leader
-             sees the flag and fixes it. Reports are anonymous.</p>
+          <p>Spot something wrong or confusing? Every problem has a <strong>Report a problem</strong> button,
+             and the footer has one for any page. Pick what looks off and send: the SI leader sees the flag,
+             reviews it and corrects it. Reports are anonymous.</p>
           <div class="about-credit">
             Resource created by <strong>Michael Bockstaller</strong>. You can reach out with more specific
             feedback at <a href="mailto:mbocksta@andrew.cmu.edu?subject=21-254%20Practice%20Lab%20Feedback">mbocksta@andrew.cmu.edu</a>.
@@ -13393,7 +14300,7 @@ async function loadReports(count) {
   const all = [...State.problemsById.values()];
   let rows = [];
   if (count && all.length) {
-    const ids = all.map(p => p.id), got = new Map();
+    const ids = all.map(p => p.id).concat(reportPageIds()), got = new Map();   // problems, then whole pages
     let k = 0;
     const worker = async () => { while (k < ids.length) { const id = ids[k++]; try { const n = +(await count(encodeURIComponent("report/" + id))); if (n > 0) got.set(id, n); } catch (_) {} } };
     await Promise.all(Array.from({ length: 6 }, worker));
@@ -13408,7 +14315,7 @@ async function loadReports(count) {
 function setReportRows(rows, live) {                           // add this browser's own reports, sort, paint
   const local = lsGetMap(LS.REPORTED);
   Object.keys(local).forEach(id => { if (!rows.some(r => r.id === id)) rows.push({ id, n: 0, mine: true, kinds: local[id].kind ? { [local[id].kind]: 1 } : {} }); });
-  rows = rows.filter(r => State.problemsById.has(r.id)).sort((a, b) => b.n - a.n || a.id.localeCompare(b.id));
+  rows = rows.filter(r => State.problemsById.has(r.id) || /^page-/.test(r.id)).sort((a, b) => b.n - a.n || a.id.localeCompare(b.id));
   WalkReports = { rows, live };
   paintReports();
 }
@@ -13418,11 +14325,12 @@ function paintReports() {
   if (!box) return;
   const fixed = lsGetMap("pl254:reportsFixed"), { rows } = WalkReports;
   const open = rows.filter(r => !(fixed[r.id] != null && r.n <= fixed[r.id])), done = rows.filter(r => !open.includes(r));
-  const short = { answer: "wrong answer or step", typo: "typo", confusing: "confusing", display: "broken math or picture" };
+  const short = { answer: "wrong answer or step", typo: "typo", confusing: "confusing", display: "broken math or picture", other: "something else" };
   box.innerHTML = (open.length ? open.map(r => {
-    const p = State.problemsById.get(r.id), tag = r.n ? r.n + (r.n === 1 ? " report" : " reports") : "reported from this browser";
+    const page = /^page-/.test(r.id), p = page ? null : State.problemsById.get(r.id), tag = r.n ? r.n + (r.n === 1 ? " report" : " reports") : "reported from this browser";
+    const route = page ? reportPageRoute(r.id) : "/problem/" + r.id, title = page ? reportPageLabel(r.id) : p.title;
     const kinds = Object.entries(r.kinds || {}).map(([kd, c]) => `<span class="wr-kind">${escapeHtml(short[kd] || kd)}${c > 1 ? " ×" + c : ""}</span>`).join("");
-    return `<div class="wr-item"><a class="wr-row" href="#/problem/${escapeHtml(r.id)}" data-route="/problem/${escapeHtml(r.id)}"><span class="wr-id">${escapeHtml(r.id)}</span><span class="wr-title">${escapeHtml(p.title)}</span><span class="pill status-report">${tag}</span></a>` +
+    return `<div class="wr-item"><a class="wr-row" href="#${escapeHtml(route)}" data-route="${escapeHtml(route)}"><span class="wr-id">${page ? "page" : escapeHtml(r.id)}</span><span class="wr-title">${escapeHtml(title)}</span><span class="pill status-report">${tag}</span></a>` +
       `<div class="wr-sub">${kinds}${r.n ? `<button class="wr-fix" type="button" data-fix="${escapeHtml(r.id)}">Mark fixed</button>` : ""}</div></div>`;
   }).join("") : `<p class="wr-empty">${WalkReports.live ? "No open reports. Nothing to fix right now." : "No reports from this browser."}</p>`) +
     (done.length ? `<p class="wr-fixed">${done.length} marked fixed<button type="button" data-unfix="1">Show again</button></p>` : "");

@@ -46,11 +46,15 @@ const areas = [
   await sum(["/visualize"].concat(vz.map(v => "/visualize/" + v))),
   await sum(["/walkthroughs"].concat(Array.from({ length: 22 }, (_, i) => "/walkthroughs/si-" + String(i + 1).padStart(2, "0")))),
 ];
-const repTotals = await pool(ids, id => count("report/" + id));
+// reports: every problem, and every page the footer's "Report a problem" can flag (same ids as reportPageIds())
+const pages = ["home", "topics", "exam", "review", "walkthroughs", "visualize"].map(k => "page-" + k)
+  .concat(vz.map(v => "page-visualize-" + v), Array.from({ length: 22 }, (_, i) => "page-walkthroughs-si-" + String(i + 1).padStart(2, "0")),
+          Array.from({ length: 10 }, (_, i) => "page-section-" + (i + 1)));
+const repIds = ids.concat(pages), repTotals = await pool(repIds, id => count("report/" + id));
 const reports = [];
-for (let i = 0; i < ids.length; i++) if (repTotals[i] > 0) {
-  const k = await pool(kinds, kd => count("report/" + ids[i] + "/" + kd));
-  reports.push({ id: ids[i], n: repTotals[i], kinds: Object.fromEntries(kinds.map((kd, j) => [kd, k[j]]).filter(([, c]) => c > 0)) });
+for (let i = 0; i < repIds.length; i++) if (repTotals[i] > 0) {
+  const k = await pool(kinds, kd => count("report/" + repIds[i] + "/" + kd));
+  reports.push({ id: repIds[i], n: repTotals[i], kinds: Object.fromEntries(kinds.map((kd, j) => [kd, k[j]]).filter(([, c]) => c > 0)) });
 }
 const data = { updated: new Date().toISOString(), home, qr, per, weekly, weeks, areas, reports };
 writeFileSync(out, JSON.stringify(data));
