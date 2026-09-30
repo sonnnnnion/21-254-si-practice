@@ -12546,11 +12546,26 @@ async function loadAllWalkthroughs() {
    only when "Allow adding visitor counts on your website" is on in GoatCounter's
    settings; otherwise the numbers stay hidden and the dashboard link remains. */
 const GC_SITE = "https://mbocksta.goatcounter.com";
+// A GitHub Action saves these counts every three hours (.github/workflows/usage.yml). Ad and tracker
+// blockers (Brave Shields, uBlock) stop requests to goatcounter.com, but not this file.
+const USAGE_SNAPSHOT = "https://raw.githubusercontent.com/sonnnnnion/21-254-si-practice/usage-data/usage.json";
 let usageRequested = false;
 async function loadSiteUsage() {
   const box = $("#walkUsageStats"), charts = $("#walkUsageCharts"), note = $("#walkUsageNote");
   if (!box || usageRequested) return;
   usageRequested = true;
+  try {
+    const r = await fetch(USAGE_SNAPSHOT + "?t=" + Math.floor(Date.now() / 3e5), { cache: "no-store" });
+    const snap = r.ok ? await r.json() : null;
+    if (snap && snap.per && snap.weekly) {
+      for (let i = 0; i < 40 && !State.problemsById.size; i++) await new Promise(res => setTimeout(res, 250));
+      renderUsage(snap);
+      setReportRows((snap.reports || []).map(x => ({ id: x.id, n: x.n, kinds: x.kinds || {} })), true);
+      const hrs = Math.max(0, Math.round((Date.now() - Date.parse(snap.updated)) / 36e5));
+      if (note) note.innerHTML = `Anonymous, cookie-free counts from GoatCounter, updated ${hrs < 1 ? "within the hour" : hrs === 1 ? "1 hour ago" : hrs + " hours ago"} (every three hours). They include your own visits. <a class="wu-ext" href="${GC_SITE}/?filter=Practice+Lab" target="_blank" rel="noopener">Full dashboard &#8599;</a>`;
+      return;
+    }
+  } catch (_) { /* no snapshot yet: read the live feed below */ }
   const count = async (path, query) => {
     const r = await fetch(GC_SITE + "/counter/" + path + ".json" + (query || ""), { cache: "no-store" });
     if (r.status === 404) return 0;                          // path never visited (in that range)
@@ -12564,7 +12579,7 @@ async function loadSiteUsage() {
   try { home = await count("/home"); }                         // one probe: if the feed is off, stop here
   catch (_) {
     box.hidden = true; charts.hidden = true;
-    if (note) note.textContent = "Usage charts appear here once GoatCounter's public count feed is on (Settings → “Allow adding visitor counts on your website”). Until then the dashboard link has everything.";
+    if (note) note.innerHTML = `Usage couldn't load right now. It refreshes every three hours; an ad or tracker blocker can also stop the live counts. <a class="wu-ext" href="${GC_SITE}/?filter=Practice+Lab" target="_blank" rel="noopener">Full dashboard &#8599;</a>`;
     loadReports(null);
     return;
   }
@@ -12670,7 +12685,7 @@ async function loadReports(count) {
   const box = $("#walkReports");
   if (!box) return;
   for (let i = 0; i < 40 && !State.problemsById.size; i++) await new Promise(r => setTimeout(r, 250));  // problem data still loading
-  const all = [...State.problemsById.values()], local = lsGetMap(LS.REPORTED);
+  const all = [...State.problemsById.values()];
   let rows = [];
   if (count && all.length) {
     const ids = all.map(p => p.id), got = new Map();
@@ -12683,9 +12698,13 @@ async function loadReports(count) {
       return { id, n, kinds };
     }));
   }
+  setReportRows(rows, !!count);
+}
+function setReportRows(rows, live) {                           // add this browser's own reports, sort, paint
+  const local = lsGetMap(LS.REPORTED);
   Object.keys(local).forEach(id => { if (!rows.some(r => r.id === id)) rows.push({ id, n: 0, mine: true, kinds: local[id].kind ? { [local[id].kind]: 1 } : {} }); });
   rows = rows.filter(r => State.problemsById.has(r.id)).sort((a, b) => b.n - a.n || a.id.localeCompare(b.id));
-  WalkReports = { rows, live: !!count };
+  WalkReports = { rows, live };
   paintReports();
 }
 let WalkReports = { rows: [], live: false };

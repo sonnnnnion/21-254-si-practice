@@ -1,0 +1,34 @@
+# Every three hours, save a snapshot of the site's GoatCounter numbers to the usage-data branch.
+# The Walkthroughs page reads it from raw.githubusercontent.com, so the charts work even where a
+# browser or ad blocker stops requests to goatcounter.com. Run it by hand from the Actions tab too.
+name: Usage snapshot
+on:
+  schedule:
+    - cron: "23 */3 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: usage-snapshot
+  cancel-in-progress: true
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Read the counts from GoatCounter
+        run: node .github/scripts/usage.mjs . "$RUNNER_TEMP/usage.json"
+      - name: Publish to the usage-data branch (one commit, replaced each time)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir "$RUNNER_TEMP/pub" && cd "$RUNNER_TEMP/pub"
+          git init -q
+          git checkout -q --orphan usage-data
+          cp "$RUNNER_TEMP/usage.json" usage.json
+          git add usage.json
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -q -m "Usage snapshot"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" usage-data
