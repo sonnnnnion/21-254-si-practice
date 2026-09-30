@@ -735,7 +735,7 @@
       "why": "A zero cross product would mean a and b are parallel, so the parallelogram is flat."
      }
     ],
-    "meaning": "(4, \u22122, \u22127) stands straight out of the plane containing a and b, and the parallelogram they span has area \u221a69 \u2248 8.3.",
+    "meaning": "(4, \u22122, \u22127) stands straight out of the plane containing a and b, and the parallelogram they span has area \u221a69.",
     "ifStuck": [
      {
       "if": "a student gets +2 in the middle",

@@ -418,7 +418,7 @@
       "say": "10/5 = 2 copies of a: the projection is (4, 2).",
       "ask": {
        "q": "Is (4, 2) longer or shorter than b?",
-       "a": "Shorter: |(4, 2)| = \u221a20 \u2248 4.5, while |b| = 5. A shadow can't be longer than the stick."
+       "a": "Shorter: |(4, 2)| = \u221a20, while |b| = \u221a25 = 5. A shadow can't be longer than the stick."
       }
      },
      {
@@ -492,7 +492,7 @@
       "why": "The shadow and the leftover are the legs of a right triangle with QP as the hypotenuse."
      }
     ],
-    "meaning": "The closest point on L to P is where the leftover drops straight down onto the line. Its length, \u221a17/3 \u2248 1.37, is the distance.",
+    "meaning": "The closest point on L to P is where the leftover drops straight down onto the line. Its length, \u221a17/3, is the distance.",
     "ifStuck": [
      {
       "if": "a student reports 8/3 (the shadow length)",

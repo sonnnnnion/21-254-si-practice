@@ -499,7 +499,7 @@
       }
      }
     ],
-    "meaning": "u and v point more than 90\u00b0 apart, since their dot product is negative. The length \u221a14 \u2248 3.7 is how long the arrow u is in space.",
+    "meaning": "u and v point more than 90\u00b0 apart, since their dot product is negative. The length \u221a14 is how long the arrow u is in space.",
     "ifStuck": [
      {
       "if": "a student writes the dot product as \u27e8\u22126, \u22124, 2\u27e9",

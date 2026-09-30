@@ -541,8 +541,8 @@
      {
       "say": "D_u f = (1, 1) \u00b7 (3/5, 4/5) = 7/5.",
       "ask": {
-       "q": "Why is 7/5 less than \u221a2 \u2248 1.41?",
-       "a": "It isn't by much: 1.4 vs. 1.41. u points almost along the gradient."
+       "q": "Why is 7/5 a little less than \u2016\u2207f\u2016 = \u221a2?",
+       "a": "(7/5)\u00b2 = 49/25, just under 2 = 50/25, so D_u f is just under its largest value \u221a2: u points almost along the gradient."
       },
       "why": "The closer u is to the gradient's direction, the closer D_u f gets to the maximum slope."
      },
