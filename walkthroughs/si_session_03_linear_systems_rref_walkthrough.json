@@ -47,7 +47,7 @@
   },
   {
    "name": "Free-variable idea",
-   "latex": "\\text{no pivot in a variable column} \\quad \\Rightarrow \\quad \\text{free variable}"
+   "latex": "\\text{no pivot in a column}\\ \\Rightarrow\\ \\text{free variable}"
   }
  ],
  "commonMistakes": [

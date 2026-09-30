@@ -48,14 +48,14 @@
   },
   {
    "name": "Rank-nullity theorem",
-   "latex": "\\operatorname{rank}(A)+\\operatorname{nullity}(A)=\\text{number of columns of }A"
+   "latex": "\\begin{gathered}\\operatorname{rank}(A)+\\operatorname{nullity}(A)\\\\=\\text{number of columns of }A\\end{gathered}"
   },
   {
    "name": "Consistency test",
-   "latex": "Ax=b\\text{ is consistent }\\Longleftrightarrow \\operatorname{rank}(A)=\\operatorname{rank}([A\\mid b])"
+   "latex": "\\begin{gathered}Ax=b\\text{ is consistent}\\\\\\Longleftrightarrow\\ \\operatorname{rank}(A)=\\operatorname{rank}([A\\mid b])\\end{gathered}"
   },
   {
-   "name": "All solutions to Ax=b",
+   "name": "All solutions to \\(Ax=b\\)",
    "latex": "x=p+v,\\quad v\\in\\operatorname{Nul}(A)"
   }
  ],

@@ -39,7 +39,7 @@
  "keyFormulas": [
   {
    "name": "Basis",
-   "latex": "\\text{basis} = \\text{spanning set with no redundant vectors}",
+   "latex": "\\text{a spanning set with no redundant vectors}",
    "plainEnglish": "A basis describes a space with the fewest clean directions."
   },
   {

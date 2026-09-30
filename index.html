@@ -871,13 +871,21 @@
     border-top: 0;
   }
   body.is-home footer .foot-brand { display: none; }
+  body.is-home footer { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 14px; padding: 8px 0 10px; }
+  body.is-home footer .foot-lead { font-size: 12.5px; }
+  body.is-home footer .foot-report { margin: 0; }
+  body.is-home footer .foot-report-note { display: none; }
+  body.is-home footer .foot-report-btn { padding: 3px 10px 3px 9px; font-size: 12px; }
+  body.is-home footer .foot-links { margin-top: 0; font-size: 12.5px; order: 3; }
+  body.is-home footer .foot-notes { order: 4; flex-basis: 100%; text-align: center; }
+  body.is-home footer .foot-notes .foot-ai { display: inline; margin: 0; font-size: 11px; }
   @media (max-height: 880px) {
-    /* the notices stay on every screen size, just below the fold on short screens */
-    body.is-home footer { margin-top: 6px; }
-    body.is-home main { padding-top: 24px; padding-bottom: 8px; }
+    /* the whole home page, footer included, fits a laptop screen */
+    body.is-home footer { margin-top: 2px; }
+    body.is-home main { padding-top: 16px; padding-bottom: 4px; }
     body.is-home .home-grid { padding: 14px 0 10px; gap: 24px; }
     body.is-home .home-modules { margin-top: 12px; gap: 14px; }
-    body.is-home .hero-art { max-height: 320px; }
+    body.is-home .hero-art { max-height: 300px; }
     body.is-home .module { padding: 14px 16px; }
     body.is-home .module-kicker { margin-bottom: 10px; }
     body.is-home .progress-ring { width: 88px; height: 88px; }
@@ -886,7 +894,8 @@
     body.is-home .home-title { margin: 12px 0 12px; font-size: clamp(36px, 4.6vw, 56px); }
     body.is-home .hero-stats { margin-top: 16px; padding-top: 12px; }
     body.is-home .home-left .hero-actions { margin-top: 14px; }
-    body.is-home .hero-chips { margin-top: 12px; }
+    body.is-home .hero-chips { display: none; }            /* they repeat the line above; the page fits without them */
+    body.is-home .home-left .hero-actions { margin-top: 18px; }
   }
   @media (max-height: 790px) {
     body.is-home .home-title { margin: 8px 0 8px; }
@@ -894,13 +903,15 @@
     body.is-home .hero-chips { margin-top: 10px; }
   }
   @media (max-height: 760px) {
-    body.is-home .hero-art { max-height: 240px; }
+    body.is-home .hero-art { max-height: 220px; }
     body.is-home .home-title { font-size: clamp(30px, 4vw, 44px); margin: 8px 0 8px; }
     body.is-home .hero-sub { font-size: 14px; margin: 0; }
     body.is-home .hero-stats dd { font-size: 19px; }
     body.is-home .home-grid { padding: 8px 0 4px; gap: 20px; }
     body.is-home .home-modules { margin-top: 8px; }
+    body.is-home .week-note { display: none; }
   }
+  @media (max-height: 705px) { body.is-home .hero-art { max-height: 196px; } body.is-home .home-grid { gap: 16px; } }
 
   /* Respect prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
@@ -2105,10 +2116,12 @@
   footer .foot-lead { font-size: 13.5px; color: var(--ink-soft); }
   footer .foot-lead strong { color: var(--ink); font-weight: 700; }
   footer .foot-report { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 12px; margin: 12px auto 4px; font-size: 13px; color: var(--ink-mute); }
-  .foot-report-btn { font: 650 13px var(--font-sans); color: var(--red-deep); background: var(--red-tint); border: 1px solid rgba(200,16,46,.35);
-    border-radius: 999px; padding: 6px 14px; cursor: pointer; transition: background .14s, border-color .14s; }
-  .foot-report-btn:hover { background: #F9E1E5; border-color: var(--red); text-decoration: none; }
+  .foot-report-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px var(--font-sans); color: var(--ink-soft); background: var(--surface);
+    border: 1px solid var(--border-strong); border-radius: 999px; padding: 5px 12px 5px 10px; cursor: pointer; transition: background .14s, border-color .14s, color .14s; }
+  .foot-report-btn svg { width: 13px; height: 13px; flex: none; }
+  .foot-report-btn:hover { color: var(--ink); border-color: var(--ink-faint); background: #fff; text-decoration: none; }
   .foot-report-btn:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 2px; }
+  footer .foot-notes .foot-ai { display: block; }
   footer .foot-ai {
     max-width: 560px;
     margin: 6px auto 0;
@@ -3854,6 +3867,11 @@
   .sg-card h3 { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
   .sg-card ul { margin: 0; padding-left: 16px; }
   .sg-card li { margin: 0 0 6px; }
+  .sg-formulas li { margin: 0 0 10px; }
+  .sgf-name { display: block; font-weight: 600; color: var(--ink); }
+  .sgf-math { display: block; margin-top: 1px; font-size: 14px; color: var(--ink); }
+  .sgf-plain { display: block; margin-top: 2px; font-size: 12px; color: var(--ink-mute); }
+  .math-scroll { overflow-x: auto; overflow-y: hidden; }
 
   .sg-seg { margin: 0 0 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--sh-1); overflow: hidden; scroll-margin-top: calc(var(--nav-h) + 80px); }
   .sg-seg-head { display: flex; align-items: baseline; gap: 12px; padding: 14px 20px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
@@ -3893,6 +3911,9 @@
   .sg-step-n { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--red); color: #fff; font: 700 13px var(--font-display); }
   .sg-step-l { margin: 3px 0 10px; font-family: var(--font-display); font-size: 16.5px; font-weight: 600; }
   .sg-board-step { margin: 0 0 6px; text-align: center; }
+  .tex-lines mjx-container[display="true"] { margin: .35em 0 !important; }
+  .sg-answer, .sg-board, .sg-prompt { overflow-x: auto; }
+  .sg-answer mjx-container[display="true"], .sg-board mjx-container[display="true"] { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
   .sg-step .sg-cue { grid-template-columns: 100px minmax(0, 1fr); padding: 9px 0; }
   .sg-answer { margin: 14px 0 6px; padding: 12px 16px; background: linear-gradient(180deg, var(--red-tint), #fff 70%); border: 1px solid var(--red-soft); border-left: 3px solid var(--red); border-radius: 10px; }
   .sg-answer-k { color: var(--red-deep); }
@@ -5401,9 +5422,8 @@
 <footer>
   <div class="foot-brand"><span class="num">21-254</span> Practice Lab</div>
   <div class="foot-lead"><strong>Independent SI practice resource.</strong> Original practice problems, not official course materials.</div>
-  <div class="foot-report"><button type="button" class="foot-report-btn" id="reportFooterBtn">Report a problem</button><span>Spot something that looks wrong? It gets reviewed and corrected.</span></div>
-  <div class="foot-ai">Problems, hints, and solutions were developed with the assistance of AI and may contain occasional errors.</div>
-  <div class="foot-ai">Anonymous, cookie-free usage statistics. No personal data is collected.</div>
+  <div class="foot-report"><button type="button" class="foot-report-btn" id="reportFooterBtn"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14V2.5M3.5 3h8l-1.6 2.6L11.5 8.2h-8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Report a problem</button><span class="foot-report-note">Spot something that looks wrong? It gets reviewed and corrected.</span></div>
+  <div class="foot-notes"><span class="foot-ai">Problems, hints, and solutions were developed with the assistance of AI and may contain occasional errors.</span> <span class="foot-ai">Anonymous, cookie-free usage statistics. No personal data is collected.</span></div>
   <div class="foot-links">
     <button type="button" id="aboutTrigger">About this resource</button>
     <span aria-hidden="true">·</span>
@@ -5907,10 +5927,24 @@ function pruneDetachedMath() {
     if (gone.length) d.math.remove(...gone);
   } catch (_) {}
 }
+// Formulas in narrow cards (the guides' key formulas) shrink just enough to fit, never below 72%;
+// one that is still too wide scrolls sideways inside its line instead of being cut off.
+function fitMath(root) {
+  (root || document).querySelectorAll(".sg-formulas li, .walk-formula-latex, .walk-list-formulas li, .sg-board-line, .sg-answer .tex-lines, .sg-board-step").forEach(host => {
+    const cs = getComputedStyle(host), avail = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if (avail <= 0) return;
+    host.querySelectorAll("mjx-container").forEach(m => {
+      m.style.fontSize = "";
+      const w = m.getBoundingClientRect().width;
+      if (w > avail + 1) m.style.fontSize = (Math.max(.72, (avail - 6) / w) * 100).toFixed(1) + "%";   // a little slack: scaling isn't exactly linear
+    });
+    host.classList.toggle("math-scroll", [...host.querySelectorAll("mjx-container")].some(m => m.getBoundingClientRect().width > avail + 1));
+  });
+}
 function typesetMath(root) {
   if (window.MathJax && MathJax.typesetPromise) {
     pruneDetachedMath();
-    return MathJax.typesetPromise(root ? [root] : undefined).catch(err => {
+    return MathJax.typesetPromise(root ? [root] : undefined).then(() => fitMath(root)).catch(err => {
       console.warn("MathJax error:", err);
       // A failed typeset leaves half-processed items in MathJax's internal list,
       // and every later typeset trips over them, so all math on every page stops
@@ -5958,6 +5992,8 @@ function handleRoute() {
   const scrollTarget = beginNavigation(route);
   const parts = route.split("/").filter(Boolean);
   const head = parts[0] || "home";
+  // full screen belongs to one Visualize picture: going anywhere else (back, the index, a nav link) leaves it
+  if (document.fullscreenElement && !(head === "visualize" && parts[1] && VzView.def && VzView.def.id === parts[1])) document.exitFullscreen().catch(() => {});
 
   // Switch active view
   $$(".view").forEach(v => v.classList.remove("active"));
@@ -14571,7 +14607,7 @@ async function renderWalkthroughDetail(sessionId) {
         if (typeof f === "string") return '<div class="walk-formula walk-formula-single">' + renderTextOrLatex(f) + '</div>';
         return (
           '<div class="walk-formula">' +
-            '<div class="walk-formula-name">' + escapeHtml(f.name || "") + '</div>' +
+            '<div class="walk-formula-name">' + (/\\\(/.test(f.name || "") ? renderTextOrLatex(f.name) : escapeHtml(f.name || "")) + '</div>' +
             '<div class="walk-formula-latex">' + (f.latex ? texInline(f.latex) : "") + '</div>' +
             (f.plainEnglish ? '<div class="walk-formula-plain">' + escapeHtml(f.plainEnglish) + '</div>' : "") +
           '</div>'
@@ -14842,7 +14878,8 @@ function renderSessionGuide(s, root, prev, next) {
       <div class="sg-seg-body">${body}</div>
     </section>`;
   }).join("");
-  const listOf = (arr, cls) => (arr || []).length ? `<ul class="${cls || ""}">${arr.map(x => `<li>${typeof x === "string" ? sgT(x) : sgT((x.name ? x.name + ": " : "") + (x.latex ? "\\(" + x.latex + "\\)" : "") + (x.plainEnglish ? " " + x.plainEnglish : ""))}</li>`).join("")}</ul>` : "";
+  const listOf = (arr, cls) => (arr || []).length ? `<ul class="${cls || ""}">${arr.map(x => `<li>${typeof x === "string" ? sgT(x)
+    : (x.name ? `<span class="sgf-name">${sgT(x.name)}</span>` : "") + (x.latex ? `<span class="sgf-math">${sgT("\\(" + x.latex + "\\)")}</span>` : "") + (x.plainEnglish ? `<span class="sgf-plain">${sgT(x.plainEnglish)}</span>` : "")}</li>`).join("")}</ul>` : "";
   // Notation warnings are plain strings, or {bad, good, reason|why} whose bad/good may already carry \\( \\).
   const noDot = x => String(x).trim().replace(/\.$/, "");
   const notation = (s.notationWarnings || []).map(n => typeof n === "string" ? sgT(n) :
@@ -15142,7 +15179,19 @@ function texBlock(s) {
   if (/\\[\(\[]/.test(str)) {
     return '<span class="tex2jax_process">' + str + '</span>';
   }
-  // Pure expression -> wrap as display math
+  // Pure expression -> display math, one line per source line. Display math ignores newlines, so
+  // "h=5.\n\n\\text{For }h=5: …" would run together ("h = 5.For h = 5") and overflow; a line that
+  // opens an environment or a brace keeps going until it closes, so matrices stay whole.
+  const lines = [];
+  let cur = "";
+  for (const piece of str.split(/\n+/)) {
+    cur = cur ? cur + "\n" + piece : piece;
+    const opens = (cur.match(/\\begin\{/g) || []).length - (cur.match(/\\end\{/g) || []).length;
+    const braces = (cur.match(/(?<!\\)\{/g) || []).length - (cur.match(/(?<!\\)\}/g) || []).length;
+    if (opens <= 0 && braces <= 0) { if (cur.trim()) lines.push(cur.trim()); cur = ""; }
+  }
+  if (cur.trim()) lines.push(cur.trim());
+  if (lines.length > 1) return '<div class="tex-lines">' + lines.map(l => '<span class="tex2jax_process">\\[' + l + '\\]</span>').join("") + '</div>';
   return '<span class="tex2jax_process">\\[' + str + '\\]</span>';
 }
 
