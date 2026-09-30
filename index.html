@@ -452,12 +452,13 @@
   .week-kicker b { color: var(--red); font-weight: 700; }
   .week-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .week-chip {
-    display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; line-height: 1.35; border-radius: 999px;
-    background: var(--red-tint); border: 1px solid #F2C6CD; color: var(--red-deep);
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; line-height: 1.35; border-radius: 999px;
+    background: var(--red-tint); border: 1px solid rgba(200,16,46,.12); color: var(--red-deep);
     font-size: 12.5px; font-weight: 600; text-decoration: none;
-    transition: transform .18s var(--ease), background .18s var(--ease);
+    transition: background .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease);
   }
-  .week-chip:hover { transform: translateY(-1px); background: var(--red-soft); }
+  .week-chip:hover { text-decoration: none; background: #F8E1E5; border-color: rgba(200,16,46,.2); box-shadow: 0 3px 10px -6px rgba(154,11,34,.35); }
+  .week-chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
   .week-chip .arr { transition: transform .18s var(--ease); }
   .week-chip:hover .arr { transform: translateX(2px); }
   .week-note { margin: 8px 0 0; font-size: 11.5px; line-height: 1.4; color: var(--ink-mute); }
@@ -568,11 +569,11 @@
   .progress-row {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
   }
   .progress-ring {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     flex-shrink: 0;
   }
   #progressRingFill {
@@ -597,32 +598,34 @@
   }
   .progress-label {
     font-size: 13px;
+    line-height: 1.4;
     color: var(--ink-soft);
-    margin: 6px 0 8px;
+    margin: 6px 0 0;
   }
+  /* under the ring and the count, full width: the help line, or the "continue where you left off" row */
   .progress-help {
     font-size: 12px;
     color: var(--ink-mute);
     line-height: 1.5;
-    margin: 0;
+    margin: 14px 0 0;
   }
-  .progress-help.has-resume { padding: 0; }
   .resume-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     width: 100%;
     background: var(--red-tint);
-    border: 1px solid var(--red-soft);
-    border-radius: 8px;
-    padding: 8px 10px;
+    border: 1px solid rgba(200,16,46,.10);
+    border-radius: 12px;
+    padding: 10px 14px;
     text-align: left;
     cursor: pointer;
     font-family: inherit;
-    transition: background 0.15s var(--ease), transform 0.15s var(--ease);
+    transition: background .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease);
   }
-  .resume-link:hover {
-    background: var(--red-soft);
-    transform: translateX(2px);
-  }
+  .resume-link:hover { background: #F8E1E5; border-color: rgba(200,16,46,.18); box-shadow: 0 4px 14px -8px rgba(154,11,34,.35); }
+  .resume-link:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+  .resume-text { flex: 1; min-width: 0; }
   .resume-verb {
     display: block;
     font-size: 10.5px;
@@ -632,19 +635,23 @@
     color: var(--red);
     font-family: var(--font-sans);
     margin-bottom: 3px;
-  }
-  .resume-title {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.3;
-    font-family: var(--font-display);
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .resume-arrow { color: var(--red); margin-left: 4px; }
+  .resume-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.35;
+    font-family: var(--font-display);
+  }
+  .progress-label .nw { white-space: nowrap; }
+  .resume-arrow { flex: none; color: var(--red); font-size: 15px; transition: transform .18s var(--ease); }
+  .resume-link:hover .resume-arrow { transform: translateX(3px); }
 
   /* Cooked heatmap module */
   .cooked-legend {
@@ -866,7 +873,8 @@
     body.is-home .hero-art { max-height: 320px; }
     body.is-home .module { padding: 14px 16px; }
     body.is-home .module-kicker { margin-bottom: 10px; }
-    body.is-home .progress-ring { width: 96px; height: 96px; }
+    body.is-home .progress-ring { width: 88px; height: 88px; }
+    body.is-home .progress-help { margin-top: 12px; }
     body.is-home .progress-num { font-size: 30px; }
     body.is-home .home-title { margin: 12px 0 12px; font-size: clamp(36px, 4.6vw, 56px); }
     body.is-home .hero-stats { margin-top: 16px; padding-top: 12px; }
@@ -922,7 +930,7 @@
                 box-shadow .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease);
     text-align: center;
   }
-  .btn:hover { transform: translateY(-1px); }
+  .btn:hover { transform: translateY(-1px); text-decoration: none; }
   .btn:active { transform: translateY(0); }
   .btn-primary {
     background: var(--ink);
@@ -3645,7 +3653,7 @@
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); box-shadow: var(--sh-1);
     transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease);
   }
-  .vz-card:hover, .vz-card:focus-visible, .vz-card:hover *, .sg-project:hover, .sg-project:hover * { text-decoration: none; }
+  .vz-card:hover, .vz-card:focus-visible, .vz-card:hover *, .sg-project:hover, .sg-project:hover *, .sec-map-seg:hover { text-decoration: none; }
   .vz-card:hover, .vz-card:focus-visible { transform: translateY(-2px); box-shadow: var(--sh-2); border-color: var(--border-strong); }
   .vz-thumb, .vz-stage {
     display: block; width: 100%; height: auto; border: 1px solid var(--border);
@@ -4937,10 +4945,10 @@
                 <span class="progress-num" id="progressGotNum">0</span>
                 <span class="progress-total" id="progressTotalNum">/ —</span>
               </div>
-              <p class="progress-label">problems marked “Got it”</p>
-              <p class="progress-help" id="progressHelp">Mark problems as you finish — your progress is saved in this browser.</p>
+              <p class="progress-label">problems marked <span class="nw">“Got it”</span></p>
             </div>
           </div>
+          <div class="progress-help" id="progressHelp">Mark problems as you finish. Your progress is saved in this browser.</div>
         </div>
 
         <div class="module module-cooked">
@@ -5998,13 +6006,14 @@ function renderResumeLink() {
     // and we typeset below so math in titles renders properly.
     const title = String(lastProblem.title || "");
     helpEl.innerHTML = `<button class="resume-link" data-route="/problem/${lastId}" type="button">
-      <span class="resume-verb">${verb} where you left off</span>
-      <span class="resume-title">${escapeHtml(title)}<span class="resume-arrow"> →</span></span>
+      <span class="resume-text"><span class="resume-verb">${verb} where you left off</span>
+      <span class="resume-title">${escapeHtml(title)}</span></span>
+      <span class="resume-arrow" aria-hidden="true">&rarr;</span>
     </button>`;
     helpEl.classList.add("has-resume");
     typesetMath(helpEl);
   } else {
-    helpEl.innerHTML = "Mark problems as you finish — your progress is saved in this browser.";
+    helpEl.innerHTML = "Mark problems as you finish. Your progress is saved in this browser.";
     helpEl.classList.remove("has-resume");
   }
 }
