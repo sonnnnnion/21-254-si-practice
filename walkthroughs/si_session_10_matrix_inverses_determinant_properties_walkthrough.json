@@ -251,5 +251,246 @@
   "Checked determinant property problem: 2^3(-3)(-1/3)=8.",
   "Checked parameter determinant: (k-1)(k+1)-3=k^2-4."
  ],
- "reviewSummary": "Session 10 emphasizes inverses as tools and determinant properties as shortcuts."
+ "reviewSummary": "Session 10 emphasizes inverses as tools and determinant properties as shortcuts.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    9
+   ],
+   [
+    "si10-p1",
+    12
+   ],
+   [
+    "si10-p2",
+    11
+   ],
+   [
+    "si10-p3",
+    11
+   ],
+   [
+    "wrap",
+    3
+   ]
+  ],
+  "open": {
+   "title": "Undo buttons and shortcuts",
+   "say": [
+    "An inverse matrix is an undo button: A\u207b\u00b9 takes every output of A back to the input it came from.",
+    "Today we use inverses to solve systems, and learn the determinant rules that let you skip huge computations. Shortcut first, arithmetic second."
+   ],
+   "ask": [
+    {
+     "q": "If A stretches everything by a factor of 3 in some direction, what must A\u207b\u00b9 do?",
+     "a": "Shrink by a factor of 3 in that same direction."
+    }
+   ],
+   "write": [
+    "\\(A^{-1}A=AA^{-1}=I\\)",
+    "\\(\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}^{-1}=\\frac{1}{ad-bc}\\begin{bmatrix}d&-b\\\\-c&a\\end{bmatrix}\\)",
+    "\\(\\det(AB)=\\det A\\det B\\)"
+   ]
+  },
+  "idea": {
+   "title": "Determinants multiply, so inverses divide",
+   "say": [
+    "Think of the determinant as the area scale factor. Doing B then A scales area by det B and then det A, so det(AB) = det A \u00b7 det B.",
+    "An inverse undoes the scaling, so det(A\u207b\u00b9) = 1 / det A. And transposing doesn't change the scaling: det A\u1d40 = det A.",
+    "One trap: scaling the whole matrix. For an n \u00d7 n matrix, det(cA) = c\u207f det A, because every one of the n directions gets stretched by c."
+   ],
+   "draw": [
+    "Draw a unit square, then an arrow labeled B to a parallelogram (area det B), then an arrow labeled A to a bigger one (area det A \u00b7 det B).",
+    "Draw a 3 \u00d7 3 cube doubled in all three directions and write 'volume \u00d7 2\u00b3 = 8'."
+   ],
+   "visualize": "matrix",
+   "ask": [
+    {
+     "q": "det A = 5. What is det(A\u207b\u00b9)?",
+     "a": "1/5."
+    },
+    {
+     "q": "A is 3 \u00d7 3 with det A = 2. What is det(3A)?",
+     "a": "3\u00b3 \u00b7 2 = 54."
+    }
+   ]
+  },
+  "problems": {
+   "si10-p1": {
+    "launch": {
+     "say": "Find A\u207b\u00b9 with the 2 \u00d7 2 formula, then solve Ax = b using it.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Check the swap-and-negate pattern: swap a and d, negate b and c.",
+      "Make sure they multiply A\u207b\u00b9b, not bA\u207b\u00b9."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What should you check before writing any inverse?",
+      "a": "That det A \u2260 0."
+     }
+    ],
+    "steps": [
+     {
+      "say": "det A = 6 \u2212 5 = 1. Nonzero, so the inverse exists.",
+      "ask": {
+       "q": "What would det A = 0 have meant for Ax = b?",
+       "a": "No inverse: either no solution or infinitely many."
+      }
+     },
+     {
+      "say": "Swap the diagonal, negate the off-diagonal, divide by det = 1.",
+      "ask": {
+       "q": "How do you check an inverse quickly?",
+       "a": "Multiply A by it and see if you get I."
+      }
+     },
+     {
+      "say": "x = A\u207b\u00b9b = (12 \u2212 13, \u221220 + 26) = (\u22121, 6).",
+      "ask": {
+       "q": "Verify in the original system.",
+       "a": "2(\u22121) + 6 = 4 and 5(\u22121) + 18 = 13. \u2713"
+      },
+      "why": "x = A\u207b\u00b9b is the matrix version of dividing both sides by a number. It only works when the inverse exists."
+     }
+    ],
+    "meaning": "A sends (\u22121, 6) to (4, 13), and A\u207b\u00b9 sends it back. Because det A \u2260 0, that's the only input that works.",
+    "ifStuck": [
+     {
+      "if": "a student swaps b and c instead of a and d",
+      "then": "multiply their 'inverse' by A; it won't give I."
+     }
+    ],
+    "transition": "That inverse was cheap. Next: a problem where computing anything explicitly would be a waste, because the rules do all the work."
+   },
+   "si10-p2": {
+    "launch": {
+     "say": "det A = \u22123 for a 3 \u00d7 3 matrix. Find det(2A\u1d40A\u207b\u00b9). No matrix given, just rules.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Watch for det(2A\u1d40) = 2 det A. It's 2\u00b3.",
+      "Check det(A\u207b\u00b9) = \u22121/3, not +3."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which three rules will you need?",
+      "a": "det(cB) = c\u207f det B, det A\u1d40 = det A, and det(A\u207b\u00b9) = 1/det A, plus det(product) = product of dets."
+     }
+    ],
+    "steps": [
+     {
+      "say": "The determinant of a product is the product of determinants: det(2A\u1d40) \u00b7 det(A\u207b\u00b9).",
+      "ask": {
+       "q": "Why can we split it like this?",
+       "a": "det(XY) = det X \u00b7 det Y."
+      }
+     },
+     {
+      "say": "2A\u1d40 is 3 \u00d7 3, so the 2 comes out cubed: 8 det A\u1d40.",
+      "ask": {
+       "q": "Why cubed?",
+       "a": "The 2 multiplies all three rows, and each row contributes one factor of 2."
+      },
+      "why": "This is the most common determinant-rule mistake on exams."
+     },
+     {
+      "say": "det A\u1d40 = det A = \u22123, and det(A\u207b\u00b9) = 1/(\u22123) = \u22121/3.",
+      "ask": {
+       "q": "Is det(A\u207b\u00b9) = \u2212det A?",
+       "a": "No, it's the reciprocal: 1/det A."
+      }
+     },
+     {
+      "say": "Multiply: 8 \u00b7 (\u22123) \u00b7 (\u22121/3) = 8.",
+      "ask": {
+       "q": "Sanity check: what is det(A\u1d40A\u207b\u00b9) alone?",
+       "a": "1: they cancel. So the whole answer is just 2\u00b3 = 8."
+      }
+     }
+    ],
+    "meaning": "A\u1d40 scales volume by det A, and A\u207b\u00b9 undoes exactly that, so together they cancel. Only the factor 2 in all three directions is left: volume \u00d7 8.",
+    "ifStuck": [
+     {
+      "if": "a student wants to invent a matrix with det \u22123",
+      "then": "it would work, but ask them to try the rules first; it's three lines."
+     }
+    ],
+    "transition": "Last one: find the parameter values that make a matrix non-invertible."
+   },
+   "si10-p3": {
+    "launch": {
+     "say": "For which k is A(k) NOT invertible? Use the zeros.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Who expanded down column 1? That's the fast way.",
+      "Check the expansion: (k \u2212 1)(k + 1) \u2212 3."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which column makes expansion easiest?",
+      "a": "Column 1: it has two zeros."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Not invertible means det = 0.",
+      "ask": {
+       "q": "How many bad values of k could there be?",
+       "a": "As many as the roots of the determinant polynomial."
+      }
+     },
+     {
+      "say": "Expand down column 1: only the top 1 contributes, times the lower-right 2 \u00d7 2 block.",
+      "ask": {
+       "q": "Why do the other two terms vanish?",
+       "a": "Their entries in column 1 are zero."
+      }
+     },
+     {
+      "say": "(k \u2212 1)(k + 1) \u2212 3 = k\u00b2 \u2212 1 \u2212 3 = k\u00b2 \u2212 4.",
+      "ask": {
+       "q": "What's (k \u2212 1)(k + 1) as a shortcut?",
+       "a": "k\u00b2 \u2212 1, a difference of squares."
+      }
+     },
+     {
+      "say": "k\u00b2 \u2212 4 = 0, so k = 2 or k = \u22122.",
+      "ask": {
+       "q": "Check k = 2: are two rows or columns dependent?",
+       "a": "Rows 2 and 3 become (0, 1, 1) and (0, 3, 3): row 3 is 3 times row 2."
+      }
+     }
+    ],
+    "meaning": "Two special values of k tilt the rows into dependence and flatten the volume to zero. For any other k, the matrix can be undone.",
+    "ifStuck": [
+     {
+      "if": "a student expands along row 1",
+      "then": "it still works but is longer; show the column-1 shortcut side by side."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Invertible \u27fa det \u2260 0 \u27fa Ax = b has exactly one solution for every b. det(AB) = det A det B, det A\u1d40 = det A, det A\u207b\u00b9 = 1/det A, det(cA) = c\u207f det A.",
+   "exit": [
+    {
+     "q": "Give three equivalent ways to say A is invertible.",
+     "a": "det A \u2260 0; a pivot in every column; Ax = b has exactly one solution for every b (also: columns independent)."
+    },
+    {
+     "q": "Why does det(cA) depend on the size of A?",
+     "a": "c scales every one of the n rows, contributing n factors of c."
+    }
+   ],
+   "next": "Next session: eigenvalues and eigenvectors, the directions a matrix doesn't turn."
+  }
+ }
 }

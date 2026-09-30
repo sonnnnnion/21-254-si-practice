@@ -298,5 +298,257 @@
   "Problem 3 checked: det(A(k))=13-2k, so non-invertible when k=13/2."
  ],
  "reviewStatus": "reviewed",
- "reviewSummary": "Session 08 keeps determinant rules simple and checks all arithmetic before export."
+ "reviewSummary": "Session 08 keeps determinant rules simple and checks all arithmetic before export.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    10
+   ],
+   [
+    "si08-p1",
+    11
+   ],
+   [
+    "si08-p2",
+    11
+   ],
+   [
+    "si08-p3",
+    11
+   ],
+   [
+    "wrap",
+    3
+   ]
+  ],
+  "open": {
+   "title": "One number that tells you if you can undo a matrix",
+   "say": [
+    "Last time a matrix moved space around. Today: one number, the determinant, tells you how much it stretches area, whether it flips things over, and whether you can undo it.",
+    "If you remember one line from today: determinant zero means not invertible."
+   ],
+   "ask": [
+    {
+     "q": "A transformation squashes the whole plane onto a line. Can you undo it?",
+     "a": "No. Many points land on the same spot, so there's no way to know where they came from."
+    }
+   ],
+   "write": [
+    "\\(\\det A\\neq 0\\iff A\\text{ invertible}\\)",
+    "\\(\\det\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}=ad-bc\\)"
+   ]
+  },
+  "idea": {
+   "title": "The determinant is the area (or volume) scale factor",
+   "say": [
+    "Take the unit square and hit it with A. It becomes a parallelogram. The determinant is that parallelogram's area, with a minus sign if the square got flipped over.",
+    "If the determinant is 0, the square got flattened to a line: area zero, information lost, no inverse.",
+    "In 3D the same story holds for volume: the unit cube becomes a slanted box whose volume is |det A|."
+   ],
+   "draw": [
+    "Draw the unit square and, next to it, a parallelogram labeled 'area = |det A|'.",
+    "Draw a second parallelogram squashed flat onto a line: 'det A = 0, not invertible'.",
+    "Draw a mirrored version: 'det A < 0, orientation flips'."
+   ],
+   "visualize": "matrix",
+   "ask": [
+    {
+     "q": "A has det 3. What happens to the area of a shape with area 2 after applying A?",
+     "a": "It becomes 6."
+    },
+    {
+     "q": "Why does det = 0 mean the columns are dependent?",
+     "a": "The parallelogram they span is flat, so the columns lie on one line (or one plane in 3D)."
+    }
+   ]
+  },
+  "problems": {
+   "si08-p1": {
+    "launch": {
+     "say": "Compute det A and decide whether A is invertible. Look for a row or column that makes expansion easy.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Watch the middle cofactor's sign: it's minus.",
+      "Who picked a row with a zero? That saves a whole 2 \u00d7 2 determinant."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which row or column would you expand along, and why?",
+      "a": "Row 1 (or column 1), because it has a zero, so one term disappears."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Expand along row 1. Signs alternate: plus, minus, plus. The zero kills the third term.",
+      "ask": {
+       "q": "What's the sign pattern for a 3 \u00d7 3?",
+       "a": "+ \u2212 + on the first row, alternating like a checkerboard."
+      }
+     },
+     {
+      "say": "The two 2 \u00d7 2 minors: (\u22121)(1) \u2212 3 \u00b7 2 = \u22127, and 1 \u00b7 1 \u2212 3 \u00b7 0 = 1.",
+      "ask": {
+       "q": "Which entries do you cross out to get the first minor?",
+       "a": "Row 1 and column 1."
+      }
+     },
+     {
+      "say": "det A = 2(\u22127) \u2212 1(1) = \u221215.",
+      "ask": {
+       "q": "The answer is negative. Is that a problem?",
+       "a": "No. It just means A flips orientation; the volume scale is 15."
+      }
+     },
+     {
+      "say": "\u221215 \u2260 0, so A is invertible.",
+      "ask": {
+       "q": "What does det A = \u221215 say about the unit cube?",
+       "a": "It becomes a box of volume 15, mirrored."
+      }
+     }
+    ],
+    "meaning": "A stretches volume by a factor of 15 and turns the cube inside-out. Nothing gets flattened, so every output comes from exactly one input and A can be undone.",
+    "ifStuck": [
+     {
+      "if": "a student gets \u221213",
+      "then": "check the middle cofactor's sign: it's \u22121 \u00b7 det(minor), not +1."
+     }
+    ],
+    "transition": "We computed from scratch. Next: predict the determinant after row operations without knowing the matrix at all."
+   },
+   "si08-p2": {
+    "launch": {
+     "say": "We don't know A, only that det A = 4. After three row operations, what's det B?",
+     "tryMinutes": 3,
+     "circulate": [
+      "Nobody should be inventing a matrix. Just track the effect of each operation.",
+      "Check the replacement step: it changes nothing."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What does each type of row operation do to the determinant?",
+      "a": "Swap: multiply by \u22121. Scale a row by c: multiply by c. Add a multiple of a row: no change."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Start with det A = 4.",
+      "ask": {
+       "q": "Why can we solve this without knowing A?",
+       "a": "Each row operation changes the determinant by a known factor."
+      }
+     },
+     {
+      "say": "A swap flips the sign: 4 becomes \u22124.",
+      "ask": {
+       "q": "Geometric reason?",
+       "a": "Swapping two rows reverses orientation, like looking in a mirror."
+      }
+     },
+     {
+      "say": "Scaling one row by 5 multiplies the determinant by 5: \u22124 becomes \u221220.",
+      "ask": {
+       "q": "What if we scaled all three rows by 5?",
+       "a": "Then det gets multiplied by 5\u00b3 = 125, which is why det(5A) = 125 det A for a 3 \u00d7 3."
+      },
+      "why": "Scaling one row stretches the box in one direction only. That's the difference between det(5A) and scaling a single row."
+     },
+     {
+      "say": "Row replacement doesn't change the determinant. det B = \u221220.",
+      "ask": {
+       "q": "Why doesn't adding a multiple of a row change the volume?",
+       "a": "It's a shear: it slides the box sideways, which doesn't change its volume."
+      }
+     }
+    ],
+    "meaning": "Row operations change the determinant in predictable ways: swaps flip the sign, scaling multiplies, and shears (replacements) leave it alone. That's also why row reducing is a fast way to compute determinants.",
+    "ifStuck": [
+     {
+      "if": "a student multiplies by 5 three times",
+      "then": "ask how many rows were scaled. Only row 3."
+     }
+    ],
+    "transition": "Last one: find the value of k that makes the determinant zero, the one bad value."
+   },
+   "si08-p3": {
+    "launch": {
+     "say": "For which k is A(k) invertible? Find the determinant as a function of k.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Is anyone setting det = 1? Invertible means det \u2260 0.",
+      "Check the final answer is the invertible values, not the bad one."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What equation finds the bad values of k?",
+      "a": "det A(k) = 0."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Invertible exactly when the determinant is nonzero.",
+      "ask": {
+       "q": "What are we actually solving for, then?",
+       "a": "The k values where det = 0; every other k is fine."
+      }
+     },
+     {
+      "say": "Expand along row 1: 1(1 \u2212 0) \u2212 2(0 \u2212 6) + k(0 \u2212 2) = 1 + 12 \u2212 2k = 13 \u2212 2k.",
+      "ask": {
+       "q": "Why does k only appear once?",
+       "a": "It's a single entry, so the determinant is linear in k."
+      }
+     },
+     {
+      "say": "13 \u2212 2k = 0 gives k = 13/2.",
+      "ask": {
+       "q": "What happens to the columns at k = 13/2?",
+       "a": "They become dependent and the box goes flat."
+      }
+     },
+     {
+      "say": "Invertible for every k except 13/2.",
+      "ask": {
+       "q": "How should you phrase the final answer?",
+       "a": "k \u2260 13/2. The question asks where A(k) IS invertible."
+      },
+      "why": "Read the question: answering with the bad value instead of the good ones costs points."
+     }
+    ],
+    "meaning": "As k changes, the third column swings around. At exactly k = 13/2 it lands in the plane of the other two columns, and the volume collapses to zero.",
+    "ifStuck": [
+     {
+      "if": "a student answers 'k = 13/2'",
+      "then": "reread the question together: it asks for the invertible values."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "det \u2260 0 \u27fa invertible. Swap: \u00d7(\u22121). Scale a row by c: \u00d7c. Replace (add a multiple): no change.",
+   "exit": [
+    {
+     "q": "What determinant value means not invertible?",
+     "a": "Zero."
+    },
+    {
+     "q": "Which row operation doesn't change the determinant?",
+     "a": "Adding a multiple of one row to another."
+    },
+    {
+     "q": "What is det(3A) for a 3 \u00d7 3 matrix with det A = 2?",
+     "a": "3\u00b3 \u00b7 2 = 54."
+    }
+   ],
+   "next": "Next session is the Exam 1 review: everything from vectors through determinants."
+  }
+ }
 }

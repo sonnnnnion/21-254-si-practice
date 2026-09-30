@@ -394,5 +394,290 @@
   "Notation uses \\([A\\mid b]\\) for augmented matrices and avoids ambiguous system notation."
  ],
  "reviewStatus": "reviewed",
- "reviewSummary": "Session 03 emphasizes simple interpretation before long computation, then ends with a parameter consistency problem."
+ "reviewSummary": "Session 03 emphasizes simple interpretation before long computation, then ends with a parameter consistency problem.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    7
+   ],
+   [
+    "si03-p01",
+    11
+   ],
+   [
+    "si03-p02",
+    17
+   ],
+   [
+    "si03-p03",
+    9
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Three possible endings",
+   "say": [
+    "Every linear system ends one of three ways: exactly one solution, no solution, or infinitely many. Nothing else is possible, not two solutions and not five.",
+    "Today's job: row reduce, then read which ending you got straight from the matrix."
+   ],
+   "ask": [
+    {
+     "q": "Two lines in the plane. How many points can they share?",
+     "a": "One (they cross), none (parallel), or infinitely many (the same line). Those are the three endings."
+    }
+   ],
+   "write": [
+    "one solution  |  no solution  |  infinitely many",
+    "\\(A\\mathbf x=\\mathbf b\\ \\longleftrightarrow\\ [A\\mid\\mathbf b]\\)"
+   ]
+  },
+  "idea": {
+   "title": "Row operations rewrite the system without changing its answers",
+   "say": [
+    "Swapping two equations, scaling one, or adding a multiple of one to another never changes which points solve the system. So we can simplify as much as we like.",
+    "Row reduction is just the careful version of the elimination you did in high school, written without the letters.",
+    "When you finish, the pivots tell the story: a pivot in every variable column means one solution; a column with no pivot means a free variable; a row that says 0 = 5 means no solution."
+   ],
+   "draw": [
+    "Draw two lines crossing at a point and write 'one solution'.",
+    "Draw two parallel lines and write 'no solution: a row like 0 = c'.",
+    "Draw one line twice (thick) and write 'infinitely many: a free variable'."
+   ],
+   "visualize": "systems",
+   "ask": [
+    {
+     "q": "What does a row of all zeros, [0 0 0 | 0], tell you?",
+     "a": "Nothing bad: it says 0 = 0, which is always true. One equation was redundant."
+    },
+    {
+     "q": "What does [0 0 0 | 5] tell you?",
+     "a": "0 = 5, which is impossible. The system has no solution."
+    }
+   ]
+  },
+  "problems": {
+   "si03-p01": {
+    "launch": {
+     "say": "The row reduction is already done here. Your job is to read it: write every solution in parametric form.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Watch for x = 5 \u2212 2t. The equation x \u2212 2z = 5 gives x = 5 + 2z.",
+      "If someone panics about the zero row, ask what equation it stands for."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which columns have pivots, and which variable is free?",
+      "a": "x and y have pivots; the z column has none, so z is free."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Circle the leading 1s: column x and column y. Column z has no pivot, so z is free.",
+      "ask": {
+       "q": "What does 'free' mean here?",
+       "a": "z can be any number; x and y then adjust to it."
+      }
+     },
+     {
+      "say": "Give the free variable a name. z = t, where t can be any real number.",
+      "ask": {
+       "q": "Does the letter matter?",
+       "a": "No. It's a label for 'any real number'."
+      }
+     },
+     {
+      "say": "Each nonzero row is an equation. Row 1: x \u2212 2z = 5. Row 2: y + 3z = \u22121. Row 3 says 0 = 0, which we can ignore.",
+      "ask": {
+       "q": "Why is the zero row harmless?",
+       "a": "It reads 0 = 0, true for every x, y, z."
+      }
+     },
+     {
+      "say": "Solve for the pivot variables: move the z terms to the right. x = 5 + 2t and y = \u22121 \u2212 3t.",
+      "ask": {
+       "q": "Why is it + 2t for x?",
+       "a": "x \u2212 2z = 5, so x = 5 + 2z: moving \u22122z across flips its sign."
+      }
+     },
+     {
+      "say": "Stack them into a vector: a fixed point plus t times a direction.",
+      "ask": {
+       "q": "What shape is this solution set?",
+       "a": "A line in \u211d\u00b3 through (5, \u22121, 0) in the direction (2, \u22123, 1)."
+      },
+      "why": "Point plus t times direction is the shape of every one-free-variable solution set: a line."
+     }
+    ],
+    "meaning": "Three planes that all contain one common line: every point on that line solves all three equations. One free variable means a one-dimensional family of solutions.",
+    "ifStuck": [
+     {
+      "if": "a student treats z like a pivot variable",
+      "then": "ask which column's leading entry belongs to z. There isn't one."
+     }
+    ],
+    "transition": "That matrix came pre-reduced. Next we do the reduction ourselves from scratch."
+   },
+   "si03-p02": {
+    "launch": {
+     "say": "Solve the system by row reducing. The goal isn't to be clever: make zeros below each pivot, one column at a time.",
+     "tryMinutes": 6,
+     "circulate": [
+      "Check that every row operation also hits the right-hand column.",
+      "Fractions are fine. If someone thinks \u22121/2 means a mistake, reassure them."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What's the first thing you do with three equations like this?",
+      "a": "Write the augmented matrix [A | b]."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Coefficients go in the left three columns, the right-hand sides in the last column, separated by a bar.",
+      "ask": {
+       "q": "What does the bar separate?",
+       "a": "The coefficients of x, y, z from the constants on the right side."
+      }
+     },
+     {
+      "say": "The 1 in the top-left is our first pivot. Clear below it: R\u2082 \u2212 2R\u2081 and R\u2083 + R\u2081.",
+      "ask": {
+       "q": "Why R\u2082 \u2212 2R\u2081 specifically?",
+       "a": "Row 2 starts with 2, so subtracting 2 copies of row 1 makes that entry 0."
+      },
+      "why": "Each operation is chosen to create one specific zero. Say which zero you are aiming for before you do it."
+     },
+     {
+      "say": "Next pivot: the 1 in row 2, column 2. Clear below it with R\u2083 \u2212 R\u2082.",
+      "ask": {
+       "q": "What equation does the new third row stand for?",
+       "a": "\u22122z = 1."
+      }
+     },
+     {
+      "say": "Scale row 3 by \u22121/2 to get a leading 1. So z = \u22121/2.",
+      "ask": {
+       "q": "Could we have stopped here and back-substituted instead?",
+       "a": "Yes. Echelon form plus back substitution works; full RREF just finishes the job in the matrix."
+      }
+     },
+     {
+      "say": "Now clear above the third pivot: R\u2082 \u2212 3R\u2083 and R\u2081 + R\u2083.",
+      "ask": {
+       "q": "Why do we clear upward only after reaching the last pivot?",
+       "a": "Working bottom-up means each row we use has a single pivot and no other unknowns left."
+      }
+     },
+     {
+      "say": "Finally R\u2081 \u2212 2R\u2082. Every variable column has a pivot, so there's exactly one solution.",
+      "ask": {
+       "q": "How can we check the answer?",
+       "a": "Plug x = \u22129/2, y = 7/2, z = \u22121/2 into an original equation: \u22129/2 + 7 + 1/2 = 3 for the first one."
+      }
+     }
+    ],
+    "meaning": "Three planes in space meet at exactly one point, (\u22129/2, 7/2, \u22121/2). A pivot in every column is the matrix's way of saying 'no freedom left'.",
+    "ifStuck": [
+     {
+      "if": "a student's final answer doesn't check in the original equations",
+      "then": "check whether the right-hand column got every row operation."
+     },
+     {
+      "if": "a student gets different numbers midway",
+      "then": "compare row by row with the board; one slip early changes everything after."
+     }
+    ],
+    "transition": "Last one: the matrix has a parameter k, and we decide which ending we get for each k."
+   },
+   "si03-p03": {
+    "launch": {
+     "say": "For which values of k does this system have one, none, or infinitely many solutions? Hint: only one row can cause trouble.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Watch for anyone stopping after solving (k \u2212 2)(k + 1) = 0. They also need to check the right-hand side.",
+      "Ask someone who's done to explain why k = 2 and k = \u22121 behave differently."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which row can change the ending, and why?",
+      "a": "The last row. The first two rows already have pivots no matter what k is."
+     }
+    ],
+    "steps": [
+     {
+      "say": "The first two rows always have pivots. The last row says (k \u2212 2)(k + 1)z = k \u2212 2.",
+      "ask": {
+       "q": "What are the only ways this row can cause trouble?",
+       "a": "If its coefficient is 0: then it reads either 0 = 0 or 0 = (nonzero)."
+      }
+     },
+     {
+      "say": "The coefficient is zero exactly when k = 2 or k = \u22121. Those are our special cases.",
+      "ask": {
+       "q": "What happens for every other k?",
+       "a": "The coefficient is nonzero, so z gets a pivot."
+      }
+     },
+     {
+      "say": "Generic case: a pivot in all three columns, so exactly one solution.",
+      "ask": {
+       "q": "How many values of k give one solution?",
+       "a": "Infinitely many: every real number except 2 and \u22121."
+      }
+     },
+     {
+      "say": "k = 2: the row becomes 0 = 0. It disappears, z has no pivot, so z is free: infinitely many solutions.",
+      "ask": {
+       "q": "Why is 0 = 0 not a contradiction?",
+       "a": "It's true for every z, so it doesn't restrict anything."
+      }
+     },
+     {
+      "say": "k = \u22121: the row becomes 0 = \u22123. Impossible, so no solution.",
+      "ask": {
+       "q": "Both special values make the coefficient zero. Why do they end differently?",
+       "a": "The right-hand side: k \u2212 2 is 0 when k = 2 but \u22123 when k = \u22121."
+      },
+      "why": "Always check the right-hand side too. That one check is the difference between 'infinitely many' and 'none'."
+     }
+    ],
+    "meaning": "As k moves, the third plane tilts. At k = 2 it slides into a position containing a whole line of solutions; at k = \u22121 it becomes parallel to where it needs to be and misses entirely.",
+    "ifStuck": [
+     {
+      "if": "a student says both k = 2 and k = \u22121 give no solution",
+      "then": "plug each one into the right-hand side and read the row out loud as an equation."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Pivot in every variable column \u2192 one solution. Free variable \u2192 infinitely many. Row [0 \u2026 0 | c \u2260 0] \u2192 no solution.",
+   "exit": [
+    {
+     "q": "What row tells you there's no solution?",
+     "a": "A row of zeros with a nonzero number on the right: 0 = c."
+    },
+    {
+     "q": "How do you know a variable is free?",
+     "a": "Its column has no pivot."
+    },
+    {
+     "q": "What's the difference between a zero row and an inconsistent row?",
+     "a": "A zero row is 0 = 0 (harmless); an inconsistent row is 0 = c with c \u2260 0 (impossible)."
+    }
+   ],
+   "next": "Next session: rank, and why the number of pivots decides almost everything about a system."
+  }
+ }
 }

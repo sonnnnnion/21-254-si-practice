@@ -319,5 +319,265 @@
   "Cross product checked: AB x AC=(4,-3,5), plane 4x-3y+5z-14=0.",
   "Notation uses arrows for point-to-point vectors."
  ],
- "reviewSummary": "Session 14 is ready for Claude rendering with exact visual specs for projection, point-to-line distance, and plane-through-points."
+ "reviewSummary": "Session 14 is ready for Claude rendering with exact visual specs for projection, point-to-line distance, and plane-through-points.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si14-p1",
+    10
+   ],
+   [
+    "si14-p2",
+    13
+   ],
+   [
+    "si14-p3",
+    13
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Shadows and normals",
+   "say": [
+    "Two geometry tools today. The dot product splits a vector into 'along' and 'across' pieces. The cross product builds a vector sticking straight out of a plane.",
+    "Together they answer the classic 3D questions: how far is this point from that line, and what is the equation of this plane?"
+   ],
+   "ask": [
+    {
+     "q": "The sun is directly overhead and you hold a stick at an angle. What is its shadow, in vector language?",
+     "a": "Its projection onto the ground: the part of the stick that points along the ground."
+    }
+   ],
+   "write": [
+    "\\(\\operatorname{proj}_{a}b=\\dfrac{b\\cdot a}{a\\cdot a}\\,a\\)",
+    "\\(b=b_{\\parallel}+b_{\\perp}\\)",
+    "\\(a\\times b\\perp a,\\ b\\)",
+    "\\(n\\cdot(x-x_0)=0\\)"
+   ]
+  },
+  "idea": {
+   "title": "Along, across, and straight out",
+   "say": [
+    "The projection is the shadow of b on the line through a. The fraction (b \u00b7 a)/(a \u00b7 a) says how many copies of a fit in that shadow.",
+    "Whatever is left over, b minus the shadow, is perpendicular to a. That leftover is the 'across' piece, and its length is a distance.",
+    "In 3D, a \u00d7 b is perpendicular to both a and b. So if a and b lie in a plane, a \u00d7 b is the plane's normal, and a normal plus a point is all a plane equation needs."
+   ],
+   "draw": [
+    "Draw a and b from the origin, the shadow of b along a, and the leftover dropping from the shadow's tip to b's tip with a right-angle box.",
+    "Next to it, draw a tilted plane with two arrows lying in it and a third arrow standing straight up, labeled 'cross product = normal'."
+   ],
+   "visualize": "projection",
+   "ask": [
+    {
+     "q": "If b \u00b7 a = 0, what is the projection?",
+     "a": "The zero vector: b has no part along a."
+    },
+    {
+     "q": "Which gives a number and which gives a vector: dot or cross?",
+     "a": "Dot gives a number; cross gives a vector."
+    }
+   ]
+  },
+  "problems": {
+   "si14-p1": {
+    "launch": {
+     "say": "Project b onto a, find the leftover, and check it's perpendicular to a.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Check the denominator is a \u00b7 a, not b \u00b7 b.",
+      "Push students to draw it: (4, 2) should sit on a's line."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which vector's line does the answer lie on?",
+      "a": "a's line. We're projecting onto a."
+     }
+    ],
+    "visualize": "projection",
+    "steps": [
+     {
+      "say": "b \u00b7 a = 6 + 4 = 10 and a \u00b7 a = 4 + 1 = 5.",
+      "ask": {
+       "q": "Why a \u00b7 a and not |a|?",
+       "a": "One |a| normalizes the dot product and the other normalizes the direction vector; together that's |a|\u00b2 = a \u00b7 a."
+      }
+     },
+     {
+      "say": "10/5 = 2 copies of a: the projection is (4, 2).",
+      "ask": {
+       "q": "Is (4, 2) longer or shorter than b?",
+       "a": "Shorter: |(4, 2)| = \u221a20 \u2248 4.5, while |b| = 5. A shadow can't be longer than the stick."
+      }
+     },
+     {
+      "say": "The leftover: (3, 4) \u2212 (4, 2) = (\u22121, 2).",
+      "ask": {
+       "q": "Where do we draw this piece?",
+       "a": "From the tip of the projection to the tip of b."
+      }
+     },
+     {
+      "say": "(\u22121, 2) \u00b7 (2, 1) = \u22122 + 2 = 0. Perpendicular, as promised.",
+      "ask": {
+       "q": "Why is it always perpendicular?",
+       "a": "The projection takes away exactly all of b's 'along a' part, so nothing along a is left."
+      },
+      "why": "This check is free and catches almost every arithmetic slip in a projection."
+     }
+    ],
+    "meaning": "b = (4, 2) + (\u22121, 2): two copies of a, plus a piece at a right angle to a. Every vector splits this way against any direction.",
+    "ifStuck": [
+     {
+      "if": "a student gets a leftover that isn't perpendicular",
+      "then": "recheck the fraction (b \u00b7 a)/(a \u00b7 a) first."
+     }
+    ],
+    "transition": "Now the leftover piece becomes a distance: the distance from a point to a line in 3D."
+   },
+   "si14-p2": {
+    "launch": {
+     "say": "Find the distance from P to the line L. Hint: the leftover from last problem is exactly a distance.",
+     "tryMinutes": 6,
+     "circulate": [
+      "Is anyone projecting P itself? The line doesn't go through the origin; use QP.",
+      "Watch for students reporting the projection's length instead of the leftover's."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What vector should we project, and onto what?",
+      "a": "The vector QP from a point on the line to P, projected onto the direction d."
+     }
+    ],
+    "steps": [
+     {
+      "say": "QP = P \u2212 Q = (2, 2, \u22121).",
+      "ask": {
+       "q": "Why not just use P = (3, 2, 1)?",
+       "a": "The line doesn't pass through the origin; we need a vector that starts on the line."
+      }
+     },
+     {
+      "say": "QP \u00b7 d = 4 + 2 + 2 = 8, d \u00b7 d = 9, so the shadow is (8/9)d = (16/9, 8/9, \u221216/9).",
+      "ask": {
+       "q": "What does 8/9 mean geometrically?",
+       "a": "The foot of the perpendicular is 8/9 of the way along d from Q."
+      }
+     },
+     {
+      "say": "Leftover: (2, 2, \u22121) \u2212 (16/9, 8/9, \u221216/9) = (2/9, 10/9, 7/9).",
+      "ask": {
+       "q": "Check it's perpendicular to d.",
+       "a": "(4 + 10 \u2212 14)/9 = 0. \u2713"
+      }
+     },
+     {
+      "say": "Length: \u221a(4 + 100 + 49)/9 = \u221a153/9 = \u221a17/3.",
+      "ask": {
+       "q": "Faster way with Pythagoras?",
+       "a": "|QP|\u00b2 = 9 and |shadow|\u00b2 = 64/9, so leftover\u00b2 = 9 \u2212 64/9 = 17/9."
+      },
+      "why": "The shadow and the leftover are the legs of a right triangle with QP as the hypotenuse."
+     }
+    ],
+    "meaning": "The closest point on L to P is where the leftover drops straight down onto the line. Its length, \u221a17/3 \u2248 1.37, is the distance.",
+    "ifStuck": [
+     {
+      "if": "a student reports 8/3 (the shadow length)",
+      "then": "draw the right triangle and ask which side is the distance to the line."
+     },
+     {
+      "if": "a student knows the cross product formula",
+      "then": "great: |QP \u00d7 d|/|d| = \u221a17/3 as well. Have them share it as a check."
+     }
+    ],
+    "transition": "Last one: from 'across' to 'straight out'. Three points, one plane, and the cross product finds its normal."
+   },
+   "si14-p3": {
+    "launch": {
+     "say": "Find the plane through A, B and C.",
+     "tryMinutes": 6,
+     "circulate": [
+      "Check the middle component of the cross product: it's minus the 2 \u00d7 2 determinant.",
+      "Encourage plugging B and C into the final equation."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "A plane equation needs two ingredients. Which?",
+      "a": "A normal vector and one point on the plane."
+     }
+    ],
+    "visualize": "cross",
+    "steps": [
+     {
+      "say": "AB = (2, 1, \u22121) and AC = (\u22121, 2, 2). Both lie in the plane.",
+      "ask": {
+       "q": "Could we use BC instead of AC?",
+       "a": "Yes: any two non-parallel vectors in the plane work."
+      }
+     },
+     {
+      "say": "Cross product: (1 \u00b7 2 \u2212 (\u22121) \u00b7 2, \u2212(2 \u00b7 2 \u2212 (\u22121)(\u22121)), 2 \u00b7 2 \u2212 1 \u00b7 (\u22121)) = (4, \u22123, 5).",
+      "ask": {
+       "q": "Check it's perpendicular to AB.",
+       "a": "8 \u2212 3 \u2212 5 = 0. \u2713"
+      },
+      "why": "The dot-product check against both vectors catches sign slips in the cross product immediately."
+     },
+     {
+      "say": "Point-normal form with A: 4(x \u2212 1) \u2212 3y + 5(z \u2212 2) = 0.",
+      "ask": {
+       "q": "Would using B give a different plane?",
+       "a": "Same plane, same simplified equation."
+      }
+     },
+     {
+      "say": "Simplify: 4x \u2212 3y + 5z = 14.",
+      "ask": {
+       "q": "Check C = (0, 2, 4).",
+       "a": "0 \u2212 6 + 20 = 14. \u2713"
+      }
+     }
+    ],
+    "meaning": "The normal (4, \u22123, 5) stands straight out of the plane. The equation just says: every point X in the plane has X \u2212 A perpendicular to that normal.",
+    "ifStuck": [
+     {
+      "if": "a student's plane misses B or C",
+      "then": "dot the normal with AB and AC; one of them won't be 0, which finds the slip."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Dot product \u2192 along vs. across (projections, distances, angles). Cross product \u2192 a normal (planes, areas). Plane = normal + point.",
+   "exit": [
+    {
+     "q": "When do you use dot vs. cross?",
+     "a": "Dot to measure 'how much along'; cross to build a perpendicular vector in 3D."
+    },
+    {
+     "q": "Projection vs. scalar component?",
+     "a": "The projection is a vector; the scalar component is its signed length (b \u00b7 a)/|a|."
+    },
+    {
+     "q": "Why does a plane need a normal?",
+     "a": "The normal fixes the plane's tilt; the point fixes where it sits."
+    }
+   ],
+   "next": "Next session: curves in space. Position, velocity and acceleration as vectors."
+  }
+ }
 }

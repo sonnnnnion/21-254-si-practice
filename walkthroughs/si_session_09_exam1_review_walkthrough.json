@@ -495,5 +495,363 @@
   "Problem 5 checked: det(M(k))=-4k-1, non-invertible at k=-1/4."
  ],
  "reviewStatus": "reviewed",
- "reviewSummary": "Session 09 is the first exam review session. It has five mixed original problems covering Sections 1-4, with simple board-first explanations and exact visual specs."
+ "reviewSummary": "Session 09 is the first exam review session. It has five mixed original problems covering Sections 1-4, with simple board-first explanations and exact visual specs.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    5
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si09-p1",
+    8
+   ],
+   [
+    "si09-p2",
+    10
+   ],
+   [
+    "si09-p3",
+    14
+   ],
+   [
+    "si09-p4",
+    10
+   ],
+   [
+    "si09-p5",
+    12
+   ],
+   [
+    "wrap",
+    8
+   ]
+  ],
+  "open": {
+   "title": "Exam review is about recognition",
+   "say": [
+    "Welcome to Exam 1 review. Most points on this exam aren't lost to hard math. They're lost in the first ten seconds, when you don't recognize what kind of problem it is.",
+    "So today, for every problem, we'll say out loud: what type is this, and what's the first move? Then we do it."
+   ],
+   "ask": [
+    {
+     "q": "Quick poll: which topic feels slowest for you right now: row reduction, span and bases, transformations, or determinants?",
+     "a": "Note the answers on the board; spend extra time on the most common one."
+    }
+   ],
+   "write": [
+    "Topic → first move",
+    "vector/dot product → vector or number? sign of u · v",
+    "system → augmented matrix, row reduce, circle pivots",
+    "span / independence / basis → vectors as columns",
+    "transformation → columns = T(e₁), T(e₂), …",
+    "invertible? → det ≠ 0"
+   ]
+  },
+  "idea": {
+   "title": "The five problem types on Exam 1",
+   "say": [
+    "Almost every Exam 1 problem is one of these five types. Each has a first move that gets you going.",
+    "Vectors: decide whether the answer is a vector or a number, and use the sign of the dot product for angles. Systems: row reduce, then read pivots and free variables.",
+    "Span and independence: put the vectors in as columns and row reduce or take the determinant. Transformations: the columns of the matrix are where the basis vectors go. Determinants: nonzero means invertible, and |det| is the area or volume scale."
+   ],
+   "draw": [
+    "Draw a two-column table titled 'Exam 1 map': Topic | First move.",
+    "Fill in the five rows from the Write list, one line each.",
+    "Leave room under each row for one takeaway sentence; fill it in after each problem."
+   ],
+   "ask": [
+    {
+     "q": "An exam problem gives you an RREF matrix. What's your first move?",
+     "a": "Circle the pivots and identify the free variables."
+    },
+    {
+     "q": "A problem asks 'is T one-to-one?' for a 2 × 2 matrix. Fastest test?",
+     "a": "Compute the determinant; nonzero means one-to-one and onto."
+    }
+   ]
+  },
+  "problems": {
+   "si09-p1": {
+    "launch": {
+     "say": "Warm-up: compute u + 2v and u · v, then decide if the angle is acute, obtuse or right. Label each answer vector or number.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Check that v was doubled before adding.",
+      "Push for the interpretation, not just 'the dot product is −1'."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which answers here are vectors and which are numbers?",
+      "a": "u + 2v is a vector; u · v is a number; the angle type is a word."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Double v first, then add: (2, −1, 2) + (2, 6, 0) = (4, 5, 2).",
+      "ask": {
+       "q": "What's the most common slip here?",
+       "a": "Adding v instead of 2v."
+      }
+     },
+     {
+      "say": "Dot product: 2 − 3 + 0 = −1.",
+      "ask": {
+       "q": "Is −1 a small or large angle?",
+       "a": "Slightly over 90°, since the dot product is barely negative compared to the lengths."
+      }
+     },
+     {
+      "say": "Negative dot product means cos θ < 0: the angle is obtuse.",
+      "ask": {
+       "q": "What would a dot product of 0 have meant?",
+       "a": "A right angle: perpendicular."
+      },
+      "why": "The sign of the dot product answers the angle question without computing any angle."
+     }
+    ],
+    "meaning": "u and v point just a bit more than perpendicular apart. On an exam, 'acute / obtuse / right' is always a sign check.",
+    "ifStuck": [
+     {
+      "if": "a student tries to compute the actual angle with arccos",
+      "then": "point out the question only asks for the type; the sign is enough."
+     }
+    ],
+    "transition": "Type two: systems. The row reduction is already done here, so it's pure reading."
+   },
+   "si09-p2": {
+    "launch": {
+     "say": "Write the solution set in parametric form. No more row reducing, just read.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Check the signs: x₁ + 2x₃ = −1 gives x₁ = −1 − 2t.",
+      "Anyone saying 'the zero row means no solution'? Ask them to read it as an equation."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "First move for an RREF problem?",
+      "a": "Circle the pivots, find the free variables."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Pivots in columns 1 and 2. Column 3 is free: x₃ = t.",
+      "ask": {
+       "q": "How many solutions will there be?",
+       "a": "Infinitely many: one free variable, and no inconsistent row."
+      }
+     },
+     {
+      "say": "Rows as equations: x₁ + 2x₃ = −1 and x₂ − 3x₃ = 4.",
+      "ask": {
+       "q": "What does the last row say?",
+       "a": "0 = 0: no information, no problem."
+      }
+     },
+     {
+      "say": "Move the t terms right: x₁ = −1 − 2t, x₂ = 4 + 3t.",
+      "ask": {
+       "q": "Why did −3x₃ become +3t?",
+       "a": "Moving it across the equals sign flips its sign."
+      }
+     },
+     {
+      "say": "Write the whole solution as a triple in t. Or as a point plus t times a direction.",
+      "ask": {
+       "q": "What shape is this solution set?",
+       "a": "A line in ℝ³ through (−1, 4, 0) in direction (−2, 3, 1)."
+      }
+     }
+    ],
+    "meaning": "A line of solutions: one free variable means one direction of freedom.",
+    "ifStuck": [
+     {
+      "if": "a student forgets the parameter",
+      "then": "ask what value x₃ has. It can be anything, so it needs a name."
+     }
+    ],
+    "transition": "Type three: span, independence and bases, all asked at once."
+   },
+   "si09-p3": {
+    "launch": {
+     "say": "Three questions: is b in the span, are the vectors independent, and what's a basis for the span. Answer all three.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Look for students who spot v₃ = 2v₁ + v₂ by eye. Have them share.",
+      "Is anyone giving all three vectors as a basis?"
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What's the difference between 'b is in the span' and 'the vectors are independent'?",
+      "a": "The first asks if some combination makes b; the second asks if any vector is redundant."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Look for a relation first: 2v₁ + v₂ = (2, 1, 3) = v₃. So v₃ is redundant.",
+      "ask": {
+       "q": "How might you spot this without guessing?",
+       "a": "Row reduce [v₁ v₂ v₃]; column 3 won't be a pivot column."
+      }
+     },
+     {
+      "say": "Now b: 3v₁ + 2v₂ = (3, 2, 4) = b. So b is in the span.",
+      "ask": {
+       "q": "Could b be in the span even though the vectors are dependent?",
+       "a": "Yes. These are separate questions."
+      }
+     },
+     {
+      "say": "Because v₃ = 2v₁ + v₂, the set is dependent.",
+      "ask": {
+       "q": "Write a dependence relation equal to zero.",
+       "a": "2v₁ + v₂ − v₃ = 0."
+      }
+     },
+     {
+      "say": "v₁ and v₂ aren't multiples of each other, so {v₁, v₂} is independent and spans the same plane: that's a basis.",
+      "ask": {
+       "q": "What's the dimension of the span?",
+       "a": "2: it's a plane through the origin."
+      },
+      "why": "A basis for a span: keep the vectors that aren't redundant (the pivot columns)."
+     }
+    ],
+    "meaning": "All three vectors and b lie in one plane through the origin. Two directions describe it; the third vector was a duplicate direction.",
+    "ifStuck": [
+     {
+      "if": "a student thinks 'dependent' means 'b is not in the span'",
+      "then": "separate the questions on the board, one per line."
+     }
+    ],
+    "transition": "Type four: transformations and what the determinant tells us about them."
+   },
+   "si09-p4": {
+    "launch": {
+     "say": "Compute T(2, −1), decide one-to-one and onto, and find the area scale factor.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Watch for 'area scale is −5'. Area scale is the absolute value."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "For a square matrix, which single number answers 'one-to-one and onto'?",
+      "a": "The determinant: nonzero means both."
+     }
+    ],
+    "visualize": "matrix",
+    "steps": [
+     {
+      "say": "Multiply: (2 − 2, 6 − 1) = (0, 5).",
+      "ask": {
+       "q": "Say it as columns.",
+       "a": "2 times column 1 minus column 2."
+      }
+     },
+     {
+      "say": "det A = 1 − 6 = −5.",
+      "ask": {
+       "q": "What does the minus sign mean?",
+       "a": "The transformation flips orientation."
+      }
+     },
+     {
+      "say": "Nonzero determinant: one-to-one and onto. Area scale factor is |−5| = 5.",
+      "ask": {
+       "q": "A triangle of area 2 goes through T. New area?",
+       "a": "10."
+      },
+      "why": "The determinant's size scales area; its sign says whether the picture is mirrored."
+     }
+    ],
+    "meaning": "T stretches every region's area by 5 and mirrors it. Nothing collapses, so T can be undone.",
+    "ifStuck": [
+     {
+      "if": "a student answers area scale −5",
+      "then": "ask whether an area can be negative."
+     }
+    ],
+    "transition": "Last type: a parameter, and the one value of k that breaks invertibility."
+   },
+   "si09-p5": {
+    "launch": {
+     "say": "For which k is M(k) invertible? Classic exam problem.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Check the minus sign on the middle cofactor.",
+      "Make sure final answers say k ≠ −1/4, not k = −1/4."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What equation finds the bad k?",
+      "a": "det M(k) = 0."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Expand along row 1: 1 · det[[1, 1], [3, 2]] − k · det[[2, 1], [0, 2]] + 0.",
+      "ask": {
+       "q": "Why expand along row 1?",
+       "a": "It has a zero, and the k is in it."
+      }
+     },
+     {
+      "say": "The minors are 2 − 3 = −1 and 4 − 0 = 4. So det M = −1 − 4k.",
+      "ask": {
+       "q": "Check: at k = 0, is M invertible?",
+       "a": "det = −1 ≠ 0, so yes."
+      }
+     },
+     {
+      "say": "−1 − 4k = 0 gives k = −1/4, the one bad value.",
+      "ask": {
+       "q": "What happens to M's columns at k = −1/4?",
+       "a": "They become dependent."
+      }
+     },
+     {
+      "say": "Invertible for every k ≠ −1/4.",
+      "ask": {
+       "q": "How many good values of k are there?",
+       "a": "Infinitely many: all reals except one."
+      }
+     }
+    ],
+    "meaning": "Exactly one value of k flattens the box the columns span; everywhere else M is invertible.",
+    "ifStuck": [
+     {
+      "if": "a student sets det = 1",
+      "then": "remind them invertible means det ≠ 0, not det = 1."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Recognize the type → make the first move → check the answer means what the question asked.",
+   "exit": [
+    {
+     "q": "What's the first thing you do with an RREF matrix?",
+     "a": "Circle pivots; find free variables."
+    },
+    {
+     "q": "What does det ≠ 0 tell you about a square matrix?",
+     "a": "It's invertible: the columns are independent and T is one-to-one and onto."
+    },
+    {
+     "q": "Which Practice Lab section will you review next, and why?",
+     "a": "Use the poll from the start: point each student to Sections 1–4 by their weakest topic."
+    }
+   ],
+   "next": "Good luck on Exam 1. After it: matrix inverses, and then eigenvalues, the core of the second unit."
+  }
+ }
 }

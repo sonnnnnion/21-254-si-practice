@@ -259,5 +259,261 @@
   "Checked conservative potential phi=x^2y+3x+2y^2 and endpoint integral value 2.",
   "Visual specs distinguish scalar ds from vector dr."
  ],
- "reviewSummary": "Session 19 is ready with checked line integral and conservative-field problems."
+ "reviewSummary": "Session 19 is ready with checked line integral and conservative-field problems.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si19-p1",
+    10
+   ],
+   [
+    "si19-p2",
+    11
+   ],
+   [
+    "si19-p3",
+    14
+   ],
+   [
+    "wrap",
+    3
+   ]
+  ],
+  "open": {
+   "title": "Adding things up along a path",
+   "say": [
+    "An ordinary integral adds things up along the x-axis. A line integral adds things up along any curve.",
+    "There are two kinds, and the whole session hinges on telling them apart: ds adds up a quantity along the curve, like mass on a wire; F \u00b7 dr adds up how much a field pushes you along the path, like work."
+   ],
+   "ask": [
+    {
+     "q": "You carry a box up a spiral staircase and back down to where you started. How much total work did gravity do?",
+     "a": "Zero. Gravity only cares about your change in height, and you ended where you started."
+    }
+   ],
+   "write": [
+    "\\(\\displaystyle\\int_C g\\,ds=\\int_a^b g(r(t))\\,\\|r'(t)\\|\\,dt\\)",
+    "\\(\\displaystyle\\int_C F\\cdot dr=\\int_a^b F(r(t))\\cdot r'(t)\\,dt\\)",
+    "\\(F=\\nabla\\phi\\Rightarrow\\displaystyle\\int_C F\\cdot dr=\\phi(\\text{end})-\\phi(\\text{start})\\)"
+   ]
+  },
+  "idea": {
+   "title": "ds measures the path; dr pushes along it",
+   "say": [
+    "Both recipes start the same way: parametrize the curve and plug r(t) into whatever you're integrating.",
+    "With ds you multiply by the speed |r\u2032(t)|, because you're adding up length-weighted values. With F \u00b7 dr you dot with the velocity r\u2032(t), because only the part of F along your direction of travel does work.",
+    "Some fields are gradients, like gravity. For those, the work only depends on where you start and end. That's the shortcut we'll earn at the end."
+   ],
+   "draw": [
+    "Draw a curve with small arrows along it (the velocity) and a few field arrows F crossing it.",
+    "At one spot, split F into a piece along the curve and a piece across it. Label the 'along' piece 'does work'.",
+    "Write the two templates side by side: g \u00b7 |r\u2032| vs. F \u00b7 r\u2032."
+   ],
+   "visualize": "work",
+   "ask": [
+    {
+     "q": "If F is perpendicular to the path everywhere, what is \u222b F \u00b7 dr?",
+     "a": "0: F never pushes along the path."
+    },
+    {
+     "q": "Does reversing the direction of travel change \u222b g ds? \u222b F \u00b7 dr?",
+     "a": "\u222b g ds stays the same; \u222b F \u00b7 dr flips sign."
+    }
+   ]
+  },
+  "problems": {
+   "si19-p1": {
+    "launch": {
+     "say": "Compute the ds line integral along the segment from (0, 0) to (3, 4).",
+     "tryMinutes": 4,
+     "circulate": [
+      "Look for the missing factor of 5.",
+      "Check the parametrization runs from t = 0 to t = 1."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "ds or dr?",
+      "a": "ds, so we need the speed |r\u2032(t)|."
+     }
+    ],
+    "steps": [
+     {
+      "say": "r(t) = (3t, 4t), 0 \u2264 t \u2264 1.",
+      "ask": {
+       "q": "Check the endpoints.",
+       "a": "t = 0 gives (0, 0), t = 1 gives (3, 4). \u2713"
+      }
+     },
+     {
+      "say": "r\u2032(t) = (3, 4), speed 5, so ds = 5 dt.",
+      "ask": {
+       "q": "Why 5?",
+       "a": "The segment has length 5, covered in 1 unit of t."
+      }
+     },
+     {
+      "say": "On the curve, x + y = 3t + 4t = 7t.",
+      "ask": {
+       "q": "What does 7t measure?",
+       "a": "The value of x + y at the point we've reached at time t."
+      }
+     },
+     {
+      "say": "\u222b\u2080\u00b9 7t \u00b7 5 dt = 35/2.",
+      "ask": {
+       "q": "Sanity check with an average?",
+       "a": "The midpoint (1.5, 2) has x + y = 3.5, the average value; times length 5 gives 17.5. \u2713"
+      },
+      "why": "A ds integral is 'average value \u00d7 length'. That makes a great check."
+     }
+    ],
+    "meaning": "Think of a wire from (0, 0) to (3, 4) whose density is x + y. Its total mass is 35/2.",
+    "ifStuck": [
+     {
+      "if": "a student gets 7/2",
+      "then": "ask where the length of the segment shows up in their integral."
+     }
+    ],
+    "transition": "Now the other kind: a field pushing along a curve."
+   },
+   "si19-p2": {
+    "launch": {
+     "say": "Compute \u222b F \u00b7 dr along the parabola directly: field on the curve, dotted with velocity.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Check x = t and y = t\u00b2 were substituted into F before dotting.",
+      "Nobody needs the speed here."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Do we need |r\u2032(t)| this time?",
+      "a": "No: F \u00b7 dr uses the velocity vector r\u2032(t) itself."
+     }
+    ],
+    "visualize": "work",
+    "steps": [
+     {
+      "say": "r\u2032(t) = (1, 2t).",
+      "ask": {
+       "q": "Which way does the velocity point at t = 1?",
+       "a": "(1, 2): up and to the right, along the parabola."
+      }
+     },
+     {
+      "say": "On the curve, F = \u27e8y, x\u27e9 becomes \u27e8t\u00b2, t\u27e9.",
+      "ask": {
+       "q": "Why do we have to substitute?",
+       "a": "We only care about F at points on the curve."
+      }
+     },
+     {
+      "say": "F \u00b7 r\u2032 = t\u00b2 + 2t\u00b2 = 3t\u00b2.",
+      "ask": {
+       "q": "Is F helping or fighting the motion along the way?",
+       "a": "Helping: 3t\u00b2 \u2265 0 for every t."
+      }
+     },
+     {
+      "say": "\u222b\u2080\u00b9 3t\u00b2 dt = 1.",
+      "ask": {
+       "q": "Here's a surprise: F = \u2207(xy). What's xy at the end minus the start?",
+       "a": "1 \u00b7 1 \u2212 0 \u00b7 0 = 1. The same answer, with no integral!"
+      },
+      "why": "That coincidence isn't one. It's exactly the shortcut the next problem is about."
+     }
+    ],
+    "meaning": "Along the parabola the field always pushes forward, and the total push adds up to 1. Because F is a gradient, any path from (0, 0) to (1, 1) would give 1.",
+    "ifStuck": [
+     {
+      "if": "a student multiplies by the speed",
+      "then": "compare with the template: F \u00b7 dr uses r\u2032(t), not |r\u2032(t)|."
+     }
+    ],
+    "transition": "Last one: recognize a gradient field on sight, find its potential, and skip the integral entirely."
+   },
+   "si19-p3": {
+    "launch": {
+     "say": "Show F is conservative, find a potential \u03c6, and compute the integral from (0, 1) to (2, \u22121).",
+     "tryMinutes": 6,
+     "circulate": [
+      "Check the + g(y) after integrating P in x.",
+      "End minus start, not start minus end.",
+      "Encourage checking \u2207\u03c6 = F at the end."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which path does the problem give?",
+      "a": "None. That's a hint that the path doesn't matter."
+     }
+    ],
+    "steps": [
+     {
+      "say": "P = 2xy + 3, Q = x\u00b2 + 4y. P_y = 2x = Q_x, so F is conservative on \u211d\u00b2.",
+      "ask": {
+       "q": "Connection to last session?",
+       "a": "Q_x \u2212 P_y is the 2D curl. Conservative fields have zero curl: no spinning."
+      }
+     },
+     {
+      "say": "Integrate P in x: \u03c6 = x\u00b2y + 3x + g(y).",
+      "ask": {
+       "q": "Why + g(y) and not + C?",
+       "a": "Anything that depends only on y has x-derivative 0, so it could be hiding there."
+      }
+     },
+     {
+      "say": "\\(\\phi_y=x^2+g'(y)\\) must equal \\(x^2+4y\\), so \\(g'(y)=4y\\) and \\(g=2y^2\\). That gives \\(\\phi=x^2y+3x+2y^2\\).",
+      "ask": {
+       "q": "Check \u2207\u03c6.",
+       "a": "(2xy + 3, x\u00b2 + 4y) = F. \u2713"
+      },
+      "why": "The x\u00b2 terms matching up is the conservative test succeeding in real time."
+     },
+     {
+      "say": "\u03c6(2, \u22121) \u2212 \u03c6(0, 1) = (\u22124 + 6 + 2) \u2212 2 = 2.",
+      "ask": {
+       "q": "What would the integral be around a closed loop?",
+       "a": "0: the start and end are the same point."
+      }
+     }
+    ],
+    "meaning": "F is the slope field of the landscape \u03c6. Walking from (0, 1) to (2, \u22121) you climb from height 2 to height 4, whatever path you take, so the work is 2.",
+    "ifStuck": [
+     {
+      "if": "a student can't find g(y)",
+      "then": "differentiate what they have in y and compare with Q term by term."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "ds: multiply by |r\u2032(t)| (mass, length, average). F \u00b7 dr: dot with r\u2032(t) (work, flow). Conservative (P_y = Q_x): integral = \u03c6(end) \u2212 \u03c6(start).",
+   "exit": [
+    {
+     "q": "When do we use ds?",
+     "a": "For adding a scalar along a curve, like mass on a wire or arc length."
+    },
+    {
+     "q": "When do we use F \u00b7 dr?",
+     "a": "For work or flow of a vector field along a path."
+    },
+    {
+     "q": "What changes when F is conservative?",
+     "a": "Only the endpoints matter; closed loops give 0."
+    }
+   ],
+   "next": "Next session: double integrals, and changing the order of integration."
+  }
+ }
 }

@@ -373,5 +373,283 @@
   "Arithmetic checked for all three problems.",
   "Visual specs are exact where possible; 3D point sketch is labeled rough/not-to-scale while coordinate values remain exact.",
   "Explanations are intentionally simple and whiteboard-friendly."
- ]
+ ],
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    5
+   ],
+   [
+    "idea",
+    7
+   ],
+   [
+    "si01-p01",
+    10
+   ],
+   [
+    "si01-p02",
+    13
+   ],
+   [
+    "si01-p03",
+    12
+   ],
+   [
+    "wrap",
+    3
+   ]
+  ],
+  "open": {
+   "title": "Two questions every vector answers",
+   "say": [
+    "Welcome in. Before any formulas: a vector answers two questions. How long is it, and which way does it point?",
+    "Today we get a tool for comparing two vectors' directions without drawing anything: the dot product. By the end you'll be able to tell if two arrows are perpendicular just from their numbers."
+   ],
+   "ask": [
+    {
+     "q": "If I walk 3 blocks east and then 4 blocks north, how far am I from where I started?",
+     "a": "5 blocks, by the Pythagorean theorem. That is exactly how we will measure vector length."
+    }
+   ],
+   "write": [
+    "\\(\\|\\mathbf v\\|=\\sqrt{\\mathbf v\\cdot\\mathbf v}\\)",
+    "\\(\\mathbf u\\cdot\\mathbf v=u_1v_1+u_2v_2+\\cdots+u_nv_n\\)",
+    "\\(\\mathbf u\\cdot\\mathbf v=\\|\\mathbf u\\|\\|\\mathbf v\\|\\cos\\theta\\)",
+    "\\(\\overrightarrow{AB}=B-A\\)"
+   ]
+  },
+  "idea": {
+   "title": "The dot product measures how much two arrows agree",
+   "say": [
+    "The dot product takes two vectors and gives back one number. That number is big and positive when the vectors point the same way, zero when they are perpendicular, and negative when they point against each other.",
+    "Why? Because \\(\\mathbf u\\cdot\\mathbf v=\\|\\mathbf u\\|\\|\\mathbf v\\|\\cos\\theta\\). The lengths are never negative, so the sign comes entirely from \\(\\cos\\theta\\).",
+    "So a dot product of zero is the algebra version of a right angle. That is the one fact you will use all semester."
+   ],
+   "draw": [
+    "Draw one fixed arrow u pointing right.",
+    "Draw three arrows v from the same point: one about 30\u00b0 above u, one straight up, one about 150\u00b0 around.",
+    "Under them write: dot product positive, zero, negative.",
+    "Shade the shadow of the first v on u and say: the dot product is the length of u times that shadow."
+   ],
+   "visualize": "projection",
+   "ask": [
+    {
+     "q": "What kind of object does a dot product give you: a vector or a number?",
+     "a": "A number (a scalar)."
+    },
+    {
+     "q": "Two vectors have a dot product of \u221210. What can you say about the angle between them?",
+     "a": "It is more than 90\u00b0: cos \u03b8 is negative, so they point in generally opposite directions."
+    }
+   ]
+  },
+  "problems": {
+   "si01-p01": {
+    "launch": {
+     "say": "Warm-up with every basic operation in one problem. As you work, label each answer: is it a vector or a number?",
+     "tryMinutes": 3,
+     "circulate": [
+      "Look for 6 \u2212 (\u22122) written as 4. It is 8.",
+      "Check that the dot product answer is a single number, not a list."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which parts of this problem produce vectors and which produce numbers?",
+      "a": "2u \u2212 v is a vector. u \u00b7 v and \u2016u\u2016 are numbers."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Scalar multiplication multiplies every component. 2 times each entry.",
+      "ask": {
+       "q": "What does multiplying by 2 do to the arrow?",
+       "a": "Same direction, twice as long."
+      }
+     },
+     {
+      "say": "Now subtract v component by component. First component: 6 minus negative 2, which is 8.",
+      "ask": {
+       "q": "Where do people slip here?",
+       "a": "Subtracting a negative: 6 \u2212 (\u22122) = 8, not 4."
+      }
+     },
+     {
+      "say": "Dot product: multiply matching components, then add. (3)(\u22122) + (\u22121)(4) + (2)(1) = \u22126 \u2212 4 + 2 = \u22128.",
+      "ask": {
+       "q": "The dot product is negative. What does that say about the angle between u and v?",
+       "a": "It is more than 90\u00b0; they point generally away from each other."
+      },
+      "why": "The sign of the dot product tells you about the angle before you compute any angle."
+     },
+     {
+      "say": "Length: square every component, add, take the square root. 9 + 1 + 4 = 14, so \u2016u\u2016 = \u221a14.",
+      "ask": {
+       "q": "Why do we square the \u22121 and not just use 1?",
+       "a": "(\u22121)\u00b2 = 1 anyway, but the habit matters: every component gets squared, which is why length is never negative."
+      }
+     },
+     {
+      "say": "Perpendicular means the dot product is exactly zero. We got \u22128, so they are not perpendicular.",
+      "ask": {
+       "q": "Could two vectors with a dot product of 0.001 be perpendicular?",
+       "a": "No. Perpendicular means exactly zero; 0.001 means the angle is very close to, but not exactly, 90\u00b0."
+      }
+     }
+    ],
+    "meaning": "u and v point more than 90\u00b0 apart, since their dot product is negative. The length \u221a14 \u2248 3.7 is how long the arrow u is in space.",
+    "ifStuck": [
+     {
+      "if": "a student writes the dot product as \u27e8\u22126, \u22124, 2\u27e9",
+      "then": "ask what the last step of the dot product is: add the products. The answer is one number."
+     }
+    ],
+    "transition": "So far the vectors were handed to us. Next, we build a vector from two points, and the order suddenly matters."
+   },
+   "si01-p02": {
+    "launch": {
+     "say": "Now we start from two points. Find the vector from A to B, the distance between them, and a unit vector in that direction.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Who computed A \u2212 B? Ask them which way their arrow points.",
+      "Check the unit vector: every component gets divided by 6."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "'From A to B': which point do we start at, and which do we subtract?",
+      "a": "Start at A, end at B. Endpoint minus start point: B \u2212 A."
+     }
+    ],
+    "steps": [
+     {
+      "say": "From A to B means endpoint minus start point: B \u2212 A.",
+      "ask": {
+       "q": "What vector would A \u2212 B give?",
+       "a": "The same arrow pointing the other way, from B back to A."
+      },
+      "why": "Order matters for displacement vectors. It will matter again for line integrals and orientation later in the course."
+     },
+     {
+      "say": "Subtract one component at a time: 5 \u2212 1, 0 \u2212 (\u22122), \u22121 \u2212 3. That gives \u27e84, 2, \u22124\u27e9.",
+      "ask": {
+       "q": "What does \u27e84, 2, \u22124\u27e9 mean physically?",
+       "a": "To get from A to B you move 4 in x, 2 in y and \u22124 in z."
+      }
+     },
+     {
+      "say": "The distance between the points is just the length of this vector: \u221a(16 + 4 + 16) = \u221a36 = 6.",
+      "ask": {
+       "q": "Why is the distance the same whether we used B \u2212 A or A \u2212 B?",
+       "a": "The two vectors are negatives of each other, and squaring removes the signs."
+      }
+     },
+     {
+      "say": "To make a unit vector, divide every component by the length 6. The direction stays; the length becomes 1.",
+      "ask": {
+       "q": "How can you check a unit vector quickly?",
+       "a": "Its components' squares should add to 1: 4/9 + 1/9 + 4/9 = 1."
+      }
+     }
+    ],
+    "meaning": "The displacement \u27e84, 2, \u22124\u27e9 carries both the distance (6) and the direction. The unit vector keeps only the direction, which is what you want when a problem asks which way something points.",
+    "ifStuck": [
+     {
+      "if": "a student divides only the first component by 6",
+      "then": "ask them to check the length of their answer. It must come out to exactly 1."
+     }
+    ],
+    "transition": "We've used the dot product to measure. Now we use it as an equation: pick a number that makes two vectors perpendicular."
+   },
+   "si01-p03": {
+    "launch": {
+     "say": "An exam-style twist: one component is unknown. Choose k so the vectors are perpendicular, then make a unit vector.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Who went straight to u \u00b7 v = 0? That's the move.",
+      "After finding k, check that they plug it back in before normalizing."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What equation does 'perpendicular' give you?",
+      "a": "u \u00b7 v = 0."
+     }
+    ],
+    "visualize": "projection",
+    "steps": [
+     {
+      "say": "The word perpendicular is your cue: the dot product is zero.",
+      "ask": {
+       "q": "Why does a zero dot product mean a right angle?",
+       "a": "u \u00b7 v = \u2016u\u2016\u2016v\u2016cos \u03b8, and the lengths are not zero, so cos \u03b8 = 0 and \u03b8 = 90\u00b0."
+      }
+     },
+     {
+      "say": "Multiply matching components and add: 2 \u00b7 k + 1 \u00b7 8 = 2k + 8.",
+      "ask": {
+       "q": "What kind of expression is 2k + 8?",
+       "a": "A number that depends on k. We will choose k to make it zero."
+      }
+     },
+     {
+      "say": "Set it equal to zero: 2k = \u22128, so k = \u22124. Now v = \u27e8\u22124, 8\u27e9.",
+      "ask": {
+       "q": "Check it: what is \u27e82, 1\u27e9 \u00b7 \u27e8\u22124, 8\u27e9?",
+       "a": "\u22128 + 8 = 0."
+      }
+     },
+     {
+      "say": "Length of v: \u221a(16 + 64) = \u221a80 = 4\u221a5.",
+      "ask": {
+       "q": "How do you simplify \u221a80?",
+       "a": "80 = 16 \u00b7 5, so \u221a80 = 4\u221a5."
+      }
+     },
+     {
+      "say": "Divide by 4\u221a5: the unit vector is \u27e8\u22121/\u221a5, 2/\u221a5\u27e9.",
+      "ask": {
+       "q": "Is this still perpendicular to u?",
+       "a": "Yes. Scaling a vector does not change its direction, so it is still perpendicular to u."
+      }
+     }
+    ],
+    "meaning": "k = \u22124 rotates v to exactly 90\u00b0 from u. On the board: u points up and to the right at a shallow angle, v points up and to the left steeply, and they meet at a right angle.",
+    "ifStuck": [
+     {
+      "if": "a student tries to find k from a picture",
+      "then": "set up the dot product first. Pictures check answers; algebra finds them."
+     },
+     {
+      "if": "a student solves 2k + 8 = 1",
+      "then": "ask what dot product value means perpendicular. It is 0, not 1."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Dot product \u2192 a number. Zero \u27fa perpendicular. Length = \u221a(v \u00b7 v). From A to B = B \u2212 A. Unit vector = v / \u2016v\u2016.",
+   "exit": [
+    {
+     "q": "What does the dot product output: a scalar or a vector?",
+     "a": "A scalar."
+    },
+    {
+     "q": "What dot product value means perpendicular?",
+     "a": "Exactly 0."
+    },
+    {
+     "q": "What is the vector from A to B?",
+     "a": "B \u2212 A: endpoint minus start point."
+    },
+    {
+     "q": "How do you turn a vector into a unit vector?",
+     "a": "Divide it by its length (it must be nonzero)."
+    }
+   ],
+   "next": "Next time: matrices. A matrix is a machine that takes in a vector and gives back a new one, and the dot product is how it does the work, row by row."
+  }
+ }
 }

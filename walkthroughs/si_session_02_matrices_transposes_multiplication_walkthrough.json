@@ -498,5 +498,273 @@
   "Problem 2 verifies \\((AC)^T=C^TA^T\\) using exact arithmetic.",
   "Problem 3 uses \\(A^2=I\\), so odd powers equal A and even powers equal I.",
   "Visual specs are designed to show exact matrix structure and board-friendly highlights."
- ]
+ ],
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    5
+   ],
+   [
+    "idea",
+    7
+   ],
+   [
+    "si02-p01",
+    15
+   ],
+   [
+    "si02-p02",
+    13
+   ],
+   [
+    "si02-p03",
+    8
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Order matters today",
+   "say": [
+    "Last time the dot product turned two vectors into one number. Today a matrix does that over and over: every entry of a product is one dot product.",
+    "The theme of the whole hour is order. With numbers, 3 · 5 = 5 · 3. With matrices, AB and BA usually aren't even the same size."
+   ],
+   "ask": [
+    {
+     "q": "You put on socks, then shoes. To undo it, what order do you take them off?",
+     "a": "Shoes first, then socks. Undoing reverses the order, and that's exactly what the transpose rule (AB)ᵀ = BᵀAᵀ will say."
+    }
+   ],
+   "write": [
+    "\\((m\\times n)(n\\times p)=m\\times p\\)",
+    "\\((AB)_{ij}=\\text{row } i\\text{ of }A\\cdot\\text{column } j\\text{ of }B\\)",
+    "\\((AB)^T=B^TA^T\\)"
+   ]
+  },
+  "idea": {
+   "title": "Row times column, and the sizes have to line up",
+   "say": [
+    "To get the entry in row i, column j of AB, slide row i of A across column j of B and take the dot product.",
+    "That only works if a row of A is as long as a column of B. That's the rule: the inside numbers of the sizes have to match, and the outside numbers give the size of the answer.",
+    "Always write the sizes first. It takes five seconds and prevents most mistakes."
+   ],
+   "draw": [
+    "Write A as a 2 × 3 box and B as a 3 × 2 box side by side.",
+    "Under them write (2 × 3)(3 × 2), circle the two inner 3s, and draw an arrow from the outer 2s to '2 × 2'.",
+    "Shade row 1 of A and column 1 of B, and draw an arrow from their overlap to the top-left entry of the answer."
+   ],
+   "visualize": "matrix",
+   "ask": [
+    {
+     "q": "Can you multiply a 2 × 3 matrix by a 2 × 3 matrix?",
+     "a": "No. The inner sizes are 3 and 2, which don't match."
+    },
+    {
+     "q": "If A is 4 × 2 and B is 2 × 7, what size is AB?",
+     "a": "4 × 7."
+    }
+   ]
+  },
+  "problems": {
+   "si02-p01": {
+    "launch": {
+     "say": "Compute both AB and BA, if they exist, and decide whether they're equal. Say the sizes before you touch any arithmetic.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Is anyone multiplying entries in matching positions? Redirect to row-dot-column.",
+      "Who noticed BA is 3 × 3 before computing it?"
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What sizes are A and B, and what sizes will AB and BA be?",
+      "a": "A is 2 × 3 and B is 3 × 2, so AB is 2 × 2 and BA is 3 × 3."
+     }
+    ],
+    "steps": [
+     {
+      "say": "A is 2 × 3, B is 3 × 2. The inner 3s match, so AB exists and it's 2 × 2.",
+      "ask": {
+       "q": "Before computing: could AB and BA possibly be equal?",
+       "a": "No. They have different sizes."
+      }
+     },
+     {
+      "say": "Top-left entry: row 1 of A, (1, −2, 0), dotted with column 1 of B, (2, 0, 3): 2 + 0 + 0 = 2. Do the other three the same way.",
+      "ask": {
+       "q": "Which row and column make the bottom-right entry?",
+       "a": "Row 2 of A with column 2 of B: 3(−1) + 1(5) + 4(2) = 10."
+      },
+      "why": "Every entry is its own dot product. Naming the row and column out loud keeps you from mixing them up."
+     },
+     {
+      "say": "Now reverse the order. B is 3 × 2 and A is 2 × 3: inner 2s match, so BA exists and it's 3 × 3.",
+      "ask": {
+       "q": "How many dot products does BA take?",
+       "a": "Nine, one for each entry of a 3 × 3."
+      }
+     },
+     {
+      "say": "Same rule, but now the rows come from B and the columns from A. Row 1 of B, (2, −1), with column 1 of A, (1, 3): 2 − 3 = −1.",
+      "ask": {
+       "q": "Why are the dot products shorter this time?",
+       "a": "Rows of B have length 2, matching the columns of A."
+      }
+     },
+     {
+      "say": "Sizes differ, so they can't be equal. Even for square matrices, AB and BA are usually different.",
+      "ask": {
+       "q": "Can you think of two matrices where AB = BA does hold?",
+       "a": "Any matrix with the identity, or a matrix with itself: AI = IA and AA = AA."
+      }
+     }
+    ],
+    "meaning": "AB means 'do B first, then A' when they act on vectors. Swapping the order is a different process, so a different result is the normal case, not a surprise.",
+    "ifStuck": [
+     {
+      "if": "a student multiplies entry by entry",
+      "then": "ask for the size of their answer. Entry-by-entry would need matching sizes, and 2 × 3 and 3 × 2 don't match."
+     }
+    ],
+    "transition": "Order mattered for multiplying. Next: what happens to the order when we transpose a product."
+   },
+   "si02-p02": {
+    "launch": {
+     "say": "Compute AC, transpose it, and check that you get the same thing as CᵀAᵀ.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Watch for sign changes during the transpose. Transposing only moves entries; it never changes a sign.",
+      "Anyone computing AᵀCᵀ? Ask them to check its size."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What size is AC, and what size is (AC)ᵀ?",
+      "a": "AC is 2 × 2, so its transpose is 2 × 2 too."
+     }
+    ],
+    "steps": [
+     {
+      "say": "A is 2 × 3, C is 3 × 2, so AC is 2 × 2.",
+      "ask": {
+       "q": "What size would AᵀCᵀ be?",
+       "a": "Aᵀ is 3 × 2 and Cᵀ is 2 × 3, so AᵀCᵀ is 3 × 3: already the wrong size to equal (AC)ᵀ."
+      },
+      "why": "Checking sizes shows the order has to reverse before you do any arithmetic."
+     },
+     {
+      "say": "Row dot column: (1, −3, 2) · (2, −1, 3) = 2 + 3 + 6 = 11, and so on for the other three entries.",
+      "ask": {
+       "q": "What is the bottom-left entry?",
+       "a": "(0, 4, −1) · (2, −1, 3) = 0 − 4 − 3 = −7."
+      }
+     },
+     {
+      "say": "Transpose: row 1 becomes column 1. The −13 and −7 swap places; nothing changes sign.",
+      "ask": {
+       "q": "Which entries stay in place when you transpose a square matrix?",
+       "a": "The diagonal entries."
+      }
+     },
+     {
+      "say": "Now transpose each matrix on its own: the columns of C become the rows of Cᵀ, and the columns of A become the rows of Aᵀ.",
+      "ask": {
+       "q": "What size is CᵀAᵀ?",
+       "a": "(2 × 3)(3 × 2) = 2 × 2, matching (AC)ᵀ."
+      }
+     },
+     {
+      "say": "Multiply CᵀAᵀ and compare. Same matrix. The order reversed, exactly like socks and shoes.",
+      "ask": {
+       "q": "State the rule in words.",
+       "a": "The transpose of a product is the product of the transposes in reverse order."
+      }
+     }
+    ],
+    "meaning": "Transposing a product undoes the order, just like reversing a sequence of steps. The same reversal will show up again with inverses: (AB)⁻¹ = B⁻¹A⁻¹.",
+    "ifStuck": [
+     {
+      "if": "a student writes (AC)ᵀ = AᵀCᵀ",
+      "then": "have them check sizes: AᵀCᵀ is 3 × 3 and (AC)ᵀ is 2 × 2."
+     }
+    ],
+    "transition": "Last one: instead of multiplying a lot, find a pattern that makes the multiplying unnecessary."
+   },
+   "si02-p03": {
+    "launch": {
+     "say": "Compute A², then simplify A²⁵ + 3A⁴ − 2I. If you're about to multiply 25 times, stop and look for a pattern.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Watch for anyone squaring each entry. A² means A times A.",
+      "Who spots A² = I and stops multiplying?"
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What does A² mean for a matrix?",
+      "a": "The matrix product A · A, not squaring each entry."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Multiply A by itself. Top-right entry: 1 · 2 + 2 · (−1) = 0. The whole thing comes out to the identity.",
+      "ask": {
+       "q": "If A² = I, what does A do if you apply it twice?",
+       "a": "Nothing overall: applying A twice gets you back where you started."
+      },
+      "why": "This is the key moment. A² = I turns every power of A into either A or I."
+     },
+     {
+      "say": "Even powers give I, odd powers give A. A²⁵ = (A²)¹²A = A, and A⁴ = (A²)² = I.",
+      "ask": {
+       "q": "What is A¹⁰⁰?",
+       "a": "I, because 100 is even."
+      }
+     },
+     {
+      "say": "Substitute: A + 3I − 2I = A + I. Combine the I terms like ordinary numbers because they're the same matrix.",
+      "ask": {
+       "q": "Why can we combine 3I − 2I but not A + I into one symbol?",
+       "a": "3I and 2I are multiples of the same matrix; A and I are different matrices, so we add them entry by entry."
+      }
+     },
+     {
+      "say": "Add matching entries: A + I = [[2, 2], [0, 0]].",
+      "ask": {
+       "q": "What size must I be here?",
+       "a": "2 × 2, the same size as A."
+      }
+     }
+    ],
+    "meaning": "A undoes itself: two applications bring every vector back. Seeing that once saves 23 multiplications.",
+    "ifStuck": [
+     {
+      "if": "a student computes A² by squaring entries",
+      "then": "multiply A times A with row-dot-column and compare the two answers."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Check sizes first: (m × n)(n × p) = m × p. Each entry = row · column. AB ≠ BA in general. (AB)ᵀ = BᵀAᵀ.",
+   "exit": [
+    {
+     "q": "Before multiplying two matrices, what do you check?",
+     "a": "That the inner sizes match; the outer sizes give the answer's size."
+    },
+    {
+     "q": "What does one entry of AB come from?",
+     "a": "One row of A dotted with one column of B."
+    },
+    {
+     "q": "What is (AB)ᵀ?",
+     "a": "BᵀAᵀ: reverse the order."
+    }
+   ],
+   "next": "Next session: systems of equations. A matrix times an unknown vector equals a known vector, and row reduction solves it."
+  }
+ }
 }

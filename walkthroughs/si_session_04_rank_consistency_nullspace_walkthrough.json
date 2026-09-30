@@ -150,7 +150,7 @@
     },
     {
      "label": "Solve the homogeneous system",
-     "latex": "\\begin{aligned}\nx_1-2x_3&=0,\\\nx_2+3x_3&=0,\\\nx_4&=0.\n\\end{aligned}",
+     "latex": "\\begin{aligned}\nx_1-2x_3&=0,\\\\\nx_2+3x_3&=0,\\\\\nx_4&=0.\n\\end{aligned}",
      "sayOutLoud": "For the null space, the right side is zero. Do not add an augmented column."
     },
     {
@@ -160,7 +160,7 @@
     },
     {
      "label": "Write the null space as a span",
-     "latex": "x=\\begin{bmatrix}x_1\\x_2\\x_3\\x_4\\end{bmatrix}=t\\begin{bmatrix}2\\\\-3\\\\1\\\\0\\end{bmatrix}.\n\n\\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}2\\\\-3\\\\1\\\\0\\end{bmatrix}\\right\\}.",
+     "latex": "x=\\begin{bmatrix}x_1\\\\x_2\\\\x_3\\\\x_4\\end{bmatrix}=t\\begin{bmatrix}2\\\\-3\\\\1\\\\0\\end{bmatrix}.\n\n\\operatorname{Nul}(A)=\\operatorname{span}\\left\\{\\begin{bmatrix}2\\\\-3\\\\1\\\\0\\end{bmatrix}\\right\\}.",
      "sayOutLoud": "The basis is the vector multiplying the parameter."
     }
    ],
@@ -251,7 +251,7 @@
     },
     {
      "label": "Explain the inconsistent case",
-     "latex": "h\ne5\\quad\\Rightarrow\\quad 0=h-5\\text{ is impossible.}\n\n\\text{So the system has no solution.}",
+     "latex": "h\\ne5\\quad\\Rightarrow\\quad 0=h-5\\text{ is impossible.}\n\n\\text{So the system has no solution.}",
      "sayOutLoud": "A nonzero number in the augmented column with all zeros on the left means no solution."
     },
     {
@@ -266,16 +266,16 @@
     },
     {
      "label": "Write the final solution set",
-     "latex": "\\begin{bmatrix}x\\y\\z\\end{bmatrix}=\\begin{bmatrix}4\\\\3\\\\0\\end{bmatrix}+t\\begin{bmatrix}-2\\\\1\\\\1\\end{bmatrix},\\quad t\\in\\mathbb{R}.",
+     "latex": "\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}=\\begin{bmatrix}4\\\\3\\\\0\\end{bmatrix}+t\\begin{bmatrix}-2\\\\1\\\\1\\end{bmatrix},\\quad t\\in\\mathbb{R}.",
      "sayOutLoud": "This is a line of solutions: one particular solution plus one null-space direction."
     }
    ],
-   "finalAnswerLatex": "\\text{Consistent exactly when }h=5.\n\n\\text{For }h=5:\\quad (x,y,z)=(4-2t,\\;3+t,\\;t),\\quad t\\in\\mathbb{R}.\n\n\\text{For }h\ne5:\\quad \\text{no solution}.",
+   "finalAnswerLatex": "\\text{Consistent exactly when }h=5.\n\n\\text{For }h=5:\\quad (x,y,z)=(4-2t,\\;3+t,\\;t),\\quad t\\in\\mathbb{R}.\n\n\\text{For }h\\ne5:\\quad \\text{no solution}.",
    "commonMistakes": [
     "Saying \\(z=0\\) just because there is no pivot in the z-column. Actually \\(z\\) is free.",
     "Forgetting to check the last row before solving.",
     "Writing one solution when the system has a free variable.",
-    "Mixing up the consistent case \\(h=5\\) with the inconsistent case \\(h\ne5\\)."
+    "Mixing up the consistent case \\(h=5\\) with the inconsistent case \\(h\\ne5\\)."
    ],
    "practiceLabPointer": "Practice Lab Section 2: consistency, free variables, and parametric solution sets."
   },
@@ -381,7 +381,7 @@
     },
     {
      "label": "Try to write r-p using the null-space basis",
-     "latex": "s\\begin{bmatrix}1\\\\-2\\\\0\\\\1\\end{bmatrix}+t\\begin{bmatrix}0\\\\3\\\\1\\\\-1\\end{bmatrix}=\\begin{bmatrix}s\\\\-2s+3t\\t\\s-t\\end{bmatrix}.\n\n\\text{To match }\\begin{bmatrix}0\\\\3\\\\2\\\\-2\\end{bmatrix},\\text{ the first entry gives }s=0\\text{ and the third entry gives }t=2.\n\n\\text{Then the second entry would be }-2(0)+3(2)=6,\\text{ not }3.",
+     "latex": "s\\begin{bmatrix}1\\\\-2\\\\0\\\\1\\end{bmatrix}+t\\begin{bmatrix}0\\\\3\\\\1\\\\-1\\end{bmatrix}=\\begin{bmatrix}s\\\\-2s+3t\\\\t\\\\s-t\\end{bmatrix}.\n\n\\text{To match }\\begin{bmatrix}0\\\\3\\\\2\\\\-2\\end{bmatrix},\\text{ the first entry gives }s=0\\text{ and the third entry gives }t=2.\n\n\\text{Then the second entry would be }-2(0)+3(2)=6,\\text{ not }3.",
      "sayOutLoud": "The entries contradict each other, so r-p is not in the null space."
     }
    ],
@@ -424,5 +424,294 @@
   "Notation intentionally uses \\(\\operatorname{Nul}(A)\\), \\([A\\mid b]\\), and vector-column formatting to reduce ambiguity."
  ],
  "reviewStatus": "reviewed",
- "reviewSummary": "Session 04 is ready for Claude implementation. It emphasizes rank/nullity, consistency, and solution-set geometry with exact arithmetic and structured visual specifications."
+ "reviewSummary": "Session 04 is ready for Claude implementation. It emphasizes rank/nullity, consistency, and solution-set geometry with exact arithmetic and structured visual specifications.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si04-p01",
+    12
+   ],
+   [
+    "si04-p02",
+    12
+   ],
+   [
+    "si04-p03",
+    12
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Count the pivots and you know almost everything",
+   "say": [
+    "Last time we row reduced and read off the answer. Today we learn to predict the shape of the answer just by counting pivots.",
+    "Two counts matter: pivots (that's the rank) and free variables (that's the nullity). They always add up to the number of columns."
+   ],
+   "ask": [
+    {
+     "q": "A 3 \u00d7 5 matrix has 3 pivots. How many free variables does Ax = 0 have?",
+     "a": "5 \u2212 3 = 2."
+    }
+   ],
+   "write": [
+    "\\(\\operatorname{rank}A=\\#\\text{ pivot columns}\\)",
+    "\\(\\operatorname{nullity}A=\\#\\text{ free variables}\\)",
+    "\\(\\operatorname{rank}A+\\operatorname{nullity}A=\\#\\text{ columns}\\)"
+   ]
+  },
+  "idea": {
+   "title": "Every solution is one solution plus the null space",
+   "say": [
+    "The null space is everything A sends to zero: all x with Ax = 0. Adding a null-space vector to an input doesn't change the output at all.",
+    "So once you have one solution p of Ax = b, you can add any null-space vector v and still have a solution: A(p + v) = Ap + Av = b + 0 = b.",
+    "That's why the solution set of Ax = b looks like the null space, just shifted over so it passes through p instead of the origin."
+   ],
+   "draw": [
+    "Draw a line through the origin and label it Nul(A).",
+    "Draw a parallel line shifted up, and mark a point p on it. Label the shifted line 'all solutions of Ax = b'.",
+    "Draw an arrow from p along the shifted line and label it v \u2208 Nul(A)."
+   ],
+   "visualize": "systems",
+   "ask": [
+    {
+     "q": "If x\u2081 and x\u2082 both solve Ax = b, what does x\u2081 \u2212 x\u2082 solve?",
+     "a": "A(x\u2081 \u2212 x\u2082) = b \u2212 b = 0, so the difference is in the null space."
+    },
+    {
+     "q": "When is Ax = b consistent?",
+     "a": "When there's no row [0 \u2026 0 | c] with c \u2260 0; equivalently rank A = rank [A | b]."
+    }
+   ]
+  },
+  "problems": {
+   "si04-p01": {
+    "launch": {
+     "say": "Reading problem: find the rank, the nullity, and a basis for the null space from this RREF.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Is anyone counting the zero row toward the rank? Rank counts pivot columns.",
+      "Check the length of their null-space vector: it needs 4 entries."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "How many columns does A have, and where are the pivots?",
+      "a": "4 columns; pivots in columns 1, 2 and 4."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Circle the leading 1s: columns 1, 2 and 4. Column 3 has none.",
+      "ask": {
+       "q": "The last row starts with zeros. Is its 1 still a pivot?",
+       "a": "Yes. It's the leading entry of that row, sitting in column 4."
+      }
+     },
+     {
+      "say": "Three pivots, so the rank is 3. Four columns minus three pivots leaves one free variable: nullity 1.",
+      "ask": {
+       "q": "What does nullity 1 predict about the null space?",
+       "a": "It's a line: spanned by one vector."
+      },
+      "why": "Rank plus nullity equals the number of columns, so you can predict the null space's size before solving anything."
+     },
+     {
+      "say": "For the null space the right-hand side is zero, so each row is an equation equal to 0: x\u2081 \u2212 2x\u2083 = 0, x\u2082 + 3x\u2083 = 0, x\u2084 = 0.",
+      "ask": {
+       "q": "Why isn't there an augmented column here?",
+       "a": "We're solving Ax = 0, and row operations keep a zero column zero."
+      }
+     },
+     {
+      "say": "Let the free variable x\u2083 = t. Then x\u2081 = 2t, x\u2082 = \u22123t, and x\u2084 = 0.",
+      "ask": {
+       "q": "x\u2084 = 0 no matter what t is. Why?",
+       "a": "Its own row says x\u2084 = 0; it's a pivot variable with nothing free attached."
+      }
+     },
+     {
+      "say": "Write x as t times a vector. That vector, (2, \u22123, 1, 0), is a basis for the null space.",
+      "ask": {
+       "q": "Check it: does A times (2, \u22123, 1, 0) give 0 using the RREF rows?",
+       "a": "Row 1: 2 \u2212 2 = 0. Row 2: \u22123 + 3 = 0. Row 3: 0. Yes."
+      }
+     }
+    ],
+    "meaning": "A crushes one whole line of \u211d\u2074, the multiples of (2, \u22123, 1, 0), down to zero. Everything else survives: rank 3 means the outputs fill a three-dimensional space.",
+    "ifStuck": [
+     {
+      "if": "a student writes (2, \u22123, 1)",
+      "then": "ask how many variables A has. A null-space vector needs one entry per column."
+     }
+    ],
+    "transition": "That was Ax = 0. Now a right-hand side appears, and the question becomes whether there's any solution at all."
+   },
+   "si04-p02": {
+    "launch": {
+     "say": "For which h is the system consistent? When it is, write every solution.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Who looked at the last row first? That's the whole question.",
+      "When h = 5, check that z is treated as free, not as 0."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which row decides whether a solution exists?",
+      "a": "The last one: it reads 0 = h \u2212 5."
+     }
+    ],
+    "steps": [
+     {
+      "say": "The last row says 0 = h \u2212 5. Everything depends on that number.",
+      "ask": {
+       "q": "What are the two things this row can say?",
+       "a": "0 = 0 (harmless) or 0 = nonzero (impossible)."
+      }
+     },
+     {
+      "say": "It's harmless exactly when h = 5.",
+      "ask": {
+       "q": "In rank language, what happens at h = 5?",
+       "a": "rank A = rank [A | b] = 2, so the system is consistent."
+      }
+     },
+     {
+      "say": "If h \u2260 5 the row says 0 equals a nonzero number: no solution.",
+      "ask": {
+       "q": "What are the ranks when h \u2260 5?",
+       "a": "rank A = 2 but rank [A | b] = 3: the augmented column picked up a pivot."
+      },
+      "why": "A pivot in the augmented column is exactly what 'inconsistent' looks like."
+     },
+     {
+      "say": "Now set h = 5. The last row vanishes, z has no pivot, so z = t is free.",
+      "ask": {
+       "q": "How many solutions now?",
+       "a": "Infinitely many: one for every t."
+      }
+     },
+     {
+      "say": "Translate the rows and move z to the right: x = 4 \u2212 2t, y = 3 + t.",
+      "ask": {
+       "q": "Why is x = 4 \u2212 2t and not 4 + 2t?",
+       "a": "x + 2z = 4 gives x = 4 \u2212 2z."
+      }
+     },
+     {
+      "say": "Stack it: (4, 3, 0) plus t times (\u22122, 1, 1). A point plus a direction.",
+      "ask": {
+       "q": "Which part solves Ax = 0?",
+       "a": "The direction t(\u22122, 1, 1): it's the null space. (4, 3, 0) is one particular solution."
+      }
+     }
+    ],
+    "meaning": "For h = 5 the solutions form a line through (4, 3, 0) in the null-space direction (\u22122, 1, 1). For any other h the third equation contradicts the first two, and no point works.",
+    "ifStuck": [
+     {
+      "if": "a student sets z = 0 because its column has no pivot",
+      "then": "ask what 'no pivot' means: z is free, so it can be anything."
+     }
+    ],
+    "transition": "Here we found the particular solution and null space ourselves. Last problem: they're handed to us, and we use the structure to test vectors without knowing A."
+   },
+   "si04-p03": {
+    "launch": {
+     "say": "You're given one solution p and the null space. Write every solution, then test q and r, without ever knowing A.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Is anyone trying to multiply by A? We don't have A. Nudge them toward q \u2212 p.",
+      "Who wrote only the null space for part (a)? The particular solution is missing."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "How can you tell if q solves Ax = b without knowing A?",
+      "a": "Check whether q \u2212 p is in the null space."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Every solution of Ax = b is p plus something from the null space.",
+      "ask": {
+       "q": "Why does adding a null-space vector keep it a solution?",
+       "a": "A(p + v) = Ap + Av = b + 0 = b."
+      }
+     },
+     {
+      "say": "The null space has two basis vectors, so we need two parameters, s and t.",
+      "ask": {
+       "q": "What shape is this solution set?",
+       "a": "A plane in \u211d\u2074 through p, parallel to the null space."
+      }
+     },
+     {
+      "say": "To test q, subtract p: q \u2212 p = (2, \u22124, 0, 2).",
+      "ask": {
+       "q": "What are we hoping to find about q \u2212 p?",
+       "a": "That it's a combination of the two null-space vectors."
+      }
+     },
+     {
+      "say": "(2, \u22124, 0, 2) is exactly 2 times the first basis vector. So q \u2212 p is in the null space, and q is a solution.",
+      "ask": {
+       "q": "Which entry forces the second coefficient to be 0?",
+       "a": "The third entry: only the second basis vector has a nonzero third entry, and q \u2212 p has 0 there."
+      }
+     },
+     {
+      "say": "Same test for r: r \u2212 p = (0, 3, 2, \u22122).",
+      "ask": {
+       "q": "What would we need for r to be a solution?",
+       "a": "(0, 3, 2, \u22122) = s(1, \u22122, 0, 1) + t(0, 3, 1, \u22121) for some s and t."
+      }
+     },
+     {
+      "say": "Entry 1 forces s = 0 and entry 3 forces t = 2. Then entry 2 should be 6, but it's 3. Contradiction, so r is not a solution.",
+      "ask": {
+       "q": "What does the contradiction mean geometrically?",
+       "a": "r is not on the plane of solutions; it's off to the side of it."
+      },
+      "why": "Matching one entry at a time and checking the rest is the fastest way to test membership in a span."
+     }
+    ],
+    "meaning": "The solution set is a flat sheet through p, shaped exactly like the null space. q lies on the sheet; r misses it.",
+    "ifStuck": [
+     {
+      "if": "a student thinks every null-space vector solves Ax = b",
+      "then": "ask what A does to a null-space vector: it gives 0, not b."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "rank = # pivots, nullity = # free variables, rank + nullity = # columns. All solutions of Ax = b: x = p + v, with v in Nul(A).",
+   "exit": [
+    {
+     "q": "How do you find rank from RREF?",
+     "a": "Count the pivot columns."
+    },
+    {
+     "q": "What does nullity count?",
+     "a": "The number of free variables, which is the dimension of the null space."
+    },
+    {
+     "q": "Why does p + Nul(A) describe every solution of Ax = b?",
+     "a": "Any two solutions differ by a null-space vector, and adding a null-space vector to a solution gives another solution."
+    }
+   ],
+   "next": "Next session: subspaces and span, the language for the 'sheets through the origin' we drew today."
+  }
+ }
 }

@@ -277,5 +277,263 @@
   "Checked critical point (1,1), Hessian determinant 3, local minimum, value -3.",
   "All direction vectors in directional derivative language are unit vectors."
  ],
- "reviewSummary": "Session 17 is ready with simple teaching language and exact visual specs for gradient, tangent plane, and optimization sketches. Minimum value correction applied after audit."
+ "reviewSummary": "Session 17 is ready with simple teaching language and exact visual specs for gradient, tangent plane, and optimization sketches. Minimum value correction applied after audit.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si17-p1",
+    11
+   ],
+   [
+    "si17-p2",
+    12
+   ],
+   [
+    "si17-p3",
+    13
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Standing on a hillside",
+   "say": [
+    "Picture f(x, y) as the height of a landscape above the point (x, y). Today's whole session is about one question: if I step from here, how does my height change?",
+    "Partial derivatives answer it for due east and due north. The gradient answers it for every direction at once."
+   ],
+   "ask": [
+    {
+     "q": "You're on a hill and want to climb as fast as possible. Which way do you step?",
+     "a": "Straight up the steepest slope. That direction is the gradient."
+    }
+   ],
+   "write": [
+    "\\(\\nabla f=(f_x,\\ f_y)\\)",
+    "\\(D_uf=\\nabla f\\cdot u\\)",
+    "\\(z=f(a,b)+f_x(x-a)+f_y(y-b)\\)",
+    "\\(D=f_{xx}f_{yy}-f_{xy}^2\\)"
+   ]
+  },
+  "idea": {
+   "title": "The gradient knows every slope",
+   "say": [
+    "f_x is the slope if you walk due east with y frozen; f_y is the slope walking due north with x frozen. Put them together and you get the gradient.",
+    "For any unit direction u, the slope that way is \u2207f \u00b7 u. The dot product is biggest when u points along \u2207f, so the gradient points straight uphill, and its length is the steepest slope.",
+    "Zoom in far enough and any smooth surface looks flat. That flat piece is the tangent plane, built from the height and the two slopes."
+   ],
+   "draw": [
+    "Draw a few oval level curves (a contour map) and a point on one of them.",
+    "Draw \u2207f at that point, perpendicular to the level curve and pointing toward higher levels.",
+    "Draw a unit vector u at an angle \u03b8 to \u2207f and write D_u f = |\u2207f| cos \u03b8."
+   ],
+   "visualize": "gradient",
+   "ask": [
+    {
+     "q": "In which direction is the directional derivative zero?",
+     "a": "Along the level curve, perpendicular to the gradient: you stay at the same height."
+    },
+    {
+     "q": "What's the slope if you walk straight downhill?",
+     "a": "\u2212|\u2207f|."
+    }
+   ]
+  },
+  "problems": {
+   "si17-p1": {
+    "launch": {
+     "say": "Find the gradient at (1, 0), then the slope in the direction u = (3/5, 4/5).",
+     "tryMinutes": 5,
+     "circulate": [
+      "Watch the chain rule on e^{xy}: its x-derivative is y e^{xy}.",
+      "Check u is already a unit vector: 9/25 + 16/25 = 1."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Before dotting with u, what should you always check?",
+      "a": "That u is a unit vector."
+     }
+    ],
+    "visualize": "gradient",
+    "steps": [
+     {
+      "say": "f_x = 2xy + y e^{xy} and f_y = x\u00b2 + x e^{xy}.",
+      "ask": {
+       "q": "Where does the extra y in y e^{xy} come from?",
+       "a": "The chain rule: the derivative of xy with respect to x is y."
+      }
+     },
+     {
+      "say": "At (1, 0): f_x = 0 and f_y = 1 + 1 = 2. So \u2207f(1, 0) = (0, 2).",
+      "ask": {
+       "q": "What's the steepest slope at (1, 0), and which way?",
+       "a": "2, due north (the +y direction)."
+      }
+     },
+     {
+      "say": "D_u f = (0, 2) \u00b7 (3/5, 4/5) = 8/5.",
+      "ask": {
+       "q": "Why is 8/5 less than 2?",
+       "a": "u points partly east, where the slope is 0. Only its northward part, 4/5, catches the slope."
+      },
+      "why": "The dot product measures how much of u points along the uphill direction."
+     }
+    ],
+    "meaning": "At (1, 0) the surface climbs fastest due north with slope 2. Walking in direction u, most of which is northward, you climb at 8/5.",
+    "ifStuck": [
+     {
+      "if": "a student gets f_x(1, 0) = 1",
+      "then": "recheck the chain rule: y e^{xy} is 0 when y = 0."
+     }
+    ],
+    "transition": "Slopes in every direction describe a flat plane. Next: build that tangent plane and use it to estimate."
+   },
+   "si17-p2": {
+    "launch": {
+     "say": "Find the tangent plane at (1, 1), then estimate f(1.1, 0.9) with it.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Check the plane uses (x \u2212 1) and (y \u2212 1), not x and y.",
+      "Ask early finishers to compute the exact value and compare."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Three ingredients of a tangent plane?",
+      "a": "The height f(a, b) and the two slopes f_x(a, b), f_y(a, b)."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Height: f(1, 1) = 1 + 1 + 2 = 4.",
+      "ask": {
+       "q": "What point does the plane touch?",
+       "a": "(1, 1, 4)."
+      }
+     },
+     {
+      "say": "f_x = 2x + y = 3 and f_y = x + 4y = 5 at (1, 1).",
+      "ask": {
+       "q": "Which direction is steeper at (1, 1)?",
+       "a": "The y-direction: slope 5 versus 3."
+      }
+     },
+     {
+      "say": "z = 4 + 3(x \u2212 1) + 5(y \u2212 1).",
+      "ask": {
+       "q": "Read it in words.",
+       "a": "Start at height 4; each step in x adds 3 per unit, each step in y adds 5 per unit."
+      },
+      "why": "This is the 2D version of the tangent line y = f(a) + f\u2032(a)(x \u2212 a)."
+     },
+     {
+      "say": "Step 0.1 in x and \u22120.1 in y: 4 + 0.3 \u2212 0.5 = 3.8.",
+      "ask": {
+       "q": "The exact value is 3.82. Why is the plane a bit low?",
+       "a": "The surface curves upward (it's a bowl), so the plane sits just under it."
+      }
+     }
+    ],
+    "meaning": "Near (1, 1) the surface is almost a flat plane tilted with slopes 3 and 5. Small steps can be estimated by walking on the plane instead of the surface.",
+    "ifStuck": [
+     {
+      "if": "a student plugs x = 1.1 into 3x instead of 3(x \u2212 1)",
+      "then": "ask what the plane should give at the base point (1, 1)."
+     }
+    ],
+    "transition": "Last one: where the tangent plane is perfectly flat, and what shape the surface has there."
+   },
+   "si17-p3": {
+    "launch": {
+     "say": "Find the critical point and classify it.",
+     "tryMinutes": 6,
+     "circulate": [
+      "Both partials must be zero: two equations.",
+      "Check f_{xy} = 1, not 0.",
+      "Is D > 0 read alongside the sign of f_{xx}?"
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What does a critical point look like on the surface?",
+      "a": "A spot where the tangent plane is horizontal."
+     }
+    ],
+    "visualize": "critical",
+    "steps": [
+     {
+      "say": "f_x = 2x + y \u2212 3 and f_y = x + 2y \u2212 3.",
+      "ask": {
+       "q": "What's the geometric meaning of f_x = 0?",
+       "a": "No slope in the x-direction."
+      }
+     },
+     {
+      "say": "Solve 2x + y = 3 and x + 2y = 3: subtract to get x = y, then x = y = 1.",
+      "ask": {
+       "q": "How many critical points?",
+       "a": "Just one: (1, 1)."
+      }
+     },
+     {
+      "say": "f_{xx} = 2, f_{yy} = 2, f_{xy} = 1.",
+      "ask": {
+       "q": "Why are these constants?",
+       "a": "f is quadratic, so its second derivatives don't depend on x or y."
+      }
+     },
+     {
+      "say": "D = 2 \u00b7 2 \u2212 1\u00b2 = 3 > 0, and f_{xx} > 0: a local minimum.",
+      "ask": {
+       "q": "What would D < 0 mean?",
+       "a": "A saddle: up in some directions, down in others."
+      },
+      "why": "D > 0 says the surface curves the same way in every direction; the sign of f_{xx} says whether that's up (min) or down (max)."
+     },
+     {
+      "say": "f(1, 1) = 1 + 1 + 1 \u2212 3 \u2212 3 = \u22123.",
+      "ask": {
+       "q": "Is this also the global minimum?",
+       "a": "Yes for this bowl-shaped quadratic, but the test itself only promises local."
+      }
+     }
+    ],
+    "meaning": "The surface is a bowl whose lowest point sits at (1, 1) with height \u22123. The mixed term xy tilts the bowl's ovals diagonally, but not enough to make a saddle.",
+    "ifStuck": [
+     {
+      "if": "a student concludes 'minimum' from D > 0 alone",
+      "then": "show f = \u2212x\u00b2 \u2212 y\u00b2: D > 0 there too, but it's a maximum."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "\u2207f = (f_x, f_y) points uphill. D_u f = \u2207f \u00b7 u (u a unit vector). Tangent plane = height + slopes. Critical points: \u2207f = 0, then D and f_{xx}.",
+   "exit": [
+    {
+     "q": "Why does the directional derivative use a dot product?",
+     "a": "It measures how much of the direction u lines up with the uphill direction \u2207f."
+    },
+    {
+     "q": "Three ingredients of a tangent plane?",
+     "a": "f(a, b), f_x(a, b), f_y(a, b)."
+    },
+    {
+     "q": "What does the second derivative test tell us geometrically?",
+     "a": "Whether the surface is a bowl, a dome or a saddle at the critical point."
+    }
+   ],
+   "next": "Next session: more optimization, including maxima and minima on a closed region."
+  }
+ }
 }

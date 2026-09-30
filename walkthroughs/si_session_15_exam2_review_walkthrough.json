@@ -421,5 +421,346 @@
   "Checked eigenbasis computation A^3x=(136,120).",
   "Checked projection and cross product arithmetic."
  ],
- "reviewSummary": "Session 15 is an Exam 2 review set with five mixed problems and visual specs for each major geometry/eigen concept."
+ "reviewSummary": "Session 15 is an Exam 2 review set with five mixed problems and visual specs for each major geometry/eigen concept.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    7
+   ],
+   [
+    "si15-p1",
+    9
+   ],
+   [
+    "si15-p2",
+    11
+   ],
+   [
+    "si15-p3",
+    13
+   ],
+   [
+    "si15-p4",
+    11
+   ],
+   [
+    "si15-p5",
+    13
+   ],
+   [
+    "wrap",
+    7
+   ]
+  ],
+  "open": {
+   "title": "Exam 2: algebra, eigen, or geometry?",
+   "say": [
+    "Welcome to Exam 2 review. Every problem on this exam falls into one of three families: undoing a matrix (inverses and determinants), eigen-questions, or geometry (projections and cross products).",
+    "Today, before we touch a problem, we'll name its family and its first move. That habit is worth more points than any single formula."
+   ],
+   "ask": [
+    {
+     "q": "Quick poll: which feels weakest right now: inverses and determinants, eigenvalues and diagonalization, or projections and cross products?",
+     "a": "Tally it on the board; linger on the most common answer."
+    }
+   ],
+   "write": [
+    "Family \u2192 first move",
+    "undo a matrix \u2192 det \u2260 0? then the inverse",
+    "eigen \u2192 det(A \u2212 \u03bbI) = 0, then Nul(A \u2212 \u03bbI)",
+    "powers \u2192 split into eigenvectors",
+    "geometry \u2192 dot for along, cross for normal"
+   ]
+  },
+  "idea": {
+   "title": "The Exam 2 map",
+   "say": [
+    "Undoing: the determinant decides if an inverse exists; the inverse solves Ax = b in one multiplication.",
+    "Eigen: eigenvalues from det(A \u2212 \u03bbI) = 0, eigenvectors from the null space. Diagonalizable means enough independent eigenvectors, and that is what makes powers easy.",
+    "Geometry: the dot product splits a vector into along and across pieces; the cross product builds a normal whose length is an area."
+   ],
+   "draw": [
+    "Draw three columns: 'Undo', 'Eigen', 'Geometry'. Under each, write its first move from the list.",
+    "As you finish each problem, write its one-line takeaway under its column."
+   ],
+   "ask": [
+    {
+     "q": "A problem says 'compute A\u00b9\u2070x'. Which family, and what's the first move?",
+     "a": "Eigen: write x as a combination of eigenvectors."
+    },
+    {
+     "q": "A problem asks for the area of a triangle in 3D. First move?",
+     "a": "Geometry: take the cross product of two side vectors; the area is half its length."
+    }
+   ]
+  },
+  "problems": {
+   "si15-p1": {
+    "launch": {
+     "say": "Warm-up from the 'Undo' column: find A\u207b\u00b9, then solve Ax = b.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Check the swap-and-negate pattern.",
+      "Check A\u207b\u00b9b, not bA\u207b\u00b9."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What do you check before any inverse?",
+      "a": "det A \u2260 0."
+     }
+    ],
+    "steps": [
+     {
+      "say": "det A = 2 \u2212 1 = 1. Nonzero: the inverse exists.",
+      "ask": {
+       "q": "What would det A = 0 have told you about Ax = b?",
+       "a": "No unique solution: either none or infinitely many."
+      }
+     },
+     {
+      "say": "Swap the diagonal, negate the off-diagonal, divide by 1: [[1, \u22121], [\u22121, 2]].",
+      "ask": {
+       "q": "Fast check?",
+       "a": "A times it: first row 2 \u2212 1 = 1 and \u22122 + 2 = 0. \u2713"
+      }
+     },
+     {
+      "say": "x = A\u207b\u00b9b = (7 \u2212 4, \u22127 + 8) = (3, 1).",
+      "ask": {
+       "q": "Check in the original system.",
+       "a": "2 \u00b7 3 + 1 = 7 and 3 + 1 = 4. \u2713"
+      },
+      "why": "Always plug the answer back in. It takes ten seconds and catches sign slips."
+     }
+    ],
+    "meaning": "A sends (3, 1) to (7, 4), and A\u207b\u00b9 undoes it. det A = 1 means A doesn't even change areas.",
+    "ifStuck": [
+     {
+      "if": "a student swaps the off-diagonal entries instead of the diagonal ones",
+      "then": "multiply their answer by A; it won't give I."
+     }
+    ],
+    "transition": "Next column: eigen. A repeated eigenvalue, and the question every exam asks about it."
+   },
+   "si15-p2": {
+    "launch": {
+     "say": "Find the eigenvalue, its eigenspace, and decide if A is diagonalizable.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Is anyone deciding from the repeated eigenvalue alone? Make them compute the eigenspace.",
+      "Check: x\u2082 = 0, x\u2081 free."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Does a repeated eigenvalue automatically mean 'not diagonalizable'?",
+      "a": "No. It depends on whether the eigenspace is big enough."
+     }
+    ],
+    "visualize": "eigen",
+    "steps": [
+     {
+      "say": "Triangular: \u03bb = 3, algebraic multiplicity 2.",
+      "ask": {
+       "q": "How many independent eigenvectors would we need?",
+       "a": "Two, for a 2 \u00d7 2 matrix."
+      }
+     },
+     {
+      "say": "A \u2212 3I = [[0, 1], [0, 0]] forces x\u2082 = 0. Only x\u2081 is free: E\u2083 = span{(1, 0)}.",
+      "ask": {
+       "q": "What's the geometric multiplicity?",
+       "a": "1."
+      }
+     },
+     {
+      "say": "One eigenvector direction, but we need two. Not diagonalizable.",
+      "ask": {
+       "q": "Which matrix with \u03bb = 3 repeated IS diagonalizable?",
+       "a": "3I itself: every vector is an eigenvector."
+      },
+      "why": "This is a shear with a stretch: it tips every direction except the x-axis."
+     }
+    ],
+    "meaning": "A stretches everything by 3 and also shears it sideways. Only the x-axis survives unturned, so there's no second eigenvector to build a basis.",
+    "ifStuck": [
+     {
+      "if": "a student claims (0, 1) is an eigenvector",
+      "then": "compute A(0, 1) = (1, 3). Is that a multiple of (0, 1)?"
+     }
+    ],
+    "transition": "When there ARE enough eigenvectors, powers become easy. That's the next problem."
+   },
+   "si15-p3": {
+    "launch": {
+     "say": "Compute A\u00b3x using only the two eigenpairs. You never need A.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Check the coefficients: c\u2081 = 2, c\u2082 = 1.",
+      "Watch for 4 \u00b7 3 instead of 4\u00b3."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Family and first move?",
+      "a": "Eigen/powers: write x as a combination of v\u2081 and v\u2082."
+     }
+    ],
+    "visualize": "powers",
+    "steps": [
+     {
+      "say": "(3, 1) = c\u2081(1, 1) + c\u2082(1, \u22121). Adding the equations: c\u2081 = 2, then c\u2082 = 1.",
+      "ask": {
+       "q": "Check.",
+       "a": "2(1, 1) + (1, \u22121) = (3, 1). \u2713"
+      }
+     },
+     {
+      "say": "A\u00b3 acts on each piece separately: 2 \u00b7 4\u00b3 v\u2081 + 1 \u00b7 2\u00b3 v\u2082 = 128v\u2081 + 8v\u2082.",
+      "ask": {
+       "q": "Why can A\u00b3 act on each piece separately?",
+       "a": "Linearity: A\u00b3(2v\u2081 + v\u2082) = 2A\u00b3v\u2081 + A\u00b3v\u2082."
+      },
+      "why": "In eigen-coordinates, A\u00b3 is just 'multiply coordinate 1 by 64 and coordinate 2 by 8'."
+     },
+     {
+      "say": "Back to standard coordinates: (128, 128) + (8, \u22128) = (136, 120).",
+      "ask": {
+       "q": "Which eigenvector does A\u00b3x mostly point along?",
+       "a": "v\u2081 = (1, 1), because 4\u00b3 beats 2\u00b3."
+      }
+     }
+    ],
+    "meaning": "Each application of A multiplies the (1, 1) part by 4 and the (1, \u22121) part by 2. The bigger eigenvalue wins, so A\u207fx swings toward (1, 1).",
+    "ifStuck": [
+     {
+      "if": "a student tries to find A",
+      "then": "it's possible but slow; ask what A does to v\u2081 three times."
+     }
+    ],
+    "transition": "On to the geometry column: a projection in 3D."
+   },
+   "si15-p4": {
+    "launch": {
+     "say": "Project v onto u and find the perpendicular part.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Denominator is u \u00b7 u.",
+      "Ask finishers to check v\u22a5 \u00b7 u = 0."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which vector's dot with itself goes in the denominator?",
+      "a": "u, the one we project onto."
+     }
+    ],
+    "visualize": "projection",
+    "steps": [
+     {
+      "say": "v \u00b7 u = 5 + 2 + 8 = 15 and u \u00b7 u = 1 + 4 + 4 = 9.",
+      "ask": {
+       "q": "Is the angle between u and v acute?",
+       "a": "Yes: v \u00b7 u > 0."
+      }
+     },
+     {
+      "say": "15/9 = 5/3 copies of u: (5/3, 10/3, 10/3).",
+      "ask": {
+       "q": "Does it point the same way as u?",
+       "a": "Yes: 5/3 is positive."
+      }
+     },
+     {
+      "say": "v\u22a5 = (5, 1, 4) \u2212 (5/3, 10/3, 10/3) = (10/3, \u22127/3, 2/3).",
+      "ask": {
+       "q": "Check perpendicular.",
+       "a": "(10 \u2212 14 + 4)/3 = 0. \u2713"
+      },
+      "why": "The check is the whole reason this problem is easy to get right."
+     }
+    ],
+    "meaning": "v splits into 5/3 of u plus a piece at a right angle to u. The length of that piece is v's distance from the line through u.",
+    "ifStuck": [
+     {
+      "if": "a student used v \u00b7 v",
+      "then": "ask which direction the answer should point along."
+     }
+    ],
+    "transition": "Last one: the cross product, and why its length is an area."
+   },
+   "si15-p5": {
+    "launch": {
+     "say": "Compute a \u00d7 b and the area of the parallelogram they span.",
+     "tryMinutes": 5,
+     "circulate": [
+      "The j-component has a minus in front.",
+      "Area is the length of a \u00d7 b, not the vector."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What two things does a \u00d7 b tell you?",
+      "a": "Its direction is normal to a and b; its length is the parallelogram's area."
+     }
+    ],
+    "visualize": "cross",
+    "steps": [
+     {
+      "say": "Set up the determinant: i, j, k on top, then a, then b.",
+      "ask": {
+       "q": "Does the order of a and b matter?",
+       "a": "Yes: b \u00d7 a = \u2212(a \u00d7 b). Same length, opposite direction."
+      }
+     },
+     {
+      "say": "Components: (4 \u2212 0, \u2212(2 \u2212 0), \u22121 \u2212 6) = (4, \u22122, \u22127).",
+      "ask": {
+       "q": "Check against a and b.",
+       "a": "a: 4 \u2212 4 + 0 = 0; b: 12 + 2 \u2212 14 = 0. \u2713"
+      }
+     },
+     {
+      "say": "Area = \u221a(16 + 4 + 49) = \u221a69.",
+      "ask": {
+       "q": "Area of the triangle with sides a and b?",
+       "a": "Half: \u221a69/2."
+      },
+      "why": "A zero cross product would mean a and b are parallel, so the parallelogram is flat."
+     }
+    ],
+    "meaning": "(4, \u22122, \u22127) stands straight out of the plane containing a and b, and the parallelogram they span has area \u221a69 \u2248 8.3.",
+    "ifStuck": [
+     {
+      "if": "a student gets +2 in the middle",
+      "then": "remind them of the + \u2212 + sign pattern across the top row."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Undo: det \u2260 0, then the inverse. Eigen: count independent eigenvectors; powers via eigen-coordinates. Geometry: dot for along/across, cross for normals and areas.",
+   "exit": [
+    {
+     "q": "AM vs. GM?",
+     "a": "AM: multiplicity as a root. GM: number of independent eigenvectors (dimension of the eigenspace)."
+    },
+    {
+     "q": "Why does diagonalization make powers easy?",
+     "a": "A\u207f = PD\u207fP\u207b\u00b9, and D\u207f just powers the diagonal."
+    },
+    {
+     "q": "Projection vs. cross product?",
+     "a": "Projection: how much of one vector lies along another. Cross: a vector perpendicular to both, with area as its length."
+    }
+   ],
+   "next": "Good luck on Exam 2. After it: curves and functions of several variables."
+  }
+ }
 }

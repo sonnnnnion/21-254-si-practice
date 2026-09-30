@@ -271,5 +271,247 @@
   "Checked 3D divergence/curl: div=x+y+z, curl=<-y,-z,-x>, values 2 and <2,-3,-1>.",
   "Visual specs include exact points/values when possible."
  ],
- "reviewSummary": "Session 18 is ready with checked optimization and vector field examples."
+ "reviewSummary": "Session 18 is ready with checked optimization and vector field examples.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    3
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si18-p1",
+    15
+   ],
+   [
+    "si18-p2",
+    11
+   ],
+   [
+    "si18-p3",
+    11
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Highest, lowest, and how things flow",
+   "say": [
+    "Two ideas today. First, finishing optimization: on a closed region, where are the very highest and lowest values? Second, vector fields: an arrow at every point, like wind on a weather map.",
+    "For vector fields we ask two questions at each point: is the flow spreading out (divergence), and is it spinning (curl)?"
+   ],
+   "ask": [
+    {
+     "q": "Your function has no critical points inside a closed square. Can it still have a maximum on the square?",
+     "a": "Yes: on the boundary. That's why we always check the edges."
+    }
+   ],
+   "write": [
+    "Absolute extrema: inside + edges + corners",
+    "\\(\\operatorname{div}F=P_x+Q_y\\)",
+    "2D curl \\(=Q_x-P_y\\)",
+    "\\(\\nabla\\times F=\\langle R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y\\rangle\\)"
+   ]
+  },
+  "idea": {
+   "title": "A closed region traps the answer",
+   "say": [
+    "On a closed, bounded region, a continuous function always has an absolute max and min. They can only hide in two places: at interior critical points or somewhere on the boundary.",
+    "So the method is a checklist: find interior critical points, then turn each edge into a one-variable problem, then check the corners. Compare every candidate value, and the biggest and smallest win.",
+    "Nothing clever, just complete. Points are lost for skipping a place to look, not for hard math."
+   ],
+   "draw": [
+    "Draw the rectangle 0 \u2264 x \u2264 3, 0 \u2264 y \u2264 4 with its four corners circled.",
+    "Write the checklist beside it: 1. inside (\u2207f = 0), 2. each edge (one variable), 3. corners, 4. compare.",
+    "Leave a table for the candidate values: point | f."
+   ],
+   "ask": [
+    {
+     "q": "On the edge x = 0, how many variables does f have?",
+     "a": "One: y. It becomes an ordinary single-variable problem."
+    },
+    {
+     "q": "Why check the corners separately?",
+     "a": "They're the endpoints of each edge's one-variable problem."
+    }
+   ]
+  },
+  "problems": {
+   "si18-p1": {
+    "launch": {
+     "say": "Find the absolute max and min of f on the rectangle. Work the checklist: inside, edges, corners.",
+     "tryMinutes": 7,
+     "circulate": [
+      "Is anyone stopping at (1, 2)? Push them to the boundary.",
+      "Suggest splitting the edge work: each table takes one edge.",
+      "Look for someone who completes the square; have them share the picture."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Why are we guaranteed an absolute max and min here?",
+      "a": "f is continuous and the rectangle is closed and bounded."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Inside: f_x = 2x \u2212 2 and f_y = 2y \u2212 4 vanish at (1, 2).",
+      "ask": {
+       "q": "Is (1, 2) inside the rectangle?",
+       "a": "Yes: 0 < 1 < 3 and 0 < 2 < 4. A critical point outside the region would be thrown away."
+      }
+     },
+     {
+      "say": "f(1, 2) = 1 + 4 \u2212 2 \u2212 8 = \u22125.",
+      "ask": {
+       "q": "Is \u22125 definitely the minimum yet?",
+       "a": "Not until we've checked the boundary."
+      }
+     },
+     {
+      "say": "Each edge is a one-variable quadratic. Their lowest values are \u22124 on x = 0 and \u22121 on each of the other three edges, all above \u22125.",
+      "ask": {
+       "q": "On x = 0, what is f as a function of y?",
+       "a": "y\u00b2 \u2212 4y, lowest at y = 2 with value \u22124."
+      },
+      "why": "Completing the square shows f = (x \u2212 1)\u00b2 + (y \u2212 2)\u00b2 \u2212 5: squared distance from (1, 2), minus 5. The closest point is (1, 2) itself."
+     },
+     {
+      "say": "Corners: 0, 3, 0, 3. The maximum is 3, at both (3, 0) and (3, 4).",
+      "ask": {
+       "q": "Using the distance picture, why these two corners?",
+       "a": "They're the farthest points of the rectangle from (1, 2), each \u221a8 away: 8 \u2212 5 = 3."
+      }
+     }
+    ],
+    "meaning": "f measures squared distance from (1, 2), shifted down by 5. Its lowest point is the center (1, 2), and its highest points are the corners farthest from that center.",
+    "ifStuck": [
+     {
+      "if": "a student finds (1, 2) and stops",
+      "then": "ask where the maximum is. It can't be at (1, 2), so it must be on the boundary."
+     }
+    ],
+    "transition": "Switching topics: a vector field puts an arrow at every point. Divergence asks 'is it spreading out here?', curl asks 'is it spinning here?'."
+   },
+   "si18-p2": {
+    "launch": {
+     "say": "Find div F and the scalar curl, then evaluate both at (1, 2).",
+     "tryMinutes": 4,
+     "circulate": [
+      "Divergence pairs P with x and Q with y.",
+      "Curl crosses them: Q with x, P with y, and the order matters."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Picture water flowing out of a faucet onto a floor. Positive or negative divergence at the faucet?",
+      "a": "Positive: flow spreads out from a source."
+     }
+    ],
+    "visualize": "fields",
+    "steps": [
+     {
+      "say": "P = x\u00b2y (first component), Q = xy\u00b2 (second).",
+      "ask": {
+       "q": "Why name them first?",
+       "a": "Every formula refers to P and Q; naming them prevents mixing them up."
+      }
+     },
+     {
+      "say": "div F = P_x + Q_y = 2xy + 2xy = 4xy. At (1, 2): 8.",
+      "ask": {
+       "q": "What does div = 8 mean?",
+       "a": "Near (1, 2), more flow leaves a small circle than enters: a source."
+      }
+     },
+     {
+      "say": "Curl = Q_x \u2212 P_y = y\u00b2 \u2212 x\u00b2. At (1, 2): 4 \u2212 1 = 3.",
+      "ask": {
+       "q": "Which way does a tiny paddle wheel at (1, 2) spin?",
+       "a": "Counterclockwise, since the curl is positive."
+      },
+      "why": "Q_x \u2212 P_y compares how the flow's sideways push changes across the paddle wheel."
+     }
+    ],
+    "meaning": "At (1, 2) the flow is spreading out (div 8) and spinning counterclockwise (curl 3) at the same time.",
+    "ifStuck": [
+     {
+      "if": "a student uses P_y + Q_x for divergence",
+      "then": "remind them divergence matches each component with its own variable: P with x, Q with y."
+     }
+    ],
+    "transition": "In 3D, divergence is still a number, but curl becomes a vector: the axis the flow spins around."
+   },
+   "si18-p3": {
+    "launch": {
+     "say": "Find div F and curl F for the 3D field, then evaluate at (1, \u22122, 3).",
+     "tryMinutes": 4,
+     "circulate": [
+      "Check div is a scalar and curl is a vector.",
+      "Walk the curl formula slowly: R_y \u2212 Q_z first."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which one is a vector in 3D: div or curl?",
+      "a": "Curl."
+     }
+    ],
+    "steps": [
+     {
+      "say": "div F = \u2202(xy)/\u2202x + \u2202(yz)/\u2202y + \u2202(zx)/\u2202z = y + z + x. At (1, \u22122, 3): 2.",
+      "ask": {
+       "q": "Is the flow a source or a sink at that point?",
+       "a": "A source: div > 0."
+      }
+     },
+     {
+      "say": "Curl: R_y \u2212 Q_z = 0 \u2212 y, P_z \u2212 R_x = 0 \u2212 z, Q_x \u2212 P_y = 0 \u2212 x. So \u2207 \u00d7 F = \u27e8\u2212y, \u2212z, \u2212x\u27e9.",
+      "ask": {
+       "q": "Memory trick for the curl?",
+       "a": "It's a cross product of \u2207 = (\u2202x, \u2202y, \u2202z) with F: a 3 \u00d7 3 determinant with i, j, k on top."
+      },
+      "why": "The third component, Q_x \u2212 P_y, is exactly the 2D curl from the last problem."
+     },
+     {
+      "say": "At (1, \u22122, 3): \u27e82, \u22123, \u22121\u27e9.",
+      "ask": {
+       "q": "What does this vector tell you?",
+       "a": "The axis the flow spins around near that point, with its length measuring how fast."
+      }
+     }
+    ],
+    "meaning": "Near (1, \u22122, 3) the flow spreads out a little and spins around the axis \u27e82, \u22123, \u22121\u27e9.",
+    "ifStuck": [
+     {
+      "if": "a student mixes up the order of curl components",
+      "then": "write the determinant with i, j, k on top and expand; the order falls out."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Absolute extrema: inside + edges + corners, then compare. div F = spreading out (a number). curl F = spinning (a number in 2D, a vector in 3D).",
+   "exit": [
+    {
+     "q": "Why check boundaries?",
+     "a": "Absolute extrema on a closed region can sit on the edge, where \u2207f need not be 0."
+    },
+    {
+     "q": "Divergence in plain words?",
+     "a": "How much the flow spreads out (or piles up) at a point."
+    },
+    {
+     "q": "Curl in plain words?",
+     "a": "How much, and around which axis, the flow spins at a point."
+    }
+   ],
+   "next": "Next session: double integrals. Adding up f over a region by slicing it."
+  }
+ }
 }

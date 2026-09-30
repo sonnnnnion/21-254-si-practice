@@ -362,5 +362,265 @@
   "Problem 3 checked: z=x+y and w=-2x-y gives basis vectors (1,0,1,-2) and (0,1,1,-1)."
  ],
  "reviewStatus": "reviewed",
- "reviewSummary": "Session 06 uses simple language around bases, dimension, column space, and null space. Arithmetic and notation were checked before export."
+ "reviewSummary": "Session 06 uses simple language around bases, dimension, column space, and null space. Arithmetic and notation were checked before export.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si06-p1",
+    15
+   ],
+   [
+    "si06-p2",
+    10
+   ],
+   [
+    "si06-p3",
+    11
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "The fewest directions that still get you everywhere",
+   "say": [
+    "Last time: span is where you can reach, independence means nothing is wasted. Put them together and you get a basis: enough directions to reach everything, with no extras.",
+    "The number of vectors in a basis is the dimension. A line has dimension 1, a plane 2, space 3."
+   ],
+   "ask": [
+    {
+     "q": "Give me a basis for the xy-plane. Now give me a different one.",
+     "a": "{(1, 0), (0, 1)} works; so does {(1, 1), (1, \u22121)}, or any two non-parallel vectors."
+    }
+   ],
+   "write": [
+    "basis = spans + independent",
+    "\\(\\dim V=\\#\\text{ vectors in any basis of }V\\)",
+    "\\(\\operatorname{rank}A+\\operatorname{nullity}A=n\\)"
+   ]
+  },
+  "idea": {
+   "title": "Two spaces live inside every matrix",
+   "say": [
+    "Every matrix A has a column space: all the outputs Ax you can produce. It's the span of A's columns.",
+    "And a null space: all the inputs that A crushes to zero.",
+    "RREF finds both, but there's a trap: RREF tells you which columns are pivot columns, and then you go back and take those columns from the original A. Row operations change the column space; they keep the null space."
+   ],
+   "draw": [
+    "Draw A on the left and RREF(A) on the right with an arrow labeled 'row ops'.",
+    "Circle the pivots in the RREF, then draw arrows back to the same column numbers in A: 'Col(A) basis comes from here'.",
+    "Under the RREF write: free variables \u2192 Nul(A)."
+   ],
+   "visualize": "matrix",
+   "ask": [
+    {
+     "q": "Why can't we use the RREF's columns for Col(A)?",
+     "a": "Row operations change the columns themselves, so the RREF's columns usually span a different space. They only tell us which original columns to keep."
+    },
+    {
+     "q": "What stays the same under row operations?",
+     "a": "The solutions of Ax = 0, so the null space."
+    }
+   ]
+  },
+  "problems": {
+   "si06-p1": {
+    "launch": {
+     "say": "From this one matrix and its RREF, find a basis for Col(A), a basis for Nul(A), the rank and the nullity.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Who used RREF columns for Col(A)? Have them compare with A's original columns.",
+      "Check that null-space vectors have 4 entries."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Where are the pivots, and which variables are free?",
+      "a": "Pivots in columns 1 and 2; x\u2083 and x\u2084 are free."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Pivots are in columns 1 and 2 of the RREF. So the pivot columns of A are A's own first two columns.",
+      "ask": {
+       "q": "What happened to columns 3 and 4 of A?",
+       "a": "They're combinations of columns 1 and 2, so they add nothing to the span."
+      }
+     },
+     {
+      "say": "Col(A) basis: (1, 2, 0, 1) and (0, 1, 1, \u22121), straight from A.",
+      "ask": {
+       "q": "What's the dimension of Col(A)?",
+       "a": "2."
+      },
+      "why": "The column space lives in \u211d\u2074 (4 rows), even though it's only a plane in there."
+     },
+     {
+      "say": "Now Nul(A). From the RREF: x\u2081 + 2x\u2083 \u2212 x\u2084 = 0 and x\u2082 + x\u2083 + 2x\u2084 = 0. Let x\u2083 = s and x\u2084 = t.",
+      "ask": {
+       "q": "Solve for x\u2081.",
+       "a": "x\u2081 = \u22122s + t."
+      }
+     },
+     {
+      "say": "Split the general vector by parameter: s(\u22122, \u22121, 1, 0) + t(1, \u22122, 0, 1).",
+      "ask": {
+       "q": "How do you know these two are independent without computing?",
+       "a": "Look at positions 3 and 4: one vector has (1, 0) there and the other has (0, 1). Neither can be a multiple of the other."
+      }
+     },
+     {
+      "say": "Two pivots: rank 2. Two free variables: nullity 2. 2 + 2 = 4 columns. \u2713",
+      "ask": {
+       "q": "If A had 4 pivots instead, what would the null space be?",
+       "a": "Just {0}: nullity 0."
+      }
+     }
+    ],
+    "meaning": "A takes \u211d\u2074 and squeezes it: a two-dimensional null space gets crushed to zero, and the outputs fill only a two-dimensional plane inside \u211d\u2074. Rank + nullity = 4 is the bookkeeping: every input dimension is either kept or crushed.",
+    "ifStuck": [
+     {
+      "if": "a student gives RREF columns for Col(A)",
+      "then": "check whether (1, 0, 0, 0) is even a combination of A's columns. Usually it isn't."
+     }
+    ],
+    "transition": "A basis gives every vector a unique recipe. Next problem: find the recipe, meaning the coordinates, in a nonstandard basis."
+   },
+   "si06-p2": {
+    "launch": {
+     "say": "Is B a basis for \u211d\u00b3? If so, find the coordinates of v in B: the recipe for v using b\u2081, b\u2082, b\u2083.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Check that the basis vectors go in as columns.",
+      "Who stops after the determinant? The coordinates are still needed."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What does [v]_B mean?",
+      "a": "The coefficients c\u2081, c\u2082, c\u2083 with v = c\u2081b\u2081 + c\u2082b\u2082 + c\u2083b\u2083."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Put b\u2081, b\u2082, b\u2083 in as columns of P.",
+      "ask": {
+       "q": "What does P times a coordinate vector give?",
+       "a": "The actual vector: P[v]_B = v."
+      }
+     },
+     {
+      "say": "det P = \u22121, not zero, so the columns are independent and span \u211d\u00b3. B is a basis.",
+      "ask": {
+       "q": "Why is 'independent' enough here, without checking span separately?",
+       "a": "Three independent vectors in \u211d\u00b3 automatically span \u211d\u00b3."
+      }
+     },
+     {
+      "say": "Solve P c = v. You get c = (\u22121, 3, 0).",
+      "ask": {
+       "q": "c\u2083 = 0. What does that mean?",
+       "a": "v can be built from b\u2081 and b\u2082 alone."
+      }
+     },
+     {
+      "say": "Check: \u2212b\u2081 + 3b\u2082 = (\u22121 + 6, \u22121, 3) = (5, \u22121, 3). \u2713",
+      "ask": {
+       "q": "Are (5, \u22121, 3) and (\u22121, 3, 0) the same vector?",
+       "a": "No: the first is v in standard coordinates, the second is its recipe in basis B."
+      }
+     }
+    ],
+    "meaning": "The same arrow v gets a different address depending on the basis. In the standard basis it's (5, \u22121, 3); in B it's (\u22121, 3, 0): one step backwards along b\u2081, three steps along b\u2082.",
+    "ifStuck": [
+     {
+      "if": "a student thinks [v]_B is just v",
+      "then": "compute \u22121b\u2081 + 3b\u2082 + 0b\u2083 with them and compare to (\u22121, 3, 0)."
+     }
+    ],
+    "transition": "Last one: a subspace given by equations. Find a basis and count."
+   },
+   "si06-p3": {
+    "launch": {
+     "say": "W is cut out by two equations in \u211d\u2074. Find a basis for W and its dimension.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Nobody needs to draw \u211d\u2074. Parametrize instead.",
+      "Check every basis vector has 4 components."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "How do you know W is a subspace before doing anything?",
+      "a": "Both equations are homogeneous and linear."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Solve each equation for one variable: z = x + y and w = \u22122x \u2212 y.",
+      "ask": {
+       "q": "Which variables are we treating as free?",
+       "a": "x and y; z and w are determined by them."
+      }
+     },
+     {
+      "say": "Let x = s, y = t. Then every vector in W is (s, t, s + t, \u22122s \u2212 t).",
+      "ask": {
+       "q": "How many free parameters? What does that predict?",
+       "a": "Two, so W is two-dimensional."
+      }
+     },
+     {
+      "say": "Split by parameter: s(1, 0, 1, \u22122) + t(0, 1, 1, \u22121).",
+      "ask": {
+       "q": "Check that (1, 0, 1, \u22122) is in W.",
+       "a": "1 + 0 \u2212 1 = 0 and 2 + 0 \u2212 2 = 0. \u2713"
+      }
+     },
+     {
+      "say": "Those two vectors are a basis, so dim W = 2.",
+      "ask": {
+       "q": "Connect to rank-nullity: what matrix is W the null space of?",
+       "a": "The 2 \u00d7 4 coefficient matrix. It has rank 2, so nullity = 4 \u2212 2 = 2."
+      },
+      "why": "Two independent equations in four unknowns always leave a two-dimensional solution space."
+     }
+    ],
+    "meaning": "Each independent equation cuts one dimension away. \u211d\u2074 has 4 dimensions and two equations remove two, leaving a two-dimensional flat slice.",
+    "ifStuck": [
+     {
+      "if": "a student writes 3-entry vectors",
+      "then": "ask how many variables W's vectors have: x, y, z, w."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Col(A): pivot columns of the ORIGINAL A. Nul(A): parametrize the free variables. rank + nullity = # columns.",
+   "exit": [
+    {
+     "q": "For Col(A), do we use the original matrix or the RREF columns?",
+     "a": "The original matrix; RREF only tells us which columns are pivots."
+    },
+    {
+     "q": "What's the difference between v and [v]_B?",
+     "a": "v is the vector; [v]_B is its list of coefficients in basis B."
+    },
+    {
+     "q": "Two independent homogeneous equations in \u211d\u2075. What's the dimension of the solution space?",
+     "a": "5 \u2212 2 = 3."
+    }
+   ],
+   "next": "Next session: linear transformations, and how a matrix is really a function that moves space around."
+  }
+ }
 }

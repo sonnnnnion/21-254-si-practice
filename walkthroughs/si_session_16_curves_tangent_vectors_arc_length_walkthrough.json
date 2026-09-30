@@ -265,5 +265,247 @@
   "Checked helix speed is constant 5 and length is 10pi.",
   "Notation uses \\overrightarrow{AB}=B-A."
  ],
- "reviewSummary": "Session 16 is ready with exact visual specs for curve tangent, segment, and helix sketches."
+ "reviewSummary": "Session 16 is ready with exact visual specs for curve tangent, segment, and helix sketches.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si16-p1",
+    12
+   ],
+   [
+    "si16-p2",
+    10
+   ],
+   [
+    "si16-p3",
+    12
+   ],
+   [
+    "wrap",
+    4
+   ]
+  ],
+  "open": {
+   "title": "A curve is a trip",
+   "say": [
+    "Welcome to the calculus half of the course. We start with the simplest moving object: a point traveling along a curve.",
+    "r(t) is where you are at time t. Its derivative is your velocity: which way you're going and how fast. Everything today is built from those two ideas."
+   ],
+   "ask": [
+    {
+     "q": "You drive around a roundabout at a steady 20 mph. Is your velocity constant?",
+     "a": "No. Your speed is constant, but your direction keeps changing, so velocity changes."
+    }
+   ],
+   "write": [
+    "velocity \\(r'(t)\\)",
+    "speed \\(\\|r'(t)\\|\\)",
+    "\\(T=\\dfrac{r'}{\\|r'\\|}\\)",
+    "\\(L=\\displaystyle\\int_a^b\\|r'(t)\\|\\,dt\\)"
+   ]
+  },
+  "idea": {
+   "title": "Velocity is a vector, speed is its length",
+   "say": [
+    "Differentiate r(t) one component at a time and you get the velocity vector r\u2032(t). Put its tail on the curve and it points along the curve, in the direction of travel.",
+    "Its length is the speed. Divide the velocity by the speed and you get T, the unit tangent: pure direction, length 1.",
+    "Arc length is the odometer: add up speed over time. Speed \u00d7 time = distance, with an integral when the speed changes."
+   ],
+   "draw": [
+    "Draw a wavy curve with a dot on it labeled r(t), and an arrow from the dot along the curve labeled r\u2032(t).",
+    "Draw a short arrow on top of it labeled T (length 1).",
+    "Draw an odometer: 'L = \u222b speed dt'."
+   ],
+   "visualize": "curves",
+   "ask": [
+    {
+     "q": "Can the speed ever be negative?",
+     "a": "No. It's a length."
+    },
+    {
+     "q": "What does r\u2032(t) = 0 mean physically?",
+     "a": "The point momentarily stops."
+    }
+   ]
+  },
+  "problems": {
+   "si16-p1": {
+    "launch": {
+     "say": "At t = 1, find the position, the velocity, the speed and the unit tangent.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Check every component was differentiated, including 2t \u2192 2.",
+      "Speed is a number; velocity and T are vectors. Ask students to label each."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which of the four answers are vectors?",
+      "a": "Position, velocity and T are vectors; speed is a number."
+     }
+    ],
+    "visualize": "curves",
+    "steps": [
+     {
+      "say": "Plug in t = 1: (1, 1 \u2212 3, 2) = (1, \u22122, 2).",
+      "ask": {
+       "q": "Is this a point or a direction?",
+       "a": "A point: where the traveler is at t = 1."
+      }
+     },
+     {
+      "say": "Differentiate each component: r\u2032(t) = (2t, 3t\u00b2 \u2212 3, 2), so r\u2032(1) = (2, 0, 2).",
+      "ask": {
+       "q": "The y-velocity is 0 at t = 1. What does that mean?",
+       "a": "y is momentarily not changing: y = t\u00b3 \u2212 3t has a turning point at t = 1."
+      }
+     },
+     {
+      "say": "Speed = \u221a(4 + 0 + 4) = \u221a8 = 2\u221a2.",
+      "ask": {
+       "q": "Why is the speed not 2 + 0 + 2?",
+       "a": "Speed is the length of the velocity vector, not the sum of its entries."
+      }
+     },
+     {
+      "say": "Divide by the speed: T(1) = (1/\u221a2, 0, 1/\u221a2).",
+      "ask": {
+       "q": "How can you check T?",
+       "a": "Its length should be 1: 1/2 + 0 + 1/2 = 1. \u2713"
+      },
+      "why": "T strips away how fast you're going and keeps only which way."
+     }
+    ],
+    "meaning": "At t = 1 the traveler is at (1, \u22122, 2), moving at 2\u221a2 units per second, heading diagonally in the x\u2013z direction with no y-motion at that instant.",
+    "ifStuck": [
+     {
+      "if": "a student reports r\u2032(1) as the speed",
+      "then": "ask whether the answer should be a vector or a number."
+     }
+    ],
+    "transition": "That curve was given. Next, you build one: the straight-line trip between two points."
+   },
+   "si16-p2": {
+    "launch": {
+     "say": "Parametrize the segment from A to B, then find its length.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Check B \u2212 A, not A \u2212 B.",
+      "Does everyone have the interval 0 \u2264 t \u2264 1?"
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Where should the traveler be at t = 0? At t = 1?",
+      "a": "At A, then at B."
+     }
+    ],
+    "steps": [
+     {
+      "say": "The trip's direction is B \u2212 A = (3, \u22123, 3).",
+      "ask": {
+       "q": "What does A \u2212 B describe instead?",
+       "a": "The trip from B back to A."
+      }
+     },
+     {
+      "say": "Start at A and add t copies of B \u2212 A: r(t) = (1 + 3t, 2 \u2212 3t, 3t) for 0 \u2264 t \u2264 1.",
+      "ask": {
+       "q": "Check t = 1.",
+       "a": "(4, \u22121, 3) = B. \u2713"
+      },
+      "why": "The interval is what makes it a segment. Without it, r(t) describes the whole infinite line."
+     },
+     {
+      "say": "Length = |B \u2212 A| = \u221a27 = 3\u221a3.",
+      "ask": {
+       "q": "How does this match the arc length formula?",
+       "a": "Speed is |r\u2032(t)| = \u221a27, constant, over 1 unit of time: \u222b\u2080\u00b9 \u221a27 dt = 3\u221a3."
+      }
+     }
+    ],
+    "meaning": "A straight trip at constant velocity: every second of t covers the whole vector B \u2212 A, so the length is just its magnitude.",
+    "ifStuck": [
+     {
+      "if": "a student's parametrization ends at the wrong point",
+      "then": "plug in t = 0 and t = 1 and compare with A and B."
+     }
+    ],
+    "transition": "Last one: a curve that isn't straight, but whose speed turns out to be constant anyway."
+   },
+   "si16-p3": {
+    "launch": {
+     "say": "Find the length of one full turn of the helix.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Is anyone integrating r(t) itself? Redirect to speed.",
+      "Look for sin\u00b2 + cos\u00b2 = 1 in their work."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What do we integrate for arc length: position, velocity or speed?",
+      "a": "Speed."
+     }
+    ],
+    "steps": [
+     {
+      "say": "r\u2032(t) = (\u22123 sin t, 3 cos t, 4).",
+      "ask": {
+       "q": "Which part of the motion is the 4?",
+       "a": "The steady climb up the z-axis."
+      }
+     },
+     {
+      "say": "Speed\u00b2 = 9 sin\u00b2t + 9 cos\u00b2t + 16 = 9 + 16 = 25, so the speed is 5, always.",
+      "ask": {
+       "q": "Why does the speed come out constant?",
+       "a": "The helix circles at a steady rate and climbs at a steady rate."
+      },
+      "why": "sin\u00b2 + cos\u00b2 = 1 is the reason almost every circle and helix problem has a clean answer."
+     },
+     {
+      "say": "\\(L=\\displaystyle\\int_0^{2\\pi}5\\,dt=10\\pi\\).",
+      "ask": {
+       "q": "Unroll one turn of the helix onto paper. What shape is it?",
+       "a": "A right triangle: base 6\u03c0 (the circle), height 8\u03c0 (the climb), hypotenuse 10\u03c0. A 3-4-5 triangle!"
+      }
+     }
+    ],
+    "meaning": "One turn of the helix covers 6\u03c0 around and 8\u03c0 up. Unrolled, it's the hypotenuse of a 3-4-5 triangle, 10\u03c0 long.",
+    "ifStuck": [
+     {
+      "if": "a student gets 6\u03c0",
+      "then": "ask whether the climb in z adds any distance."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Velocity r\u2032(t): a vector along the curve. Speed |r\u2032(t)|: a number. Segment A \u2192 B: A + t(B \u2212 A), 0 \u2264 t \u2264 1. Arc length: integrate speed.",
+   "exit": [
+    {
+     "q": "Velocity vs. speed?",
+     "a": "Velocity is a vector with direction; speed is its length."
+    },
+    {
+     "q": "Parametrize from A to B.",
+     "a": "r(t) = A + t(B \u2212 A), 0 \u2264 t \u2264 1."
+    },
+    {
+     "q": "Why does arc length use |r\u2032(t)|?",
+     "a": "Distance = speed \u00d7 time, added up with an integral."
+    }
+   ],
+   "next": "Next session: functions of two variables, level curves and partial derivatives."
+  }
+ }
 }

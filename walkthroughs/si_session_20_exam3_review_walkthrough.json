@@ -380,5 +380,360 @@
   "Checked divergence/curl values 6 and 0.",
   "Checked conservative potential phi=x^2y+x+y^3 and integral 6."
  ],
- "reviewSummary": "Session 20 is an Exam 3 review set with five checked mixed problems."
+ "reviewSummary": "Session 20 is an Exam 3 review set with five checked mixed problems.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    7
+   ],
+   [
+    "si20-p1",
+    8
+   ],
+   [
+    "si20-p2",
+    13
+   ],
+   [
+    "si20-p3",
+    12
+   ],
+   [
+    "si20-p4",
+    10
+   ],
+   [
+    "si20-p5",
+    13
+   ],
+   [
+    "wrap",
+    8
+   ]
+  ],
+  "open": {
+   "title": "Exam 3: is the output a number or an arrow?",
+   "say": [
+    "Welcome to Exam 3 review. This exam mixes curves, scalar functions and vector fields, and the fastest way to sort a problem is one question: does the function output a number or an arrow?",
+    "Numbers (f(x, y)) get gradients, tangent planes and optimization. Arrows (F) get divergence, curl and line integrals. Curves r(t) are the paths we travel on."
+   ],
+   "ask": [
+    {
+     "q": "Quick poll: which is shakiest: curves and arc length, gradients and tangent planes, optimization, div and curl, or line integrals?",
+     "a": "Tally it; slow down on the most common answer."
+    }
+   ],
+   "write": [
+    "Curve r(t) \u2192 velocity, speed, arc length",
+    "Scalar f \u2192 \u2207f, D_u f, tangent plane, critical points",
+    "Field F \u2192 div, curl, \u222b F \u00b7 dr",
+    "Conservative? \u2192 potential, endpoints"
+   ]
+  },
+  "idea": {
+   "title": "The Exam 3 map",
+   "say": [
+    "Curves: differentiate, take the length, integrate the length. Arc length is just the odometer.",
+    "Scalar functions: the gradient does everything. It gives slopes in any direction (dot with a unit vector), the tangent plane, and the critical points (where it's zero).",
+    "Vector fields: div and curl are local (spreading, spinning at a point). Line integrals are global (total push along a path), and if P_y = Q_x, only the endpoints matter."
+   ],
+   "draw": [
+    "Draw a two-column map: 'f(x, y) \u2192 a number' on the left, 'F(x, y) \u2192 an arrow' on the right, with 'r(t): the path' across the bottom.",
+    "Under each column, list its tools. Add a takeaway line under the right column after each problem."
+   ],
+   "ask": [
+    {
+     "q": "Which formulas need a unit vector?",
+     "a": "The directional derivative. The unit tangent T is also a unit vector by definition."
+    },
+    {
+     "q": "A line integral problem says 'any smooth path'. What does that hint at?",
+     "a": "The field is probably conservative: check P_y = Q_x."
+    }
+   ]
+  },
+  "problems": {
+   "si20-p1": {
+    "launch": {
+     "say": "Warm-up: find the speed and the arc length of the half-turn helix.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Look for sin\u00b2 + cos\u00b2 = 1.",
+      "Check the interval ends at \u03c0, not 2\u03c0."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What do we integrate for arc length?",
+      "a": "The speed |r\u2032(t)|."
+     }
+    ],
+    "visualize": "curves",
+    "steps": [
+     {
+      "say": "r\u2032(t) = (\u22122 sin t, 2 cos t, 1).",
+      "ask": {
+       "q": "Which component is the climb?",
+       "a": "The 1: z = t rises at a steady rate."
+      }
+     },
+     {
+      "say": "Speed = \u221a(4 sin\u00b2t + 4 cos\u00b2t + 1) = \u221a5, constant.",
+      "ask": {
+       "q": "Why does it come out constant?",
+       "a": "Steady circling (radius 2) plus steady climbing."
+      }
+     },
+     {
+      "say": "\\(L=\\displaystyle\\int_0^{\\pi}\\sqrt5\\,dt=\\pi\\sqrt5\\).",
+      "ask": {
+       "q": "Unrolled, what triangle is this?",
+       "a": "Base 2\u03c0 (half the circle), height \u03c0, hypotenuse \u221a(4\u03c0\u00b2 + \u03c0\u00b2) = \u03c0\u221a5. \u2713"
+      },
+      "why": "Constant speed turns arc length into speed \u00d7 time."
+     }
+    ],
+    "meaning": "Half a turn of a helix of radius 2 that climbs \u03c0: unrolled, it's a straight ramp of length \u03c0\u221a5.",
+    "ifStuck": [
+     {
+      "if": "a student integrates |r(t)|",
+      "then": "ask what the odometer measures: position, or speed?"
+     }
+    ],
+    "transition": "Left column now: a scalar function, a slope in a direction, and a tangent plane."
+   },
+   "si20-p2": {
+    "launch": {
+     "say": "At (1, 0): the slope toward (4, 4), then the tangent plane.",
+     "tryMinutes": 5,
+     "circulate": [
+      "The direction is (4, 4) \u2212 (1, 0) = (3, 4), then divide by 5.",
+      "Check the plane includes the base height f(1, 0) = 1."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Is (4, 4) the direction vector?",
+      "a": "No. It's a target point; the direction is (4, 4) \u2212 (1, 0) = (3, 4)."
+     }
+    ],
+    "visualize": "gradient",
+    "steps": [
+     {
+      "say": "Direction (3, 4) has length 5: u = (3/5, 4/5).",
+      "ask": {
+       "q": "Why must u be a unit vector?",
+       "a": "Otherwise the 'slope' would be inflated by the vector's length."
+      }
+     },
+     {
+      "say": "f_x = e^y and f_y = x e^y + 2y, so \u2207f(1, 0) = (1, 1).",
+      "ask": {
+       "q": "Steepest slope at (1, 0)?",
+       "a": "|\u2207f| = \u221a2, in the direction (1, 1)."
+      }
+     },
+     {
+      "say": "D_u f = (1, 1) \u00b7 (3/5, 4/5) = 7/5.",
+      "ask": {
+       "q": "Why is 7/5 less than \u221a2 \u2248 1.41?",
+       "a": "It isn't by much: 1.4 vs. 1.41. u points almost along the gradient."
+      },
+      "why": "The closer u is to the gradient's direction, the closer D_u f gets to the maximum slope."
+     },
+     {
+      "say": "f(1, 0) = 1, so z = 1 + (x \u2212 1) + y = x + y.",
+      "ask": {
+       "q": "Check the plane at the base point.",
+       "a": "z = 1 + 0 = 1 = f(1, 0). \u2713"
+      }
+     }
+    ],
+    "meaning": "Near (1, 0) the surface looks like the plane z = x + y. Heading toward (4, 4) you climb at 7/5, nearly the steepest possible.",
+    "ifStuck": [
+     {
+      "if": "a student dots with (3, 4) and gets 7",
+      "then": "ask if the slope should depend on how long the arrow is."
+     }
+    ],
+    "transition": "Still in the left column: where is the tangent plane flat, and what shape is the surface there?"
+   },
+   "si20-p3": {
+    "launch": {
+     "say": "Find and classify the critical point.",
+     "tryMinutes": 5,
+     "circulate": [
+      "f_{xy} = \u22122; the square in D makes it +4, then subtracted.",
+      "Check both first partials are set to zero."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Two steps?",
+      "a": "Solve \u2207f = 0, then use D and f_{xx}."
+     }
+    ],
+    "visualize": "critical",
+    "steps": [
+     {
+      "say": "f_x = 2x \u2212 2y, f_y = \u22122x + 4y \u2212 4.",
+      "ask": {
+       "q": "Where does the \u22122x in f_y come from?",
+       "a": "The \u22122xy term, differentiated in y."
+      }
+     },
+     {
+      "say": "f_x = 0 gives x = y. Then \u22122y + 4y \u2212 4 = 0, so y = 2: the point (2, 2).",
+      "ask": {
+       "q": "Could there be more critical points?",
+       "a": "No: the equations are linear with one solution."
+      }
+     },
+     {
+      "say": "f_{xx} = 2, f_{yy} = 4, f_{xy} = \u22122. D = 8 \u2212 4 = 4 > 0 and f_{xx} > 0: local minimum.",
+      "ask": {
+       "q": "Does the negative f_{xy} matter?",
+       "a": "Only through its square: (\u22122)\u00b2 = 4."
+      },
+      "why": "D compares the bowl-shaped curvature \\(f_{xx}f_{yy}\\) with the twist \\(f_{xy}^2\\)."
+     },
+     {
+      "say": "f(2, 2) = 4 \u2212 8 + 8 \u2212 8 = \u22124.",
+      "ask": {
+       "q": "A slick check?",
+       "a": "f = (x \u2212 y)\u00b2 + (y \u2212 2)\u00b2 \u2212 4, clearly smallest at x = y = 2, value \u22124."
+      }
+     }
+    ],
+    "meaning": "A tilted bowl with its bottom at (2, 2), height \u22124.",
+    "ifStuck": [
+     {
+      "if": "a student writes D = 8 + 4",
+      "then": "rewrite the formula: \\(D=f_{xx}f_{yy}-(f_{xy})^2\\)."
+     }
+    ],
+    "transition": "Right column now: an arrow field and what it does at a single point."
+   },
+   "si20-p4": {
+    "launch": {
+     "say": "Find div F and the scalar curl, then evaluate at (2, \u22121).",
+     "tryMinutes": 3,
+     "circulate": [
+      "\\(P_y=-1\\), so \\(-P_y=+1\\).",
+      "Is anyone surprised by curl = 0? Ask what it means."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Name P and Q.",
+      "a": "P = x\u00b2 \u2212 y, Q = xy."
+     }
+    ],
+    "visualize": "fields",
+    "steps": [
+     {
+      "say": "P = x\u00b2 \u2212 y, Q = xy.",
+      "ask": {
+       "q": "Which partials does div need? Curl?",
+       "a": "div: P_x, Q_y. Curl: Q_x, P_y."
+      }
+     },
+     {
+      "say": "div F = 2x + x = 3x. At (2, \u22121): 6.",
+      "ask": {
+       "q": "Source or sink there?",
+       "a": "Source: the flow spreads out."
+      }
+     },
+     {
+      "say": "Curl = Q_x \u2212 P_y = y \u2212 (\u22121) = y + 1. At (2, \u22121): 0.",
+      "ask": {
+       "q": "Does curl 0 at one point make F conservative?",
+       "a": "No. Conservative needs zero curl everywhere, and y + 1 isn't always 0."
+      },
+      "why": "Local (one point) versus global (everywhere) is a classic exam trap."
+     }
+    ],
+    "meaning": "At (2, \u22121) the field spreads out (div 6) but doesn't spin at that exact point (curl 0). Elsewhere it does spin.",
+    "ifStuck": [
+     {
+      "if": "a student gets curl = y \u2212 1",
+      "then": "recompute P_y: the derivative of \u2212y is \u22121, and subtracting \u22121 adds 1."
+     }
+    ],
+    "transition": "Last one: a line integral with no path given. What does that tell you?"
+   },
+   "si20-p5": {
+    "launch": {
+     "say": "Compute \u222b F \u00b7 dr from (1, 0) to (2, 1) along any smooth path.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Check the test P_y = Q_x first.",
+      "Watch for + g(y).",
+      "End minus start."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "'Any smooth path' is a hint. Of what?",
+      "a": "That the integral is path-independent, so F should be conservative."
+     }
+    ],
+    "steps": [
+     {
+      "say": "P_y = 2x = Q_x: conservative.",
+      "ask": {
+       "q": "What would you do if the test failed?",
+       "a": "Parametrize the specific path; the answer would depend on it."
+      }
+     },
+     {
+      "say": "\\(\\phi=x^2y+x+g(y)\\); matching \\(\\phi_y=x^2+3y^2\\) gives \\(g=y^3\\).",
+      "ask": {
+       "q": "Check \u2207\u03c6.",
+       "a": "(2xy + 1, x\u00b2 + 3y\u00b2) = F. \u2713"
+      }
+     },
+     {
+      "say": "\u03c6(2, 1) \u2212 \u03c6(1, 0) = 7 \u2212 1 = 6.",
+      "ask": {
+       "q": "Integral along a loop from (1, 0) back to (1, 0)?",
+       "a": "0."
+      },
+      "why": "This is the Fundamental Theorem of Calculus, upgraded to curves."
+     }
+    ],
+    "meaning": "F is the gradient of \u03c6, so the work from (1, 0) to (2, 1) is \u03c6's rise from 1 to 7, whatever the path.",
+    "ifStuck": [
+     {
+      "if": "a student starts parametrizing a straight line",
+      "then": "it works, but ask them to check the conservative test first; it's much faster."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Number or arrow? f: gradient \u2192 slopes, planes, critical points. F: div/curl at a point; \u222b F \u00b7 dr along a path; conservative \u2192 endpoints. Curves: integrate speed.",
+   "exit": [
+    {
+     "q": "Big categories of Exam 3?",
+     "a": "Curves, scalar functions (gradient, planes, optimization), vector fields (div, curl, line integrals)."
+    },
+    {
+     "q": "Which formula needs a unit direction?",
+     "a": "The directional derivative D_u f = \u2207f \u00b7 u."
+    },
+    {
+     "q": "When can a line integral use endpoints only?",
+     "a": "When F is conservative (F = \u2207\u03c6; in 2D on a nice region, P_y = Q_x)."
+    }
+   ],
+   "next": "Good luck on Exam 3. After it: double integrals, polar coordinates, and Green's theorem."
+  }
+ }
 }

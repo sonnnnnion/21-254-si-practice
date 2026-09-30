@@ -48,7 +48,7 @@
  ],
  "notationWarnings": [
   "Use AM and GM only after defining them.",
-  "Write E_λ for eigenspace if that helps the board stay clean.",
+  "Write \\(E_\\lambda\\) for eigenspace if that helps the board stay clean.",
   "Be clear that an eigenbasis is a basis made entirely of eigenvectors."
  ],
  "problems": [
@@ -223,7 +223,7 @@
     "AM versus GM",
     "Conceptual diagonalization"
    ],
-   "studentPromptLatex": "Suppose \\(A\\) is a \\(3\\times3\\) matrix with characteristic polynomial \\((\\lambda-2)^2(\\lambda+1)\\). Also suppose \\[E_2=\\operatorname{span}\\{(1,0,1),(0,1,-1)\\},\\qquad E_{-1}=\\operatorname{span}\\{(1,1,0)\\}.\\] Does \\(A\\) have an eigenbasis for \\(\\mathbb{R}^3\\)? If yes, give one.",
+   "studentPromptLatex": "Suppose \\(A\\) is a \\(3\\times3\\) matrix with characteristic polynomial \\((\\lambda-2)^2(\\lambda+1)\\). Also suppose \\[E_2=\\operatorname{span}\\{(1,0,1),(0,1,-1)\\},\\qquad E_{-1}=\\operatorname{span}\\{(1,1,1)\\}.\\] Does \\(A\\) have an eigenbasis for \\(\\mathbb{R}^3\\)? If yes, give one.",
    "whatToSayBefore": "Tell students: this problem gives the eigenspaces, so do not row reduce. Just count independent eigenvectors.",
    "visualSpec": {
     "type": "eigenspace_table",
@@ -245,7 +245,7 @@
       [
        1,
        1,
-       0
+       1
       ]
      ]
     },
@@ -271,10 +271,10 @@
     },
     {
      "label": "Write the eigenbasis",
-     "latex": "One eigenbasis is the union of the eigenspace bases: \\[\\{(1,0,1),(0,1,-1),(1,1,0)\\}.\\]"
+     "latex": "One eigenbasis is the union of the eigenspace bases: \\[\\{(1,0,1),(0,1,-1),(1,1,1)\\}.\\]"
     }
    ],
-   "finalAnswerLatex": "Yes. One eigenbasis is \\[\\{(1,0,1),(0,1,-1),(1,1,0)\\}.\\]",
+   "finalAnswerLatex": "Yes. One eigenbasis is \\[\\{(1,0,1),(0,1,-1),(1,1,1)\\}.\\]",
    "commonMistakes": [
     "Row reducing even though the eigenspaces are already given.",
     "Forgetting to include the eigenvector for λ=-1.",
@@ -303,5 +303,260 @@
   "Checked B example: λ=4 eigenspace has dimension 2 and λ=1 has eigenvector (0,1,-3).",
   "Checked conceptual eigenbasis problem totals 3 eigenvectors."
  ],
- "reviewSummary": "Session 12 is about counting eigenvector directions, not just finding eigenvalues."
+ "reviewSummary": "Session 12 is about counting eigenvector directions, not just finding eigenvalues.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    9
+   ],
+   [
+    "si12-p1",
+    13
+   ],
+   [
+    "si12-p2",
+    12
+   ],
+   [
+    "si12-p3",
+    9
+   ],
+   [
+    "wrap",
+    3
+   ]
+  ],
+  "open": {
+   "title": "Do we have enough eigenvectors?",
+   "say": [
+    "Last time we found eigenvectors. Today's question: are there enough of them to build a whole coordinate system, an eigenbasis?",
+    "An n × n matrix needs n independent eigenvectors. Repeated eigenvalues are where that can go wrong, and today you'll learn to tell exactly when it does."
+   ],
+   "ask": [
+    {
+     "q": "λ = 3 is a double root of the characteristic polynomial. How many independent eigenvectors does it give?",
+     "a": "Either 1 or 2. You can't tell until you solve for the eigenspace. That's today's whole point."
+    }
+   ],
+   "write": [
+    "AM(λ): how many times λ is a root",
+    "GM(λ): \\(\\dim\\operatorname{Nul}(A-\\lambda I)\\)",
+    "\\(1\\le \\text{GM}\\le\\text{AM}\\)",
+    "eigenbasis ⟺ GMs add up to n"
+   ]
+  },
+  "idea": {
+   "title": "Algebra promises; geometry delivers",
+   "say": [
+    "Algebraic multiplicity is a promise from the characteristic polynomial: λ = 2 shows up twice. Geometric multiplicity is what you actually get: the number of independent eigenvectors for λ = 2.",
+    "Geometry can never beat algebra, and it can fall short. When it falls short, the matrix is missing a direction, and there's no eigenbasis.",
+    "So the check is always the same: for each eigenvalue, find the dimension of its eigenspace, then add them up and compare with n."
+   ],
+   "draw": [
+    "Draw a table with columns λ | AM | GM | eigenspace basis.",
+    "Next to it, draw a 'good' repeated eigenvalue as a whole plane of eigenvectors, and a 'bad' one as just a single line.",
+    "Write under the table: add the GMs; need n."
+   ],
+   "visualize": "eigen",
+   "ask": [
+    {
+     "q": "Can GM ever be 0 for an eigenvalue?",
+     "a": "No. If λ is an eigenvalue, there's at least one nonzero eigenvector, so GM ≥ 1."
+    },
+    {
+     "q": "If all n eigenvalues are distinct, is there always an eigenbasis?",
+     "a": "Yes. Each gives at least one eigenvector, and eigenvectors for distinct eigenvalues are independent."
+    }
+   ]
+  },
+  "problems": {
+   "si12-p1": {
+    "launch": {
+     "say": "Find AM and GM for each eigenvalue, and decide whether there's an eigenbasis.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Is anyone assuming λ = 2 gives two eigenvectors because it appears twice?",
+      "Check that λ = 3 got its own eigenspace computation."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Why can we read the eigenvalues off this matrix directly?",
+      "a": "It's upper triangular, so the eigenvalues are the diagonal entries."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Diagonal: 2, 2, 3. So λ = 2 has AM 2 and λ = 3 has AM 1.",
+      "ask": {
+       "q": "Maximum possible GM for λ = 2?",
+       "a": "2, since GM ≤ AM."
+      }
+     },
+     {
+      "say": "A − 2I: row 1 says y = 0, row 3 says z = 0. Only x is free. E₂ = span{(1, 0, 0)}, GM = 1.",
+      "ask": {
+       "q": "Which entry is responsible for GM being only 1?",
+       "a": "The 1 in the top-right of the 2 × 2 block: it forces y = 0."
+      },
+      "why": "That off-diagonal 1 is a shear. It links x and y, so only one direction survives unturned."
+     },
+     {
+      "say": "A − 3I: rows give y = 0 then x = 0, with z free. E₃ = span{(0, 0, 1)}, GM = 1.",
+      "ask": {
+       "q": "Did we need to compute E₃ to answer the eigenbasis question?",
+       "a": "Strictly no (λ = 2 already fell short), but it completes the table."
+      }
+     },
+     {
+      "say": "Total: 1 + 1 = 2 independent eigenvectors, but ℝ³ needs 3. No eigenbasis.",
+      "ask": {
+       "q": "Which eigenvalue is 'defective'?",
+       "a": "λ = 2: AM 2 but GM 1."
+      }
+     }
+    ],
+    "meaning": "A has only two eigen-directions in 3D: the x-axis (stretched by 2) and the z-axis (stretched by 3). The y-direction gets sheared toward x, so no third eigenvector exists.",
+    "ifStuck": [
+     {
+      "if": "a student says λ = 2 gives two eigenvectors",
+      "then": "have them solve A − 2I together and count free variables."
+     }
+    ],
+    "transition": "Same shape of question, but this time the repeated eigenvalue behaves."
+   },
+   "si12-p2": {
+    "launch": {
+     "say": "Does B have an eigenbasis? If yes, write one down.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Is anyone rejecting B immediately because 4 repeats? Ask them to check GM.",
+      "Check the λ = 1 eigenvector: 3y + z = 0."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Eigenvalues?",
+      "a": "4, 4, 1 from the diagonal."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Triangular again: eigenvalues 4, 4, 1.",
+      "ask": {
+       "q": "So far, how does this compare with the last problem?",
+       "a": "Same pattern: one repeated eigenvalue and one simple one."
+      }
+     },
+     {
+      "say": "B − 4I: rows say z = 0 (twice). x and y are both free. E₄ is a whole plane: span{(1, 0, 0), (0, 1, 0)}.",
+      "ask": {
+       "q": "Why do we get two free variables here but only one last time?",
+       "a": "Here the off-diagonal 1 is in the column of the non-repeated eigenvalue, so it doesn't tie x and y together."
+      },
+      "why": "Where the off-diagonal entry sits decides whether a repeated eigenvalue is 'full' or 'defective'."
+     },
+     {
+      "say": "B − I: x = 0 and 3y + z = 0. Take y = 1, z = −3: E₁ = span{(0, 1, −3)}.",
+      "ask": {
+       "q": "Check it: B(0, 1, −3)?",
+       "a": "(0, 4 − 3, −3) = (0, 1, −3). ✓"
+      }
+     },
+     {
+      "say": "2 + 1 = 3 independent eigenvectors: an eigenbasis.",
+      "ask": {
+       "q": "Why are the three automatically independent?",
+       "a": "Eigenvectors from different eigenvalues are independent, and within E₄ we chose a basis."
+      }
+     }
+    ],
+    "meaning": "B stretches a whole plane by 4 and one extra direction, (0, 1, −3), by 1. Three independent eigen-directions cover all of ℝ³.",
+    "ifStuck": [
+     {
+      "if": "a student includes the zero vector",
+      "then": "remind them eigenvectors must be nonzero; the basis vectors of the eigenspace are the ones to use."
+     }
+    ],
+    "transition": "Last one: the eigenspaces are handed to us. No row reduction at all."
+   },
+   "si12-p3": {
+    "launch": {
+     "say": "The characteristic polynomial and eigenspaces are given. Decide if there's an eigenbasis and give one.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Nobody needs to row reduce. Count basis vectors.",
+      "Check the eigenvector for λ = −1 is included."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Where do AM and GM come from here?",
+      "a": "AM from the exponents in the characteristic polynomial; GM from the number of basis vectors in each eigenspace."
+     }
+    ],
+    "steps": [
+     {
+      "say": "(λ − 2)² gives AM 2 for λ = 2; (λ + 1) gives AM 1 for λ = −1.",
+      "ask": {
+       "q": "Which eigenvalue could possibly be defective?",
+       "a": "Only λ = 2, since a simple eigenvalue always has GM 1."
+      }
+     },
+     {
+      "say": "E₂ has two basis vectors: GM 2. E₋₁ has one: GM 1.",
+      "ask": {
+       "q": "Is λ = 2 defective here?",
+       "a": "No: GM 2 = AM 2."
+      }
+     },
+     {
+      "say": "2 + 1 = 3 = n. Enough for an eigenbasis.",
+      "ask": {
+       "q": "What would we need to double-check if the eigenspaces weren't given as bases?",
+       "a": "That the listed vectors are independent."
+      }
+     },
+     {
+      "say": "Put the eigenspace bases together: {(1, 0, 1), (0, 1, −1), (1, 1, 1)}.",
+      "ask": {
+       "q": "Quick independence check?",
+       "a": "(1, 1, 1) isn't a combination a(1, 0, 1) + b(0, 1, −1) = (a, b, a − b), since that would need a − b = 1 with a = b = 1."
+      },
+      "why": "An eigenbasis is built by pooling the eigenspace bases. No new computation is needed once you have them."
+     }
+    ],
+    "meaning": "A stretches a plane of directions by 2 and flips one more direction, (1, 1, 1). In the eigenbasis, A is just the diagonal matrix with entries 2, 2, −1.",
+    "ifStuck": [
+     {
+      "if": "a student row reduces",
+      "then": "point out the eigenspaces are already given; the job is counting."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "For each λ: GM = dim Nul(A − λI) ≤ AM. Eigenbasis ⟺ the GMs add up to n. Repeated λ is fine if its GM matches its AM.",
+   "exit": [
+    {
+     "q": "What's the difference between AM and GM?",
+     "a": "AM counts the root's multiplicity; GM counts the independent eigenvectors."
+    },
+    {
+     "q": "How many independent eigenvectors does an eigenbasis for ℝ³ need?",
+     "a": "Three."
+    },
+    {
+     "q": "Can a repeated eigenvalue still be okay?",
+     "a": "Yes, when its eigenspace is as big as its multiplicity."
+    }
+   ],
+   "next": "Next session: diagonalization. An eigenbasis lets us write A = PDP⁻¹, and matrix powers become easy."
+  }
+ }
 }

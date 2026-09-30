@@ -427,5 +427,381 @@
   "Checked Green's Theorem clockwise triangle: CCW value 2, clockwise value -2.",
   "Visual specs include exact regions, orientations, normal directions, and theorem-specific labels."
  ],
- "reviewSummary": "Session 22 is the final Exam 4 review walkthrough with five checked problems and exact visual specifications."
+ "reviewSummary": "Session 22 is the final Exam 4 review walkthrough with five checked problems and exact visual specifications.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    7
+   ],
+   [
+    "si22-p1",
+    11
+   ],
+   [
+    "si22-p2",
+    14
+   ],
+   [
+    "si22-p3",
+    12
+   ],
+   [
+    "si22-p4",
+    12
+   ],
+   [
+    "si22-p5",
+    9
+   ],
+   [
+    "wrap",
+    6
+   ]
+  ],
+  "open": {
+   "title": "The last exam: pick the right integral",
+   "say": [
+    "Welcome to the last review of the semester. Everything in this unit is an integral, and the hardest part of each problem is picking which integral and setting it up. The calculus at the end is usually easy.",
+    "So today, for every problem, we'll say three things out loud: what are we integrating over, what's the orientation, and is there a theorem that makes it easier?"
+   ],
+   "ask": [
+    {
+     "q": "Quick poll: which feels least solid: surface integrals, flux, Stokes and Green, or triple integrals?",
+     "a": "Tally it; linger on the most common answer."
+    }
+   ],
+   "write": [
+    "\\(dS=\\sqrt{1+f_x^2+f_y^2}\\,dA\\)",
+    "upward flux: \\(F\\cdot\\langle -f_x,-f_y,1\\rangle\\,dA\\)",
+    "Stokes: \\(\\displaystyle\\iint_S(\\nabla\\times F)\\cdot n\\,dS=\\oint_{\\partial S}F\\cdot dr\\)",
+    "\\(dV=r\\,dz\\,dr\\,d\\theta\\)"
+   ]
+  },
+  "idea": {
+   "title": "A decision tree for the final unit",
+   "say": [
+    "Integrating a number over a surface, like mass or area? That's dS. Measuring how much a field flows through a surface? That's flux, and you need a normal with an orientation.",
+    "Curl over a surface, or circulation around its edge? Stokes lets you trade one for the other; Green is the flat 2D version. Whichever side is easier wins.",
+    "A solid region? Triple integral, and if you see cylinders or x\u00b2 + y\u00b2, go cylindrical and don't forget the r."
+   ],
+   "draw": [
+    "Draw a decision tree. Root: 'What am I integrating over?'",
+    "Branch 1, a curve: ds or F \u00b7 dr (closed loop in 2D \u2192 Green).",
+    "Branch 2, a surface: scalar \u2192 dS; field through it \u2192 flux; curl through it \u2192 Stokes (try the boundary).",
+    "Branch 3, a solid: dV (cylindrical if round).",
+    "Next to it, draw a surface with an upward normal and a counterclockwise boundary arrow: the right-hand rule."
+   ],
+   "ask": [
+    {
+     "q": "Stokes: your thumb points along the normal. Which way do your fingers curl?",
+     "a": "The direction to walk the boundary. Upward normal means counterclockwise from above."
+    },
+    {
+     "q": "What's the one factor that polar, cylindrical and dS all have in common?",
+     "a": "An area/volume stretch factor: \\(r\\), \\(r\\), or \\(\\sqrt{1+f_x^2+f_y^2}\\)."
+    }
+   ]
+  },
+  "problems": {
+   "si22-p1": {
+    "launch": {
+     "say": "Integrate z over the tilted plane above the rectangle.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Look for the \u221a6.",
+      "Check z was replaced by x + 2y."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Decision tree: which branch?",
+      "a": "A number over a surface: dS."
+     }
+    ],
+    "steps": [
+     {
+      "say": "f = x + 2y, so f_x = 1, f_y = 2, and dS = \u221a(1 + 1 + 4) dA = \u221a6 dA.",
+      "ask": {
+       "q": "What does \u221a6 mean geometrically?",
+       "a": "Each patch of the tilted plane is \u221a6 times bigger than its shadow on the xy-plane."
+      },
+      "why": "A tilted surface has more area than its shadow; \\(\\sqrt{1+f_x^2+f_y^2}\\) is the stretch factor."
+     },
+     {
+      "say": "On the surface, z = x + 2y: the integral becomes \u222b\u2080\u00b9 \u222b\u2080\u00b2 (x + 2y) \u221a6 dy dx.",
+      "ask": {
+       "q": "Why can't z stay as z?",
+       "a": "We integrate over the shadow region in x and y; z is determined by the surface."
+      }
+     },
+     {
+      "say": "Inner: [xy + y\u00b2] from 0 to 2 = 2x + 4. Outer: \u222b\u2080\u00b9 (2x + 4) dx = 5. Answer 5\u221a6.",
+      "ask": {
+       "q": "Sanity check?",
+       "a": "The average height is at the center (1/2, 1): z = 2.5. Surface area = 2\u221a6. 2.5 \u00b7 2\u221a6 = 5\u221a6. \u2713"
+      }
+     }
+    ],
+    "meaning": "The tilted plane's area is \u221a6 times its shadow's, and its average height is 2.5. Height times area adds up to 5\u221a6.",
+    "ifStuck": [
+     {
+      "if": "a student gets 5",
+      "then": "ask whether the tilted plane has the same area as the flat rectangle."
+     }
+    ],
+    "transition": "Same kind of surface, but now a vector field flowing through it: flux."
+   },
+   "si22-p2": {
+    "launch": {
+     "say": "Find the upward flux of F = \u27e8x, y, z\u27e9 through the paraboloid cap.",
+     "tryMinutes": 6,
+     "circulate": [
+      "Upward: \\(\\langle -f_x,-f_y,1\\rangle=\\langle 2x,2y,1\\rangle\\).",
+      "Check z was replaced by 4 \u2212 x\u00b2 \u2212 y\u00b2.",
+      "Polar at the end, with the extra r."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Decision tree: which branch?",
+      "a": "A field through a surface: flux, with an upward normal."
+     }
+    ],
+    "visualize": "polar",
+    "steps": [
+     {
+      "say": "f_x = \u22122x, f_y = \u22122y. Upward: \u27e82x, 2y, 1\u27e9 dA.",
+      "ask": {
+       "q": "How do you know it's upward?",
+       "a": "The z-component is +1."
+      }
+     },
+     {
+      "say": "On the surface, F = \u27e8x, y, 4 \u2212 x\u00b2 \u2212 y\u00b2\u27e9.",
+      "ask": {
+       "q": "What does F look like?",
+       "a": "Arrows pointing straight out from the origin."
+      }
+     },
+     {
+      "say": "Dot: 2x\u00b2 + 2y\u00b2 + 4 \u2212 x\u00b2 \u2212 y\u00b2 = 4 + x\u00b2 + y\u00b2.",
+      "ask": {
+       "q": "Is the flux positive?",
+       "a": "Yes: the integrand is always positive, so the field flows out through the top."
+      }
+     },
+     {
+      "say": "Polar on the unit disk: \\(\\displaystyle\\int_0^{2\\pi}\\!\\int_0^1(4+r^2)\\,r\\,dr\\,d\\theta\\).",
+      "ask": {
+       "q": "Why polar?",
+       "a": "The shadow is a disk and the integrand has x\u00b2 + y\u00b2."
+      },
+      "why": "Flux problems often end as a polar double integral over the shadow."
+     },
+     {
+      "say": "[2r\u00b2 + r\u2074/4] from 0 to 1 = 9/4, times 2\u03c0 = 9\u03c0/2.",
+      "ask": {
+       "q": "What would the downward flux be?",
+       "a": "\u22129\u03c0/2."
+      }
+     }
+    ],
+    "meaning": "The field points away from the origin, so it pushes out through the dome. Adding up that push over the whole cap gives 9\u03c0/2.",
+    "ifStuck": [
+     {
+      "if": "a student uses \\(\\langle f_x,f_y,-1\\rangle\\)",
+      "then": "check its z-component: it points down."
+     }
+    ],
+    "transition": "Next: a curl through a surface. The decision tree says Stokes."
+   },
+   "si22-p3": {
+    "launch": {
+     "say": "Compute the flux of curl F through the disk at height 3.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Curl first; it's constant.",
+      "Area 4\u03c0, not radius 2 or 4.",
+      "Ask a fast finisher to verify with the boundary circle."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Which side of Stokes looks easier here?",
+      "a": "Either! The curl is constant and the boundary is a circle. We'll do the surface and check with the boundary."
+     }
+    ],
+    "visualize": "fields",
+    "steps": [
+     {
+      "say": "\u2207 \u00d7 \u27e8\u2212y, x, z\u27e9 = \u27e80, 0, 1 \u2212 (\u22121)\u27e9 = \u27e80, 0, 2\u27e9.",
+      "ask": {
+       "q": "What does \u27e80, 0, 2\u27e9 say?",
+       "a": "The field spins counterclockwise around the vertical axis, the same amount everywhere."
+      }
+     },
+     {
+      "say": "Flat disk, upward: n = \u27e80, 0, 1\u27e9, so (\u2207 \u00d7 F) \u00b7 n = 2.",
+      "ask": {
+       "q": "Why is n so simple?",
+       "a": "The disk is horizontal."
+      }
+     },
+     {
+      "say": "2 \u00d7 area 4\u03c0 = 8\u03c0.",
+      "ask": {
+       "q": "Check via the boundary.",
+       "a": "\\(r=(2\\cos t,2\\sin t,3)\\): \\(F\\cdot r'=4\\sin^2t+4\\cos^2t=4\\), and \\(\\int_0^{2\\pi}4\\,dt=8\\pi\\). \u2713"
+      },
+      "why": "Stokes guarantees the two sides agree. Computing both is the ultimate check."
+     }
+    ],
+    "meaning": "The field swirls counterclockwise around the z-axis. The total spin on the disk equals the circulation around its rim: 8\u03c0 either way.",
+    "ifStuck": [
+     {
+      "if": "a student gets \u22128\u03c0",
+      "then": "use the right-hand rule: upward normal means counterclockwise from above."
+     }
+    ],
+    "transition": "From surfaces to solids: a triple integral."
+   },
+   "si22-p4": {
+    "launch": {
+     "say": "Integrate z over the solid under z = x\u00b2 + y\u00b2, inside the cylinder of radius 2.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Upper bound is z = r\u00b2, not r.",
+      "dV includes r.",
+      "Check 2\u2076/12 = 16/3."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Decision tree: which branch, and which coordinates?",
+      "a": "A solid: dV, in cylindrical because of x\u00b2 + y\u00b2 and the cylinder."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Bounds: 0 \u2264 \u03b8 \u2264 2\u03c0, 0 \u2264 r \u2264 2, 0 \u2264 z \u2264 r\u00b2.",
+      "ask": {
+       "q": "What does the solid look like?",
+       "a": "A bowl shape: the region between the floor and the paraboloid, cut off at radius 2."
+      }
+     },
+     {
+      "say": "\\(\\displaystyle\\int_0^{2\\pi}\\!\\int_0^2\\!\\int_0^{r^2} z\\,r\\,dz\\,dr\\,d\\theta\\).",
+      "ask": {
+       "q": "Where does the r come from?",
+       "a": "Cylindrical cells are polar cells stacked up: dV = r dz dr d\u03b8."
+      }
+     },
+     {
+      "say": "Inner: r \u00b7 (r\u00b2)\u00b2/2 = r\u2075/2.",
+      "ask": {
+       "q": "Why (r\u00b2)\u00b2?",
+       "a": "z\u00b2/2 evaluated at z = r\u00b2."
+      }
+     },
+     {
+      "say": "\u222b\u2080\u00b2 r\u2075/2 dr = 64/12 = 16/3, then times 2\u03c0 = 32\u03c0/3.",
+      "ask": {
+       "q": "Why does \u03b8 just multiply by 2\u03c0?",
+       "a": "Nothing depends on \u03b8: the solid is symmetric around the z-axis."
+      },
+      "why": "Symmetry around an axis almost always means the \u03b8 integral is a free factor of 2\u03c0."
+     }
+    ],
+    "meaning": "The solid is thickest (tallest) near the rim, where z is also largest, so the outer ring contributes most of the 32\u03c0/3.",
+    "ifStuck": [
+     {
+      "if": "a student uses 0 \u2264 z \u2264 4",
+      "then": "ask for the height of the solid at the center r = 0."
+     }
+    ],
+    "transition": "Last one: a quick Green's theorem problem where the whole challenge is one sign."
+   },
+   "si22-p5": {
+    "launch": {
+     "say": "Compute the clockwise circulation around the triangle. Watch the orientation.",
+     "tryMinutes": 3,
+     "circulate": [
+      "Triangle area is 1.",
+      "Clockwise means a minus sign."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Green's theorem assumes which orientation?",
+      "a": "Counterclockwise."
+     }
+    ],
+    "steps": [
+     {
+      "say": "P = \u2212y, Q = x.",
+      "ask": {
+       "q": "Have we seen this field before?",
+       "a": "Yes: it's the swirl from the Stokes problem, flattened to 2D."
+      }
+     },
+     {
+      "say": "Q_x \u2212 P_y = 1 \u2212 (\u22121) = 2.",
+      "ask": {
+       "q": "So counterclockwise, the integral is twice what?",
+       "a": "Twice the area."
+      }
+     },
+     {
+      "say": "Area = \u00bd \u00b7 2 \u00b7 1 = 1, so counterclockwise gives 2.",
+      "ask": {
+       "q": "Fun fact: what does \u00bd\u222e \u2212y dx + x dy compute for any region?",
+       "a": "Its area."
+      }
+     },
+     {
+      "say": "Clockwise flips the sign: \u22122.",
+      "ask": {
+       "q": "How many points is that sign worth on an exam?",
+       "a": "All of them, if the final answer is graded."
+      },
+      "why": "The orientation is part of the question, not a detail."
+     }
+    ],
+    "meaning": "The field swirls counterclockwise; walking clockwise means walking against it, so the circulation is negative.",
+    "ifStuck": [
+     {
+      "if": "a student answers 2",
+      "then": "reread the orientation in the prompt together."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Over what? Curve \u2192 ds or F \u00b7 dr (Green if closed in 2D). Surface \u2192 dS, flux, or Stokes. Solid \u2192 dV. Always: orientation, and the stretch factor (r, or the square root for dS).",
+   "exit": [
+    {
+     "q": "How do you pick between dS, flux, Green, Stokes and a triple integral?",
+     "a": "Ask what you're integrating over and whether it's a number, a field through, or a curl."
+    },
+    {
+     "q": "Positive orientation for Green?",
+     "a": "Counterclockwise."
+    },
+    {
+     "q": "Right-hand rule in Stokes?",
+     "a": "Thumb along the normal, fingers give the boundary direction."
+    },
+    {
+     "q": "Where does the extra r come from?",
+     "a": "Polar and cylindrical cells get bigger farther from the axis."
+    }
+   ],
+   "next": "That's the whole course. Good luck on the final. Practice Lab Sections 9 and 10 have more of exactly these."
+  }
+ }
 }

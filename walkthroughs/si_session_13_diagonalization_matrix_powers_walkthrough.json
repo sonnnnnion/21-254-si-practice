@@ -48,7 +48,7 @@
  ],
  "notationWarnings": [
   "Write P^{-1}, not 1/P.",
-  "If P=[v_1 v_2], then D=diag(λ_1,λ_2) in that same order.",
+  "If \\(P=[\\,v_1\\ \\ v_2\\,]\\), then \\(D=\\operatorname{diag}(\\lambda_1,\\lambda_2)\\) in that same order.",
   "Use A^n=PD^nP^{-1}; the P and P^{-1} do not get powers."
  ],
  "problems": [
@@ -312,5 +312,272 @@
   "Checked decomposition (5,1)=3(1,1)+2(1,-1).",
   "Checked 3x3 eigenvectors for eigenvalues 1,2,3."
  ],
- "reviewSummary": "Session 13 turns eigenvectors into a practical tool for powers."
+ "reviewSummary": "Session 13 turns eigenvectors into a practical tool for powers.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    9
+   ],
+   [
+    "si13-p1",
+    14
+   ],
+   [
+    "si13-p2",
+    10
+   ],
+   [
+    "si13-p3",
+    11
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Change coordinates, and the matrix becomes easy",
+   "say": [
+    "Last time we asked: are there enough eigenvectors? Today's payoff: when there are, the matrix becomes a diagonal matrix in disguise.",
+    "Diagonal matrices are the easiest matrices in the world. Multiplying them, powering them, reading them: all trivial. Diagonalization lets us borrow that ease for any matrix with an eigenbasis."
+   ],
+   "ask": [
+    {
+     "q": "What is \\(\\begin{bmatrix}2&0\\\\0&3\\end{bmatrix}^{10}\\)?",
+     "a": "\\(\\begin{bmatrix}2^{10}&0\\\\0&3^{10}\\end{bmatrix}\\). Just power the diagonal."
+    }
+   ],
+   "write": [
+    "\\(A=PDP^{-1}\\)",
+    "P: eigenvectors as columns",
+    "D: matching eigenvalues, same order",
+    "\\(A^n=PD^nP^{-1}\\)"
+   ]
+  },
+  "idea": {
+   "title": "Translate, stretch, translate back",
+   "say": [
+    "Read PDP⁻¹ from right to left. P⁻¹ translates a vector into eigenvector coordinates. D stretches each coordinate by its eigenvalue. P translates back to standard coordinates.",
+    "Powers are where this pays off. In A·A·A, every P⁻¹P in the middle cancels, so A³ = PD³P⁻¹. The hard part, powering, happens only to D.",
+    "The one rule you cannot break: column j of P and entry j of D belong to the same eigenpair."
+   ],
+   "draw": [
+    "Draw three boxes in a row: 'standard coords' → P⁻¹ → 'eigen coords' → D (stretch) → 'eigen coords' → P → 'standard coords'.",
+    "Under it write A·A·A = PDP⁻¹ · PDP⁻¹ · PDP⁻¹ and cross out each P⁻¹P pair.",
+    "Draw P and D side by side with an arrow from column 1 of P to the first diagonal entry of D."
+   ],
+   "visualize": "eigen",
+   "ask": [
+    {
+     "q": "Why do the middle P⁻¹P pairs cancel?",
+     "a": "P⁻¹P = I, so they multiply to nothing."
+    },
+    {
+     "q": "If you swap the columns of P, what else must you do?",
+     "a": "Swap the diagonal entries of D the same way."
+    }
+   ]
+  },
+  "problems": {
+   "si13-p1": {
+    "launch": {
+     "say": "The eigenpairs are given. Build P and D, find P⁻¹, then compute A³ the fast way.",
+     "tryMinutes": 6,
+     "circulate": [
+      "Check the columns of P match the order of D.",
+      "Watch the P⁻¹ formula: divide by det P = −3.",
+      "Encourage checking the answer: A² then A³ is only two multiplications for a 2 × 2."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Before computing: check that v₁ really is an eigenvector.",
+      "a": "A(2, 1) = (10, 5) = 5(2, 1). ✓"
+     }
+    ],
+    "steps": [
+     {
+      "say": "v₁ goes first, so 5 goes first. P = [[2, 1], [1, −1]], D = diag(5, 2).",
+      "ask": {
+       "q": "Eigenvectors: rows or columns of P?",
+       "a": "Columns."
+      },
+      "why": "AP = PD says exactly 'A times each column of P equals that column times its eigenvalue'."
+     },
+     {
+      "say": "det P = −2 − 1 = −3. Swap, negate, divide: P⁻¹ = [[1/3, 1/3], [1/3, −2/3]].",
+      "ask": {
+       "q": "Quick check on P⁻¹?",
+       "a": "P times it should be I. First row: 2/3 + 1/3 = 1 and 2/3 − 2/3 = 0. ✓"
+      }
+     },
+     {
+      "say": "D³ just cubes the diagonal: diag(125, 8). So A³ = PD³P⁻¹.",
+      "ask": {
+       "q": "What would A¹⁰⁰ be?",
+       "a": "P · diag(5¹⁰⁰, 2¹⁰⁰) · P⁻¹. Same amount of work as A³."
+      }
+     },
+     {
+      "say": "Multiply left to right: PD³ = [[250, 8], [125, −8]], then times P⁻¹ gives [[86, 78], [39, 47]].",
+      "ask": {
+       "q": "How can you check this without trusting the diagonalization?",
+       "a": "A² = [[18, 14], [7, 11]], then A²A = [[86, 78], [39, 47]]. ✓"
+      }
+     }
+    ],
+    "meaning": "A stretches the (2, 1) direction by 5 and the (1, −1) direction by 2. Applying A three times stretches them by 125 and 8. Everything else is just translating in and out of those directions.",
+    "ifStuck": [
+     {
+      "if": "a student gets fractions that don't simplify to integers",
+      "then": "check P⁻¹ first; the most common slip is dividing by +3 instead of −3."
+     },
+     {
+      "if": "a student puts 2 first in D",
+      "then": "ask which eigenvector is in column 1 of P."
+     }
+    ],
+    "transition": "We needed P⁻¹ there. Next: a way to power a matrix on one vector without ever building P⁻¹ or even knowing A."
+   },
+   "si13-p2": {
+    "launch": {
+     "say": "We don't know A. We know two eigenpairs and a vector x. Find a formula for Aⁿx.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Is anyone trying to reconstruct A? Redirect: split x into eigenvectors.",
+      "Check 3ⁿ versus 3n."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What's easy to compute: Aⁿ v₁ or Aⁿ x?",
+      "a": "Aⁿ v₁ = 3ⁿ v₁. So we want x in terms of v₁ and v₂."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Write x = c₁v₁ + c₂v₂: (5, 1) = c₁(1, 1) + c₂(1, −1).",
+      "ask": {
+       "q": "Why can we always do this here?",
+       "a": "v₁ and v₂ are independent, so they form a basis of ℝ²."
+      }
+     },
+     {
+      "say": "c₁ + c₂ = 5 and c₁ − c₂ = 1. Add: c₁ = 3, so c₂ = 2.",
+      "ask": {
+       "q": "Check: 3(1, 1) + 2(1, −1)?",
+       "a": "(5, 1). ✓"
+      }
+     },
+     {
+      "say": "Aⁿ passes through the combination: 3Aⁿv₁ + 2Aⁿv₂, and each piece just gets its eigenvalue to the n.",
+      "ask": {
+       "q": "What is Aⁿ v₂?",
+       "a": "(−1)ⁿ v₂."
+      },
+      "why": "This is the same idea as PDⁿP⁻¹. Finding c₁, c₂ is what P⁻¹ does."
+     },
+     {
+      "say": "Aⁿx = 3 · 3ⁿ(1, 1) + 2(−1)ⁿ(1, −1).",
+      "ask": {
+       "q": "For large n, which piece dominates?",
+       "a": "The 3ⁿ piece; the other just flips sign. Aⁿx points more and more along (1, 1)."
+      }
+     }
+    ],
+    "meaning": "Each application of A triples the (1, 1) part of x and flips the (1, −1) part. After many steps, x lines up with the dominant eigenvector (1, 1).",
+    "ifStuck": [
+     {
+      "if": "a student writes 3n",
+      "then": "compute A²x together; the eigenvalue gets applied twice, so it's 3², not 3 · 2."
+     }
+    ],
+    "transition": "Last one: a full 3 × 3 diagonalization from scratch, the exam version."
+   },
+   "si13-p3": {
+    "launch": {
+     "say": "Diagonalize C: find P and D.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Eigenvalues are free (triangular), but each eigenvector still needs a computation.",
+      "Check the λ = 3 eigenvector: z = y, not z = −y."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Distinct eigenvalues 1, 2, 3. Is C guaranteed diagonalizable?",
+      "a": "Yes: three distinct eigenvalues give three independent eigenvectors."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Triangular: eigenvalues 1, 2, 3.",
+      "ask": {
+       "q": "What does 'distinct' save us from checking?",
+       "a": "Whether any GM falls short of its AM."
+      }
+     },
+     {
+      "say": "C − I: rows give y + z = 0 and 2z = 0, so y = z = 0. Eigenvector (1, 0, 0).",
+      "ask": {
+       "q": "Is x free?",
+       "a": "Yes: column 1 of C − I is all zeros."
+      }
+     },
+     {
+      "say": "C − 2I: x = 0 and z = 0, with y free. Eigenvector (0, 1, 0).",
+      "ask": {
+       "q": "Check C(0, 1, 0).",
+       "a": "(0, 2, 0) = 2(0, 1, 0). ✓"
+      }
+     },
+     {
+      "say": "C − 3I: x = 0 and −y + z = 0, so z = y. Eigenvector (0, 1, 1).",
+      "ask": {
+       "q": "Check C(0, 1, 1).",
+       "a": "(0, 2 + 1, 3) = (0, 3, 3) = 3(0, 1, 1). ✓"
+      }
+     },
+     {
+      "say": "Eigenvectors as columns in the order 1, 2, 3; D = diag(1, 2, 3).",
+      "ask": {
+       "q": "Is D just the diagonal of C?",
+       "a": "Here, yes, the entries match, but C ≠ D. The work was finding P."
+      },
+      "why": "D alone doesn't diagonalize anything. P is what connects C to D."
+     }
+    ],
+    "meaning": "C is a shear-plus-stretch in standard coordinates, but along the directions (1, 0, 0), (0, 1, 0) and (0, 1, 1) it simply stretches by 1, 2 and 3.",
+    "ifStuck": [
+     {
+      "if": "a student answers only with D",
+      "then": "ask them to check C = PDP⁻¹ with P = I. It fails because of the off-diagonal 1."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "A = PDP⁻¹: eigenvectors in P, eigenvalues in D, same order. Aⁿ = PDⁿP⁻¹. For Aⁿx, split x into eigenvectors and power each eigenvalue.",
+   "exit": [
+    {
+     "q": "What goes in P? In D?",
+     "a": "Eigenvectors as columns; matching eigenvalues on the diagonal."
+    },
+    {
+     "q": "Why is Dⁿ easy?",
+     "a": "Power each diagonal entry."
+    },
+    {
+     "q": "What order mistake breaks it?",
+     "a": "Reordering D without reordering the columns of P (or vice versa)."
+    }
+   ],
+   "next": "Next session: complex eigenvalues, when a matrix rotates and no real direction stays put."
+  }
+ }
 }

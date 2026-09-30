@@ -328,5 +328,250 @@
   "Problem 3 checked: (3,5)=3(1,2)-(0,1), so output is (13,0,-2)."
  ],
  "reviewStatus": "reviewed",
- "reviewSummary": "Session 07 emphasizes columns-as-images and very simple kernel/range language. All computations were checked."
+ "reviewSummary": "Session 07 emphasizes columns-as-images and very simple kernel/range language. All computations were checked.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    9
+   ],
+   [
+    "si07-p1",
+    11
+   ],
+   [
+    "si07-p2",
+    14
+   ],
+   [
+    "si07-p3",
+    10
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "A matrix is a machine that moves space",
+   "say": [
+    "Up to now a matrix has been a table of numbers. Today it becomes a function: vectors go in, vectors come out, and the whole plane gets stretched, sheared, or flipped.",
+    "The best part: to know everything the machine does, you only need to know where it sends e\u2081 and e\u2082."
+   ],
+   "ask": [
+    {
+     "q": "If I tell you where a linear map sends e\u2081 and e\u2082, can you tell me where it sends (5, \u22122)?",
+     "a": "Yes: (5, \u22122) = 5e\u2081 \u2212 2e\u2082, so it goes to 5T(e\u2081) \u2212 2T(e\u2082)."
+    }
+   ],
+   "write": [
+    "\\(T(\\mathbf u+\\mathbf v)=T(\\mathbf u)+T(\\mathbf v),\\quad T(c\\mathbf u)=cT(\\mathbf u)\\)",
+    "\\(A=\\big[\\,T(\\mathbf e_1)\\ \\ T(\\mathbf e_2)\\ \\cdots\\,\\big]\\)"
+   ]
+  },
+  "idea": {
+   "title": "Linear means straight lines stay straight and the origin stays put",
+   "say": [
+    "A linear transformation respects adding and scaling. Geometrically: grid lines stay parallel and evenly spaced, and the origin doesn't move.",
+    "Because every vector is a combination of e\u2081 and e\u2082, knowing T(e\u2081) and T(e\u2082) pins down T completely. That's why those two outputs are the columns of the standard matrix.",
+    "Two questions we ask about every transformation: does anything besides 0 get crushed to 0 (the kernel), and which outputs can it hit (the range)?"
+   ],
+   "draw": [
+    "Draw a unit square with e\u2081 and e\u2082 on the left.",
+    "Draw a tilted parallelogram on the right, with the images T(e\u2081) and T(e\u2082) as its sides.",
+    "Write A = [T(e\u2081) T(e\u2082)] underneath with an arrow from each image to its column."
+   ],
+   "visualize": "matrix",
+   "ask": [
+    {
+     "q": "Can a linear map send 0 to (1, 1)?",
+     "a": "No. T(0) = T(0 \u00b7 v) = 0 \u00b7 T(v) = 0 always."
+    },
+    {
+     "q": "What does it mean if a nonzero vector is in the kernel?",
+     "a": "Two different inputs give the same output, so T isn't one-to-one."
+    }
+   ]
+  },
+  "problems": {
+   "si07-p1": {
+    "launch": {
+     "say": "Build the matrix from T(e\u2081) and T(e\u2082), use it on (5, \u22122), and decide if T is one-to-one and onto.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Check that the images go in as columns, not rows.",
+      "Ask the first finisher why a nonzero determinant settles both questions here."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Where do T(e\u2081) and T(e\u2082) go in the matrix?",
+      "a": "As columns 1 and 2."
+     }
+    ],
+    "visualize": "matrix",
+    "steps": [
+     {
+      "say": "Columns are T(e\u2081) and T(e\u2082): A = [[2, 3], [\u22121, 4]].",
+      "ask": {
+       "q": "What is A times e\u2081 with this setup?",
+       "a": "Column 1, which is T(e\u2081). That's why columns work."
+      },
+      "why": "A times e\u2c7c picks out column j. That's the whole reason the images become columns."
+     },
+     {
+      "say": "Multiply: 5 times column 1 plus \u22122 times column 2 = (10 \u2212 6, \u22125 \u2212 8) = (4, \u221213).",
+      "ask": {
+       "q": "Say this multiplication in words.",
+       "a": "5 copies of T(e\u2081) plus \u22122 copies of T(e\u2082)."
+      }
+     },
+     {
+      "say": "det A = 8 + 3 = 11. Nonzero, so A is invertible: T is one-to-one and onto.",
+      "ask": {
+       "q": "What does det A = 11 say about areas?",
+       "a": "T scales every area by 11 and doesn't flip orientation."
+      }
+     }
+    ],
+    "meaning": "T turns the unit square into a parallelogram of area 11. Nothing gets crushed and every output is reachable, so every point of the plane has exactly one input.",
+    "ifStuck": [
+     {
+      "if": "a student writes the images as rows",
+      "then": "multiply their matrix by e\u2081 and see if they get T(e\u2081)."
+     }
+    ],
+    "transition": "That map was square and invertible. Next: a map from 3D to 2D, which has to crush something."
+   },
+   "si07-p2": {
+    "launch": {
+     "say": "T goes from \u211d\u00b3 to \u211d\u00b2. Find the matrix, the kernel, the range, and decide one-to-one and onto.",
+     "tryMinutes": 5,
+     "circulate": [
+      "When finding the kernel, the output is set to 0, not the input.",
+      "Is anyone claiming it's not onto because the input has 3 variables? Push them to count pivots."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Before computing: can a map from \u211d\u00b3 to \u211d\u00b2 be one-to-one?",
+      "a": "No. At most 2 pivots for 3 columns, so there's always a free variable."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Read the coefficients row by row: A = [[1, \u22122, 1], [3, 1, 0]].",
+      "ask": {
+       "q": "What size is A and why?",
+       "a": "2 \u00d7 3: two outputs, three inputs."
+      }
+     },
+     {
+      "say": "Kernel: set the output to zero. From 3x + y = 0, y = \u22123x. Then x + 6x + z = 0 gives z = \u22127x.",
+      "ask": {
+       "q": "Why do we solve T(x) = 0 and not x = 0?",
+       "a": "The kernel is the set of inputs that produce the output 0."
+      }
+     },
+     {
+      "say": "Let x = t: the kernel is all multiples of (1, \u22123, \u22127). A line through the origin.",
+      "ask": {
+       "q": "Check (1, \u22123, \u22127).",
+       "a": "1 + 6 \u2212 7 = 0 and 3 \u2212 3 = 0. \u2713"
+      }
+     },
+     {
+      "say": "The two rows are independent, so the rank is 2. The outputs fill all of \u211d\u00b2.",
+      "ask": {
+       "q": "Rank-nullity check?",
+       "a": "rank 2 + nullity 1 = 3 columns. \u2713"
+      }
+     },
+     {
+      "say": "Nonzero kernel: not one-to-one. Range is all of \u211d\u00b2: onto.",
+      "ask": {
+       "q": "Give two different inputs with the same output.",
+       "a": "0 and (1, \u22123, \u22127) both go to 0."
+      }
+     }
+    ],
+    "meaning": "T squashes 3D space onto the 2D plane. A whole line of inputs, the multiples of (1, \u22123, \u22127), gets crushed to the origin, but every point of the output plane still gets hit.",
+    "ifStuck": [
+     {
+      "if": "a student says 'not onto because the domain is \u211d\u00b3'",
+      "then": "ask what onto is about: the outputs. Check whether rank 2 reaches all of \u211d\u00b2."
+     }
+    ],
+    "transition": "Both problems so far gave us T(e\u2081), T(e\u2082) or a formula. The last one gives neither, only T of two other vectors."
+   },
+   "si07-p3": {
+    "launch": {
+     "say": "We know T on (1, 2) and (0, 1) only. Find T(3, 5).",
+     "tryMinutes": 3,
+     "circulate": [
+      "Who is looking for a formula? There isn't one. Ask how (3, 5) relates to (1, 2) and (0, 1)."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What's the one property of T we're allowed to use?",
+      "a": "Linearity: T respects addition and scaling."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Write (3, 5) as a(1, 2) + b(0, 1). The first coordinate forces a = 3, then 6 + b = 5 gives b = \u22121.",
+      "ask": {
+       "q": "Why is it easy to solve for a first?",
+       "a": "Only (1, 2) has a nonzero first entry."
+      }
+     },
+     {
+      "say": "Linearity lets T pass through the combination: T(3, 5) = 3T(1, 2) \u2212 T(0, 1).",
+      "ask": {
+       "q": "Which two properties of linearity did we just use?",
+       "a": "Additivity and scaling."
+      },
+      "why": "Linearity means once you know T on a basis, you know it everywhere."
+     },
+     {
+      "say": "3(4, 1, 0) \u2212 (\u22121, 3, 2) = (13, 0, \u22122).",
+      "ask": {
+       "q": "Where do people drop a sign?",
+       "a": "Subtracting (\u22121, 3, 2): the first entry becomes 12 + 1 = 13."
+      }
+     }
+    ],
+    "meaning": "(1, 2) and (0, 1) form a basis of \u211d\u00b2, so their images determine T completely, even though neither is e\u2081.",
+    "ifStuck": [
+     {
+      "if": "a student assumes (1, 2) and (0, 1) are e\u2081 and e\u2082",
+      "then": "ask them to write e\u2081 = (1, 0) as a combination of the two given vectors."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Columns of A = T(e\u2081), T(e\u2082), \u2026 . Kernel = inputs sent to 0. Range = outputs hit. One-to-one \u27fa kernel = {0}.",
+   "exit": [
+    {
+     "q": "What goes in the columns of a standard matrix?",
+     "a": "The images of the standard basis vectors."
+    },
+    {
+     "q": "What does a nonzero kernel tell you?",
+     "a": "T is not one-to-one."
+    },
+    {
+     "q": "How do you find T(x) if you only know T on some other basis?",
+     "a": "Write x as a combination of that basis and use linearity."
+    }
+   ],
+   "next": "Next session: determinants, the single number that measures how much a transformation scales area and whether it's invertible."
+  }
+ }
 }

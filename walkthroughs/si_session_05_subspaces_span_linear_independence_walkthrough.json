@@ -329,5 +329,280 @@
   "Notation uses operatorname{span} and distinguishes span membership equations from independence equations."
  ],
  "reviewStatus": "reviewed",
- "reviewSummary": "Session 05 emphasizes simple whiteboard language and uses exact visualSpec data for the plane, vector span, and determinant-volume interpretations. Arithmetic and LaTeX were checked before export."
+ "reviewSummary": "Session 05 emphasizes simple whiteboard language and uses exact visualSpec data for the plane, vector span, and determinant-volume interpretations. Arithmetic and LaTeX were checked before export.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    4
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si05-p01",
+    12
+   ],
+   [
+    "si05-p02",
+    15
+   ],
+   [
+    "si05-p03",
+    9
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Where can you get to?",
+   "say": [
+    "Imagine you're only allowed to walk along two fixed directions, as far as you like, forwards or backwards. The set of places you can reach is the span.",
+    "Today's three words: span (where you can get), subspace (a set that's closed under that kind of walking), and independence (whether any direction was redundant)."
+   ],
+   "ask": [
+    {
+     "q": "With one direction in the plane, what can you reach? With two different directions?",
+     "a": "One direction: a line. Two non-parallel directions: the whole plane."
+    }
+   ],
+   "write": [
+    "subspace: contains 0, closed under + and scaling",
+    "\\(\\operatorname{span}\\{\\mathbf v_1,\\dots,\\mathbf v_k\\}=\\{c_1\\mathbf v_1+\\cdots+c_k\\mathbf v_k\\}\\)",
+    "independent: \\(c_1\\mathbf v_1+\\cdots+c_k\\mathbf v_k=\\mathbf 0\\) only when all \\(c_i=0\\)"
+   ]
+  },
+  "idea": {
+   "title": "Span is where you can reach; independence means no wasted directions",
+   "say": [
+    "The span of two vectors is every combination c\u2081v\u2081 + c\u2082v\u2082. If the vectors point different ways, that's a whole plane. If they're parallel, you only get a line, and the second vector added nothing.",
+    "That's what dependent means: at least one vector is redundant, because the others can already make it.",
+    "A subspace is any set like this: it contains 0, and you can't leave it by adding or scaling. Lines and planes through the origin are the classic examples."
+   ],
+   "draw": [
+    "Draw two non-parallel arrows from the origin and lightly sketch the grid of their combinations: 'span = plane'.",
+    "Next to it, draw two arrows on the same line: 'span = line, dependent'.",
+    "Draw a plane that doesn't pass through the origin and cross it out: 'not a subspace: missing 0'."
+   ],
+   "visualize": "span",
+   "ask": [
+    {
+     "q": "Is a line that doesn't pass through the origin a subspace?",
+     "a": "No. It doesn't contain the zero vector."
+    },
+    {
+     "q": "Why must every subspace contain 0?",
+     "a": "Scale any vector in it by 0; closure under scaling forces 0 to be in the set."
+    }
+   ]
+  },
+  "problems": {
+   "si05-p01": {
+    "launch": {
+     "say": "Show that W is a subspace, then describe it as the span of two vectors. The second part tells us what W actually looks like.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Is anyone stopping after the zero vector check? Closure is still needed.",
+      "Check the rearrangement: x = 2y \u2212 z."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What's special about the equation x \u2212 2y + z = 0 that makes this likely to be a subspace?",
+      "a": "It equals zero: it's homogeneous and linear."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Plug in (0, 0, 0): 0 \u2212 0 + 0 = 0. The origin is in W.",
+      "ask": {
+       "q": "If the equation were x \u2212 2y + z = 5, would the origin be in it?",
+       "a": "No, and then it couldn't be a subspace."
+      }
+     },
+     {
+      "say": "If u and v both satisfy the equation, so does u + v and so does cu, because the equation is linear and the right side is 0.",
+      "ask": {
+       "q": "What goes wrong with = 5 when you add two solutions?",
+       "a": "You'd get 5 + 5 = 10 on the right, so the sum leaves the set."
+      },
+      "why": "Homogeneous linear equations always carve out subspaces. That's the fastest way to spot one."
+     },
+     {
+      "say": "Solve for x: x = 2y \u2212 z. Let y and z be free: y = s, z = t.",
+      "ask": {
+       "q": "Why pick y and z to be free?",
+       "a": "x is the easiest to solve for; any variable could be chosen."
+      }
+     },
+     {
+      "say": "Write a general vector: (2s \u2212 t, s, t) = s(2, 1, 0) + t(\u22121, 0, 1).",
+      "ask": {
+       "q": "What does this line tell us about every vector in W?",
+       "a": "It's a combination of (2, 1, 0) and (\u22121, 0, 1)."
+      }
+     },
+     {
+      "say": "So W is the span of those two vectors: a plane through the origin.",
+      "ask": {
+       "q": "Check: is (2, 1, 0) actually in W?",
+       "a": "2 \u2212 2 + 0 = 0. Yes."
+      }
+     }
+    ],
+    "meaning": "W is a tilted plane through the origin in \u211d\u00b3. Its two spanning vectors are two directions you can walk in and never leave the plane.",
+    "ifStuck": [
+     {
+      "if": "a student only checks the zero vector",
+      "then": "ask them to try adding two vectors from W. Does the sum stay in W?"
+     }
+    ],
+    "transition": "That was 'describe the span'. Next: given a span, can we reach a specific vector b?"
+   },
+   "si05-p02": {
+    "launch": {
+     "say": "Two separate questions. Is b in the span of v\u2081, v\u2082, v\u2083? And are v\u2081, v\u2082, v\u2083 independent?",
+     "tryMinutes": 5,
+     "circulate": [
+      "Check that the vectors go in as columns.",
+      "Who answered only one of the two questions?"
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "In your own words, what's the difference between the two questions?",
+      "a": "Span membership asks if some combination makes b. Independence asks if the only combination making 0 is the all-zero one."
+     }
+    ],
+    "steps": [
+     {
+      "say": "b is in the span exactly when we can find coefficients with c\u2081v\u2081 + c\u2082v\u2082 + c\u2083v\u2083 = b.",
+      "ask": {
+       "q": "What are the unknowns here?",
+       "a": "The coefficients c\u2081, c\u2082, c\u2083, not the vectors."
+      }
+     },
+     {
+      "say": "Put the vectors in as columns and the coefficients as the unknown vector. Now it's a matrix equation Ac = b.",
+      "ask": {
+       "q": "Why columns and not rows?",
+       "a": "A times c is c\u2081(column 1) + c\u2082(column 2) + c\u2083(column 3), which is exactly the combination we want."
+      },
+      "why": "A times a vector is a combination of A's columns. That single fact connects span, systems and matrices."
+     },
+     {
+      "say": "Solve. The third equation gives c\u2082 = c\u2081 + 1; working through, c\u2081 = \u22121, c\u2082 = 0, c\u2083 = 2.",
+      "ask": {
+       "q": "c\u2082 came out 0. Does that mean the vectors are dependent?",
+       "a": "No. That's the recipe for b, not for 0; it just means b doesn't need v\u2082."
+      }
+     },
+     {
+      "say": "So b = \u2212v\u2081 + 2v\u2083. That's the certificate: b is in the span.",
+      "ask": {
+       "q": "How do you check it quickly?",
+       "a": "\u2212(1, 2, 1) + 2(2, 5, 0) = (3, 8, \u22121). \u2713"
+      }
+     },
+     {
+      "say": "For independence, three vectors in \u211d\u00b3: take the determinant of the column matrix. It's \u22121, not zero, so they're independent.",
+      "ask": {
+       "q": "Once we know they're independent, is every vector in \u211d\u00b3 in their span?",
+       "a": "Yes. Three independent vectors in \u211d\u00b3 span all of \u211d\u00b3."
+      }
+     }
+    ],
+    "meaning": "v\u2081, v\u2082, v\u2083 point in three genuinely different directions, so together they reach every point in space, b included. b happens to need only v\u2081 and v\u2083.",
+    "ifStuck": [
+     {
+      "if": "a student puts the vectors in as rows",
+      "then": "multiply A by c and ask whether the result is c\u2081v\u2081 + c\u2082v\u2082 + c\u2083v\u2083."
+     }
+    ],
+    "transition": "Here the determinant was nonzero. Last problem: choose k to make it zero on purpose."
+   },
+   "si05-p03": {
+    "launch": {
+     "say": "Find the k that makes these three vectors dependent, then write an actual dependence relation.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Is anyone setting the determinant nonzero? Dependence means zero.",
+      "After k = 7/2, who's finding the relation, not just the value?"
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What's the quickest test for three vectors in \u211d\u00b3?",
+      "a": "Put them in as columns and check whether the determinant is zero."
+     }
+    ],
+    "visualize": "matrix",
+    "steps": [
+     {
+      "say": "Columns: a\u2081, a\u2082, a\u2083, with k in the top-right.",
+      "ask": {
+       "q": "Does it matter whether k ends up in a row or a column?",
+       "a": "Not for the determinant (det A = det A\u1d40), but columns keep the dependence relation readable."
+      }
+     },
+     {
+      "say": "Expand along the first column: 1(5 \u2212 6) \u2212 0 + 2(4 \u2212 k) = \u22121 + 8 \u2212 2k = 7 \u2212 2k.",
+      "ask": {
+       "q": "Geometrically, what is |det A|?",
+       "a": "The volume of the box the three vectors span."
+      }
+     },
+     {
+      "say": "Dependent means the box is flat: 7 \u2212 2k = 0, so k = 7/2.",
+      "ask": {
+       "q": "What happens to the three vectors at k = 7/2?",
+       "a": "They all lie in one plane, so the box has no volume."
+      }
+     },
+     {
+      "say": "Now find numbers c\u2081, c\u2082, c\u2083, not all zero, with c\u2081a\u2081 + c\u2082a\u2082 + c\u2083a\u2083 = 0.",
+      "ask": {
+       "q": "How would you find them systematically?",
+       "a": "Row reduce [a\u2081 a\u2082 a\u2083] and read off a null-space vector."
+      }
+     },
+     {
+      "say": "Try (1, \u22124, 2): a\u2081 \u2212 4a\u2082 + 2a\u2083 = (1 \u2212 8 + 7, 0 \u2212 4 + 4, 2 \u2212 12 + 10) = (0, 0, 0).",
+      "ask": {
+       "q": "Rewrite the relation to show which vector is redundant.",
+       "a": "a\u2083 = 2a\u2082 \u2212 a\u2081/2: a\u2083 is a combination of the other two."
+      }
+     }
+    ],
+    "meaning": "At k = 7/2 the third vector slides into the plane of the first two, the box flattens to zero volume, and a\u2083 adds nothing new.",
+    "ifStuck": [
+     {
+      "if": "a student gives k = 7/2 and stops",
+      "then": "point at the second half of the question: it asks for the relation itself."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "span = everything you can reach. Independent = no redundant vector. n vectors in \u211d\u207f: independent \u27fa det \u2260 0.",
+   "exit": [
+    {
+     "q": "Asking if b is in the span vs. asking if the vectors are independent: what's the difference?",
+     "a": "Span: can some combination make b? Independence: is the zero combination the only way to make 0?"
+    },
+    {
+     "q": "Why do homogeneous equations give subspaces?",
+     "a": "Their solution sets contain 0 and are closed under adding and scaling."
+    },
+    {
+     "q": "What does det = 0 mean for three vectors in \u211d\u00b3?",
+     "a": "They lie in a common plane: dependent, zero volume."
+    }
+   ],
+   "next": "Next session: bases and dimension, the smallest independent sets that still span."
+  }
+ }
 }

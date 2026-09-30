@@ -269,5 +269,248 @@
   "Checked Green's Theorem integrand 4y and value 24.",
   "Visual specs include exact regions and orientation arrows."
  ],
- "reviewSummary": "Session 21 is ready with checked double-integral, polar, and Green's Theorem problems."
+ "reviewSummary": "Session 21 is ready with checked double-integral, polar, and Green's Theorem problems.",
+ "teach": {
+  "runOfShow": [
+   [
+    "open",
+    3
+   ],
+   [
+    "idea",
+    8
+   ],
+   [
+    "si21-p1",
+    14
+   ],
+   [
+    "si21-p2",
+    11
+   ],
+   [
+    "si21-p3",
+    12
+   ],
+   [
+    "wrap",
+    2
+   ]
+  ],
+  "open": {
+   "title": "Draw first",
+   "say": [
+    "Today's three tools: switching the order of a double integral, polar coordinates, and Green's theorem. They look different, but every one of them starts the same way: draw the region.",
+    "If you remember one habit from today, make it this: nobody sets up a double integral without a picture."
+   ],
+   "ask": [
+    {
+     "q": "What does \\(\\iint_D 1\\,dA\\) compute?",
+     "a": "The area of D."
+    }
+   ],
+   "write": [
+    "DRAW FIRST",
+    "polar: \\(x=r\\cos\\theta,\\ y=r\\sin\\theta,\\ dA=r\\,dr\\,d\\theta\\)",
+    "Green: \\(\\displaystyle\\oint_C P\\,dx+Q\\,dy=\\iint_D (Q_x-P_y)\\,dA\\) (counterclockwise)"
+   ]
+  },
+  "idea": {
+   "title": "Slices, and the boundary that knows the inside",
+   "say": [
+    "A double integral stacks up thin slices. Vertical slices mean dy on the inside; horizontal slices mean dx on the inside. Same region, same answer, just a different way of cutting it.",
+    "In polar, the slices are wedges and rings. A small polar cell has area r dr d\u03b8: cells far from the origin are bigger, and that extra r is the thing people forget.",
+    "Green's theorem says the circulation around a closed curve equals the total spin (the 2D curl) inside it. Walk around the fence, or add up the spin in the field. Same number."
+   ],
+   "draw": [
+    "Draw a triangle twice: once filled with vertical strips, once with horizontal strips.",
+    "Draw a polar grid with one small cell shaded, labeled 'width dr, arc length r d\u03b8'.",
+    "Draw a rectangle with counterclockwise arrows on its edge and little spinning circles inside."
+   ],
+   "visualize": "riemann",
+   "ask": [
+    {
+     "q": "Why is a polar cell's area r dr d\u03b8 and not dr d\u03b8?",
+     "a": "Its arc side has length r d\u03b8, which grows with r."
+    },
+    {
+     "q": "In Green's theorem, what happens if you go clockwise?",
+     "a": "The answer changes sign."
+    }
+   ]
+  },
+  "problems": {
+   "si21-p1": {
+    "launch": {
+     "say": "Reverse the order of integration, then evaluate. Draw the region before anything else.",
+     "tryMinutes": 6,
+     "circulate": [
+      "Is there a sketch on every paper?",
+      "Watch for 'x from y to 2', the classic wrong flip.",
+      "Ask early finishers to evaluate in the original order too and compare."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "Read the bounds as inequalities.",
+      "a": "0 \u2264 x \u2264 2 and x \u2264 y \u2264 2."
+     }
+    ],
+    "steps": [
+     {
+      "say": "Those inequalities describe the triangle above y = x, below y = 2, right of x = 0. Corners: (0, 0), (0, 2), (2, 2).",
+      "ask": {
+       "q": "Where are the vertical slices in the original order?",
+       "a": "Each runs from the line y = x up to y = 2."
+      }
+     },
+     {
+      "say": "Horizontal slices: y runs 0 to 2, and each slice goes from x = 0 across to x = y.",
+      "ask": {
+       "q": "Why x \u2264 y and not y \u2264 x?",
+       "a": "The region is above y = x, so on a horizontal slice x stays left of the line: x \u2264 y."
+      },
+      "why": "Switching order never changes the region, only how you describe it. The picture keeps you honest."
+     },
+     {
+      "say": "Inner: [x\u00b2/2 + xy] from 0 to y = 3y\u00b2/2. Outer: \u222b\u2080\u00b2 3y\u00b2/2 dy = 4.",
+      "ask": {
+       "q": "Sanity check?",
+       "a": "Area 2 times the average of x + y (at the centroid (2/3, 4/3), that's 2) gives 4. \u2713"
+      }
+     }
+    ],
+    "meaning": "Same triangle, cut two ways. Adding up x + y over it gives 4 either way; the new order just makes the arithmetic cleaner.",
+    "ifStuck": [
+     {
+      "if": "a student writes x from y to 2",
+      "then": "draw one horizontal slice and ask where it starts and stops."
+     }
+    ],
+    "transition": "Rectangular slices were fine for a triangle. For a half-disk they'd be painful. Time for polar."
+   },
+   "si21-p2": {
+    "launch": {
+     "say": "Integrate x\u00b2 + y\u00b2 over the upper half-disk of radius 2.",
+     "tryMinutes": 4,
+     "circulate": [
+      "Look for the extra r.",
+      "\u03b8 from 0 to \u03c0, not 2\u03c0."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What in this problem says 'use polar'?",
+      "a": "The disk boundary and the x\u00b2 + y\u00b2 integrand."
+     }
+    ],
+    "visualize": "polar",
+    "steps": [
+     {
+      "say": "Upper half-disk: 0 \u2264 r \u2264 2, 0 \u2264 \u03b8 \u2264 \u03c0.",
+      "ask": {
+       "q": "What would the right half-disk be?",
+       "a": "\u2212\u03c0/2 \u2264 \u03b8 \u2264 \u03c0/2."
+      }
+     },
+     {
+      "say": "x\u00b2 + y\u00b2 = r\u00b2, and dA = r dr d\u03b8, so the integrand becomes r\u00b3.",
+      "ask": {
+       "q": "Where did the fourth power go? r\u00b2 times r is r\u00b3.",
+       "a": "Right: r\u00b2 from the integrand, one more r from dA."
+      },
+      "why": "Forget the r and you'd get 8\u03c0/3 instead of 4\u03c0."
+     },
+     {
+      "say": "\\(\\displaystyle\\int_0^{\\pi}\\!\\int_0^2 r^3\\,dr\\,d\\theta=\\int_0^{\\pi}4\\,d\\theta=4\\pi\\).",
+      "ask": {
+       "q": "Why does \u03b8 just multiply by \u03c0?",
+       "a": "Nothing in the integrand depends on \u03b8."
+      }
+     }
+    ],
+    "meaning": "The integrand is squared distance from the origin, which is largest near the rim. Polar lets us add up rings of equal distance.",
+    "ifStuck": [
+     {
+      "if": "a student gets 8\u03c0/3",
+      "then": "ask them to find the area of the half-disk with their setup. Without the r it comes out wrong."
+     }
+    ],
+    "transition": "Last one: a line integral around a closed loop, turned into a double integral."
+   },
+   "si21-p3": {
+    "launch": {
+     "say": "Use Green's theorem to compute the circulation around the rectangle.",
+     "tryMinutes": 5,
+     "circulate": [
+      "Q_x \u2212 P_y, in that order.",
+      "P_y = \u22122y, so subtracting gives +2y."
+     ]
+    },
+    "askFirst": [
+     {
+      "q": "What does 'positively oriented' mean?",
+      "a": "Counterclockwise, with the region on your left."
+     }
+    ],
+    "visualize": "fields",
+    "steps": [
+     {
+      "say": "P = x \u2212 y\u00b2 (with dx), Q = 2xy (with dy).",
+      "ask": {
+       "q": "How do you tell P from Q?",
+       "a": "P rides with dx, Q rides with dy."
+      }
+     },
+     {
+      "say": "Q_x \u2212 P_y = 2y \u2212 (\u22122y) = 4y.",
+      "ask": {
+       "q": "What is 4y physically?",
+       "a": "The field's spin (2D curl) at each point."
+      },
+      "why": "Green says circulation around the edge = total spin inside."
+     },
+     {
+      "say": "\\(\\displaystyle\\iint_D 4y\\,dA=\\int_0^3\\!\\int_0^2 4y\\,dy\\,dx\\).",
+      "ask": {
+       "q": "How many line integrals did we skip?",
+       "a": "Four, one per edge."
+      }
+     },
+     {
+      "say": "Inner: 2y\u00b2 from 0 to 2 = 8. Outer: 8 \u00b7 3 = 24.",
+      "ask": {
+       "q": "Quick check?",
+       "a": "Average of 4y over the rectangle is 4 (at y = 1), times area 6: 24. \u2713"
+      }
+     }
+    ],
+    "meaning": "The field spins counterclockwise everywhere above the x-axis, more so higher up. Adding up all that spin gives the total circulation around the fence: 24.",
+    "ifStuck": [
+     {
+      "if": "a student gets \u221224",
+      "then": "check the order: Q_x \u2212 P_y, not P_y \u2212 Q_x."
+     }
+    ]
+   }
+  },
+  "wrap": {
+   "write": "Draw first. Switch order = same region, new slices. Polar: dA = r dr d\u03b8. Green: \u222e P dx + Q dy = \u222c (Q_x \u2212 P_y) dA, counterclockwise.",
+   "exit": [
+    {
+     "q": "First thing for any double integral?",
+     "a": "Draw the region."
+    },
+    {
+     "q": "When should you consider polar?",
+     "a": "Circles, disks, sectors, or x\u00b2 + y\u00b2 in the integrand."
+    },
+    {
+     "q": "Two signs to watch in Green's theorem?",
+     "a": "Q_x \u2212 P_y (not the reverse), and counterclockwise orientation."
+    }
+   ],
+   "next": "Next session is the final exam review: everything, with a map of which tool fits which problem."
+  }
+ }
 }
