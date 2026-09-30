@@ -2518,12 +2518,23 @@
   .wu-charts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 28px; margin: 6px 0 4px; }
   @media (max-width: 760px) { .wu-charts { grid-template-columns: minmax(0, 1fr); } }
   .wu-chart h4 { margin: 0 0 8px; font: 600 12.5px/1.3 var(--font-sans); color: var(--ink-soft); }
-  .wu-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .wu-chart svg { display: block; width: 100%; max-width: 440px; height: auto; overflow: visible; }
   .wu-chart .bar { fill: var(--red); transition: fill .14s var(--ease); }
   .wu-chart .bar-hit:hover + .bar, .wu-chart .bar-hit:focus + .bar { fill: var(--red-deep); }
   .wu-chart .bar-hit { fill: transparent; cursor: default; }
   .wu-chart text { font-family: var(--font-sans); font-size: 11px; fill: var(--ink-mute); }
   .wu-chart text.val { fill: var(--ink-soft); font-weight: 600; }
+  .wu-ext { font-weight: 600; white-space: nowrap; }
+  .wr-empty { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+  .wr-item { display: grid; gap: 4px; }
+  .wr-item .wr-row { margin: 0; }
+  .wr-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 0 2px 0 10px; font-size: 12px; color: var(--ink-mute); }
+  .wr-kind { padding: 1px 8px; border-radius: 999px; background: var(--bg-subtle); color: var(--ink-soft); }
+  .wr-fix { margin-left: auto; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-soft); border-radius: 999px;
+    padding: 2px 10px; font: 600 11.5px/1.5 var(--font-sans); cursor: pointer; }
+  .wr-fix:hover { border-color: var(--ink-mute); color: var(--ink); }
+  .wr-fixed { font-size: 12.5px; color: var(--ink-mute); }
+  .wr-fixed button { border: 0; background: none; color: var(--red-deep); font: 600 12.5px var(--font-sans); cursor: pointer; padding: 0 0 0 4px; }
   .wu-top { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
   .wu-top li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: baseline; font-size: 13px; }
   .wu-top .id { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-mute); }
@@ -5173,18 +5184,17 @@
           <div class="wu-kicker">Site usage</div>
           <div class="wu-stats" id="walkUsageStats" hidden></div>
           <div class="wu-charts" id="walkUsageCharts" hidden></div>
-          <p class="wu-note" id="walkUsageNote">Anonymous, cookie-free counts from GoatCounter. They include your own visits and can lag a few hours.</p>
+          <p class="wu-note" id="walkUsageNote">Anonymous, cookie-free counts from GoatCounter. They include your own visits and can lag a few hours. <a class="wu-ext" href="https://mbocksta.goatcounter.com/?filter=Practice+Lab" target="_blank" rel="noopener">Full dashboard &#8599;</a></p>
         </div>
-        <a class="btn btn-ghost btn-sm wu-link" href="https://mbocksta.goatcounter.com/?filter=Practice+Lab" target="_blank" rel="noopener">Open full dashboard &rarr;</a>
+
       </div>
 
       <div class="walk-usage walk-reports">
         <div class="wu-body">
           <div class="wu-kicker">Reported issues</div>
           <div class="wr-list" id="walkReports" hidden></div>
-          <p class="wu-note">Students flag a problem with its <strong>Report issue</strong> button. Each report is anonymous and shows up on the dashboard as <code>report/</code> plus the problem ID.</p>
+          <p class="wu-note">Students flag a problem with its <strong>Report issue</strong> button (anonymous). Mark one fixed and it stays hidden until someone reports it again.</p>
         </div>
-        <a class="btn btn-ghost btn-sm wu-link" href="https://mbocksta.goatcounter.com/?filter=report%2F" target="_blank" rel="noopener">See reported problems &rarr;</a>
       </div>
       </div>
 
@@ -10228,7 +10238,8 @@ function setReport(id, kind) {
 function sendReportEvent(p, kind) {
   try {
     if (window.goatcounter && typeof window.goatcounter.count === "function")
-      window.goatcounter.count({ path: "report/" + p.id, title: "Issue report · " + p.id + " · " + (REPORT_KINDS[kind] || kind), event: true });
+    { window.goatcounter.count({ path: "report/" + p.id, title: "Issue report · " + p.id, event: true });
+      window.goatcounter.count({ path: "report/" + p.id + "/" + kind, title: "Issue report · " + p.id + " · " + (REPORT_KINDS[kind] || kind), event: true }); }
   } catch (_) { /* reporting must never break the page */ }
 }
 function reportPanelHtml(p, mailto) {
@@ -12560,7 +12571,7 @@ async function loadSiteUsage() {
   loadReports(count);
   for (let i = 0; i < 40 && !State.problemsById.size; i++) await new Promise(r => setTimeout(r, 250));   // problem data still loading
   let data = null;
-  try { const c = JSON.parse(sessionStorage.getItem("pl254:usage") || "null"); if (c && Date.now() - c.t < 20 * 60e3) data = c.d; } catch (_) {}
+  try { const c = JSON.parse(sessionStorage.getItem("pl254:usage2") || "null"); if (c && Date.now() - c.t < 20 * 60e3) data = c.d; } catch (_) {}
   if (!data) {
     const ids = [...State.problemsById.keys()], per = {};
     let k = 0;
@@ -12569,13 +12580,16 @@ async function loadSiteUsage() {
     const ymd = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     const mon = new Date(); mon.setHours(0, 0, 0, 0); mon.setDate(mon.getDate() - (mon.getDay() + 6) % 7);
     const weeks = Array.from({ length: 8 }, (_, i) => { const a = new Date(mon); a.setDate(a.getDate() - 7 * (7 - i)); const b = new Date(a); b.setDate(b.getDate() + 6); return [a, b]; });
-    const [weekly, qr] = await Promise.all([
+    const one = p => count(encodeURIComponent(p)).catch(() => 0), sum = async ps => (await Promise.all(ps.map(one))).reduce((a, b) => a + b, 0);
+    const [weekly, qr, areas] = await Promise.all([
       Promise.all(weeks.map(([a, b]) => count("/home", "?start=" + ymd(a) + "&end=" + ymd(b)).catch(() => null))),
       count("/si-qr").catch(() => 0),
+      Promise.all([one("/topics"), sum(Array.from({ length: 10 }, (_, i) => "/section/" + (i + 1))), one("/exam"), one("/exam/run/1"), one("/review"),
+                   sum(["/visualize"].concat(VZ_LIST.map(v => "/visualize/" + v.id))), sum(["/walkthroughs"].concat(Array.from({ length: 22 }, (_, i) => "/walkthroughs/si-" + String(i + 1).padStart(2, "0"))))]),
       Promise.all(Array.from({ length: 6 }, worker)),
     ]);
-    data = { home, qr, per, weekly, weeks: weeks.map(([a]) => a.getTime()) };
-    try { sessionStorage.setItem("pl254:usage", JSON.stringify({ t: Date.now(), d: data })); } catch (_) {}
+    data = { home, qr, per, weekly, areas, weeks: weeks.map(([a]) => a.getTime()) };
+    try { sessionStorage.setItem("pl254:usage2", JSON.stringify({ t: Date.now(), d: data })); } catch (_) {}
   }
   renderUsage(data);
 }
@@ -12617,11 +12631,25 @@ function renderUsage(d) {
         `<text x="${lab - 7}" y="${y + h - 1.5}" text-anchor="end">${String(x.n).padStart(2, "0")}</text>` +
         `<text class="val" x="${lab + w + 5}" y="${y + h - 1.5}">${x.v}</text></g>`;
     }).join("") + `</svg></div>`;
+  // where students go: visits to each part of the site
+  let c4 = "";
+  if (d.areas) {
+    const [topics, sections, exam, runs, review, viz, walk] = d.areas;
+    const rows = [["Home", d.home], ["Topics", topics], ["Section pages", sections], ["Problems", views], ["Exam Mode", exam], ["Exam runs started", runs], ["Need Review", review], ["Visualize", viz], ["SI walkthroughs", walk]];
+    const mx4 = Math.max(1, ...rows.map(r => r[1])), rh = 13, W4 = 320, lw = 96, vw = 30;
+    c4 = `<div class="wu-chart"><h4>Where students go</h4><svg viewBox="0 0 ${W4} ${rows.length * rh + 4}" role="img" aria-label="Visits to each part of the site">` +
+      rows.map(([name, v], i) => {
+        const y = 2 + i * rh, w = v ? Math.max(3, (W4 - lw - vw) * v / mx4) : 0, h = rh - 4, r = Math.min(4, w / 2, h / 2), tip = `${name}: ${v} visit${v === 1 ? "" : "s"}`;
+        return `<g><rect class="bar-hit" x="0" y="${y - 1}" width="${W4}" height="${rh}" data-tip="${escapeHtml(tip)}" tabindex="0"><title>${escapeHtml(tip)}</title></rect>` +
+          (w ? `<path class="bar" d="M${lw} ${y}H${lw + w - r}Q${lw + w} ${y} ${lw + w} ${y + r}V${y + h - r}Q${lw + w} ${y + h} ${lw + w - r} ${y + h}H${lw}Z"/>` : "") +
+          `<text x="${lw - 7}" y="${y + h - 1.5}" text-anchor="end">${escapeHtml(name)}</text><text class="val" x="${lw + w + 5}" y="${y + h - 1.5}">${v}</text></g>`;
+      }).join("") + `</svg></div>`;
+  }
   // most opened problems
   const top = probs.filter(p => d.per[p.id] > 0).sort((a, b) => d.per[b.id] - d.per[a.id] || a.id.localeCompare(b.id)).slice(0, 5);
   const c3 = top.length ? `<div class="wu-chart"><h4>Most opened problems</h4><ol class="wu-top">` + top.map(p =>
     `<li><span class="id">${escapeHtml(p.id)}</span><a href="#/problem/${escapeHtml(p.id)}" data-route="/problem/${escapeHtml(p.id)}">${escapeHtml(p.title)}</a><span class="n">${d.per[p.id]}</span></li>`).join("") + `</ol></div>` : "";
-  charts.innerHTML = c1 + c2 + c3;
+  charts.innerHTML = c1 + c2 + c4 + c3;
   charts.hidden = false;
   typesetMath(charts);                                         // some problem titles carry math
   // one small tooltip for every bar
@@ -12634,32 +12662,56 @@ function renderUsage(d) {
   });
 }
 
-/* Reported issues: with the public count feed on, list every problem that has reports (one small
-   request per problem, done once per visit). Without it, show reports made from this browser and
-   leave the dashboard link to do the rest. */
+/* Reported issues, straight from GoatCounter's public count feed: one small request per problem (6 at a time,
+   once per visit), then the kinds for the ones that have reports. "Mark fixed" remembers the count at that
+   moment (in this browser), so a fixed problem only comes back when someone reports it again. Without the
+   feed, reports made from this browser are listed. */
 async function loadReports(count) {
   const box = $("#walkReports");
   if (!box) return;
   for (let i = 0; i < 40 && !State.problemsById.size; i++) await new Promise(r => setTimeout(r, 250));  // problem data still loading
-  const all = [...State.problemsById.values()];
-  const local = lsGetMap(LS.REPORTED);
+  const all = [...State.problemsById.values()], local = lsGetMap(LS.REPORTED);
   let rows = [];
   if (count && all.length) {
     const ids = all.map(p => p.id), got = new Map();
     let k = 0;
     const worker = async () => { while (k < ids.length) { const id = ids[k++]; try { const n = +(await count(encodeURIComponent("report/" + id))); if (n > 0) got.set(id, n); } catch (_) {} } };
     await Promise.all(Array.from({ length: 6 }, worker));
-    rows = [...got].map(([id, n]) => ({ id, n }));
+    rows = await Promise.all([...got].map(async ([id, n]) => {
+      const kinds = {};
+      await Promise.all(Object.keys(REPORT_KINDS).map(async kd => { try { const c = +(await count(encodeURIComponent("report/" + id + "/" + kd))); if (c > 0) kinds[kd] = c; } catch (_) {} }));
+      return { id, n, kinds };
+    }));
   }
-  Object.keys(local).forEach(id => { if (!rows.some(r => r.id === id)) rows.push({ id, n: 0, mine: true }); });
+  Object.keys(local).forEach(id => { if (!rows.some(r => r.id === id)) rows.push({ id, n: 0, mine: true, kinds: local[id].kind ? { [local[id].kind]: 1 } : {} }); });
   rows = rows.filter(r => State.problemsById.has(r.id)).sort((a, b) => b.n - a.n || a.id.localeCompare(b.id));
-  if (!rows.length) { box.hidden = true; return; }
-  box.innerHTML = rows.map(r => {
-    const p = State.problemsById.get(r.id);
-    const tag = r.n ? r.n + (r.n === 1 ? " report" : " reports") : "reported from this browser";
-    return `<a class="wr-row" href="#/problem/${escapeHtml(r.id)}" data-route="/problem/${escapeHtml(r.id)}"><span class="wr-id">${escapeHtml(r.id)}</span><span class="wr-title">${escapeHtml(p.title)}</span><span class="pill status-report">${tag}</span></a>`;
-  }).join("");
+  WalkReports = { rows, live: !!count };
+  paintReports();
+}
+let WalkReports = { rows: [], live: false };
+function paintReports() {
+  const box = $("#walkReports");
+  if (!box) return;
+  const fixed = lsGetMap("pl254:reportsFixed"), { rows } = WalkReports;
+  const open = rows.filter(r => !(fixed[r.id] != null && r.n <= fixed[r.id])), done = rows.filter(r => !open.includes(r));
+  const short = { answer: "wrong answer or step", typo: "typo", confusing: "confusing", display: "broken math or picture" };
+  box.innerHTML = (open.length ? open.map(r => {
+    const p = State.problemsById.get(r.id), tag = r.n ? r.n + (r.n === 1 ? " report" : " reports") : "reported from this browser";
+    const kinds = Object.entries(r.kinds || {}).map(([kd, c]) => `<span class="wr-kind">${escapeHtml(short[kd] || kd)}${c > 1 ? " ×" + c : ""}</span>`).join("");
+    return `<div class="wr-item"><a class="wr-row" href="#/problem/${escapeHtml(r.id)}" data-route="/problem/${escapeHtml(r.id)}"><span class="wr-id">${escapeHtml(r.id)}</span><span class="wr-title">${escapeHtml(p.title)}</span><span class="pill status-report">${tag}</span></a>` +
+      `<div class="wr-sub">${kinds}${r.n ? `<button class="wr-fix" type="button" data-fix="${escapeHtml(r.id)}">Mark fixed</button>` : ""}</div></div>`;
+  }).join("") : `<p class="wr-empty">${WalkReports.live ? "No open reports. Nothing to fix right now." : "No reports from this browser."}</p>`) +
+    (done.length ? `<p class="wr-fixed">${done.length} marked fixed<button type="button" data-unfix="1">Show again</button></p>` : "");
   box.hidden = false;
+  typesetMath(box);
+  box.onclick = e => {
+    const f = e.target.closest("[data-fix]"), u = e.target.closest("[data-unfix]");
+    if (!f && !u) return;
+    e.preventDefault(); e.stopPropagation();
+    const m = lsGetMap("pl254:reportsFixed");
+    if (f) { const r = rows.find(x => x.id === f.dataset.fix); m[f.dataset.fix] = r ? r.n : 0; } else Object.keys(m).forEach(k => delete m[k]);
+    lsSet("pl254:reportsFixed", m); paintReports();
+  };
 }
 
 async function renderWalkthroughs() {
