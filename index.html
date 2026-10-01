@@ -3769,6 +3769,8 @@
   .vz-sl-name { font-size: 13px; font-weight: 600; color: var(--ink); }
   .vz-sl-right { display: flex; align-items: center; gap: 8px; }
   .vz-sl output { min-width: 52px; text-align: right; font: 600 12.5px var(--font-mono); color: var(--red-deep); }
+  /* numbers that change during Play keep a fixed width, so the text around them never jiggles */
+  .vz-readout, .vz-eq, .vz-status, .st-time { font-variant-numeric: tabular-nums; }
   .vz-play {
     border: 1px solid var(--border-strong); background: var(--surface); border-radius: 999px; padding: 2px 10px; cursor: pointer;
     font: 600 11.5px var(--font-sans); color: var(--ink-soft); transition: background .15s var(--ease), color .15s var(--ease), border-color .15s var(--ease);
@@ -5068,9 +5070,10 @@
 
   /* ---------- 9. Double integral as the limit of boxes ---------- */
   const riemann = {
-    label: "Boxes over a square region whose heights follow f(x, y); they refine from 3 by 3 to 12 by 12 and approach the surface, the double integral",
-    poster: 9.0,
-    levels: [3, 6, 12],
+    label: "Boxes over a square region whose heights follow f(x, y): one box splits into 3 by 3, then 9 by 9, approaching the surface, the double integral; then the boxes sink into the floor and one box rises to start again",
+    poster: 6.9,
+    levels: [1, 3, 9],
+    edge: st => st.n > 4 ? .5 : .65,                           // the white edges between boxes
     f(x, y) { return .22 + .78 * Math.exp(-((x - .62) ** 2 / .08 + (y - .4) ** 2 / .12)) + .3 * Math.exp(-((x - .2) ** 2 + (y - .78) ** 2) / .03); },
     build() {
       const cam = camera(198, 262, 188, -.72, .52), V = cam.view; this.cam = cam;
@@ -5082,20 +5085,17 @@
         for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
           const x0 = i / n, y0 = j / n, x1 = (i + 1) / n, y1 = (j + 1) / n, v = this.f((x0 + x1) / 2, (y0 + y1) / 2);
           const top = mixA(hexRGB("#F6E3E5"), hexRGB(RED), .12 + .8 * Math.min(1, v / hmax)), dark = hexRGB("#4A0512");
-          bars.push({ i, j, x0, y0, x1, y1, h: v * H, depth: P3((x0 + x1) / 2, (y0 + y1) / 2, 0)[2], delay: .55 * (i + (n - 1 - j)) / (2 * (n - 1)),
+          bars.push({ i, j, x0, y0, x1, y1, h: v * H, depth: P3((x0 + x1) / 2, (y0 + y1) / 2, 0)[2], delay: n > 1 ? .55 * (i + (n - 1 - j)) / (2 * (n - 1)) : 0,
                       cTop: rgb(top), cX: rgb(mixA(top, dark, .24)), cY: rgb(mixA(top, dark, .12)), cols: [mixA(top, dark, .24), mixA(top, dark, .12), top] });
         }
         bars.sort((a, b) => b.depth - a.depth);                  // far boxes first
         return { n, bars, key: null, done: false };
       });
-      // each finer box starts at the height of the coarser box it splits out of, so a refinement never jumps
+      // each finer box starts at the height (and colour) of the coarser box it splits out of, so a refinement never jumps
       this.sets.forEach((st, si) => st.bars.forEach(b => {
         if (!si) { b.hp = 0; return; }
         const up = this.sets[si - 1], f = st.n / up.n, par = up.bars.find(q => q.i === Math.floor(b.i / f) && q.j === Math.floor(b.j / f));
         b.hp = par.h; b.pcols = par.cols;
-        // and the finest boxes know their 3 × 3 ancestor, so the loop can merge back into it
-        const g0 = this.sets[0], f0 = st.n / g0.n, anc = g0.bars.find(q => q.i === Math.floor(b.i / f0) && q.j === Math.floor(b.j / f0));
-        b.h0 = anc.h; b.cols0 = anc.cols;
       }));
       // which vertical faces face us: +x and -y for this camera
       this.faceX = V[0] > 0 ? 1 : 0; this.faceY = V[1] < 0 ? 0 : 1;
@@ -5109,29 +5109,28 @@
         mesh += d1 + d2;
       }
       const base = [P3(0, 0, 0), P3(1, 0, 0), P3(1, 1, 0), P3(0, 1, 0)];
-      const groups = this.sets.map((st, si) => '<g data-k="set' + si + '" opacity="0">' +
-        st.bars.map(b => ['cX', 'cY', 'cTop'].map(c => '<path fill="' + b[c] + '" stroke="#FFFFFF" stroke-opacity=".55" stroke-width=".7" stroke-linejoin="round"/>').join("")).join("") + '</g>').join("");
+      const groups = this.sets.map((st, si) => '<g data-k="set' + si + '" opacity="0" stroke="#FFFFFF" stroke-width=".7" stroke-linejoin="round" stroke-opacity="' + this.edge(st) + '">' +
+        st.bars.map(b => ['cX', 'cY', 'cTop'].map(c => '<path fill="' + b[c] + '"/>').join("")).join("") + '</g>').join("");
       return defs() +
         '<path d="' + poly(base) + '" fill="' + INK + '" fill-opacity=".03" stroke="' + GREY + '" stroke-opacity=".6" stroke-width="1.2" stroke-linejoin="round" data-k="base" opacity="0"/>' +
-        groups +
+        groups + '<g data-k="was" stroke="#FFFFFF" stroke-width=".7" stroke-linejoin="round" opacity="0"></g>' +
         '<path data-k="mesh" d="' + mesh + '" fill="none" stroke="' + RED + '" stroke-width="1" stroke-linejoin="round" opacity="0"/>' +
         '<text x="' + n2((P3(0, 0, 0)[0] + P3(1, 0, 0)[0]) / 2 - 16) + '" y="' + n2((P3(0, 0, 0)[1] + P3(1, 0, 0)[1]) / 2 + 22) + '" font-family="\'Fraunces\', Georgia, serif" font-size="15" font-style="italic" fill="' + GREY + '" data-k="lR" opacity="0">R</text>' +
-        labels("riemann", "the limit of sums f · ΔA as the boxes shrink", "3 × 3 = 9 boxes");
+        labels("riemann", "the limit of sums f · ΔA as the boxes shrink", "1 box");
     },
-    // One set of boxes on screen at a time. 3 × 3 rises in a wave; then every box splits into four that
-    // start at their parent's height (identical at the switch) and glide to their own heights; 6 → 12 the
-    // same way; then the surface shows through and fades again, and the 12 × 12 boxes glide back to the
-    // heights and colours of their 3 × 3 ancestors, which take over (identical at the switch) for the next
-    // round. Only the very first round rises from the empty square.
-    T: { split1: 2.9, split2: 5.6, mesh: 8.1, meshOut: 10.4, merge: 11.1, cyc: 13.0, glide: .95 },
-    paint(st, si, g, u, cycle) {
+    // One set of boxes on screen at a time. One box rises from the square; it splits into 3 × 3 boxes that
+    // start at its height (identical at the switch) and glide to their own heights; each of those splits into
+    // 3 × 3 the same way (9 × 9 = 81); the surface shows through and fades again. Then the round ends with its
+    // own move, not the film run backwards: the 81 boxes sink into the floor in a wave from the back corner,
+    // the square sits empty for a beat, and the one box rises again to start the next round.
+    T: { split1: 2.2, split2: 4.9, mesh: 7.3, meshOut: 9.4, drain: 10.1, sink: .7, cyc: 12.1, glide: .95 },
+    paint(st, si, g, u) {
       const kids = g.children, P3 = this.P3, T = this.T; let all = true;
       st.bars.forEach((b, i) => {
         let h;
-        if (!si) { const w = cycle ? 1 : ease(clamp01((u - b.delay) / .75)); if (w < 1) all = false; h = b.h * w; }
-        else if (si === 2 && u >= T.merge) {
-          const w = ease(clamp01((u - T.merge - b.delay * .45) / T.glide)); if (w < 1) all = false; h = b.h + (b.h0 - b.h) * w;
-          for (let c = 0; c < 3; c++) kids[3 * i + c].setAttribute("fill", rgb(mixA(b.cols[c], b.cols0[c], w)));
+        if (!si) { const w = ease(clamp01(u / 1.05)); if (w < 1) all = false; h = b.h * w; }   // the one box rises
+        else if (si === 2 && u >= T.drain) {                       // the reset: sink into the floor, back corner first
+          const w = clamp01((u - T.drain - (.55 - b.delay) * .9) / T.sink), e = w * w * (3 - 2 * w); if (w < 1) all = false; h = b.h * (1 - e);
         } else {
           const w = ease(clamp01((u - (si === 1 ? T.split1 : T.split2) - b.delay * .45) / T.glide)); if (w < 1) all = false; h = b.hp + (b.h - b.hp) * w;
           for (let c = 0; c < 3; c++) kids[3 * i + c].setAttribute("fill", rgb(mixA(b.pcols[c], b.cols[c], w)));   // colour glides with the height
@@ -5148,21 +5147,30 @@
       const T = this.T, tt = Math.max(0, t - .3), cycle = Math.floor(tt / T.cyc), u = tt - cycle * T.cyc;
       const lvl = u < T.split1 ? 0 : u < T.split2 ? 1 : 2, meshOn = smooth(T.mesh, T.mesh + .9, u) * (1 - smooth(T.meshOut, T.meshOut + .7, u));
       k.base.setAttribute("opacity", n2(faint(t, 0, .5)));
-      // at each switch the new set (identical in shape at that instant) fades in over the old one, so the extra
-      // edges of a split, or the edges lost in the merge, come and go softly instead of in a single frame
-      const since = lvl === 1 ? u - T.split1 : lvl === 2 ? u - T.split2 : cycle ? u : 9, fade = ease(clamp01(since / .4));
+      // at a split the new set takes over at once (identical in shape and colour at that instant). A copy of the
+      // old boxes, as they ended, sits on top and dissolves within a third of a second, before the new boxes have
+      // moved much: their extra dividing edges come in softly, and nothing lingers as a ghost
+      const since = lvl === 1 ? u - T.split1 : lvl === 2 ? u - T.split2 : 9, fade = ease(clamp01(since / .3));
+      if (lvl !== this._lvl) {
+        if (lvl && this._lvl === lvl - 1) { k.was.innerHTML = k["set" + (lvl - 1)].innerHTML; k.was.setAttribute("stroke-opacity", n2(this.edge(this.sets[lvl - 1]))); }
+        else k.was.innerHTML = "";
+        this._lvl = lvl;
+      }
+      k.was.setAttribute("opacity", n2(lvl && k.was.firstChild ? 1 - fade : 0));
+      // the flattened tiles fade off the floor as the last boxes finish sinking; the next box fades in as it starts to rise
+      const gone = smooth(T.drain + .85, T.drain + 1.45, u), rise = ease(clamp01(u / .35));
       this.sets.forEach((st, si) => {
         const on = si === lvl;
-        let op = on ? (lvl === 2 ? 1 - .72 * meshOn : 1) * (lvl ? fade : 1) : 0;
-        if (!on && fade < 1 && ((lvl && si === lvl - 1) || (!lvl && si === 2))) op = lvl ? 1 : 1 - fade;   // the old set, frozen as it ended
+        const op = on ? (lvl === 2 ? (1 - .72 * meshOn) * (1 - gone) : lvl ? 1 : rise) : 0;
         k["set" + si].setAttribute("opacity", n2(op));
+
         if (!on) { st.key = null; return; }
-        const key = cycle + ":" + si + (u >= T.merge ? "m" : "");   // repaint only while its boxes are still moving
-        if (st.key !== key || !st.done) { st.key = key; st.done = this.paint(st, si, k["set" + si], u, cycle); }
+        const key = cycle + ":" + si + (u >= T.drain ? "d" : "");  // repaint only while its boxes are still moving
+        if (st.key !== key || !st.done) { st.key = key; st.done = this.paint(st, si, k["set" + si], u); }
       });
       k.mesh.setAttribute("opacity", n2(.75 * meshOn));
-      const n = this.levels[u >= T.merge ? 0 : lvl];
-      setText(k.caption, meshOn > .5 ? "boxes → the surface z = f(x, y)" : n + " × " + n + " = " + n * n + " boxes");
+      const n = this.levels[lvl];
+      setText(k.caption, u >= T.drain ? "back to one box" : meshOn > .5 ? "boxes → the surface z = f(x, y)" : n === 1 ? "1 box" : n + " × " + n + " = " + n * n + " boxes");
       k.lR.setAttribute("opacity", n2(introLabels(t)));
       k.labels.setAttribute("opacity", n2(introLabels(t)));
     },
@@ -12151,7 +12159,26 @@ function vzArrow(x1, y1, x2, y2, key, w, extra) {
   return `<g ${extra || ""}><line x1="${q2(x1)}" y1="${q2(y1)}" x2="${q2(sx)}" y2="${q2(sy)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>` +
     `<path d="M${q2(x2)} ${q2(y2)}L${q2(bx - uy * hw)} ${q2(by + ux * hw)}L${q2(bx + uy * hw)} ${q2(by - ux * hw)}Z" fill="${c}" stroke="${c}" stroke-width=".8" stroke-linejoin="round"/></g>`;
 }
+// On the live picture, a label (or a pill's width) that would jump in one frame, because it switched sides
+// to stay clear of an arrow, glides to its new place over ~0.2 s instead; ordinary motion is followed exactly.
+// Keyed by the label's text with the numbers taken out (and how many times that text appeared this frame).
+function vzGlide(name, vals, jump = 14) {
+  if (!VzView.live) return vals;
+  const seen = VzView.labSeen, base = String(name).replace(/<[^>]+>/g, "").replace(/[−-]?\d[\d.,/]*/g, "#"), n = seen[base] = (seen[base] || 0) + 1, key = base + "|" + n;
+  const L = VzView.labs || (VzView.labs = {}), f = VzView.frameNo, p = L[key];
+  if (!p || p.f < f - 1) { L[key] = { v: vals.slice(), f, g: false }; return vals; }
+  p.f = f;
+  const d = Math.hypot(...vals.map((v, i) => v - p.v[i]));
+  if (!p.g && d > jump) { p.g = true; p.s = p.v.slice(); p.f0 = f; }
+  if (p.g) {
+    const u = Math.min(1, (f - p.f0) / 13), e = vzEase(u);
+    p.v = vals.map((v, i) => p.s[i] + (v - p.s[i]) * e);
+    if (u >= 1) p.g = false; else VzView.again = true;
+  } else p.v = vals.slice();
+  return p.v;
+}
 function vzLabel(x, y, html, col, size, anchor) {
+  [x, y] = vzGlide(html, [x, y]);
   return `<text x="${q2(x)}" y="${q2(y)}" font-family="'Fraunces', Georgia, serif" font-size="${size || 17}" font-style="italic" fill="${col || VZ.ink}" text-anchor="${anchor || "middle"}" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${html}</text>`;
 }
 function vzTip(ox, oy, tx, ty, html, col, gap) {         // label just past an arrow tip
@@ -12228,6 +12255,7 @@ function renderVisualize(id) {
   vzStop();
   // moving from picture to picture stays inside one view, so the new page fades in on its own (no hard cut)
   root.classList.remove("vz-in"); void root.offsetWidth; root.classList.add("vz-in");
+  VzView.labs = {}; VzView.tipSide = {};                    // label glides and sides belong to one picture
   const def = id && VZ_BY_ID[id];
   if (!def) {                                               // the index: every picture as a card
     root.innerHTML = `
@@ -12551,7 +12579,8 @@ function vzDraw(now) {
   const [gs, ga, gd] = stage._layers;
   if (VzView.stale) {
     if (def.static) { const key = def.staticKey ? def.staticKey(st) : "1"; if (key !== stage._key) { gs.innerHTML = def.static(st); stage._key = key; } }
-    ga.innerHTML = def.draw(st, t, false);
+    VzView.live = true; VzView.frameNo = (VzView.frameNo || 0) + 1; VzView.labSeen = {};
+    try { ga.innerHTML = def.draw(st, t, false); } finally { VzView.live = false; }
     const ro = document.getElementById("vzReadout");
     if (ro && def.readout) { const html = def.readout(st); if (ro._html !== html) { ro._html = html; ro.innerHTML = html; } }
   }
@@ -13517,7 +13546,7 @@ function vzKey(items, x = 16, y = 432) {
 }
 // a pill label ("in W", "not in W") beside a point
 function vzPill(x, y, text, col) {
-  const w = text.length * 7.7 + 18;
+  const [w] = vzGlide("pill@" + Math.round(x) + "," + Math.round(y), [text.length * 7.7 + 18], 6);
   return `<g><rect x="${q2(x - w / 2)}" y="${q2(y - 11.5)}" width="${q2(w)}" height="23" rx="11.5" fill="${col}"/>` +
     `<text x="${q2(x)}" y="${q2(y + 4.6)}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="13" font-weight="700" fill="#fff">${text}</text></g>`;
 }
@@ -13859,13 +13888,16 @@ function vzTipLabels(P, items) {
     if (Math.hypot(v[0], v[1]) < 1e-6) return;
     const X1 = P.X(0), Y1 = P.Y(0), X2 = P.X(v[0]), Y2 = P.Y(v[1]), L = Math.hypot(X2 - X1, Y2 - Y1) || 1, ux = (X2 - X1) / L, uy = (Y2 - Y1) / L;
     const w = html.replace(/<[^>]+>/g, "").length * 8.5 + 6;
-    let best = null, bs = -Infinity;
+    // on the live picture the side it used last frame wins a near tie, so a label never flickers between two spots
+    const key = html.replace(/<[^>]+>/g, "").replace(/[−-]?\d[\d.,/]*/g, "#"), mem = VzView.live ? (VzView.tipSide || (VzView.tipSide = {})) : null;
+    let best = null, bs = -Infinity, bi = 0;
     [6, -6, 20, -20, 34, -34].forEach((side, i) => {
       const x = X2 + ux * gap - uy * side, y = Y2 + uy * gap + ux * side;
       const d = placed.length ? Math.min(...placed.map(p => Math.max(Math.abs(p[0] - x) / ((p[2] + w) / 2), Math.abs(p[1] - y) / 21))) : 9;
-      const sc = (d >= 1 ? 100 : d * 50) - i;          // clear of the others first, then as close to the tip as it can be
-      if (sc > bs) { bs = sc; best = [x, y]; }
+      const sc = (d >= 1 ? 100 : d * 50) - i + (mem && mem[key] === i ? 12 : 0);   // clear of the others first, then as close to the tip as it can be
+      if (sc > bs) { bs = sc; best = [x, y]; bi = i; }
     });
+    if (mem) mem[key] = bi;
     placed.push([best[0], best[1], w]);
     o += vzLabel(best[0], best[1] + 5, html, col, 16);
   });
@@ -14079,20 +14111,27 @@ vzAdd({
     const txt = "area " + (flat ? "0" : vzShort(Math.round(Math.abs(det) * 100) / 100)), tw = txt.length * 8.8 + 8, th = 22;
     const scr = p => [P.X(p[0]), P.Y(p[1])], poly = [[0, 0], e1, far, e2].map(scr);
     const inside = (x, y) => { let sg = 0; for (let i = 0; i < 4; i++) { const a = poly[i], b = poly[(i + 1) % 4], c = (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]); if (Math.abs(c) < 1e-6) continue; if (sg && Math.sign(c) !== sg) return false; sg = Math.sign(c); } return true; };
-    const corners = (x, y) => [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, -1], [0, 1]].map(([a, b]) => [x + a * (tw / 2 + 3), y + b * (th / 2 + 2)]);
+    const corners = (x, y, m = 0) => [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, -1], [0, 1]].map(([a, b]) => [x + a * (tw / 2 + 3 + m), y + b * (th / 2 + 2 + m)]);
     const tipAt = v => { const X2 = P.X(v[0]), Y2 = P.Y(v[1]), L = Math.hypot(X2 - P.X(0), Y2 - P.Y(0)) || 1; return [X2 + (X2 - P.X(0)) / L * 20, Y2 + (Y2 - P.Y(0)) / L * 20]; };
     const busy = [tipAt(e1), tipAt(e2), scr(e1), scr(e2)];
     const clear = (x, y) => x - tw / 2 > 10 && x + tw / 2 < 590 && y - th / 2 > 10 && y + th / 2 < 410 && busy.every(([bx, by]) => Math.abs(bx - x) > tw / 2 + 20 || Math.abs(by - y) > th / 2 + 11);
     const C = scr([far[0] / 2, far[1] / 2]);
-    let at = !flat && corners(...C).every(q => inside(...q)) && clear(...C) ? C : null;
+    // with some stickiness, so the label doesn't flicker between two spots when either would do
+    const keepIn = this._lab && this._lab.inside, mIn = keepIn ? -3 : 6;
+    let at = !flat && corners(...C, mIn).every(q => inside(...q)) && clear(...C) ? C : null;
     if (!at) {
-      const F = scr(Math.hypot(...far) > .2 ? far : [.7, .7]), O = scr([0, 0]), a0 = Math.atan2(F[1] - O[1], F[0] - O[0]);
-      search: for (const R of [26, 40, 56, 76, 100]) for (const da of [0, .45, -.45, .9, -.9, 1.4, -1.4, 2, -2, 2.6, -2.6, Math.PI]) {
+      const F = scr(Math.hypot(...far) > .2 ? far : [.7, .7]), O = scr([0, 0]), a0 = Math.atan2(F[1] - O[1], F[0] - O[0]), was = this._lab && !this._lab.inside ? this._lab.at : null;
+      let best = null, bs = Infinity;
+      [26, 40, 56, 76, 100].forEach((R, ri) => [0, .45, -.45, .9, -.9, 1.4, -1.4, 2, -2, 2.6, -2.6, Math.PI].forEach((da, ai) => {
         const an = a0 + da, x = F[0] + Math.cos(an) * (R + tw / 2 * Math.abs(Math.cos(an))), y = F[1] + Math.sin(an) * (R + th / 2 * Math.abs(Math.sin(an)));
-        if (clear(x, y) && !corners(x, y).some(q => inside(...q))) { at = [x, y]; break search; }
-      }
+        if (!clear(x, y) || corners(x, y).some(q => inside(...q))) return;
+        const sc = ri * 12 + ai + (was ? Math.hypot(x - was[0], y - was[1]) / 4 : 0);
+        if (sc < bs) { bs = sc; best = [x, y]; }
+      }));
+      at = best;
     }
     if (!at) { const F = scr(far); at = [vzClamp(F[0] + 40, tw / 2 + 12, 588 - tw / 2), vzClamp(F[1] - 30, 24, 400)]; }
+    if (!thumb) this._lab = { inside: at === C, at };
     o += vzLabel(at[0], at[1] + 6, txt, flip ? "#6E5518" : VZ.deep, 18);
     o += vzKey([["dash", VZ.grey, "unit square (area 1)"], ["fill", col, flip ? "its image (flipped)" : "its image"]]);
     return o;
