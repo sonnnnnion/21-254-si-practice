@@ -157,6 +157,10 @@
     border-radius: 4px;
   }
 
+  /* no lone word on a line of its own: short headings even out, longer text avoids widows */
+  h1, h2, h3, h4, .vz-card-title { text-wrap: balance; }
+  p, li, .vz-card-blurb, .st-why, .vz-status, .vz-try { text-wrap: pretty; }
+
   /* Container */
   .container {
     max-width: var(--maxw);
@@ -292,6 +296,8 @@
      VIEWS / ROUTING
      ============================================================ */
   .view { display: none; animation: viewIn .42s var(--ease-out); }
+  #vizRoot.vz-in { animation: vzRootIn .36s var(--ease-out); }
+  @keyframes vzRootIn { from { opacity: 0; } to { opacity: 1; } }
   .view.active { display: block; }
   @keyframes viewIn {
     from { opacity: 0; transform: translateY(8px); }
@@ -1057,6 +1063,7 @@
     color: var(--ink-mute);
     font-size: 15px;
     max-width: 540px;
+    text-wrap: balance;
   }
 
   /* ============================================================
@@ -1577,6 +1584,7 @@
   }
   .concept-svg.sk { max-width: 480px; border-radius: 10px; }
   .concept-caption {
+    text-wrap: balance;
     font-size: 12.5px;
     color: var(--ink-mute);
     line-height: 1.5;
@@ -2114,6 +2122,7 @@
   footer .foot-lead strong { color: var(--ink); font-weight: 700; }
   footer .foot-notes .foot-ai { display: block; }
   footer .foot-ai {
+    text-wrap: balance;
     max-width: 560px;
     margin: 6px auto 0;
     font-size: 11.5px;
@@ -2541,7 +2550,7 @@
   .wu-panel { min-width: 0; padding: 14px 16px 12px; background: #FFFFFF; border: 1px solid var(--border); border-radius: 12px; }
   .wu-panel h4 { margin: 0; font: 650 13.5px/1.3 var(--font-sans); color: var(--ink); }
   .wu-desc { margin: 2px 0 10px; font-size: 12px; color: var(--ink-mute); line-height: 1.4; }
-  .wu-panel svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .wu-panel > svg { display: block; width: 100%; height: auto; overflow: visible; }
   .wu-panel .bar { fill: var(--red); transition: fill .14s var(--ease); }
   .wu-panel .bar.now { fill: #E8909F; }
   .wu-panel .bar-hit:hover + .bar, .wu-panel .bar-hit:focus + .bar { fill: var(--red-deep); }
@@ -2657,6 +2666,7 @@
     gap: 12px;
   }
   .walk-card-num {
+    white-space: nowrap;
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 13px;
@@ -3739,6 +3749,8 @@
     background: radial-gradient(ellipse at 70% 30%, var(--red-tint) 0%, transparent 55%), var(--surface-2);
   }
   .vz-thumb { border-radius: 10px; margin-bottom: 6px; }
+  /* thumbnails are icons: the small notes and keys would be unreadable specks */
+  .vz-thumb .vz-note, .vz-thumb .vz-key, .sg-project svg .vz-note, .sg-project svg .vz-key { display: none; }
   .vz-card-title { font-weight: 700; font-size: 14px; padding: 0 3px; }
   .vz-card-blurb { font-size: 12px; line-height: 1.4; color: var(--ink-mute); padding: 0 3px; }
 
@@ -3826,7 +3838,9 @@
   /* desktop: a picture page fits one screen; the panel scrolls inside itself if it ever must */
   @media (min-width: 981px) and (min-height: 560px) {
     body.vz-detail main { padding: 12px 0 0; }
-    body.vz-detail footer, body.vz-detail .vz-pager { display: none; }
+    /* the picture grows to fill the screen's height: the page widens past the usual 1180px when there is room */
+    body.vz-detail main > .container { max-width: min(1640px, max(var(--maxw), calc((100vh - var(--nav-h) - 78px) * 4 / 3 + 449px))); }
+    body.vz-detail footer, body.vz-detail .vz-pager, body.vz-detail .qr-fab { display: none; }
     body.vz-detail .vz-top { margin: 0 0 10px; }
     body.vz-detail .vz-main { --vz-h: calc(100vh - var(--nav-h) - 12px - 52px - 14px); grid-template-columns: minmax(0, calc(var(--vz-h) * 4 / 3)) minmax(300px, 350px); justify-content: center; }
     body.vz-detail .vz-panel { position: static; max-height: var(--vz-h); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 16px 16px 12px; }
@@ -3865,9 +3879,7 @@
   .vz-stage.vz-draggable:focus { outline: none; }
   .vz-stage.vz-draggable:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 3px; }
   .vz-stage.dragging { cursor: grabbing !important; }
-  @keyframes vzSwapIn { from { opacity: .35; } to { opacity: 1; } }
   @keyframes vzReadIn { from { opacity: .3; transform: translateY(3px); } to { opacity: 1; transform: none; } }
-  .vz-stage.vz-swap g[clip-path] { animation: vzSwapIn .34s ease; }
   .vz-readout.vz-swap { animation: vzReadIn .3s ease; }
   @keyframes vzFlash { 0% { background: rgba(200,16,46,.16); } 100% { background: transparent; } }
   .vz-check li.flash { animation: vzFlash 1.1s ease; border-radius: 6px; }
@@ -3909,31 +3921,41 @@
   /* ---------- Methods, step by step: the board and its outline ---------- */
   @keyframes stIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   .st-board { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r-lg); box-shadow: var(--sh-1); aspect-ratio: 4 / 3; overflow: hidden; }
+    border-radius: var(--r-lg); box-shadow: var(--sh-1); aspect-ratio: 4 / 3; overflow: hidden; container-type: inline-size; }
   .st-board.has-pic { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
-  .st-math { min-height: 0; padding: 16px 20px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; }
+  .st-math { font-size: clamp(14.5px, 2cqw, 19px); min-height: 0; padding: 16px 20px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; }
   .st-pic { display: block; width: 100%; height: 100%; border-left: 1px solid var(--border);
     background: radial-gradient(ellipse at 70% 25%, var(--red-tint) 0%, transparent 60%), var(--surface-2); }
-  .st-given { font-size: 14.5px; line-height: 1.5; color: var(--ink); padding-bottom: 10px; border-bottom: 1px dashed var(--border-strong); transition: font-size .3s ease, color .3s ease; }
-  .st-given.small { font-size: 12.5px; color: var(--ink-soft); }
-  .st-kicker, .st-step-n { display: block; font: 800 10.5px var(--font-sans); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 3px; }
+  .st-given { font-size: 1em; line-height: 1.5; color: var(--ink); padding-bottom: 10px; border-bottom: 1px dashed var(--border-strong); transition: font-size .3s ease, color .3s ease; }
+  .st-given.small { font-size: .86em; color: var(--ink-soft); }
+  .st-kicker, .st-step-n { display: block; font: 800 max(10.5px, .72em) var(--font-sans); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 3px; }
   .st-past { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-  .st-past li { display: none; align-items: center; gap: 8px; font-size: 13px; line-height: 1.35; color: var(--ink-soft); }
+  .st-past li { display: none; align-items: center; gap: 8px; font-size: .9em; line-height: 1.35; color: var(--ink-soft); }
   .st-past li.on { display: flex; animation: stIn .35s ease; }
   .st-past li.on.old { display: none; }
   .st-past-n { flex: none; width: 18px; height: 18px; border-radius: 99px; background: #EAF4EE; color: #245F3A; font: 800 10px var(--font-sans); display: grid; place-items: center; }
+  .st-now { position: relative; }
   .st-now > * { display: none; }
   .st-now > .on { display: block; }
-  .st-now > .on.enter { animation: stIn .45s ease; }
-  .st-intro p { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--ink-soft); }
-  .st-step-h { font: 700 16px/1.3 var(--font-sans); color: var(--ink); margin: 0 0 4px; }
+  .st-now > .on.enter { animation: stIn .5s var(--ease-out, ease) .17s both; }
+  .st-now > .leave { display: block; position: absolute; left: 0; right: 0; top: 0; pointer-events: none; animation: stOut .2s ease-in both; }
+  @keyframes stOut { to { opacity: 0; transform: translateY(-6px); } }
+  /* a new line is written in from the left, like chalk, rather than appearing at once */
+  @keyframes stWrite { from { clip-path: inset(-20% 100% -20% 0); opacity: .35; } 60% { opacity: 1; } to { clip-path: inset(-20% -2% -20% 0); opacity: 1; } }
+  .st-time { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; display: flex; align-items: flex-end; cursor: pointer; z-index: 2; }
+  .st-time-track { position: relative; width: 100%; height: 3px; background: rgba(31, 41, 51, .08); transition: height .15s ease; overflow: hidden; }
+  .st-time:hover .st-time-track { height: 6px; }
+  .st-time-fill { position: absolute; inset: 0; background: var(--red); transform-origin: 0 50%; transform: scaleX(0); }
+  .st-tick { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--surface); z-index: 1; }
+  .st-intro p { margin: 6px 0 0; font-size: 1.03em; line-height: 1.55; color: var(--ink-soft); }
+  .st-step-h { font: 700 1.1em/1.3 var(--font-sans); color: var(--ink); margin: 0 0 4px; }
   .st-step-n { color: var(--red); margin-bottom: 2px; }
   .st-line { display: none; }
-  .st-line.on { display: block; animation: stIn .55s ease; }
-  .st-tex { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .st-line.on { display: block; animation: stWrite .8s cubic-bezier(.4, 0, .2, 1) both; }
+  .st-tex { font-size: 1.03em; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
   .st-tex mjx-container[display="true"] { margin: .45em 0 !important; font-size: 108%; }
-  .st-text { font-size: 14.5px; line-height: 1.55; color: var(--ink); margin: 6px 0; }
-  .st-why { margin: 10px 0 0; padding: 9px 12px; border-left: 3px solid var(--gold); background: #FFFAEB; border-radius: 8px; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
+  .st-text { font-size: 1em; line-height: 1.55; color: var(--ink); margin: 6px 0; }
+  .st-why { margin: 10px 0 0; padding: 9px 12px; border-left: 3px solid var(--gold); background: #FFFAEB; border-radius: 8px; font-size: .93em; line-height: 1.5; color: var(--ink-soft); }
   .st-ctl { display: flex; gap: 8px; margin: 2px 0 10px; }
   .st-ctl .st-play { min-width: 86px; justify-content: center; }
   .st-ctl button:disabled { opacity: .4; cursor: default; }
@@ -7978,7 +8000,9 @@ const Viz3D = (() => {
     const s   = (Math.min(w, h) / 3.6) * (cam.zoom || 1);
     const cx  = w / 2, cy = h / 2 + (cam.lift || 0);
     const P   = 7;  // perspective distance (world units)
-    return (p) => {
+    const C   = cam.center || [0, 0, 0];   // the point the scene turns around (and sits on screen center)
+    return (q) => {
+      const p  = [q[0] - C[0], q[1] - C[1], q[2] - C[2]];
       const x  = p[0] * cyw - p[1] * syw;
       const y  = p[0] * syw + p[1] * cyw;
       const z  = p[2];
@@ -8147,11 +8171,12 @@ const Viz3D = (() => {
     }
     return out;
   }
-  function axesPrims(L, T, labels = ["x", "y", "z"]) {
+  function axesPrims(L, T, labels = ["x", "y", "z"]) {    // L: one length, or [Lx, Ly, Lz]
+    const [lx, ly, lz] = Array.isArray(L) ? L : [L, L, L];
     return [
-      { type: "arrow", a: [0,0,0], b: [L,0,0], color: T.inkFaint, lw: 1.2, head: 7, label: labels[0], size: 12, labelColor: T.inkMute },
-      { type: "arrow", a: [0,0,0], b: [0,L,0], color: T.inkFaint, lw: 1.2, head: 7, label: labels[1], size: 12, labelColor: T.inkMute },
-      { type: "arrow", a: [0,0,0], b: [0,0,L], color: T.inkFaint, lw: 1.2, head: 7, label: labels[2], size: 12, labelColor: T.inkMute },
+      { type: "arrow", a: [0,0,0], b: [lx,0,0], color: T.inkFaint, lw: 1.2, head: 7, label: labels[0], size: 12, labelColor: T.inkMute },
+      { type: "arrow", a: [0,0,0], b: [0,ly,0], color: T.inkFaint, lw: 1.2, head: 7, label: labels[1], size: 12, labelColor: T.inkMute },
+      { type: "arrow", a: [0,0,0], b: [0,0,lz], color: T.inkFaint, lw: 1.2, head: 7, label: labels[2], size: 12, labelColor: T.inkMute },
     ];
   }
   // generic mesh: fn(u, v) -> [x, y, z]
@@ -8434,7 +8459,7 @@ const Viz3D = (() => {
     wrap.appendChild(hint);
 
     const ctx = canvas.getContext("2d");
-    const cam = { yaw: scene.yaw ?? -0.5, pitch: scene.pitch ?? 0.42, zoom: scene.zoom || 1, lift: scene.lift || 0 };
+    const cam = { yaw: scene.yaw ?? -0.5, pitch: scene.pitch ?? 0.42, zoom: scene.zoom || 1, lift: scene.lift || 0, center: scene.center };
     const reducedMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     let auto = !reducedMotion;
     let dragging = false, lastX = 0, lastY = 0;
@@ -8487,6 +8512,8 @@ const Viz3D = (() => {
       new IntersectionObserver(es => {
         visible = es.some(e => e.isIntersecting);
         if (visible) { needsFrame = true; if (!running && canvas.isConnected) { running = true; requestAnimationFrame(loop); } }
+        // the hint has done its job once it has been seen for a few seconds; it never sits over a label for good
+        if (visible && !wrap._hintT) wrap._hintT = setTimeout(() => wrap.classList.add("touched"), 4000);
       }).observe(canvas);
     }
 
@@ -10861,12 +10888,12 @@ WALK_SKETCH.cylindrical_triple_integral = s => {
   scene("surfstokes-001", () => {
     const T = theme(), K = .25, r = (u, v) => { const x = 2 * u, y = 2 * (1 - u) * v; return scl([x, y, 6 - 2 * x - y], K); };
     const n = norm([2, 1, 1]), c = r(.35, .45);
-    return { prims: [...axesPrims(1.75, T),
+    return { prims: [...axesPrims([1, 1, 1.8], T),
       { type: "poly", pts: [[0, 0, 0], scl([2, 0, 0], K), scl([0, 2, 0], K)], fill: T.border, opacity: .9, stroke: T.inkFaint, lw: 1, decal: true },
       ...[[0, 0], [2, 0], [0, 2]].map(([x, y]) => ({ type: "line", a: scl([x, y, 0], K), b: scl([x, y, 6 - 2 * x - y], K), color: T.inkFaint, lw: 1, dash: [3, 3] })),
       ...meshQuads(r, 0, 1, 0, 1, 6, 6, { fill: T.redTint, opacity: .85, shade: true, stroke: T.redSoft, lw: .6 }),
       { type: "arrow", a: c, b: add(c, scl(n, .7)), color: T.red, lw: 2.6, label: "\\mathbf r_x\\times\\mathbf r_y" },
-      { type: "label", p: scl([.5, .5, 0], K), text: "D", color: T.inkMute, size: 13, anchor: "center" }, { type: "label", p: r(.6, .2), text: "S", color: T.redDeep, size: 15 }], yaw: -.55, pitch: .32 };
+      { type: "label", p: scl([.5, .5, 0], K), text: "D", color: T.inkMute, size: 13, anchor: "center" }, { type: "label", p: r(.6, .2), text: "S", color: T.redDeep, size: 15 }], yaw: -.55, pitch: .32, center: [.25, .25, .7] };
   });
   entry("surfstokes-001", "surfacePatch", "The tilted triangle S sits over the flat triangle D",
     "Parametrize S by (x, y) over D. The length of r_x × r_y says how much each bit of D is stretched; integrate it over D for the area.", { formula: "\\text{Area}(S)=\\iint_D\\|\\mathbf r_x\\times\\mathbf r_y\\|\\,dA" });
@@ -10874,12 +10901,12 @@ WALK_SKETCH.cylindrical_triple_integral = s => {
   scene("surfstokes-002", () => {
     const T = theme(), K = .34, r = (u, v) => { const x = 2 * u, y = 2 * (1 - u) * v; return scl([x, y, 4 - x - y], K); };
     const n = norm([1, 1, 1]), c = r(.35, .45);
-    return { prims: [...axesPrims(1.6, T),
+    return { prims: [...axesPrims([1.15, 1.15, 1.65], T),
       { type: "poly", pts: [[0, 0, 0], scl([2, 0, 0], K), scl([0, 2, 0], K)], fill: T.border, opacity: .9, stroke: T.inkFaint, lw: 1, decal: true },
       ...[[0, 0], [2, 0], [0, 2]].map(([x, y]) => ({ type: "line", a: scl([x, y, 0], K), b: scl([x, y, 4 - x - y], K), color: T.inkFaint, lw: 1, dash: [3, 3] })),
       ...meshQuads(r, 0, 1, 0, 1, 6, 6, { fill: T.redTint, opacity: .85, shade: true, stroke: T.redSoft, lw: .6 }),
       { type: "arrow", a: c, b: add(c, scl(n, .6)), color: T.red, lw: 2.6, label: "\\mathbf r_x\\times\\mathbf r_y" },
-      { type: "label", p: scl([.55, .55, 0], K), text: "D", color: T.inkMute, size: 13, anchor: "center" }, { type: "label", p: r(.55, .25), text: "S", color: T.redDeep, size: 15 }], yaw: -.55, pitch: .32 };
+      { type: "label", p: scl([.55, .55, 0], K), text: "D", color: T.inkMute, size: 13, anchor: "center" }, { type: "label", p: r(.55, .25), text: "S", color: T.redDeep, size: 15 }], yaw: -.55, pitch: .32, center: [.3, .3, .6] };
   });
   entry("surfstokes-002", "surfacePatch", "On S, write everything in terms of x and y",
     "Substitute z = 4 − x − y into the integrand, find ‖r_x × r_y‖, then integrate over the triangle D.", { formula: "\\iint_S g\\,dS=\\iint_D g(x,y,4-x-y)\\,\\|\\mathbf r_x\\times\\mathbf r_y\\|\\,dA" });
@@ -11065,7 +11092,7 @@ WALK_SKETCH.cylindrical_triple_integral = s => {
   as3D("diagprojcross-003", withLines({ K: .5, noAxes: true, yaw: -.35, pitch: .3, arrows: [{ to: [1, 0, 0], label: "e_1" }, { to: [0, 0, 1], label: "e_3" },
       { to: [0, 1, 0], c: "inkMute", lw: 2, label: "e_2", lc: "inkMute" }, { to: [.4, 1.6, 0], c: "inkMute", lw: 2, label: "Ae_2\\ (\\text{scaled})", lc: "inkMute", size: 13 }] },
     [eigLine([1, 0, 0], "red", "E_{\\lambda_1}", 1.6), eigLine([0, 0, 1], "gold", "E_{\\lambda_2}", 1.6)]));
-  as3D("eig-004", withLines({ K: .55, noAxes: true, yaw: .8, pitch: .2, planes: [{ u: [1, 0, 0], v: [0, 1, 1], ru: [-1.2, 1.3], rv: [-1.1, 1.3] }],
+  as3D("eig-004", withLines({ K: .7, noAxes: true, yaw: .2, pitch: .4, planes: [{ u: [1, 0, 0], v: [0, 1, 1], ru: [-1.2, 1.3], rv: [-1.1, 1.3] }],
       arrows: [{ to: [1, 0, 0], label: "v_1" }, { to: [0, 1, 1], label: "v_2" }, { to: [0, 2, 1], c: "gold", label: "v_3" }],
       labels: [{ p: add(scl([1, 0, 0], -1.3), scl([0, 1, 1], -1.05)), text: "E_{\\lambda_1}", c: "redDeep" }] },
     [eigLine([0, 2, 1], "gold", "E_{\\lambda_2}", 2.35)]));
@@ -12135,7 +12162,7 @@ function vzTip(ox, oy, tx, ty, html, col, gap) {         // label just past an a
 const vzB = (n, s) => `<tspan font-weight="700">${n}</tspan>${s ? `<tspan baseline-shift="sub" font-size="12.5">${s}</tspan>` : ""}`;
 const vzI = (n, s) => `${n}${s ? `<tspan baseline-shift="sub" font-size="12.5">${s}</tspan>` : ""}`;
 function vzNote(x, y, text, anchor, col) {
-  return `<text x="${q2(x)}" y="${q2(y)}" font-family="'Manrope', sans-serif" font-size="13.5" fill="${col || VZ.grey}" text-anchor="${anchor || "start"}" stroke="${VZ.paper}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke">${text}</text>`;
+  return `<text class="vz-note" x="${q2(x)}" y="${q2(y)}" font-family="'Manrope', sans-serif" font-size="13.5" fill="${col || VZ.grey}" text-anchor="${anchor || "start"}" stroke="${VZ.paper}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke">${text}</text>`;
 }
 function vzPlane(cx, cy, u, uy = u) {                   // uy: a different vertical scale (regions much taller than wide)
   const X = x => cx + x * u, Y = y => cy - y * uy;
@@ -12199,6 +12226,8 @@ function renderVisualize(id) {
   const root = $("#vizRoot");
   if (!root) return;
   vzStop();
+  // moving from picture to picture stays inside one view, so the new page fades in on its own (no hard cut)
+  root.classList.remove("vz-in"); void root.offsetWidth; root.classList.add("vz-in");
   const def = id && VZ_BY_ID[id];
   if (!def) {                                               // the index: every picture as a card
     root.innerHTML = `
@@ -12274,7 +12303,7 @@ function renderVisualize(id) {
     vzChanged();
   });
   panel.addEventListener("click", e => {
-    if (def.onClick && def.onClick(e.target, VzView.st)) { vzSetPlay(null); vzSwap(); vzChanged(); return; }
+    if (def.onClick && def.onClick(e.target, VzView.st)) { vzSetPlay(null); vzSwap(!(VzView.tweens && performance.now() - VzView.tweens.t0 < 40)); vzChanged(); return; }
     const chip = e.target.closest("[data-preset]");
     if (chip) { vzPreset(def.presets[Number(chip.dataset.preset)][1]); return; }
     const play = e.target.closest("[data-play]");
@@ -12376,9 +12405,20 @@ function vzTweenTo(to, dur = 480) {
   Object.keys(to).forEach(k => { from[k] = st[k]; });
   VzView.tweens = { from, to, t0: performance.now(), dur };
 }
-// a soft fade when a picture switches what it shows, so nothing just jumps
-function vzSwap() {
-  ["vzStage", "vzReadout"].forEach(id => { const el = document.getElementById(id); if (!el) return; el.classList.remove("vz-swap"); void el.getBoundingClientRect(); el.classList.add("vz-swap"); });
+// when a picture switches what it shows, the old drawing dissolves into the new one, so nothing just jumps.
+// (When the change is a glide of its own, the motion already carries the eye: ghost = false.)
+function vzSwap(ghost = true) {
+  const stage = document.getElementById("vzStage"), g = stage && stage.querySelector(":scope > g[clip-path]");
+  if (stage && g && ghost && g.textContent !== undefined && g.innerHTML.length > 40) {
+    const old = stage.querySelector("#vzGhost"); if (old) old.remove();
+    const gh = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    gh.id = "vzGhost"; gh.setAttribute("clip-path", "url(#vz-clip)"); gh.setAttribute("pointer-events", "none"); gh.setAttribute("aria-hidden", "true");
+    gh.innerHTML = g.innerHTML; gh.querySelectorAll("[id]").forEach(e => e.removeAttribute("id"));
+    stage.appendChild(gh);
+    const a = gh.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 460, easing: "cubic-bezier(.4, 0, .2, 1)" });
+    a.onfinish = () => gh.remove();
+  }
+  const ro = document.getElementById("vzReadout"); if (ro) { ro.classList.remove("vz-swap"); void ro.getBoundingClientRect(); ro.classList.add("vz-swap"); }
 }
 
 function vzControlsHtml(def) {
@@ -12403,7 +12443,7 @@ const vzCtlText = (c, v) => c.fmt ? c.fmt(v) : vzNum(v, c.digits == null ? 2 : c
 // angle keeps turning; any other slider sweeps back and forth, slowing into each end and resting there.
 // A control may list rests(s): values where the motion eases to a stop for a moment (an eigenvector, a right
 // angle), so there is time to read what is special there. Only one slider plays at a time.
-const vzSpeed = c => c.play || (c.max - c.min) / 5;
+const vzSpeed = (c, v) => typeof c.play === "function" ? c.play(v) : c.play || (c.max - c.min) / 5;   // units per second (may depend on the value)
 const vzWraps = c => typeof c.wrap === "function" ? !!c.wrap(VzView.st) : c.wrap != null ? !!c.wrap : !c.progress && c.unit === "°" && c.max - c.min === 360;
 function vzFade(a) {                                      // the drawing and the readout, not the paper behind them
   const g = document.querySelector("#vzStage > g[clip-path]"), ro = document.getElementById("vzReadout");
@@ -12421,7 +12461,7 @@ function vzSetPlay(k) {
 }
 function vzPlayStep(now) {
   const ph = VzView.phase, c = ph.c, st = VzView.st, span = c.max - c.min, wraps = vzWraps(c);
-  const put = v => { ph.v = v; st[c.k] = c.snap ? Math.round(v / c.step) * c.step : v; };
+  const put = v => { ph.v = v; st[c.k] = v; };          // continuous: pictures glide between values, never step
   const cur = ph.v != null ? ph.v : st[c.k];
   if (ph.name === "hold") { if (now - ph.t0 > ph.dur) { ph.next.t0 = now; VzView.phase = ph.next; } return; }
   if (ph.name === "out") {                                // fade out, jump to the start
@@ -12431,7 +12471,7 @@ function vzPlayStep(now) {
   }
   if (ph.name === "in") {                                 // and fade back in
     const u = vzClamp((now - ph.t0) / 340, 0, 1); vzFade(vzEase(u));
-    if (u >= 1) VzView.phase = { name: "hold", t0: now, dur: 420, c, next: { name: "run", c, dir: 1, v: c.min, s0: c.min } };
+    if (u >= 1) VzView.phase = { name: "hold", t0: now, dur: 260, c, next: { name: "run", c, dir: 1, v: c.min, s0: c.min } };
     return;
   }
   const dt = Math.min(.05, (now - (VzView.lastNow || now)) / 1000), dir = ph.dir || 1, edge = span * .1;
@@ -12442,14 +12482,14 @@ function vzPlayStep(now) {
   let moved = (cur - (ph.s0 != null ? ph.s0 : cur)) * dir; if (wraps) moved = ((moved % span) + span) % span;
   // slow into a rest or an end, and ease away from where it last stopped
   const ease = (.18 + .82 * vzClamp(Math.min(dRest, c.progress ? Infinity : dEnd) / edge, 0, 1)) * (.3 + .7 * vzClamp(moved / (edge * .7), 0, 1));
-  const step = vzSpeed(c) * ease * dt;
+  const step = vzSpeed(c, cur) * ease * dt;
   if (step >= dRest && dRest <= dEnd) {
     put(nextRest);
-    VzView.phase = { name: "hold", t0: now, dur: c.restMs || 1400, c, next: { name: "run", c, dir, v: nextRest, s0: nextRest } };
+    VzView.phase = { name: "hold", t0: now, dur: c.restMs || 1000, c, next: { name: "run", c, dir, v: nextRest, s0: nextRest } };
   } else if (!wraps && step >= dEnd) {
     const end = dir > 0 ? c.max : c.min; put(end);
-    VzView.phase = c.progress ? { name: "hold", t0: now, dur: 1200, c, next: { name: "out", c } }
-      : { name: "hold", t0: now, dur: 700, c, next: { name: "run", c, dir: -dir, v: end, s0: end } };
+    VzView.phase = c.progress ? { name: "hold", t0: now, dur: 1000, c, next: { name: "out", c } }
+      : { name: "hold", t0: now, dur: 420, c, next: { name: "run", c, dir: -dir, v: end, s0: end } };
   } else {
     let v = cur + dir * step;
     if (wraps) v = c.min + (((v - c.min) % span) + span) % span;
@@ -12580,6 +12620,7 @@ vzAdd({
     if (!thumb && tt >= .999) o += vzGrip(P.X(e1[0]), P.Y(e1[1]), VZ.red, VzView.hot === "e1") + vzGrip(P.X(e2[0]), P.Y(e2[1]), VZ.ink, VzView.hot === "e2");
     o += P.arrow([0, 0], e1, "R", 3) + P.arrow([0, 0], e2, "I", 3) + P.dot([0, 0], 3.6);
     o += P.tip([0, 0], e1, "A" + vzB("e", "1"), VZ.red, 18) + P.tip([0, 0], e2, "A" + vzB("e", "2"), VZ.ink, 18);
+    o += vzKey([["fill", flip ? VZ.gold : VZ.red, flip ? "the unit square's image, flipped (det A < 0)" : "the unit square's image"], ["fill", VZ.ink, "a flag, to show which way round"]]);
     return o;
   },
   readout(s) {
@@ -12641,7 +12682,7 @@ vzAdd({
           vzLabel(best[0], best[1] + 5, txt, VZ.deep, 16);
       }
     }
-    o += `<g><line x1="22" y1="420" x2="44" y2="420" stroke="${VZ.red}" stroke-width="3" stroke-linecap="round"/>${vzNote(50, 424, "line 1", "start", VZ.red)}` +
+    o += `<g class="vz-key"><line x1="22" y1="420" x2="44" y2="420" stroke="${VZ.red}" stroke-width="3" stroke-linecap="round"/>${vzNote(50, 424, "line 1", "start", VZ.red)}` +
       `<line x1="104" y1="420" x2="126" y2="420" stroke="${VZ.ink}" stroke-width="3" stroke-linecap="round"/>${vzNote(132, 424, "line 2", "start", VZ.ink)}</g>`;
     return o;
   },
@@ -12857,7 +12898,8 @@ vzAdd({
     });
     const Kl = Math.round(s.k);
     o += P.dot([0, 0], 3.6) + P.tip([0, 0], x, Kl ? `A<tspan baseline-shift="super" font-size="11">${Kl}</tspan>${vzB("v")}` : vzB("v"), VZ.red, 20);
-    o += vzNote(22, 432, "arrows show directions only (each Aᵏv scaled to length 1)");
+    o += vzNote(22, 34, "arrows show directions only (each Aᵏv scaled to length 1)");
+    o += vzKey([["dash", VZ.red, "line of the biggest |λ|"], ["dash", VZ.grey, "the other eigenvector line"], ["line", VZ.grey, "earlier Aᵏv"]]);
     return o;
   },
   readout(s) {
@@ -13081,16 +13123,31 @@ const VZ_GF = [
   { chip: "sin x + cos y", f: (x, y) => Math.sin(x) + Math.cos(y), g: (x, y) => [Math.cos(x), -Math.sin(y)], fT: "sin x + cos y", gT: "(cos x, −sin y)", note: "hills and hollows: arrows climb toward each peak" },
   { chip: "a hill", f: (x, y) => 2 * Math.exp(-(x * x + y * y) / 2), g: (x, y) => { const e = 2 * Math.exp(-(x * x + y * y) / 2); return [-x * e, -y * e]; }, fT: "2e^(−(x² + y²)/2)", gT: "(−x f, −y f)", note: "one hill: arrows point to the top, longest on the steep sides" },
 ];
-const VZ_GF_GRID = (() => { const p = []; for (let j = 0; j < 6; j++) for (let i = 0; i < 8; i++) p.push([-2.625 + .75 * i, 1.875 - .75 * j]); return p; })();
+// the field's sample points (11 × 8), each with the moment it grows in during Play: a wave out from the middle
+const VZ_GF_GRID = (() => { const p = []; for (let j = 0; j < 8; j++) for (let i = 0; i < 11; i++) { const x = -3 + .6 * i, y = 2.1 - .6 * j; p.push([x, y]); } return p; })();
+const VZ_GF_WAVE = VZ_GF_GRID.map(([x, y]) => Math.min(1, Math.hypot(x / 3, y / 2.1) / Math.SQRT2 * 1.02));
+// f's height as soft shading behind the picture (darker = higher), drawn once per function on a small canvas
+function vzHeat(f, P, key) {
+  vzHeat.c = vzHeat.c || {};
+  if (vzHeat.c[key]) return vzHeat.c[key];
+  const W = 180, H = 135, x0 = (0 - P.cx) / P.u, x1 = (600 - P.cx) / P.u, y1 = P.cy / P.u, y0 = (P.cy - 450) / P.u;
+  const vals = new Float32Array(W * H); let lo = Infinity, hi = -Infinity;
+  for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) { const v = f(x0 + (x1 - x0) * (i + .5) / W, y1 - (y1 - y0) * (j + .5) / H); vals[j * W + i] = v; lo = Math.min(lo, v); hi = Math.max(hi, v); }
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const cx = cv.getContext("2d"), im = cx.createImageData(W, H);
+  for (let k = 0; k < W * H; k++) { const h = (vals[k] - lo) / ((hi - lo) || 1); im.data[4 * k] = 200; im.data[4 * k + 1] = 16; im.data[4 * k + 2] = 46; im.data[4 * k + 3] = Math.round(255 * (.015 + .22 * h * h * (3 - 2 * h))); }
+  cx.putImageData(im, 0, 0);
+  return (vzHeat.c[key] = cv.toDataURL());
+}
 vzAdd({
   id: "gradfield", title: "Building a gradient field", card: "Gradient fields",
   tagline: "Put ∇f at points, one click at a time, and watch the field appear.",
-  blurb: "A gradient field puts the vector \\(\\nabla f\\) at every point. Click anywhere to place it there, or press Play to build the whole field arrow by arrow.",
-  tryIt: "Click a few points on one level curve: every arrow there is square to that curve. Then press Play.",
+  blurb: "A gradient field puts the vector \\(\\nabla f\\) at every point. The shading is the height of \\(f\\): darker is higher. Click anywhere to place \\(\\nabla f\\) there, or press Play to grow the whole field.",
+  tryIt: "Click a few points on one level curve: every arrow there is square to that curve and points toward the darker side. Then press Play.",
   state: { fn: 0, built: 0, levels: true },
-  thumb: { built: 48 },
+  thumb: { built: 1 },
   controls: [
-    { k: "built", label: "build the field", min: 0, max: 48, step: 1, fmt: v => Math.round(v) + " of 48 arrows", play: 9, progress: true, aria: "the build" },
+    { k: "built", label: "grow the field", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .24, progress: true, aria: "the field" },
     { k: "levels", label: "show level curves", type: "toggle" },
   ],
   P: vzPlane(300, 222, 82),
@@ -13099,7 +13156,7 @@ vzAdd({
   scale(s) {                                               // one shrink factor for every arrow of this f
     this._sc = this._sc || {};
     const i = Math.round(s.fn);
-    if (this._sc[i] == null) { const F = VZ_GF[i]; let m = 0; VZ_GF_GRID.forEach(p => { m = Math.max(m, Math.hypot(...F.g(...p))); }); this._sc[i] = .62 / (m || 1); }
+    if (this._sc[i] == null) { const F = VZ_GF[i]; let m = 0; VZ_GF_GRID.forEach(p => { m = Math.max(m, Math.hypot(...F.g(...p))); }); this._sc[i] = .5 / (m || 1); this._mx = this._mx || {}; this._mx[i] = m || 1; }
     return this._sc[i];
   },
   panelTop() { return `<div class="vz-chips" id="vzGf">${VZ_GF.map((F, i) => `<button type="button" class="vz-chip" data-gf="${i}">f = ${escapeHtml(F.chip)}</button>`).join("")}</div>`; },
@@ -13120,7 +13177,7 @@ vzAdd({
   staticKey: s => Math.round(s.fn) + ":" + !!s.levels,
   static(s) {
     const P = this.P, F = this.F(s);
-    let o = P.axes(.2);
+    let o = `<image href="${vzHeat(F.f, P, "gf" + Math.round(s.fn))}" x="0" y="0" width="600" height="450" preserveAspectRatio="none"/>` + P.axes(.2);
     if (!s.levels) return o;
     const N = 72, G = this.grid(s);
     let lo = Infinity, hi = -Infinity; G.forEach(r => r.forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v); }));
@@ -13142,8 +13199,13 @@ vzAdd({
   draw(s, t, thumb) {
     const P = this.P, F = this.F(s), sc = this.scale(s), now = performance.now();
     let o = "";
-    const n = s.built;                                      // the grid, filling in row by row; the newest arrow grows in
-    VZ_GF_GRID.forEach((p, i) => { if (i >= Math.ceil(n - 1e-9)) return; const grow = vzEase(vzClamp(n - i, 0, 1)); o += `<g opacity="${q2(.45 + .5 * grow)}">${this.arrow(P, p, F.g(...p), sc, "I", 1.8, grow)}</g>`; });
+    // the field grows in as one wave from the middle outward: each arrow eases from nothing to full length
+    const n = s.built, mx = (this._mx || {})[Math.round(s.fn)] || 1;
+    if (n > 0) VZ_GF_GRID.forEach((p, i) => {
+      const grow = vzEase(vzClamp((n * 1.3 - VZ_GF_WAVE[i]) / .3, 0, 1)); if (grow <= 0) return;
+      const g = F.g(...p), w = Math.hypot(...g) / mx;
+      o += `<g opacity="${q2(grow * (.4 + .55 * Math.sqrt(w)))}">${this.arrow(P, p, g, sc, "I", 1.7, grow)}</g>`;
+    });
     const pins = thumb ? [] : this._pins || [];
     pins.forEach((q, i) => {
       const last = i === pins.length - 1, g = F.g(...q.p), grow = q.t ? vzEase(vzClamp((now - q.t) / 380, 0, 1)) : 1;
@@ -13160,7 +13222,7 @@ vzAdd({
       if (last && Math.hypot(...g) * sc * P.u > 12) o += P.tip(q.p, [q.p[0] + g[0] * sc, q.p[1] + g[1] * sc], "∇f", VZ.red, 18);
     });
     if (!pins.length && !n && !thumb) o += vzPill(300, 30, "click anywhere to place ∇f", VZ.grey);
-    o += vzKey([["line", VZ.gold, "level curves of f"], ["line", VZ.red, "∇f at a point you chose"], ["line", VZ.ink, "the field"]]);
+    o += vzKey([["fill", VZ.red, "darker = higher f"], ["line", VZ.gold, "level curves"], ["line", VZ.red, "∇f where you click"], ["line", VZ.ink, "the field"]]);
     return o;
   },
   readout(s) {
@@ -13198,7 +13260,7 @@ vzAdd({
     }
     return o + `<circle cx="300" cy="225" r="${.9 * 58}" fill="${VZ.red}" fill-opacity=".05" stroke="${VZ.deep}" stroke-width="1.6" stroke-dasharray="5 5"/>`;
   },
-  draw() { return ""; },
+  draw() { return vzKey([["line", VZ.grey, "F at each point"], ["dot", VZ.red, "fluid that starts inside the dashed circle"]]); },
   // a few dozen particles start inside the dashed circle and ride the flow, each with a short fading trail
   frame(g, s, t) {
     const P = vzPlane(300, 225, 58), N = 36, R0 = .9, TR = 9, LIFE = 3.4;
@@ -13291,7 +13353,8 @@ vzAdd({
     o += P.dot([s.R, 0], 4, VZ.grey) + `<circle cx="${q2(P.X(p[0]))}" cy="${q2(P.Y(p[1]))}" r="10" fill="${VZ.red}" opacity=".15"/>` + P.dot(p, 5, VZ.red);
     const nx = Math.cos(A), ny = Math.sin(A), tT = [p[0] + T[0] * .9, p[1] + T[1] * .9], tF = [p[0] + f[0] * fs * .6, p[1] + f[1] * fs * .6];
     o += vzLabel(P.X(tT[0] - nx * .3), P.Y(tT[1] - ny * .3) + 5, vzB("T"), VZ.red, 16) + vzLabel(P.X(tF[0] + nx * .32), P.Y(tF[1] + ny * .32) + 5, vzB("F"), VZ.ink, 16);
-    o += vzNote(22, 432, this.fields[Math.round(s.fld)].name, "start");
+    o += vzNote(22, 34, this.fields[Math.round(s.fld)].name, "start");
+    o += vzKey([["line", VZ.red, "F helps: F · T > 0"], ["line", VZ.grey, "F fights: F · T < 0"]]);
     return o;
   },
   readout(s) {
@@ -13315,7 +13378,7 @@ vzAdd({
     { name: "a ridge", f: (x, y) => .3 + .55 * Math.sin(Math.PI * x) * (0.6 + .4 * y) },
   ],
   controls: [
-    { k: "n", label: "n (boxes per side)", min: 1, max: 16, step: 1, digits: 0, play: 2.5, progress: true, aria: "n" },
+    { k: "n", label: "n (boxes per side)", min: 1, max: 16, step: 1, digits: 0, fmt: v => String(Math.round(v)), play: v => 1 + .35 * v, progress: true, aria: "n" },
     { k: "yaw", label: "turn the view", min: -80, max: 10, step: 1, unit: "°", digits: 0, noPlay: true },
   ],
   presets: [["Hill", { fn: 0 }], ["Tilted plane", { fn: 1 }], ["Ridge", { fn: 2 }]],
@@ -13328,14 +13391,17 @@ vzAdd({
   },
   sum(s) { const f = this.fns[Math.round(s.fn)].f, n = Math.round(s.n); let S = 0; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) S += f((i + .5) / n, (j + .5) / n); return S / (n * n); },
   draw(s) {
-    const fi = Math.round(s.fn), f = this.fns[fi].f, n = Math.round(s.n), H = .95;
+    // between whole n, a new row and column of boxes slide in from the far edges while the rest narrow: no jumps
+    const fi = Math.round(s.fn), f = this.fns[fi].f, nn = vzClamp(s.n, 1, 16), m = Math.floor(nn + 1e-6), fr = nn - m > 1e-4 ? nn - m : 0, e = vzEase(fr), n = fr ? m + 1 : m, H = .95;
+    const span = i => { const nw = [i / n, (i + 1) / n]; if (n === m) return nw; const ol = i < m ? [i / m, (i + 1) / m] : [1, 1]; return [ol[0] + (nw[0] - ol[0]) * e, ol[1] + (nw[1] - ol[1]) * e]; };
     const cam = vzCam(300, 290, 250, vzRad(s.yaw), .55), V = cam.view, P3 = (x, y, z) => cam(x - .5, y - .5, z);
     const pt = q => q2(q[0]) + " " + q2(q[1]), poly = pts => "M" + pts.map(pt).join("L") + "Z";
     const base = [P3(0, 0, 0), P3(1, 0, 0), P3(1, 1, 0), P3(0, 1, 0)];
     let o = `<path d="${poly(base)}" fill="${VZ.ink}" fill-opacity=".04" stroke="${VZ.grey}" stroke-opacity=".6" stroke-width="1.2"/>`;
     const fx = V[0] > 0, fy = V[1] > 0, bars = [];
     for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
-      const x0 = i / n, y0 = j / n, x1 = (i + 1) / n, y1 = (j + 1) / n, h = f((x0 + x1) / 2, (y0 + y1) / 2) * H;
+      const [x0, x1] = span(i), [y0, y1] = span(j); if (x1 - x0 < 1e-4 || y1 - y0 < 1e-4) continue;
+      const h = f((x0 + x1) / 2, (y0 + y1) / 2) * H;
       bars.push({ x0, y0, x1, y1, h, d: P3((x0 + x1) / 2, (y0 + y1) / 2, 0)[2] });
     }
     bars.sort((A, B) => B.d - A.d);
@@ -13374,7 +13440,7 @@ vzAdd({
   thumb: { m: 1, cell: 4 },
   controls: [
     { k: "m", label: "curl the rectangle", min: 0, max: 1, step: .01, fmt: v => vzNum(v * 100, 0) + "%", play: .35, aria: "the curl" },
-    { k: "cell", label: "which ring", min: 0, max: 5, step: 1, digits: 0, fmt: v => "ring " + (Math.round(v) + 1), play: 1.4, progress: true, aria: "which ring" },
+    { k: "cell", label: "which ring", min: 0, max: 5, step: 1, digits: 0, fmt: v => "ring " + (Math.round(v) + 1), play: 1.3, progress: true, aria: "which ring", rests: () => [1, 2, 3, 4], restMs: 650 },
   ],
   presets: [["Rectangle", { m: 0 }], ["Half way", { m: .5 }], ["Polar region", { m: 1 }]],
   O: [236, 340], S: 112, K: 78, r0: .6, r1: 1.8, th1: 2 * Math.PI / 3,
@@ -13388,7 +13454,7 @@ vzAdd({
     for (let i = 0; i <= N; i++) { let d = ""; for (let k = 0; k <= 36; k++) d += (k ? "L" : "M") + pt(this.pos(rv(i), this.th1 * k / 36, m)); g += d; }
     for (let j = 0; j <= N; j++) g += "M" + pt(this.pos(this.r0, tv(j), m)) + "L" + pt(this.pos(this.r1, tv(j), m));
     const outline = (ra, rb, ta, tb, n) => { const pts = []; for (let k = 0; k <= n; k++) pts.push(this.pos(ra, ta + (tb - ta) * k / n, m)); for (let k = 0; k <= n; k++) pts.push(this.pos(rb, tb - (tb - ta) * k / n, m)); return "M" + pts.map(pt).join("L") + "Z"; };
-    const [ox, oy] = this.O, c = Math.round(s.cell), dr = (this.r1 - this.r0) / N, r = this.r0 + (c + .5) * dr;
+    const [ox, oy] = this.O, c = vzClamp(s.cell, 0, 5), dr = (this.r1 - this.r0) / N, r = this.r0 + (c + .5) * dr;   // the cell slides out ring by ring
     let o = `<path d="M${ox - 120} ${oy}H588M${ox} ${oy + 40}V20" stroke="${VZ.ink}" stroke-width="1.2" opacity=".32" fill="none"/>`;
     o += `<path d="${outline(this.r0, this.r1, 0, this.th1, 48)}" fill="${VZ.red}" fill-opacity=".06" stroke="${VZ.red}" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>`;
     o += `<path d="${g}" fill="none" stroke="${VZ.grey}" stroke-width="1" opacity=".42"/>`;
@@ -13447,7 +13513,7 @@ function vzKey(items, x = 16, y = 432) {
     o += vzNote(cx + 22, y, label, "start", VZ.ink);
     cx += 22 + label.length * 7.3 + 18;
   });
-  return o;
+  return `<g class="vz-key">${o}</g>`;
 }
 // a pill label ("in W", "not in W") beside a point
 function vzPill(x, y, text, col) {
@@ -14398,7 +14464,7 @@ vzAdd({
   tryIt: "Play n: the polygon hugs the curve and the gap to the exact length shrinks.",
   state: { n: 3, fn: 0 },
   thumb: { n: 6 },
-  controls: [{ k: "n", label: "n (straight pieces)", min: 1, max: 40, step: 1, digits: 0, play: 5, progress: true, aria: "n" }],
+  controls: [{ k: "n", label: "n (straight pieces)", min: 1, max: 40, step: 1, digits: 0, fmt: v => String(Math.round(v)), play: v => 1 + .4 * v, progress: true, aria: "n" }],
   presets: [["Parabola", { fn: 0 }], ["Circle arc", { fn: 1 }], ["Spiral", { fn: 2 }]],
   curves: [
     { name: "r(t) = (t, t²/2), −2 ≤ t ≤ 2", r: t => [t, t * t / 2], a: -2, b: 2, exact: "2√5 + ln(2 + √5)" },
@@ -14419,14 +14485,18 @@ vzAdd({
     return (c._P = vzPlane(cx, cy, u));
   },
   draw(s) {
-    const c = this.curves[Math.round(s.fn)], P = this.fit(c), n = Math.round(s.n), pts = [];
+    // between whole n the corners slide along the curve and a new one comes out of the end: one smooth motion
+    const c = this.curves[Math.round(s.fn)], P = this.fit(c), nn = vzClamp(s.n, 1, 40), m = Math.floor(nn + 1e-6), fr = nn - m > 1e-4 ? nn - m : 0, e = vzEase(fr), n = fr ? m + 1 : m, pts = [];
     let o = P.axes(.22);
     for (let i = 0; i <= 160; i++) pts.push(c.r(c.a + (c.b - c.a) * i / 160));
     o += P.path(pts, `stroke="${VZ.ink}" stroke-width="8" stroke-opacity=".1" stroke-linecap="round"`) + P.path(pts, `stroke="${VZ.ink}" stroke-width="1.6"`);
-    const v = []; for (let i = 0; i <= n; i++) v.push(c.r(c.a + (c.b - c.a) * i / n));
+    const tt = i => { const nw = i / n; if (n === m) return nw; const ol = i <= m ? i / m : 1; return ol + (nw - ol) * e; };
+    const v = []; for (let i = 0; i <= n; i++) v.push(c.r(c.a + (c.b - c.a) * tt(i)));
     o += P.path(v, `stroke="${VZ.red}" stroke-width="2.8" stroke-linejoin="round"`);
-    v.forEach((p, i) => { o += `<circle cx="${q2(P.X(p[0]))}" cy="${q2(P.Y(p[1]))}" r="${i === 0 || i === n ? 4.6 : 3.6}" fill="${VZ.red}" stroke="#fff" stroke-width="1.3"/>`; });
-    o += vzKey([["line", VZ.ink, "the curve"], ["line", VZ.red, n + " straight piece" + (n === 1 ? "" : "s")]]);
+    const rr = n > 24 ? .75 : 1;
+    v.forEach((p, i) => { const end = i === 0 || i === n, op = n > m && i === m ? e : 1; o += `<circle cx="${q2(P.X(p[0]))}" cy="${q2(P.Y(p[1]))}" r="${q2((end ? 4.6 : 3.6) * (end ? 1 : rr))}" fill="${VZ.red}" stroke="#fff" stroke-width="1.3" opacity="${q2(op)}"/>`; });
+    const nk = Math.round(nn);
+    o += vzKey([["line", VZ.ink, "the curve"], ["line", VZ.red, nk + " straight piece" + (nk === 1 ? "" : "s")]]);
     return o;
   },
   readout(s) {
@@ -14472,22 +14542,32 @@ vzAdd({
     const top = [], bot = [];
     for (let i = 0; i <= 80; i++) { const x = R.xs[0] + (R.xs[1] - R.xs[0]) * i / 80; top.push([x, R.yhi(x)]); bot.push([x, R.ylo(x)]); }
     o += P.poly(top.concat(bot.reverse()), `fill="${VZ.red}" fill-opacity=".1" stroke="none"`);
+    // the strip's end labels name the same curves; a curve's own name fades out when one sits close by, so nothing reads twice
+    const box = (x, y, t, sz, a) => { const w = t.length * sz * .55, x0 = a === "end" ? x - w : a === "middle" ? x - w / 2 : x; return [x0, y - sz, x0 + w, y + 4]; };
+    const ends = [];
+    const sv = vert ? R.xs[0] + (R.xs[1] - R.xs[0]) * s.s : R.ys[0] + (R.ys[1] - R.ys[0]) * s.s;
+    if (vert) ends.push(box(P.X(sv) + 12, P.Y(R.ylo(sv)) + 20, "bottom: y = " + R.dydx[2], 15, "start"), box(P.X(sv) - 12, P.Y(R.yhi(sv)) - 12, "top: y = " + R.dydx[3], 15, "end"));
+    else ends.push(box(P.X(R.xlo(sv)) - 10, P.Y(sv) - 12, "left: x = " + R.dxdy[2], 15, "end"), box(P.X(R.xhi(sv)) + 10, P.Y(sv) + 22, "right: x = " + R.dxdy[3], 15, "start"));
     R.curves.forEach(([r, [t0, t1], name, lt, off]) => {
       const pts = []; for (let i = 0; i <= 60; i++) pts.push(r(t0 + (t1 - t0) * i / 60));
       o += P.path(pts, `stroke="${VZ.red}" stroke-width="2"`);
-      const e = r(lt); o += vzLabel(P.X(e[0]) + off[0], P.Y(e[1]) + off[1], name, VZ.red, 16, off[2] || "start");
+      const e = r(lt), lx = P.X(e[0]) + off[0], ly = P.Y(e[1]) + off[1], b = box(lx, ly, name, 16, off[2] || "start");
+      const gap = Math.min(...ends.map(q => Math.max(q[0] - b[2], b[0] - q[2], q[1] - b[3], b[1] - q[3])));
+      const said = vert ? ["y = " + R.dydx[2], "y = " + R.dydx[3]] : ["x = " + R.dxdy[2], "x = " + R.dxdy[3]];
+      const op = said.includes(name) ? 0 : vzClamp((gap - 12) / 36, 0, 1);
+      if (op > .02) o += `<g opacity="${q2(op)}">${vzLabel(lx, ly, name, VZ.red, 16, off[2] || "start")}</g>`;
     });
     // the strip and its two ends
     const w = vert ? (R.xs[1] - R.xs[0]) * .045 : (R.ys[1] - R.ys[0]) * .045;
     if (vert) {
-      const x = R.xs[0] + (R.xs[1] - R.xs[0]) * s.s, lo = R.ylo(x), hi = R.yhi(x);
+      const x = sv, lo = R.ylo(x), hi = R.yhi(x);
       o += P.poly([[x - w / 2, lo], [x + w / 2, lo], [x + w / 2, hi], [x - w / 2, hi]], `fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}" stroke-width="1.2"`);
       o += P.dot([x, lo], 4.6, VZ.ink) + P.dot([x, hi], 4.6, VZ.ink);
       o += vzLabel(P.X(x) + 12, P.Y(lo) + 20, "bottom: y = " + R.dydx[2], VZ.ink, 15, "start") + vzLabel(P.X(x) - 12, P.Y(hi) - 12, "top: y = " + R.dydx[3], VZ.ink, 15, "end");
       // the outer range: x from a to b, under the axis
       const y = P.Y(0) + 30; o += `<path d="M${P.X(R.xs[0])} ${y - 6}V${y}H${P.X(R.xs[1])}V${y - 6}" fill="none" stroke="${VZ.gold}" stroke-width="2.2"/>` + vzLabel((P.X(R.xs[0]) + P.X(R.xs[1])) / 2, y + 20, "x from " + R.dydx[0] + " to " + R.dydx[1], "#7A5C0F", 15);
     } else {
-      const y = R.ys[0] + (R.ys[1] - R.ys[0]) * s.s, lo = R.xlo(y), hi = R.xhi(y);
+      const y = sv, lo = R.xlo(y), hi = R.xhi(y);
       o += P.poly([[lo, y - w / 2], [hi, y - w / 2], [hi, y + w / 2], [lo, y + w / 2]], `fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}" stroke-width="1.2"`);
       o += P.dot([lo, y], 4.6, VZ.ink) + P.dot([hi, y], 4.6, VZ.ink);
       o += vzLabel(P.X(lo) - 10, P.Y(y) - 12, "left: x = " + R.dxdy[2], VZ.ink, 15, "end") + vzLabel(P.X(hi) + 10, P.Y(y) + 22, "right: x = " + R.dxdy[3], VZ.ink, 15, "start");
@@ -14657,23 +14737,34 @@ vzAdd({
   tryIt: "Play the number of cells: however finely you cut, the inside edges cancel in pairs and the total stays the circulation around C.",
   state: { n: 3 },
   thumb: { n: 3 },
-  controls: [{ k: "n", label: "cells across", min: 1, max: 6, step: 1, digits: 0, play: 1.2, progress: true, aria: "the number of cells" }],
+  controls: [{ k: "n", label: "cells across", min: 1, max: 6, step: 1, digits: 0, fmt: v => String(Math.round(v)), play: 1.1, progress: true, aria: "the number of cells",
+    rests: () => [2, 3, 4, 5], restMs: 650 }],
   P: vzPlane(300, 238, 92),
   X: [-2.4, 2.4], Y: [-1.6, 1.6],
   F: (x, y) => [-y * (1 + .25 * x), x],                   // curl Q_x − P_y = 2 + 0.25x
   draw(s) {
-    const P = this.P, n = Math.round(s.n), [x0, x1] = this.X, [y0, y1] = this.Y, hx = (x1 - x0) / n, hy = (y1 - y0) / n;
+    // between two whole numbers of cells, a new column and row slide in from the right and top while the
+    // others narrow to make room: Play is one continuous motion, never a jump from grid to grid
+    const P = this.P, [x0, x1] = this.X, [y0, y1] = this.Y, nn = vzClamp(s.n, 1, 6), m = Math.floor(nn + 1e-6), f = nn - m > 1e-4 ? nn - m : 0, e = vzEase(f), N = f ? m + 1 : m;
+    const span = (lo, hi, i) => { const w = hi - lo, nw = [lo + i * w / N, lo + (i + 1) * w / N]; if (N === m) return nw;
+      const ol = i < m ? [lo + i * w / m, lo + (i + 1) * w / m] : [hi, hi]; return [ol[0] + (nw[0] - ol[0]) * e, ol[1] + (nw[1] - ol[1]) * e]; };
     let o = P.poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], `fill="${VZ.red}" fill-opacity=".07" stroke="none"`);
     // every cell's counterclockwise edges, drawn just inside the cell; shared edges show two opposite arrows
-    const inset = .1 * Math.min(hx, hy), edge = (a, b, outer) => {
-      const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], d = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(...d), len = Math.min(L * .32, .45);
-      const u = [d[0] / L, d[1] / L], p = [m[0] - u[0] * len / 2, m[1] - u[1] * len / 2], q = [m[0] + u[0] * len / 2, m[1] + u[1] * len / 2];
-      return vzArrow(P.X(p[0]), P.Y(p[1]), P.X(q[0]), P.Y(q[1]), outer ? "R" : "G", outer ? 2.4 : 1.6).replace("<g ", outer ? "<g " : '<g opacity=".7" ');
+    const edge = (a, b, outer, op) => {
+      if (op < .02) return "";
+      const md = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], d = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(...d) || 1e-9, len = Math.min(L * .32, .45);
+      const u = [d[0] / L, d[1] / L], p = [md[0] - u[0] * len / 2, md[1] - u[1] * len / 2], q = [md[0] + u[0] * len / 2, md[1] + u[1] * len / 2];
+      return `<g opacity="${q2((outer ? 1 : .7) * op)}">${vzArrow(P.X(p[0]), P.Y(p[1]), P.X(q[0]), P.Y(q[1]), outer ? "R" : "G", outer ? 2.4 : 1.6)}</g>`;
     };
-    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
-      const a = x0 + i * hx, b = y0 + j * hy, c = [[a + inset, b + inset], [a + hx - inset, b + inset], [a + hx - inset, b + hy - inset], [a + inset, b + hy - inset]];
-      o += P.poly(c, `fill="none" stroke="${VZ.grey}" stroke-width="1" stroke-dasharray="3 4" opacity=".55"`);
-      o += edge(c[0], c[1], j === 0) + edge(c[1], c[2], i === n - 1) + edge(c[2], c[3], j === n - 1) + edge(c[3], c[0], i === 0);
+    // an edge that is on C before the change but inside after (or the reverse) fades from one look to the other
+    const both = (a, b, wasOut, isOut, op) => wasOut === isOut ? edge(a, b, isOut, op) : edge(a, b, wasOut, op * (1 - e)) + edge(a, b, isOut, op * e);
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const [a, a2] = span(x0, x1, i), [b, b2] = span(y0, y1, j), hx = a2 - a, hy = b2 - b, inset = .1 * Math.min(hx, hy);
+      const op = N > m && (i === m || j === m) ? e : 1;
+      const c = [[a + inset, b + inset], [a2 - inset, b + inset], [a2 - inset, b2 - inset], [a + inset, b2 - inset]];
+      o += P.poly(c, `fill="none" stroke="${VZ.grey}" stroke-width="1" stroke-dasharray="3 4" opacity="${q2(.55 * op)}"`);
+      const lastOld = m - 1;
+      o += both(c[0], c[1], j === 0, j === 0, op) + both(c[1], c[2], i === lastOld, i === N - 1, op) + both(c[2], c[3], j === lastOld, j === N - 1, op) + both(c[3], c[0], i === 0, i === 0, op);
     }
     o += P.poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], `fill="none" stroke="${VZ.red}" stroke-width="2.4"`);
     o += vzLabel(P.X(x1) + 14, P.Y(y1) - 6, "C", VZ.red, 18) + vzLabel(P.X(x0) + 22, P.Y(y1) + 26, "D", VZ.deep, 17);
@@ -14701,7 +14792,7 @@ vzAdd({
   tagline: "A (u, v) rectangle bent into a surface.",
   blurb: "\\(\\mathbf r(u,v)\\) bends a flat \\((u,v)\\) rectangle into a surface. A small cell becomes a patch spanned by \\(\\mathbf r_u\\,\\Delta u\\) and \\(\\mathbf r_v\\,\\Delta v\\), with area about \\(\\|\\mathbf r_u\\times\\mathbf r_v\\|\\,\\Delta u\\,\\Delta v\\).",
   tryIt: "Play the bend from flat to the surface, then move the patch: where the surface stretches more, \\(\\|\\mathbf r_u\\times\\mathbf r_v\\|\\) is larger.",
-  state: { kind: 0, m: 1, u0: .22, v0: .45, yaw: -30 },
+  state: { kind: 0, m: 1, u0: .06, v0: .35, yaw: -30 },
   controls: [
     { k: "m", label: "flat → surface", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .35, aria: "the bend" },
     { k: "u0", label: "patch: u", min: 0, max: 1, step: .01, fmt: v => vzNum(v, 2), noPlay: true },
@@ -14710,7 +14801,7 @@ vzAdd({
   ],
   presets: [["Sphere", { kind: 0 }], ["Cylinder", { kind: 1 }], ["Paraboloid", { kind: 2 }]],
   kinds: [
-    { name: "r(u, v) = (2 sin v cos u, −2 sin v sin u, 2 cos v)", U: [0, 1.5 * Math.PI], V: [.25, Math.PI - .25], r: (u, v) => [2 * Math.sin(v) * Math.cos(u), -2 * Math.sin(v) * Math.sin(u), 2 * Math.cos(v)] },   // u runs clockwise so r_u × r_v points out
+    { name: "r(u, v) = (2 sin v cos u, −2 sin v sin u, 2 cos v)", U: [0, 2 * Math.PI], V: [.02, Math.PI - .02], r: (u, v) => [2 * Math.sin(v) * Math.cos(u), -2 * Math.sin(v) * Math.sin(u), 2 * Math.cos(v)] },   // u runs clockwise so r_u × r_v points out
     { name: "r(u, v) = (1.5 cos u, 1.5 sin u, v)", U: [0, 1.5 * Math.PI], V: [-1.4, 1.4], r: (u, v) => [1.5 * Math.cos(u), 1.5 * Math.sin(u), v] },
     { name: "r(u, v) = (v cos u, v sin u, 0.6v²)", U: [0, 2 * Math.PI], V: [0, 1.8], r: (u, v) => [v * Math.cos(u), v * Math.sin(u), .6 * v * v - .9] },
   ],
@@ -14770,31 +14861,40 @@ vzAdd({
     const cam = this.cam(s), G = this.geo(s), h = G.h, c = (p, q) => [p * G.e1[0] + q * G.e2[0], p * G.e1[1] + q * G.e2[1], p * G.e1[2] + q * G.e2[2]];
     const sq = [c(-h, -h), c(h, -h), c(h, h), c(-h, h), c(-h, -h)], shadow = sq.map(p => [p[0], p[1], -1.7]);
     let o = vzPath3(cam, shadow, `stroke="${VZ.gold}" stroke-width="1.6" stroke-dasharray="5 4" fill="${VZ.gold}" fill-opacity=".14"`);
+    this.cols.forEach(([x, y]) => { const thr = this.through(G, x, y); o += vzPath3(cam, [[x, y, -1.7], [x, y, 1.6]], `stroke="${thr ? VZ.red : VZ.grey}" stroke-width="1" opacity="${thr ? .28 : .16}"`); });
     sq.slice(0, 4).forEach(p => { o += vzPath3(cam, [p, [p[0], p[1], -1.7]], `stroke="${VZ.gold}" stroke-width="1" stroke-dasharray="2 4" opacity=".6"`); });
     o += vzPath3(cam, sq, `stroke="${VZ.red}" stroke-width="2.2" fill="${VZ.red}" fill-opacity="${G.n[2] >= 0 ? .2 : .1}"`);
     o += vzArrow3(cam, [0, 0, 0], G.n.map(v => v * 1.2), "I", 2.6) + vzLab3(cam, G.n.map(v => v * 1.42), "<tspan font-weight=\"700\">n</tspan>", VZ.ink, 0, 5, 17);
     o += vzLab3(cam, [1.9, -1.9, -1.7], "shadow: area A cos θ", "#7A5C0F", 0, 22, 14);
-    o += vzKey([["line", VZ.grey, "flow F (upward)"], ["fill", VZ.red, "the square"], ["dash", VZ.gold, "its shadow"]]);
+    o += vzKey([["line", VZ.grey, "flow F (upward)"], ["line", VZ.red, "passes through"], ["fill", VZ.red, "the square"], ["dash", VZ.gold, "its shadow"]]);
     return o;
   },
-  frame(g, s, t) {                                       // the flow: streaks rising; those crossing the square turn red
+  // the flow runs up a regular grid of columns, so the lines through the square can be counted: fewer as it tilts
+  cols: (() => { const c = []; for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) c.push([-1.5 + .6 * i, -1.5 + .6 * j]); return c; })(),
+  through(G, x, y) {                                     // does the vertical line at (x, y) pass through the square?
+    const den = G.n[2]; if (Math.abs(den) < 1e-6) return false;
+    const zc = -(G.n[0] * x + G.n[1] * y) / den, w2 = y * G.e2[1] + zc * G.e2[2];
+    return Math.abs(x) <= G.h && Math.abs(w2) <= G.h;
+  },
+  frame(g, s, t) {                                       // short arrows rising up every column; the ones crossing the square are red
     if (!g) return "";
-    const cam = this.cam(s), G = this.geo(s), h = G.h, out = [];
-    for (let i = 0; i < 64; i++) {
-      const hsh = k => { const v = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return v - Math.floor(v); };
-      const x = -1.9 + 3.8 * hsh(1), y = -1.9 + 3.8 * hsh(2), ph = hsh(3), z = -1.7 + ((t * .55 * s.k + ph) % 1) * 3.6;
-      // does this streak's vertical line pass through the square?
-      const den = G.n[2]; let through = false;
-      if (Math.abs(den) > 1e-6) { const zc = -(G.n[0] * x + G.n[1] * y) / den, w1 = x, w2 = y * G.e2[1] + zc * G.e2[2]; through = Math.abs(w1) <= h && Math.abs(w2) <= h; }
-      const A = cam(x, y, z), B = cam(x, y, z + .32), col = through ? VZ.red : VZ.grey;
-      out.push(`<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${col}" stroke-width="${through ? 2.2 : 1.5}" stroke-linecap="round" opacity="${through ? .9 : .45}"/>`);
-    }
+    const cam = this.cam(s), G = this.geo(s), out = [];
+    this.cols.forEach(([x, y]) => {
+      const thr = this.through(G, x, y), col = thr ? VZ.red : VZ.grey;
+      for (let k = 0; k < 2; k++) {
+        const ph = ((t * .45 * s.k + k / 2) % 1), z = -1.7 + ph * 3.3, fade = Math.min(1, ph / .12, (1 - ph) / .12);
+        const A = cam(x, y, z), B = cam(x, y, z + .3), dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+        out.push(`<g opacity="${q2(fade * (thr ? .95 : .5))}" stroke="${col}" stroke-width="${thr ? 2.2 : 1.6}" stroke-linecap="round" fill="none"><line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}"/>` +
+          `<path d="M${q2(B[0] - ux * 5 - uy * 3.6)} ${q2(B[1] - uy * 5 + ux * 3.6)}L${q2(B[0])} ${q2(B[1])}L${q2(B[0] - ux * 5 + uy * 3.6)} ${q2(B[1] - uy * 5 - ux * 3.6)}" stroke-linejoin="round"/></g>`);
+      }
+    });
     g.innerHTML = out.join("");
     return "";
   },
   readout(s) {
-    const G = this.geo(s), A = (2 * G.h) ** 2, flux = s.k * G.n[2] * A;
+    const G = this.geo(s), A = (2 * G.h) ** 2, flux = s.k * G.n[2] * A, nThr = this.cols.filter(([x, y]) => this.through(G, x, y)).length;
     return `<div class="vz-eq">F = (0, 0, ${vzNum(s.k, 2)}), square area A = ${vzNum(A, 2)}</div>
+      <div class="vz-eq">flow lines through the square: <b>${nThr}</b> of ${this.cols.length}</div>
       <div class="vz-eq">F · n = ${vzNum(s.k, 2)} cos ${Math.round(s.tilt)}° = ${vzNum(s.k * G.n[2])}</div>
       <div class="vz-eq">flux = F · n A = <b>${vzNum(flux)}</b></div>
       <div class="vz-status ${Math.abs(flux) < .01 ? "warn" : "ok"}">${Math.abs(flux) < .01 ? "Edge-on: the flow slides along the square, so nothing passes through." : flux < 0 ? "The normal points down now, against the flow, so the flux is negative." : "The flux equals the flow strength times the area of the square's shadow on the floor."}</div>`;
@@ -14899,7 +14999,10 @@ function renderSteps(def, i, prev, next) {
                 <p class="st-why">${s.why}</p></section>`).join("")}
             </div>
           </div>
-          ${def.pic ? `<svg class="st-pic" id="stPic" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${vzDefs()}<g id="stPicG"></g></svg>` : ""}
+          ${def.pic ? `<svg class="st-pic" id="stPic" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${vzDefs()}<g id="stPicOld" pointer-events="none"></g><g id="stPicG"></g></svg>` : ""}
+          <div class="st-time" id="stTime" role="slider" aria-label="Progress through the method" aria-valuemin="0" aria-valuemax="${def.steps.length}" aria-valuenow="0" tabindex="-1">
+            <div class="st-time-track">${(() => { const bs = stBeats(def), tot = bs.reduce((a, x) => a + x[2], 0); let acc = 0; return bs.map(([k, b, ms]) => { const x = acc / tot; acc += ms; return b === 0 && k > 0 ? `<i class="st-tick" style="left:${(x * 100).toFixed(2)}%"></i>` : ""; }).join(""); })()}<div class="st-time-fill"></div></div>
+          </div>
         </div>
       </div>
       <aside class="vz-panel st-panel">
@@ -14910,7 +15013,7 @@ function renderSteps(def, i, prev, next) {
           <button class="btn btn-red btn-sm st-play" type="button" data-st="play">Play</button>
           <button class="btn btn-ghost btn-sm" type="button" data-st="next" aria-label="Next line">Next &rarr;</button>
         </div>
-        <div class="st-speed"><span>Speed</span><div class="vz-seg" role="group" aria-label="Speed">${[[1.5, "Slow"], [1, "Normal"], [.65, "Quick"]].map(([v, l]) => `<button type="button" data-speed="${v}">${l}</button>`).join("")}</div></div>
+        <div class="st-speed"><span>Speed</span><div class="vz-seg" role="group" aria-label="Speed">${[[1.4, "Slow"], [1, "Normal"], [.7, "Quick"]].map(([v, l]) => `<button type="button" data-speed="${v}">${l}</button>`).join("")}</div></div>
         <div class="vz-ptop-k st-outline-k">The method</div>
         <ol class="st-outline">${steps.map((s, j) => `<li data-goto="${j}"><span class="st-o-n">${j + 1}</span><span>${escapeHtml(s.t)}</span></li>`).join("")}</ol>
         <button class="vz-report" type="button" id="vzReport">Report a problem</button>
@@ -14943,7 +15046,14 @@ function renderSteps(def, i, prev, next) {
   document.addEventListener("keydown", ST.onKey);
   typesetMath(root).then(() => { if (ST.def === def) stShow(); });
   stShow();
-  const loop = now => { if (ST.def !== def) return; if (def.pic && now - ST.beatT0 < (def.picDur || 3200) + 100) stPic(now); ST.raf = requestAnimationFrame(loop); };
+  ST.beats = stBeats(def);
+  document.getElementById("stTime").addEventListener("click", e => {
+    const r = e.currentTarget.getBoundingClientRect(), x = vzClamp((e.clientX - r.left) / r.width, 0, 1), tot = ST.beats.reduce((a, q) => a + q[2], 0);
+    let acc = 0, hit = ST.beats[0];
+    for (const q of ST.beats) { if (acc / tot > x) break; hit = q; acc += q[2]; }
+    ST.k = hit[0]; ST.b = hit[1]; stShow(); if (ST.playing) stSchedule();
+  });
+  const loop = now => { if (ST.def !== def) return; if (def.pic && now - ST.beatT0 < (def.picDur || 3200) + 100) stPic(now); stTimeline(now); ST.raf = requestAnimationFrame(loop); };
   ST.raf = requestAnimationFrame(loop);
 }
 function stStop() {
@@ -14969,18 +15079,32 @@ function stPlay(on) {
   if (on && ST.k === def.steps.length - 1 && ST.b === def.steps[ST.k].tex.length - 1) { ST.k = -1; ST.b = 0; stShow(); }   // replay from the start
   ST.playing = on; stSync(); stSchedule();
 }
-// how long each line stays before the next one: longer lines get more time, and a step's reason gets reading time
+// how long each line stays before the next one: longer lines get a little more time, and a step's last line
+// leaves time to read its reason. Kept brisk so Play runs like a video, not a slideshow.
+function stBeatMs(def, k, b) {
+  if (k < 0) return 900;
+  const s = def.steps[k], last = b === s.tex.length - 1;
+  let ms = vzClamp(1100 + 14 * stTexLen(s.tex[b]), 1500, 3400);
+  if (last) ms += vzClamp(600 + 16 * s.why.replace(/<[^>]+>/g, "").length, 1600, 3800);   // the reason is on screen from the start; this is the last look
+  return ms;
+}
+// every beat in order, for the progress bar: [k, b, ms]
+function stBeats(def) { const out = [[-1, 0, stBeatMs(def, -1, 0)]]; def.steps.forEach((s, k) => s.tex.forEach((_, b) => out.push([k, b, stBeatMs(def, k, b)]))); return out; }
 function stSchedule() {
   clearTimeout(ST.timer); ST.timer = 0;
   const def = ST.def; if (!def || !ST.playing) return;
-  let ms;
-  if (ST.k < 0) ms = 1600;
-  else {
-    const s = def.steps[ST.k], last = ST.b === s.tex.length - 1;
-    ms = vzClamp(1700 + 22 * stTexLen(s.tex[ST.b]), 2300, 5200);
-    if (last) ms += vzClamp(800 + 26 * s.why.replace(/<[^>]+>/g, "").length, 2400, 6000);   // the reason is on screen from the start; this is the last look
-  }
-  ST.timer = setTimeout(() => { if (!stNext()) { ST.playing = false; stSync(); return; } stSchedule(); }, ms * ST.speed);
+  ST.lineT0 = performance.now(); ST.lineMs = stBeatMs(def, ST.k, ST.b) * ST.speed;
+  ST.timer = setTimeout(() => { if (!stNext()) { ST.playing = false; stSync(); return; } stSchedule(); }, ST.lineMs);
+}
+// the thin progress line along the bottom of the board: it fills smoothly while playing; click to jump to a step
+function stTimeline(now) {
+  const def = ST.def, bar = document.getElementById("stTime"); if (!def || !bar) return;
+  if (!ST.beats) ST.beats = stBeats(def);
+  const total = ST.beats.reduce((a, x) => a + x[2], 0);
+  let before = 0; for (const [k, b, ms] of ST.beats) { if (k === ST.k && b === ST.b) break; before += ms; }
+  const cur = ST.beats.find(x => x[0] === ST.k && x[1] === ST.b), ms = cur ? cur[2] : 0;
+  const f = ST.playing && ST.lineMs ? vzClamp((now - ST.lineT0) / ST.lineMs, 0, 1) : ST.k < 0 ? 0 : 1;
+  const fill = bar.querySelector(".st-time-fill"); if (fill) fill.style.transform = `scaleX(${((before + f * ms) / total).toFixed(4)})`;
 }
 function stSync() {
   const root = $("#vizRoot"), def = ST.def; if (!root || !def) return;
@@ -14999,7 +15123,11 @@ function stShow() {
   const shown = [...root.querySelectorAll("#stPast li.on")]; shown.forEach((li, j) => li.classList.toggle("old", j < shown.length - 4));
   root.querySelectorAll("#stNow [data-j]").forEach(el => {
     const on = +el.dataset.j === k;
-    if (on && !el.classList.contains("on")) { el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter"); }
+    if (on && !el.classList.contains("on")) { el.classList.remove("enter", "leave"); void el.offsetWidth; el.classList.add("enter"); }
+    if (!on && el.classList.contains("on")) {                // the old step fades out on top while the new one fades in
+      el.classList.remove("enter"); el.classList.add("leave"); clearTimeout(el._lt);
+      el._lt = setTimeout(() => el.classList.remove("leave"), 220);
+    }
     el.classList.toggle("on", on);
   });
   const cur = k >= 0 ? root.querySelector(`.st-step[data-j="${k}"]`) : null;
@@ -15014,8 +15142,21 @@ function stShow() {
   const m = root.querySelector("#stMath");
   if (m) { const vis = shown.filter(li => !li.classList.contains("old")); while (m.scrollHeight > m.clientHeight + 2 && vis.length) vis.shift().classList.add("old"); }
   if (m && m.scrollHeight > m.clientHeight + 2) m.scrollTo({ top: m.scrollHeight, behavior: "smooth" });
-  if (key !== ST.key) { ST.key = key; ST.beatT0 = performance.now(); }
-  stSync(); stPic(performance.now());
+  if (key !== ST.key) {
+    if (!ST.key || +ST.key.split(":")[0] !== k) {             // a new step: the picture's clock restarts, and the old picture dissolves away
+      ST.beatT0 = performance.now();
+      const g = document.getElementById("stPicG"), old = document.getElementById("stPicOld");
+      if (g && old && ST.key) {
+        old.innerHTML = g.innerHTML; if (old._a) old._a.cancel();
+        old._a = old.animate([{ opacity: 1 }, { opacity: 1, offset: .25 }, { opacity: 0 }], { duration: 560, easing: "ease-in-out", fill: "forwards" });
+        g.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: "ease-out" });
+      }
+    }
+    ST.key = key;
+  }
+  if (!ST.playing) ST.lineMs = 0;
+  const tb = root.querySelector("#stTime"); if (tb) tb.setAttribute("aria-valuenow", String(Math.max(0, k + 1)));
+  stSync(); stPic(performance.now()); stTimeline(performance.now());
 }
 function stFit(el) {                                     // a line too wide for the board shrinks to fit (never below 70%)
   el.querySelectorAll(".st-line.on").forEach(line => {
@@ -15033,10 +15174,10 @@ function stPic(now) {
   const html = def.pic(ST.k, ST.b, (now - ST.beatT0) / 1000);
   if (g._h !== html) { g._h = html; g.innerHTML = html; }
 }
-// the index card for a method: its picture at the end (or a small board), with a "step by step" tag
+// the index card for a method: its picture at the end (or a small board)
 function stThumb(def) {
   const k = def.steps.length - 1, inner = def.pic ? `<g transform="translate(120 -5) scale(1.0)">${def.pic(k, def.steps[k].tex.length - 1, 99)}</g>` : def.thumbSvg ? def.thumbSvg() : "";
-  return inner + `<g><rect x="16" y="16" width="146" height="30" rx="15" fill="${VZ.ink}"/><text x="89" y="36" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="15" font-weight="700" fill="#fff">step by step</text></g>`;
+  return inner;
 }
 // a small board for methods with no picture: a matrix written out, pivots in red
 function stBoardSvg(rows, piv, bar) {
@@ -15211,11 +15352,11 @@ stAdd({
       [[1, 0], [0, 1], [Math.SQRT1_2, -Math.SQRT1_2]].forEach(p => { o += P.arrow([0, 0], p, "I", 2) + `<g opacity=".7">${P.arrow([0, 0], Ax(p), "R", 2.4)}</g>`; });
       return o + `<circle cx="180" cy="250" r="34" fill="none" stroke="${VZ.grey}" opacity=".6"/>` + stNote(180, 440, "most vectors get turned off their own line", VZ.ink);
     }
-    if (k >= 3) o += P.line([0, 0], d1, `stroke="${VZ.red}" stroke-width="2" stroke-dasharray=".01 7" stroke-linecap="round" opacity="${k >= 4 ? .7 : .25}"`);
+    if (k >= 3) o += P.line([0, 0], d1, `stroke="${VZ.red}" stroke-width="2" stroke-dasharray=".01 7" stroke-linecap="round" opacity="${k >= 4 ? .7 : q2(.15 + .3 * stEase(u, .4, 1.6))}"`);
     if (k >= 5) o += P.line([0, 0], d2, `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray=".01 7" stroke-linecap="round" opacity=".6"`);
     if (k >= 4) { const e = k > 4 ? 1 : stEase(u, .8, 1.4); o += P.arrow([0, 0], d1, "I", 2.6) + P.arrow([0, 0], [d1[0] * (1 + 3 * e), d1[1] * (1 + 3 * e)], "R", 3) + P.tip([0, 0], [4 * d1[0], 4 * d1[1]], "A" + vzB("v", "1") + " = 4" + vzB("v", "1"), VZ.red, 20); }
     if (k >= 5) { const e = k > 5 ? 1 : stEase(u, 1.6, 1.4); o += P.arrow([0, 0], d2, "I", 2.6) + P.tip([0, 0], d2, vzB("v", "2"), VZ.ink) + `<g opacity="${q2(e)}">${P.arrow([0, 0], [-d2[0], -d2[1]], "R", 3)}${P.tip([0, 0], [-d2[0], -d2[1]], "A" + vzB("v", "2") + " = −" + vzB("v", "2"), VZ.red)}</g>`; }
-    o += stNote(180, 440, k >= 5 ? "two lines A doesn't turn: stretch by 4, flip" : "λ = 4 and λ = −1", VZ.ink);
+    o += stNote(180, 440, k >= 5 ? "two lines A doesn't turn: stretch by 4, flip" : k === 3 ? "looking for the line A − 4I sends to 0" : "λ = 4 and λ = −1", VZ.ink);
     return o;
   },
   steps: [
@@ -15420,7 +15561,7 @@ stAdd({
 
 stAdd({
   id: "m-flux", title: "Flux through a surface, step by step", card: "Flux through a triangle",
-  tagline: "Parametrize, take r_x × r_y, check the direction, integrate.",
+  tagline: "Parametrize, find the normal, check its direction, integrate.",
   blurb: "The flux recipe: parametrize the surface, get a normal from the cross product, make sure it points the way the problem asks, then integrate \\(\\mathbf F\\cdot\\mathbf N\\) over the parameter region.",
   problem: "Find the flux of \\(\\mathbf F=(2x,\\ y,\\ z)\\) through the triangle cut from the plane \\(x+y+z=3\\) by the first octant, with the normal pointing away from the origin.",
   pic(k, b, u) {
