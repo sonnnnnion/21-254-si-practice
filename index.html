@@ -873,9 +873,6 @@
   body.is-home footer .foot-brand { display: none; }
   body.is-home footer { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 14px; padding: 8px 0 10px; }
   body.is-home footer .foot-lead { font-size: 12.5px; }
-  body.is-home footer .foot-report { margin: 0; }
-  body.is-home footer .foot-report-note { display: none; }
-  body.is-home footer .foot-report-btn { padding: 3px 10px 3px 9px; font-size: 12px; }
   body.is-home footer .foot-links { margin-top: 0; font-size: 12.5px; order: 3; }
   body.is-home footer .foot-notes { order: 4; flex-basis: 100%; text-align: center; }
   body.is-home footer .foot-notes .foot-ai { display: inline; margin: 0; font-size: 11px; }
@@ -2115,12 +2112,6 @@
   footer .foot-brand .num { color: var(--red); }
   footer .foot-lead { font-size: 13.5px; color: var(--ink-soft); }
   footer .foot-lead strong { color: var(--ink); font-weight: 700; }
-  footer .foot-report { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 12px; margin: 12px auto 4px; font-size: 13px; color: var(--ink-mute); }
-  .foot-report-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px var(--font-sans); color: var(--ink-soft); background: var(--surface);
-    border: 1px solid var(--border-strong); border-radius: 999px; padding: 5px 12px 5px 10px; cursor: pointer; transition: background .14s, border-color .14s, color .14s; }
-  .foot-report-btn svg { width: 13px; height: 13px; flex: none; }
-  .foot-report-btn:hover { color: var(--ink); border-color: var(--ink-faint); background: #fff; text-decoration: none; }
-  .foot-report-btn:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 2px; }
   footer .foot-notes .foot-ai { display: block; }
   footer .foot-ai {
     max-width: 560px;
@@ -2133,8 +2124,10 @@
   footer .foot-links {
     margin-top: 8px;
     display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 4px 10px;
     color: var(--ink-faint);
   }
   footer .foot-links button,
@@ -2146,6 +2139,7 @@
     color: var(--ink-mute);
     cursor: pointer;
     text-decoration: none;
+    white-space: nowrap;
   }
   footer .foot-links button:hover,
   footer .foot-links a:hover { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
@@ -5016,9 +5010,14 @@
       const T = this.T, tt = Math.max(0, t - .3), cycle = Math.floor(tt / T.cyc), u = tt - cycle * T.cyc;
       const lvl = u < T.split1 ? 0 : u < T.split2 ? 1 : 2, meshOn = smooth(T.mesh, T.mesh + .9, u) * (1 - smooth(T.meshOut, T.meshOut + .7, u));
       k.base.setAttribute("opacity", n2(faint(t, 0, .5)));
+      // at each switch the new set (identical in shape at that instant) fades in over the old one, so the extra
+      // edges of a split, or the edges lost in the merge, come and go softly instead of in a single frame
+      const since = lvl === 1 ? u - T.split1 : lvl === 2 ? u - T.split2 : cycle ? u : 9, fade = ease(clamp01(since / .4));
       this.sets.forEach((st, si) => {
         const on = si === lvl;
-        k["set" + si].setAttribute("opacity", n2(on ? (lvl === 2 ? 1 - .72 * meshOn : 1) : 0));
+        let op = on ? (lvl === 2 ? 1 - .72 * meshOn : 1) * (lvl ? fade : 1) : 0;
+        if (!on && fade < 1 && ((lvl && si === lvl - 1) || (!lvl && si === 2))) op = lvl ? 1 : 1 - fade;   // the old set, frozen as it ended
+        k["set" + si].setAttribute("opacity", n2(op));
         if (!on) { st.key = null; return; }
         const key = cycle + ":" + si + (u >= T.merge ? "m" : "");   // repaint only while its boxes are still moving
         if (st.key !== key || !st.done) { st.key = key; st.done = this.paint(st, si, k["set" + si], u, cycle); }
@@ -5447,9 +5446,10 @@
 <footer>
   <div class="foot-brand"><span class="num">21-254</span> Practice Lab</div>
   <div class="foot-lead"><strong>Independent SI practice resource.</strong> Original practice problems, not official course materials.</div>
-  <div class="foot-report"><button type="button" class="foot-report-btn" id="reportFooterBtn"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14V2.5M3.5 3h8l-1.6 2.6L11.5 8.2h-8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Report a problem</button><span class="foot-report-note">Spot something that looks wrong? It gets reviewed and corrected.</span></div>
   <div class="foot-notes"><span class="foot-ai">Problems, hints, and solutions were developed with the assistance of AI and may contain occasional errors.</span> <span class="foot-ai">Anonymous, cookie-free usage statistics. No personal data is collected.</span></div>
   <div class="foot-links">
+    <button type="button" id="reportFooterBtn">Report a problem</button>
+    <span aria-hidden="true">·</span>
     <button type="button" id="aboutTrigger">About this resource</button>
     <span aria-hidden="true">·</span>
     <button type="button" id="qrFooterBtn">QR code</button>
@@ -11978,6 +11978,14 @@ function vzExact(v, d = 2) {
     if (Math.abs(Math.abs(v) - x) < 5e-4) return (v < 0 ? "−" : "") + t;
   return vzNum(v, d);
 }
+// a multiple of π: π/2, 3π/4, 2π exactly; otherwise 0.37π
+function vzPi(v) {
+  const k = v / Math.PI, n = Math.round(k * 12);
+  if (Math.abs(k * 12 - n) > 1e-6) return vzNum(k) + "π";
+  if (!n) return "0";
+  const g = (a, b) => b ? g(b, a % b) : a, d = g(Math.abs(n), 12), p = n / d, q = 12 / d;
+  return (p < 0 ? "−" : "") + (Math.abs(p) === 1 ? "" : Math.abs(p)) + "π" + (q === 1 ? "" : "/" + q);
+}
 const vzEase = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const vzRad = d => d * Math.PI / 180;
 
@@ -12435,7 +12443,7 @@ vzAdd({
   presets: [["One solution", { t1: 30, c1: 1.2, t2: 115, c2: .8 }], ["Nearly parallel", { t1: 30, c1: 1.2, t2: 36, c2: 1.5 }],
             ["No solution", { t1: 40, c1: 1.2, t2: 40, c2: -1 }], ["Same line", { t1: 40, c1: 1.2, t2: 40, c2: 1.2 }]],
   solve(s) {
-    const n1 = [Math.cos(vzRad(s.t1)), Math.sin(vzRad(s.t1))], n2 = [Math.cos(vzRad(s.t2)), Math.sin(vzRad(s.t2))];
+    const n1 = [-Math.sin(vzRad(s.t1)), Math.cos(vzRad(s.t1))], n2 = [-Math.sin(vzRad(s.t2)), Math.cos(vzRad(s.t2))];   // normals: line i runs at angle tᵢ
     const det = n1[0] * n2[1] - n1[1] * n2[0];
     if (Math.abs(det) > 1e-3) return { n1, n2, det, kind: "one", p: [(s.c1 * n2[1] - s.c2 * n1[1]) / det, (n1[0] * s.c2 - n2[0] * s.c1) / det] };
     const same = n1[0] * n2[0] + n1[1] * n2[1] > 0 ? Math.abs(s.c1 - s.c2) < 0.03 : Math.abs(s.c1 + s.c2) < 0.03;
@@ -12668,7 +12676,7 @@ vzAdd({
   state: { t: 0, cv: 0 },
   thumb: { t: .18 },
   curves: [
-    { name: "Circle",    t1: 2 * Math.PI, f: t => [2 * Math.cos(t), 2 * Math.sin(t)] },
+    { name: "Circle",    t1: 2 * Math.PI, f: t => [2 * Math.cos(t), 2 * Math.sin(t)], len: t => vzPi(2 * t) },
     { name: "Ellipse",   t1: 2 * Math.PI, f: t => [2.7 * Math.cos(t), 1.5 * Math.sin(t)] },
     { name: "Figure eight", t1: 2 * Math.PI, f: t => [2.5 * Math.sin(t), 1.6 * Math.sin(2 * t)] },
     { name: "Cycloid",   t1: 4 * Math.PI, f: t => [.62 * (t - Math.sin(t)) - 3.9, .62 * (1 - Math.cos(t)) - 1.2] },
@@ -12701,10 +12709,10 @@ vzAdd({
     const { C, t, p, v, acc } = this.at(s);
     let sLen = 0, prev = C.f(0);
     for (let i = 1; i <= 400; i++) { const q = C.f(t * i / 400); sLen += Math.hypot(q[0] - prev[0], q[1] - prev[1]); prev = q; }
-    return `<div class="vz-eq">t = ${vzNum(t)} &nbsp; r(t) = (${vzNum(p[0])}, ${vzNum(p[1])})</div>
+    return `<div class="vz-eq">t = ${vzPi(t)} &nbsp; r(t) = (${vzNum(p[0])}, ${vzNum(p[1])})</div>
       <div class="vz-eq">speed |r′(t)| = <b>${vzNum(Math.hypot(v[0], v[1]))}</b></div>
       <div class="vz-eq">|r″(t)| = ${vzNum(Math.hypot(acc[0], acc[1]))}</div>
-      <div class="vz-eq">arc length so far = ∫ |r′| dt = <b>${vzNum(sLen)}</b></div>`;
+      <div class="vz-eq">arc length so far = ∫ |r′| dt = <b>${C.len ? C.len(t) : vzNum(sLen)}</b></div>`;
   },
 });
 
@@ -13030,11 +13038,11 @@ vzAdd({
   },
   readout(s) {
     const n = Math.round(s.n), S = this.sum(s), E = this.exact(Math.round(s.fn));
-    return `<div class="vz-eq">${n} × ${n} = ${n * n} box${n * n === 1 ? "" : "es"}, each ΔA = ${vzNum(1 / (n * n), 4)}</div>
-      <div class="vz-eq">Σ f(x<sub>i</sub>, y<sub>j</sub>) ΔA = <b>${vzNum(S, 4)}</b> <span class="vz-nw">(centre heights)</span></div>
+    return `<div class="vz-eq">${n} × ${n} = ${n * n} box${n * n === 1 ? "" : "es"}, each ΔA = ${n === 1 ? "1" : "1/" + n * n}</div>
+      <div class="vz-eq">Σ f(x<sub>i</sub>, y<sub>j</sub>) ΔA = <b>${vzNum(S, 4)}</b> <span class="vz-nw">(center heights)</span></div>
       <div class="vz-eq">∬<sub>R</sub> f dA = ${vzNum(E, 4)}</div>
       <div class="vz-status ${Math.abs(S - E) < 5e-4 ? "ok" : ""}">error = ${vzNum(Math.abs(S - E), 4)}${Math.round(s.fn) === 1
-        ? ". For a plane the centre-height boxes are exact at every n: each box sticks out above the plane on one side by exactly as much as it falls short on the other. Try the hill or the ridge to watch the error shrink." : ""}</div>`;
+        ? ". For a plane the center-height boxes are exact at every n: each box sticks out above the plane on one side by exactly as much as it falls short on the other. Try the hill or the ridge to watch the error shrink." : ""}</div>`;
   },
 });
 
@@ -13050,7 +13058,7 @@ vzAdd({
     { k: "cell", label: "which ring", min: 0, max: 5, step: 1, digits: 0, fmt: v => "ring " + (Math.round(v) + 1), play: 1.4, progress: true, aria: "which ring" },
   ],
   presets: [["Rectangle", { m: 0 }], ["Half way", { m: .5 }], ["Polar region", { m: 1 }]],
-  O: [236, 340], S: 104, K: 78, r0: .6, r1: 2, th1: 2 * Math.PI / 3,
+  O: [236, 340], S: 112, K: 78, r0: .6, r1: 1.8, th1: 2 * Math.PI / 3,
   pos(r, th, m) {
     const [ox, oy] = this.O, xr = ox + r * this.S, yr = oy - th * this.K, xp = ox + r * Math.cos(th) * this.S, yp = oy - r * Math.sin(th) * this.S;
     return [xr + (xp - xr) * m, yr + (yp - yr) * m];
@@ -13074,14 +13082,14 @@ vzAdd({
     // the highlighted cell's area, beside it
     const at = this.pos(rv(c + 1) + .12, (tv(2) + tv(3)) / 2, m), flat = 1 - vzClamp((m - .3) / .3, 0, 1), curled = vzClamp((m - .7) / .25, 0, 1);
     if (flat > .01) o += `<g opacity="${q2(flat)}">${vzLabel(at[0], at[1] + 5, "Δr Δθ", VZ.deep, 15, "start")}</g>`;
-    if (curled > .01) o += `<g opacity="${q2(curled)}">${vzLabel(at[0], at[1] + 5, `<tspan font-weight="700" fill="${VZ.red}">${vzNum(r)}</tspan> Δr Δθ`, VZ.deep, 15, "start")}</g>`;
+    if (curled > .01) o += `<g opacity="${q2(curled)}">${vzLabel(at[0], at[1] + 5, `<tspan font-weight="700" fill="${VZ.red}">${vzShort(r)}</tspan> Δr Δθ`, VZ.deep, 15, "start")}</g>`;
     o += vzNote(22, 432, m < .12 ? "the (r, θ) plane: every cell is Δr by Δθ" : m < .88 ? "curling the rectangle around the origin" : "the (x, y) plane: each cell's area is r Δr Δθ");
     return o;
   },
   readout(s) {
     const N = 6, c = Math.round(s.cell), dr = (this.r1 - this.r0) / N, dth = this.th1 / N, r = this.r0 + (c + .5) * dr;
-    return `<div class="vz-eq">Δr = ${vzNum(dr, 3)}, Δθ = ${vzNum(dth, 3)}; this ring sits at r = ${vzNum(r, 3)}</div>
-      <div class="vz-eq">flat: Δr Δθ = <b>${vzNum(dr * dth, 3)}</b> &nbsp;·&nbsp; curled: <b>r</b> Δr Δθ = <b>${vzNum(r * dr * dth, 3)}</b></div>
+    return `<div class="vz-eq">Δr = ${vzShort(dr)}, Δθ = π/9; this ring sits at r = ${vzShort(r)}</div>
+      <div class="vz-eq">flat: Δr Δθ = <b>π/45</b> &nbsp;·&nbsp; <span class="vz-nw">curled: <b>r</b> Δr Δθ = <b>${vzShort(r)} × π/45</b></span></div>
       <div class="vz-status">Every cell is stretched by its own r. That factor is the Jacobian: ∬ f dA = ∬ f(r cos θ, r sin θ) r dr dθ.</div>`;
   },
 });
@@ -13091,8 +13099,19 @@ vzAdd({
 VZ.green = "#2F7A4A"; VZ_COL.N = VZ.green;
 const vzSnap = (v, step = .25) => Math.round(v / step) * step;
 const vzQ = (fine, v) => fine ? v : vzSnap(v);            // snap unless the point is still being dragged
-const vzShort = v => { const r = Math.round(v * 10000) / 10000 || 0; return (r < 0 ? "−" : "") + Math.abs(r); };   // 1.5, −2, 0.25, 3.125
+// 1.5, −2, 0.25, 3.125 as they are; a repeating decimal as its fraction (2/3, −6/7); anything else (mid-drag) to 2 places
+const vzShort = v => {
+  const a = Math.abs(v), k = Math.round(a * 10000);
+  if (Math.abs(a * 10000 - k) < 1e-6) return k ? (v < 0 ? "−" : "") + k / 10000 : "0";
+  for (let q = 3; q <= 64; q++) { const p = Math.round(a * q); if (Math.abs(a * q - p) < 1e-7 * q) return (v < 0 ? "−" : "") + p + "/" + q; }
+  const r = Math.round(a * 100) / 100;
+  return r ? (v < 0 ? "−" : "") + r : "0";
+};
 const vzTup = p => "(" + p.map(vzShort).join(", ") + ")";
+const vzPar = v => v < 0 && vzShort(v) !== "0" ? "(" + vzShort(v) + ")" : vzShort(v);        // a factor in a product: 2·(−0.5)
+const vzCoef = v => { const t = vzShort(v); return t.includes("/") ? "(" + t + ")" : t; };   // a coefficient: 1.5v, (2/3)v
+// c₁v₁ + c₂v₂ with the signs folded in: 1.5v₁ − 0.5v₂
+const vzCombo = (terms, dot = "") => terms.map(([c, name], i) => (i ? (c < 0 ? " − " : " + ") + vzCoef(Math.abs(c)) : vzCoef(c)) + dot + name).join("");
 // the ring that marks a draggable tip (brighter while hovered or dragged)
 // (drawn before the arrow, so the arrowhead sits on top of it)
 function vzGrip(x, y, col, hot) {
@@ -13149,7 +13168,12 @@ const VZ_SETS = {
       why: ["(0, 0) has both coordinates ≥ 0.", "Adding numbers that are ≥ 0 gives a number ≥ 0.", "c = −1 sends (1, 2) to (−1, −2), outside the quadrant."] },
     { chip: "Disk", w: "W = {(x, y) : x² + y² ≤ 4}, a disk of radius 2",
       has: p => Math.hypot(p[0], p[1]) <= 2 + 1e-9,
-      snap: (p, fine) => { const q = [vzQ(fine, p[0]), vzQ(fine, p[1])], r = Math.hypot(q[0], q[1]); return r > 2 ? [p[0] * 2 / Math.hypot(p[0], p[1]), p[1] * 2 / Math.hypot(p[0], p[1])] : q; },
+      snap: (p, fine) => {
+        const q = [vzQ(fine, p[0]), vzQ(fine, p[1])];
+        if (Math.hypot(q[0], q[1]) <= 2) return q;
+        const e = [p[0] * 2 / Math.hypot(p[0], p[1]), p[1] * 2 / Math.hypot(p[0], p[1])];   // onto the circle
+        return fine ? e : e.map(c => Math.sign(c) * Math.floor(Math.abs(c) * 4 + 1e-9) / 4);   // then in to the grid
+      },
       draw: P => `<circle cx="${P.X(0)}" cy="${P.Y(0)}" r="${2 * P.u}" fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="2.4" stroke-opacity=".75"/>`,
       truth: [1, 0, 0], u: [1, 0.5], v: [-0.5, 1],
       why: ["‖0‖ = 0 ≤ 2.", "(2, 0) and (0, 2) are in W, but (2, 2) has length 2√2 > 2.", "c = 3 sends (1, 0) to (3, 0), which has length 3 > 2."] },
@@ -13461,15 +13485,36 @@ function vzWorld(P, x, y, lim = [5.6, 4.2], fine) {
 }
 // if w is nearly on the line of v (small angle either way), put it exactly on that line: dependence is
 // a knife-edge, so the picture holds it once you are close
-function vzOntoLine(w, v, tol = .07) {
+function vzOntoLine(w, v, tol = .07, fine = true) {
   const L = Math.hypot(v[0], v[1]), M = Math.hypot(w[0], w[1]);
   if (L < 1e-9 || M < 1e-9) return w;
   const sin = (v[0] * w[1] - v[1] * w[0]) / (L * M);
   if (Math.abs(sin) > tol) return w;
-  const k = (w[0] * v[0] + w[1] * v[1]) / (L * L);
+  let k = (w[0] * v[0] + w[1] * v[1]) / (L * L);
+  if (!fine) { const q = vzSnap(k, .25); k = q || (k < 0 ? -.25 : .25); }   // let go: a clean multiple, so the readout stays exact
   return [k * v[0], k * v[1]];
 }
 const vzDet2 = (p, q) => p[0] * q[1] - p[1] * q[0];
+// labels at several arrow tips (arrows from the origin): each goes past its tip, on whichever side keeps it
+// clear of the labels already placed (vectors that line up would otherwise stack their names)
+function vzTipLabels(P, items) {
+  const placed = []; let o = "";
+  items.forEach(({ v, html, col, gap = 20 }) => {
+    if (Math.hypot(v[0], v[1]) < 1e-6) return;
+    const X1 = P.X(0), Y1 = P.Y(0), X2 = P.X(v[0]), Y2 = P.Y(v[1]), L = Math.hypot(X2 - X1, Y2 - Y1) || 1, ux = (X2 - X1) / L, uy = (Y2 - Y1) / L;
+    const w = html.replace(/<[^>]+>/g, "").length * 8.5 + 6;
+    let best = null, bs = -Infinity;
+    [6, -6, 20, -20, 34, -34].forEach((side, i) => {
+      const x = X2 + ux * gap - uy * side, y = Y2 + uy * gap + ux * side;
+      const d = placed.length ? Math.min(...placed.map(p => Math.max(Math.abs(p[0] - x) / ((p[2] + w) / 2), Math.abs(p[1] - y) / 21))) : 9;
+      const sc = (d >= 1 ? 100 : d * 50) - i;          // clear of the others first, then as close to the tip as it can be
+      if (sc > bs) { bs = sc; best = [x, y]; }
+    });
+    placed.push([best[0], best[1], w]);
+    o += vzLabel(best[0], best[1] + 5, html, col, 16);
+  });
+  return o;
+}
 const vzTipGrip = (P, p, col, k) => vzGrip(P.X(p[0]), P.Y(p[1]), col, VzView.hot === k);
 
 /* ---------- Adding and scaling vectors ---------- */
@@ -13494,18 +13539,20 @@ vzAdd({
     if (s.sum) {
       o += P.poly([[0, 0], u, w, v], `fill="${VZ.red}" fill-opacity=".06" stroke="none"`);
       o += P.path([u, w], `stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="6 5" opacity=".7"`) + P.path([v, w], `stroke="${VZ.red}" stroke-width="1.6" stroke-dasharray="6 5" opacity=".7"`);
-      o += P.arrow([0, 0], w, "D", 3.4) + vzSideTip(P, [0, 0], w, vzB("u") + " + " + vzB("v"), VZ.deep, 26);
+      o += P.arrow([0, 0], w, "D", 3.4);
     }
-    if (s.scale && Math.hypot(...cu) > .02) o += P.arrow([0, 0], cu, "O", 3.8) + vzSideTip(P, [0, 0], cu, vzShort(s.c) + vzB("u"), "#8A6A12", 26);
+    if (s.scale && Math.hypot(...cu) > .02) o += P.arrow([0, 0], cu, "O", 3.8);
     if (!thumb) o += vzTipGrip(P, u, VZ.red, "u") + vzTipGrip(P, v, VZ.ink, "v");
     o += P.arrow([0, 0], u, "R", 2.8) + P.arrow([0, 0], v, "I", 2.8) + P.dot([0, 0], 3.6);
-    o += vzSideTip(P, [0, 0], u, vzB("u"), VZ.red, 20) + vzSideTip(P, [0, 0], v, vzB("v"), VZ.ink, 20);
+    o += vzTipLabels(P, [{ v: u, html: vzB("u"), col: VZ.red }, { v, html: vzB("v"), col: VZ.ink }]
+      .concat(s.sum ? [{ v: w, html: vzB("u") + " + " + vzB("v"), col: VZ.deep, gap: 26 }] : [])
+      .concat(s.scale && Math.hypot(...cu) > .02 ? [{ v: cu, html: vzShort(s.c) + vzB("u"), col: "#8A6A12", gap: 26 }] : []));
     return o;
   },
   readout(s) {
     const u = [s.ux, s.uy], v = [s.vx, s.vy];
     return `<div class="vz-eq"><b>u</b> = ${vzTup(u)}, <b>v</b> = ${vzTup(v)}</div>
-      ${s.sum ? `<div class="vz-eq"><b>u</b> + <b>v</b> = (${vzShort(u[0])} + ${vzShort(v[0])}, ${vzShort(u[1])} + ${vzShort(v[1])}) = <b>${vzTup([u[0] + v[0], u[1] + v[1]])}</b></div>` : ""}
+      ${s.sum ? `<div class="vz-eq"><b>u</b> + <b>v</b> = (${vzShort(u[0])} + ${vzPar(v[0])}, ${vzShort(u[1])} + ${vzPar(v[1])}) = <b>${vzTup([u[0] + v[0], u[1] + v[1]])}</b></div>` : ""}
       ${s.scale ? `<div class="vz-eq">${vzShort(s.c)}<b>u</b> = <b>${vzTup([s.c * u[0], s.c * u[1]])}</b></div>` : ""}
       <div class="vz-status ok">Add coordinate by coordinate. Scaling multiplies every coordinate by c; a negative c flips the direction.</div>`;
   },
@@ -13537,7 +13584,7 @@ vzAdd({
   dragTo(s, k, x, y, fine) {
     let p = vzWorld(this.P, x, y, undefined, fine);
     const other = k === "v1" ? [s.v2x, s.v2y] : [s.v1x, s.v1y];
-    if (s.two) p = vzOntoLine(p, other);
+    if (s.two) p = vzOntoLine(p, other, .07, fine);
     s[k + "x"] = p[0]; s[k + "y"] = p[1];
   },
   draw(s, t, thumb) {
@@ -13556,16 +13603,17 @@ vzAdd({
     const a = [s.c1 * v1[0], s.c1 * v1[1]], b = two ? [s.c2 * v2[0], s.c2 * v2[1]] : [0, 0], w = [a[0] + b[0], a[1] + b[1]];
     if (two) o += P.path([a, w], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="4 5"`) + P.arrow(a, w, "I", 2.2);
     o += P.arrow([0, 0], a, "R", 2.2);
-    if (Math.hypot(...w) > .02) o += P.arrow([0, 0], w, "D", 3.4) + vzSideTip(P, [0, 0], w, vzB("w"), VZ.deep, 22);
+    if (Math.hypot(...w) > .02) o += P.arrow([0, 0], w, "D", 3.4);
     if (!thumb) o += vzTipGrip(P, v1, VZ.red, "v1") + (two ? vzTipGrip(P, v2, VZ.ink, "v2") : "");
     o += P.arrow([0, 0], v1, "R", 3) + (two ? P.arrow([0, 0], v2, "I", 3) : "") + P.dot([0, 0], 3.6);
-    o += vzSideTip(P, [0, 0], v1, vzB("v", "1"), VZ.red, 20) + (two ? vzSideTip(P, [0, 0], v2, vzB("v", "2"), VZ.ink, 20) : "");
+    o += vzTipLabels(P, [{ v: v1, html: vzB("v", "1"), col: VZ.red }].concat(two ? [{ v: v2, html: vzB("v", "2"), col: VZ.ink }] : [])
+      .concat(Math.hypot(...w) > .02 ? [{ v: w, html: vzB("w"), col: VZ.deep, gap: 22 }] : []));
     o += vzKey([[kind === "line" ? "line" : "fill", VZ.red, kind === "zero" ? "span = {0}" : "the span"], ["line", VZ.deep, "w = a combination"]]);
     return o;
   },
   readout(s) {
     const [v1, v2] = this.vs(s), kind = this.kind(s), w = [s.c1 * v1[0] + (s.two ? s.c2 * v2[0] : 0), s.c1 * v1[1] + (s.two ? s.c2 * v2[1] : 0)];
-    const combo = s.two ? `${vzShort(s.c1)}<b>v</b>₁ + ${vzShort(s.c2)}<b>v</b>₂` : `${vzShort(s.c1)}<b>v</b>₁`;
+    const combo = vzCombo(s.two ? [[s.c1, "<b>v</b>₁"], [s.c2, "<b>v</b>₂"]] : [[s.c1, "<b>v</b>₁"]]);
     let msg;
     if (kind === "zero") msg = "Every combination of zero vectors is 0: the span is just {0}.";
     else if (!s.two) msg = "One nonzero vector: its span is the line through 0 along v₁.";
@@ -13595,7 +13643,7 @@ vzAdd({
   },
   dragTo(s, k, x, y, fine) {
     let p = vzWorld(this.P, x, y, undefined, fine);
-    if (k !== "v3") p = vzOntoLine(p, k === "v1" ? [s.v2x, s.v2y] : [s.v1x, s.v1y]);
+    if (k !== "v3") p = vzOntoLine(p, k === "v1" ? [s.v2x, s.v2y] : [s.v1x, s.v1y], .07, fine);
     s[k + "x"] = p[0]; s[k + "y"] = p[1];
   },
   draw(s, t, thumb) {
@@ -13611,24 +13659,24 @@ vzAdd({
       if (!flat) {                                          // v3 = a v1 + b v2, drawn tip to tail
         const a = vzDet2(v3, v2) / det, b = vzDet2(v1, v3) / det, p = [a * v1[0], a * v1[1]];
         o += P.path([[0, 0], p], `stroke="${VZ.red}" stroke-width="2" stroke-dasharray="5 4"`) + P.path([p, v3], `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray="5 4"`);
-        o += vzLabel(P.X(p[0] / 2), P.Y(p[1] / 2) - 8, vzShort(a) + vzB("v", "1"), VZ.red, 14) + vzLabel(P.X((p[0] + v3[0]) / 2) + 12, P.Y((p[1] + v3[1]) / 2) - 6, vzShort(b) + vzB("v", "2"), VZ.ink, 14);
+        o += vzLabel(P.X(p[0] / 2), P.Y(p[1] / 2) - 8, vzCoef(a) + vzB("v", "1"), VZ.red, 14) + vzLabel(P.X((p[0] + v3[0]) / 2) + 12, P.Y((p[1] + v3[1]) / 2) - 6, vzCoef(b) + vzB("v", "2"), VZ.ink, 14);
       }
       if (!thumb) o += vzTipGrip(P, v3, VZ.gold, "v3");
-      o += P.arrow([0, 0], v3, "O", 3) + vzSideTip(P, [0, 0], v3, vzB("v", "3"), "#8A6A12", 20);
+      o += P.arrow([0, 0], v3, "O", 3);
     }
     if (!thumb) o += vzTipGrip(P, v1, VZ.red, "v1") + vzTipGrip(P, v2, VZ.ink, "v2");
     o += P.arrow([0, 0], v1, "R", 3) + P.arrow([0, 0], v2, "I", 3) + P.dot([0, 0], 3.6);
-    o += vzSideTip(P, [0, 0], v1, vzB("v", "1"), VZ.red, 20) + vzSideTip(P, [0, 0], v2, vzB("v", "2"), VZ.ink, 20);
+    o += vzTipLabels(P, [{ v: v1, html: vzB("v", "1"), col: VZ.red }, { v: v2, html: vzB("v", "2"), col: VZ.ink }].concat(s.three ? [{ v: v3, html: vzB("v", "3"), col: "#8A6A12" }] : []));
     return o;
   },
   readout(s) {
     const [v1, v2, v3] = this.vs(s), det = vzDet2(v1, v2), flat = Math.abs(det) < 1e-9;
     let msg = flat
-      ? (Math.hypot(...v1) < 1e-9 || Math.hypot(...v2) < 1e-9 ? "One of the vectors is 0, so the set is dependent: 1·0 = 0 is a nontrivial combination." : `Dependent: <b>v</b>₂ = ${vzShort((v2[0] * v1[0] + v2[1] * v1[1]) / (v1[0] * v1[0] + v1[1] * v1[1]))}<b>v</b>₁. The parallelogram is flat, so its area and det are 0.`)
+      ? (Math.hypot(...v1) < 1e-9 || Math.hypot(...v2) < 1e-9 ? "One of the vectors is 0, so the set is dependent: 1·0 = 0 is a nontrivial combination." : `Dependent: <b>v</b>₂ = ${vzCoef((v2[0] * v1[0] + v2[1] * v1[1]) / (v1[0] * v1[0] + v1[1] * v1[1]))}<b>v</b>₁. The parallelogram is flat, so its area and det are 0.`)
       : "Independent: the only way to get c₁v₁ + c₂v₂ = 0 is c₁ = c₂ = 0. The parallelogram has area |det| ≠ 0.";
-    if (s.three && !flat) msg += ` With v₃: v₃ = ${vzShort(vzDet2(v3, v2) / det)}v₁ + ${vzShort(vzDet2(v1, v3) / det)}v₂, so {v₁, v₂, v₃} is dependent. Three vectors in ℝ² always are.`;
+    if (s.three && !flat) msg += ` With v₃: v₃ = ${vzCombo([[vzDet2(v3, v2) / det, "v₁"], [vzDet2(v1, v3) / det, "v₂"]])}, so {v₁, v₂, v₃} is dependent. Three vectors in ℝ² always are.`;
     return `<div class="vz-mat"><span class="vz-mat-name">[<b>v</b>₁ <b>v</b>₂] =</span><span class="vz-brk"><table><tr><td>${vzShort(v1[0])}</td><td>${vzShort(v2[0])}</td></tr><tr><td>${vzShort(v1[1])}</td><td>${vzShort(v2[1])}</td></tr></table></span></div>
-      <div class="vz-eq">det = ${vzShort(v1[0])}·${vzShort(v2[1])} − ${vzShort(v2[0])}·${vzShort(v1[1])} = <b>${vzShort(det)}</b></div>
+      <div class="vz-eq">det = ${vzPar(v1[0])}·${vzPar(v2[1])} − ${vzPar(v2[0])}·${vzPar(v1[1])} = <b>${vzShort(det)}</b></div>
       <div class="vz-status ${flat ? "warn" : "ok"}">${msg}</div>`;
   },
 });
@@ -13671,13 +13719,26 @@ vzAdd({
     }
     if (!thumb && s.t >= .999) o += vzTipGrip(P, e1, VZ.red, "e1") + vzTipGrip(P, e2, VZ.ink, "e2");
     o += P.arrow([0, 0], e1, "R", 3.2) + P.arrow([0, 0], e2, "I", 3.2) + P.dot([0, 0], 3.8);
-    o += vzSideTip(P, [0, 0], e1, "A" + vzB("e", "1"), VZ.red, 20) + vzSideTip(P, [0, 0], e2, "A" + vzB("e", "2"), VZ.ink, 20);
-    // the area, inside the image when it has room, otherwise just past its far corner
-    const txt = "area " + (flat ? "0" : vzShort(Math.round(Math.abs(det) * 100) / 100));
-    const L1 = Math.hypot(...e1) * P.u, L2 = Math.hypot(...e2) * P.u, room = Math.abs(det) * P.u * P.u / Math.max(L1, L2);
-    const m = [far[0] / 2, far[1] / 2];
-    if (!flat && room > 38 && Math.min(L1, L2) > 70) o += vzLabel(P.X(m[0]), P.Y(m[1]) + 6, txt, flip ? "#6E5518" : VZ.deep, 18);
-    else o += vzSideTip(P, [0, 0], Math.hypot(...far) > .2 ? far : [.7, .7], txt, flip ? "#6E5518" : VZ.deep, 34);
+    o += vzTipLabels(P, [{ v: e1, html: "A" + vzB("e", "1"), col: VZ.red }, { v: e2, html: "A" + vzB("e", "2"), col: VZ.ink }]);
+    // the area: inside the image when the whole label fits there, otherwise the nearest clear spot outside it
+    const txt = "area " + (flat ? "0" : vzShort(Math.round(Math.abs(det) * 100) / 100)), tw = txt.length * 8.8 + 8, th = 22;
+    const scr = p => [P.X(p[0]), P.Y(p[1])], poly = [[0, 0], e1, far, e2].map(scr);
+    const inside = (x, y) => { let sg = 0; for (let i = 0; i < 4; i++) { const a = poly[i], b = poly[(i + 1) % 4], c = (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]); if (Math.abs(c) < 1e-6) continue; if (sg && Math.sign(c) !== sg) return false; sg = Math.sign(c); } return true; };
+    const corners = (x, y) => [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, -1], [0, 1]].map(([a, b]) => [x + a * (tw / 2 + 3), y + b * (th / 2 + 2)]);
+    const tipAt = v => { const X2 = P.X(v[0]), Y2 = P.Y(v[1]), L = Math.hypot(X2 - P.X(0), Y2 - P.Y(0)) || 1; return [X2 + (X2 - P.X(0)) / L * 20, Y2 + (Y2 - P.Y(0)) / L * 20]; };
+    const busy = [tipAt(e1), tipAt(e2), scr(e1), scr(e2)];
+    const clear = (x, y) => x - tw / 2 > 10 && x + tw / 2 < 590 && y - th / 2 > 10 && y + th / 2 < 410 && busy.every(([bx, by]) => Math.abs(bx - x) > tw / 2 + 20 || Math.abs(by - y) > th / 2 + 11);
+    const C = scr([far[0] / 2, far[1] / 2]);
+    let at = !flat && corners(...C).every(q => inside(...q)) && clear(...C) ? C : null;
+    if (!at) {
+      const F = scr(Math.hypot(...far) > .2 ? far : [.7, .7]), O = scr([0, 0]), a0 = Math.atan2(F[1] - O[1], F[0] - O[0]);
+      search: for (const R of [26, 40, 56, 76, 100]) for (const da of [0, .45, -.45, .9, -.9, 1.4, -1.4, 2, -2, 2.6, -2.6, Math.PI]) {
+        const an = a0 + da, x = F[0] + Math.cos(an) * (R + tw / 2 * Math.abs(Math.cos(an))), y = F[1] + Math.sin(an) * (R + th / 2 * Math.abs(Math.sin(an)));
+        if (clear(x, y) && !corners(x, y).some(q => inside(...q))) { at = [x, y]; break search; }
+      }
+    }
+    if (!at) { const F = scr(far); at = [vzClamp(F[0] + 40, tw / 2 + 12, 588 - tw / 2), vzClamp(F[1] - 30, 24, 400)]; }
+    o += vzLabel(at[0], at[1] + 6, txt, flip ? "#6E5518" : VZ.deep, 18);
     o += vzKey([["dash", VZ.grey, "unit square (area 1)"], ["fill", col, flip ? "its image (flipped)" : "its image"]]);
     return o;
   },
@@ -13687,7 +13748,7 @@ vzAdd({
       : det < 0 ? `The image has area |det A| = ${vzShort(-det)}, and the turn from Ae₁ to Ae₂ now goes clockwise: the orientation is flipped.`
       : `The image has area det A = ${vzShort(det)}, and the turn from Ae₁ to Ae₂ still goes counterclockwise. Every region's area is multiplied by ${vzShort(det)}.`;
     return `<div class="vz-mat"><span class="vz-mat-name">A =</span><span class="vz-brk"><table><tr><td>${vzShort(s.a)}</td><td>${vzShort(s.b)}</td></tr><tr><td>${vzShort(s.c)}</td><td>${vzShort(s.d)}</td></tr></table></span></div>
-      <div class="vz-eq">det A = ad − bc = ${vzShort(s.a)}·${vzShort(s.d)} − ${vzShort(s.b)}·${vzShort(s.c)} = <b>${vzShort(det)}</b></div>
+      <div class="vz-eq">det A = ad − bc = ${vzPar(s.a)}·${vzPar(s.d)} − ${vzPar(s.b)}·${vzPar(s.c)} = <b>${vzShort(det)}</b></div>
       ${s.t < .999 ? `<div class="vz-eq">${vzNum(s.t * 100, 0)}% of the way: area ${vzNum(Math.abs(dt))}${dt < -1e-9 ? ", flipped" : ""}</div>` : ""}
       <div class="vz-status ${Math.abs(det) < 1e-9 ? "warn" : "ok"}">${msg}</div>`;
   },
@@ -13743,10 +13804,10 @@ vzAdd({
   },
   dragTo(s, k, x, y, fine) {
     const I = this.info(s), lim = [3.6, 5];
-    if (k === "x") { let p = vzWorld(this.L, x, y, lim, fine); if (I.rank === 1) p = vzOntoLine(p, I.nul, .08); s.xx = p[0]; s.xy = p[1]; }
-    else if (k === "b") { let p = vzWorld(this.R, x, y, lim, fine); if (I.rank === 1) p = vzOntoLine(p, I.col, .08); s.bx = p[0]; s.by = p[1]; }
+    if (k === "x") { let p = vzWorld(this.L, x, y, lim, fine); if (I.rank === 1) p = vzOntoLine(p, I.nul, .08, fine); s.xx = p[0]; s.xy = p[1]; }
+    else if (k === "b") { let p = vzWorld(this.R, x, y, lim, fine); if (I.rank === 1) p = vzOntoLine(p, I.col, .08, fine); s.bx = p[0]; s.by = p[1]; }
     else {
-      let p = vzWorld(this.R, x, y, lim, fine); p = vzOntoLine(p, k === "a1" ? [s.b, s.d] : [s.a, s.c]);
+      let p = vzWorld(this.R, x, y, lim, fine); p = vzOntoLine(p, k === "a1" ? [s.b, s.d] : [s.a, s.c], .07, fine);
       if (k === "a1") { s.a = p[0]; s.c = p[1]; } else { s.b = p[0]; s.d = p[1]; }
     }
   },
@@ -13805,8 +13866,9 @@ vzAdd({
       if (!thumb) right += vzTipGrip(R, cols[0], VZ.red, "a1") + vzTipGrip(R, cols[1], VZ.gold, "a2");
       right += R.arrow([0, 0], cols[0], "R", 2.4) + R.arrow([0, 0], cols[1], "O", 2.4);
       right += R.path([[0, 0], p], `stroke="${VZ.red}" stroke-width="2.4" stroke-dasharray="5 4"`) + R.path([p, y], `stroke="${VZ.gold}" stroke-width="2.4" stroke-dasharray="5 4"`);
-      if (Math.hypot(...y) > .02) right += R.arrow([0, 0], y, "I", 3.2) + vzSideTip(R, [0, 0], y, "A" + vzB("x"), VZ.ink, 22);
-      right += vzSideTip(R, [0, 0], cols[0], vzB("a", "1"), VZ.red, 18) + vzSideTip(R, [0, 0], cols[1], vzB("a", "2"), "#8A6A12", 18);
+      if (Math.hypot(...y) > .02) right += R.arrow([0, 0], y, "I", 3.2);
+      right += vzTipLabels(R, (Math.hypot(...y) > .02 ? [{ v: y, html: "A" + vzB("x"), col: VZ.ink, gap: 22 }] : [])
+        .concat([{ v: cols[0], html: vzB("a", "1"), col: VZ.red, gap: 18 }, { v: cols[1], html: vzB("a", "2"), col: "#8A6A12", gap: 18 }]));
       left += L.arrow([0, 0], [s.x1, s.x2], "I", 3.2) + vzSideTip(L, [0, 0], [s.x1, s.x2], vzB("x"), VZ.ink, 20);
     } else {
       const b = [s.bx, s.by], sol = this.solve(s, b), ok = sol.kind !== "none";
@@ -13833,13 +13895,13 @@ vzAdd({
       now = zero ? `A${vzTup([s.xx, s.xy])} = 0: this x is in the null space.` : `A${vzTup([s.xx, s.xy])} = ${vzTup(y)}.` + (I.rank === 1 ? " Every x on the same colored line gives this same output." : I.rank === 2 ? " Different inputs always give different outputs here." : "");
     } else if (s.tab === 1) {
       const y = this.Ax(s, [s.x1, s.x2]);
-      now = `Ax = ${vzShort(s.x1)}·${vzTup([s.a, s.c])} + ${vzShort(s.x2)}·${vzTup([s.b, s.d])} = ${vzTup(y)}. The column space is the span of the columns: ${["{0}", "a line", "all of ℝ²"][I.rank]}.`;
+      now = `Ax = ${vzCombo([[s.x1, vzTup([s.a, s.c])], [s.x2, vzTup([s.b, s.d])]], "·")} = ${vzTup(y)}. The column space is the span of the columns: ${["{0}", "a line", "all of ℝ²"][I.rank]}.`;
     } else {
       const sol = this.solve(s, [s.bx, s.by]);
       now = sol.kind === "none" ? "b is not in Col A, so Ax = b has no solution."
         : sol.kind === "point" ? `Exactly one solution, x = ${vzTup(sol.x)}, because Nul A = {0}.`
         : sol.kind === "all" ? "b = 0 and A = 0: every x is a solution."
-        : `b is in Col A. The solutions are the green line: x = x_p + (anything in Nul A), with x_p = ${vzTup(sol.x)}.`;
+        : `b is in Col A. The solutions are the green line: x = x<sub>p</sub> + (anything in Nul A), with x<sub>p</sub> = ${vzTup(sol.x)}.`;
     }
     return `<div class="vz-mat"><span class="vz-mat-name">A =</span><span class="vz-brk"><table><tr><td>${vzShort(s.a)}</td><td>${vzShort(s.b)}</td></tr><tr><td>${vzShort(s.c)}</td><td>${vzShort(s.d)}</td></tr></table></span></div>
       <div class="vz-eq">rank A = ${I.rank}, dim Nul A = ${2 - I.rank}</div>
@@ -13998,11 +14060,11 @@ vzAdd({
   },
   readout(s) {
     const F = this.fns[Math.round(s.fn)], a = s.a, b = s.b, z0 = F.f(a, b), fx = F.fx(a, b), fy = F.fy(a, b);
-    const sgn = v => (v < 0 ? " − " : " + ") + vzNum(Math.abs(v));
+    const sgn = v => (v < 0 ? " − " : " + ") + vzNum(Math.abs(v)), sh = (n, v) => Math.abs(v) < .05 ? n : `(${n} ${v < 0 ? "+" : "−"} ${vzNum(Math.abs(v), 1)})`;
     return `<div class="vz-eq">f(x, y) = ${F.name}</div>
       <div class="vz-eq">at (a, b) = (${vzNum(a, 1)}, ${vzNum(b, 1)}): f<sub>x</sub> = <b>${vzNum(fx)}</b>, f<sub>y</sub> = <b>${vzNum(fy)}</b></div>
-      <div class="vz-eq">tangent plane: z = ${vzNum(z0)}${sgn(fx)}(x − ${vzNum(a, 1)})${sgn(fy)}(y − ${vzNum(b, 1)})</div>
-      <div class="vz-status ${Math.abs(fx) < .02 && Math.abs(fy) < .02 ? "warn" : "ok"}">${Math.abs(fx) < .02 && Math.abs(fy) < .02 ? "Both slopes are 0: the tangent plane is level. This is a critical point." : "f_x is the slope of the red slice, f_y the slope of the gold one. Together they tilt the tangent plane."}</div>`;
+      <div class="vz-eq">tangent plane: z = ${vzNum(z0)}${sgn(fx)}${sh("x", a)}${sgn(fy)}${sh("y", b)}</div>
+      <div class="vz-status ${Math.abs(fx) < .02 && Math.abs(fy) < .02 ? "warn" : "ok"}">${Math.abs(fx) < .02 && Math.abs(fy) < .02 ? "Both slopes are 0: the tangent plane is level. This is a critical point." : "f<sub>x</sub> is the slope of the red slice, f<sub>y</sub> the slope of the gold one. Together they tilt the tangent plane."}</div>`;
   },
 });
 
@@ -14430,7 +14492,8 @@ vzAdd({
     const qs = vzQuads(cam, grid, (i) => vzMix([250, 236, 232], [224, 120, 136], .25 + .5 * (1 - i / n)));
     o += vzQuadSvg(qs, { op: .9, mesh: .8 });
     // upward normals at a few points, and the curl (0, 0, 2) beside them
-    [[0, 0], [.9, 0], [-.45, .78], [-.45, -.78]].forEach(([x, y]) => {
+    const ca = Math.cos(vzRad(s.yaw)), sa = Math.sin(vzRad(s.yaw));       // screen-right is (ca, −sa) on the floor, the front is −(sa, ca)
+    [[0, 0], [ca, -sa], [-ca, sa], [-.85 * sa, -.85 * ca]].forEach(([x, y]) => {
       const r = Math.hypot(x, y), zz = z(r), gx = -2 * s.h * x / (R * R), gy = -2 * s.h * y / (R * R), N = [-gx, -gy, 1], L = Math.hypot(...N);
       o += vzArrow3(cam, [x, y, zz], [x + N[0] / L * .7, y + N[1] / L * .7, zz + N[2] / L * .7], "O", 2);
     });
@@ -14438,7 +14501,9 @@ vzAdd({
     const C = []; for (let j = 0; j <= 72; j++) { const th = 2 * Math.PI * j / 72; C.push([R * Math.cos(th), R * Math.sin(th), 0]); }
     o += vzPath3(cam, C, `stroke="${VZ.red}" stroke-width="3"`);
     [.1, .6].forEach(f => { const a = 2 * Math.PI * f, b = a + .12; o += vzArrow3(cam, [R * Math.cos(a), R * Math.sin(a), 0], [R * Math.cos(b), R * Math.sin(b), 0], "R", 3); });
-    o += vzLab3(cam, [R * Math.cos(-.5), R * Math.sin(-.5), 0], "C", VZ.red, 16, 16, 18) + vzLab3(cam, [0, -R * .45, z(R * .45)], "S", VZ.deep, -24, 0, 18);
+    // C at the edge's right end on screen, S on the surface left of the middle: clear of the normals in every view
+    const sx = -.5 * ca - .3 * sa, sy = .5 * sa - .3 * ca;
+    o += vzLab3(cam, [R * ca, -R * sa, 0], "C", VZ.red, 18, 6, 18) + vzLab3(cam, [sx, sy, z(Math.hypot(sx, sy))], "S", VZ.deep, -6, 4, 18);
     o += vzKey([["line", VZ.red, "the edge C (fixed)"], ["line", VZ.gold, "normals n"], ["fill", VZ.red, "the surface S"]]);
     return o;
   },
@@ -14448,8 +14513,8 @@ vzAdd({
     for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) { const r = R * (i + .5) / n, dr = R / n, dth = 2 * Math.PI / m; flux += 2 * r * dr * dth; }   // curl·(r_r × r_θ) = 2r for a graph
     const circ = 2 * Math.PI * R * R;
     return `<div class="vz-eq">F = (−y, x, 0), so ∇ × F = (0, 0, 2)</div>
-      <div class="vz-eq">∮<sub>C</sub> F · dr = 2π·${vzNum(R, 1)}² = <b>${vzNum(circ)}</b></div>
-      <div class="vz-eq">∬<sub>S</sub> (∇ × F) · n dS = <b>${vzNum(flux)}</b></div>
+      <div class="vz-eq">∮<sub>C</sub> F · dr = 2π(${vzNum(R, 1)})² = <b>${vzNum(circ / Math.PI)}π</b></div>
+      <div class="vz-eq">∬<sub>S</sub> (∇ × F) · n dS = <b>${vzNum(flux / Math.PI)}π</b></div>
       <div class="vz-status ok">${Math.abs(s.h) < .05 ? "A flat disk: the curl points straight through it." : s.h > 0 ? "A dome: the normals tilt and the surface is bigger, and the two effects cancel exactly." : "A bowl: same edge, same answer."} Only the edge matters.</div>`;
   },
 });
@@ -16472,7 +16537,7 @@ function numTex(n) {
   if (Number.isInteger(n)) return String(n);
   if (Math.abs(n * 100 - Math.round(n * 100)) < 1e-9) return String(Math.round(n * 100) / 100);
   const sg = n < 0 ? "-" : "", a = Math.abs(n);
-  const fit = x => { for (let q = 1; q <= 72; q++) { const p = Math.round(x * q); if (p > 0 && Math.abs(x * q - p) < 1e-6 * q) return [p, q]; } return null; };
+  const fit = x => { for (let q = 1; q <= 72; q++) { const p = Math.round(x * q); if (p > 0 && Math.abs(x * q - p) < 1e-9 * q) return [p, q]; } return null; };   // tight: only true repeating decimals (stored to 10+ places) match
   const frac = (p, q, core) => { const top = (p === 1 && core ? "" : String(p)) + core; return q === 1 ? top : "\\frac{" + top + "}{" + q + "}"; };
   let r = fit(a); if (r) return sg + frac(r[0], r[1], "");
   for (const k of [2, 3, 5, 6, 7, 10, 11, 13, 14, 15, 17, 19, 21, 22, 23, 26, 29, 30]) { r = fit(a / Math.sqrt(k)); if (r) return sg + frac(r[0], r[1], "\\sqrt{" + k + "}"); }

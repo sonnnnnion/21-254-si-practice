@@ -47,7 +47,9 @@ function keyFor(request) {
 async function networkFirst(request) {
   const cache = await caches.open(VERSION), key = keyFor(request);
   try {
-    const response = await fetch(request);
+    // revalidate with the server (a cheap 304 when nothing changed), so a new version shows up right after it's published
+    const fresh = request.mode === "navigate" ? new Request(request.url, { cache: "no-cache", credentials: "same-origin" }) : new Request(request, { cache: "no-cache" });
+    const response = await fetch(fresh);
     if (response.ok) cache.put(key, response.clone());
     return response;
   } catch (err) {
