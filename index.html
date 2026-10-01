@@ -13030,9 +13030,10 @@ vzAdd({
   presets: [["Two hills", { fn: 0 }], ["Bowl", { fn: 1 }], ["Saddle", { fn: 2 }]],
   grad(s) { const f = VZ_FNS[Math.round(s.fn)].f, h = 1e-4; return [(f(s.x + h, s.y) - f(s.x - h, s.y)) / (2 * h), (f(s.x, s.y + h) - f(s.x, s.y - h)) / (2 * h)]; },
   staticKey: s => String(Math.round(s.fn)),
-  static(s) {
+  static(s) {                                              // f's height as shading (darker = higher) under quiet level curves
     const P = vzPlane(300, 225, 62), fi = Math.round(s.fn), Fn = VZ_FNS[fi], G = vzSample(fi, -5, 5, -3.8, 3.8, 90);
-    return Fn.levels.map((L, i) => `<path d="${vzContoursPath(G, P, L)}" fill="none" stroke="${i >= Fn.levels.length - 3 ? VZ.red : VZ.grey}" stroke-opacity="${.22 + .05 * i}" stroke-width="1.3" stroke-linecap="round"/>`).join("");
+    return `<image href="${vzHeat(Fn.f, P, "gd" + fi)}" x="0" y="0" width="600" height="450" preserveAspectRatio="none"/>` +
+      Fn.levels.map((L, i) => `<path d="${vzContoursPath(G, P, L)}" fill="none" stroke="${VZ.gold}" stroke-opacity="${.35 + .04 * i}" stroke-width="1.2" stroke-linecap="round"/>`).join("");
   },
   draw(s) {
     const P = vzPlane(300, 225, 62), fi = Math.round(s.fn), Fn = VZ_FNS[fi], G = vzSample(fi, -5, 5, -3.8, 3.8, 90);
@@ -13046,12 +13047,19 @@ vzAdd({
     // u itself is a direction, drawn dashed; the shadow is the solid gold arrow along it.
     let nx = -u[1], ny = u[0]; if (nx * g[0] + ny * g[1] > 0) { nx = -nx; ny = -ny; }
     const foot = [p[0] + u[0] * D * gs, p[1] + u[1] * D * gs], drop = [gt[0] - foot[0], gt[1] - foot[1]], dl = Math.hypot(drop[0], drop[1]), sl = Math.abs(D * gs);
-    o += P.line(p, u, `stroke="${VZ.grey}" stroke-width="1.1" stroke-dasharray="2 5" opacity=".7"`);
+    // the slope ring: every direction from the point at once, thick and red where that way climbs (thickest along
+    // ∇f), thin and grey where it goes down; it changes over exactly where the level curve passes through
+    const R = 1.3, ga = Math.atan2(g[1], g[0]);
+    for (let i = 0; i < 72; i++) {
+      const a0 = i * Math.PI / 36, a1 = (i + 1) * Math.PI / 36, c = gl > 1e-6 ? Math.cos((a0 + a1) / 2 - ga) : 0;
+      const A = [p[0] + R * Math.cos(a0), p[1] + R * Math.sin(a0)], B = [p[0] + R * Math.cos(a1), p[1] + R * Math.sin(a1)];
+      o += `<line x1="${q2(P.X(A[0]))}" y1="${q2(P.Y(A[1]))}" x2="${q2(P.X(B[0]))}" y2="${q2(P.Y(B[1]))}" stroke="${c > 0 ? VZ.red : VZ.grey}" stroke-width="${q2(c > 0 ? 1.4 + 5.2 * c : 1.3)}" stroke-opacity="${q2(c > 0 ? .3 + .55 * c : .45)}" stroke-linecap="round"/>`;
+    }
     o += vzGrip(P.X(p[0]), P.Y(p[1]), VZ.ink, VzView.hot === "p") + vzGrip(P.X(ut[0]), P.Y(ut[1]), VZ.ink, VzView.hot === "u");   // under the arrows
     if (dl > .05) o += `<line x1="${q2(P.X(gt[0]))}" y1="${q2(P.Y(gt[1]))}" x2="${q2(P.X(foot[0]))}" y2="${q2(P.Y(foot[1]))}" stroke="${VZ.gold}" stroke-width="1.5" stroke-dasharray="3 3"/>`;
     if (dl > .25 && sl > .25) o += P.rightAngle(foot, [-Math.sign(D) * u[0], -Math.sign(D) * u[1]], [drop[0] / dl, drop[1] / dl], .15);
     if (sl * 62 > 14) o += P.arrow(p, foot, "O", 3.8);
-    o += vzArrow(P.X(p[0]), P.Y(p[1]), P.X(ut[0]), P.Y(ut[1]), "I", 1.8, 'stroke-dasharray="6 4"');   // on top, so it shows over the shadow
+    o += vzArrow(P.X(p[0]), P.Y(p[1]), P.X(ut[0]), P.Y(ut[1]), "I", 2);   // on top, so it shows over the shadow
     o += `<circle cx="${q2(P.X(foot[0]))}" cy="${q2(P.Y(foot[1]))}" r="3.4" fill="${VZ.gold}" stroke="${VZ.paper}" stroke-width="1.2"/>`;
     if (sl * 62 > 34) o += vzLabel(P.X((p[0] + foot[0]) / 2) + nx * 20, P.Y((p[1] + foot[1]) / 2) - ny * 20 + 5, `D<tspan baseline-shift="sub" font-size="10">u</tspan>f`, VZ.gold, 14);
     o += P.arrow(p, gt, "R", 3.2);
@@ -13062,7 +13070,8 @@ vzAdd({
     if (Math.hypot(lg[0] - lu[0], lg[1] - lu[1]) < 30) { lu[0] += nx * 24; lu[1] -= ny * 24; }
     if (gl * gs * 62 > 3) o += vzLabel(lg[0], lg[1] + 5, "∇f", VZ.red);
     o += vzLabel(lu[0], lu[1] + 5, vzB("u"), VZ.ink);
-    o += vzNote(22, 432, `${Fn.name.toLowerCase()} · the dark curve is the level curve through the point`, "start");
+    o += vzNote(22, 34, Fn.name.toLowerCase() + ": darker is higher", "start");
+    o += vzKey([["line", VZ.ink, "level curve here"], ["line", VZ.red, "ring: uphill each way"], ["line", VZ.gold, "Dᵤf (the shadow)"]]);
     return o;
   },
   readout(s) {
@@ -15293,7 +15302,7 @@ stAdd({
       if (k === 1) o += vzDot3(cam, [0, 0, 0], 6, VZ.green) + stNote(180, 420, "a = b = 0 gives 0", VZ.green);
       if (k === 2) { const p = at(.6, .3), q = at(.2, -.7), r = at(.8, -.4); o += vzArrow3(cam, [0, 0, 0], p, "I", 2) + vzArrow3(cam, [0, 0, 0], q, "I", 2) + vzArrow3(cam, [0, 0, 0], r, "N", 3) + vzLab3(cam, r, "sum, still in the plane", VZ.green, 0, 22, 13); }
       if (k === 3) { const p = at(.45, .3), q = at(-.9, -.6); o += vzArrow3(cam, [0, 0, 0], q, "N", 3) + vzArrow3(cam, [0, 0, 0], p, "I", 2.2) + vzLab3(cam, q, "−2 × it, still in the plane", VZ.green, 0, 22, 13); }
-      o += stNote(180, 30, "W₁: a plane through 0", VZ.ink);
+      o += stNote(180, 30, k < 0 ? "W₁ = {(a + b, a − b, 2a)}" : "W₁: a plane through 0", VZ.ink);   // named only once step 1 shows it
       return o;
     }
     const P = stPlane(180, 240, 34);                        // W2: the first and third quadrants
@@ -15876,7 +15885,9 @@ stAdd({
     const P = vzPlane(58, 392, 72), f = (x, y) => x * x + y * y - 2 * x - 2 * y;
     let o = `<defs><clipPath id="stTri"><path d="M${P.X(0)} ${P.Y(0)}L${P.X(4)} ${P.Y(0)}L${P.X(0)} ${P.Y(4)}Z"/></clipPath></defs>`;
     o += `<path d="M${P.X(0)} ${P.Y(0)}L${P.X(4)} ${P.Y(0)}L${P.X(0)} ${P.Y(4)}Z" fill="${VZ.red}" fill-opacity=".06"/>`;
-    o += `<g clip-path="url(#stTri)">${[.5, 1, 1.5, 2, 2.5, 3, 3.5, 4].map(r => `<circle cx="${P.X(1)}" cy="${P.Y(1)}" r="${r * 72}" fill="none" stroke="${VZ.gold}" stroke-opacity=".55"/>`).join("")}</g>`;
+    // the level curves (centred on the critical point) only come in once step 2 has found that point
+    const lv = k < 1 ? 0 : k === 1 ? stEase(u, .3, 1) : 1;
+    if (lv > 0) o += `<g clip-path="url(#stTri)" opacity="${q2(lv)}">${[.5, 1, 1.5, 2, 2.5, 3, 3.5, 4].map(r => `<circle cx="${P.X(1)}" cy="${P.Y(1)}" r="${r * 72}" fill="none" stroke="${VZ.gold}" stroke-opacity=".55"/>`).join("")}</g>`;
     const edge = (a, c, on) => `<line x1="${P.X(a[0])}" y1="${P.Y(a[1])}" x2="${P.X(c[0])}" y2="${P.Y(c[1])}" stroke="${on ? VZ.red : VZ.ink}" stroke-width="${on ? 4 : 1.8}" stroke-opacity="${on ? .8 : .6}" stroke-linecap="round"/>`;
     o += edge([0, 0], [4, 0], k === 2) + edge([0, 0], [0, 4], k === 3) + edge([4, 0], [0, 4], k === 4);
     const cands = [[1, 1, 1], [1, 0, 2], [0, 1, 3], [2, 2, 4], [0, 0, 5], [4, 0, 5], [0, 4, 5]];
@@ -15886,7 +15897,7 @@ stAdd({
       o += `<circle cx="${P.X(x)}" cy="${P.Y(y)}" r="${fin && (v === 8 || v === -2) ? 9 : 6}" fill="${col}" stroke="#fff" stroke-width="1.6"/>`;
       o += vzLabel(P.X(x) + (x === 4 ? -6 : 14), P.Y(y) + (y === 0 ? -12 : y === 4 ? 4 : -10), String(v).replace("-", "−"), col, 15, x === 4 ? "end" : "start");
     });
-    o += stNote(200, 440, k >= 6 ? "max 8 (red), min −2 (green)" : "level curves of f: circles around (1, 1)", VZ.ink);
+    o += stNote(200, 440, k >= 6 ? "max 8 (red), min −2 (green)" : k >= 1 ? "level curves of f: circles around (1, 1)" : "the closed triangle T", VZ.ink);
     return o;
   },
   steps: [
