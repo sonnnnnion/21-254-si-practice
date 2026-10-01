@@ -3813,6 +3813,7 @@
   .vz-report { display: block; margin: 12px 0 0; padding: 0; border: 0; background: none; font: 500 12px var(--font-sans); color: var(--ink-mute); cursor: pointer; }
   .vz-report:hover { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
   /* an editable 2 × 2 matrix */
+  .vz-row-mats { display: flex; flex-wrap: wrap; gap: 4px 18px; }
   .vz-mx { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 4px 10px; margin: 0 0 12px; }
   .vz-mx-name { font-family: var(--font-display); font-style: italic; font-size: 17px; }
   .vz-mx-grid { display: grid !important; grid-template-columns: repeat(2, 62px); gap: 4px 6px; padding: 3px 9px; }
@@ -3844,6 +3845,8 @@
     body.vz-detail .vz-blurb { margin-bottom: 8px; }
     body.vz-detail .vz-try, body.vz-detail .vz-logic { display: none; }   /* short screens: the picture and its controls come first */
     body.vz-detail .vz-cond { padding: 6px 10px; }
+    body.vz-detail .vz-ptop { gap: 6px; }
+    body.vz-detail .vz-ptop-k { margin-bottom: 3px; }
     body.vz-detail .vz-w { margin-bottom: 4px; }
   }
   /* integrals with stacked limits in the readouts */
@@ -12066,13 +12069,13 @@ const VZ = { red: "#C8102E", deep: "#9A0B22", ink: "#1F2933", grey: "#6B7682", f
              tint: "#FCEFF1", soft: "#F7DEE2", paper: "#FBF8F4" };
 // The index is organized by idea; each picture belongs to one group (VZ_GROUP_OF), in VZ_ORDER.
 const VZ_GROUP_OF = {
-  "Methods, step by step": ["m-nullcol", "m-subspace", "m-span", "m-eigen", "m-complex", "m-inverse", "m-markov", "m-wire", "m-potential", "m-flux", "m-switch", "m-green"],
-  "Vectors, span, and subspaces": ["vectors", "span", "independence", "subspace"],
-  "Matrices as maps": ["matrix", "det", "nullcol", "systems"],
+  "Methods, step by step": ["m-nullcol", "m-subspace", "m-span", "m-eigen", "m-complex", "m-inverse", "m-markov", "m-wire", "m-potential", "m-flux", "m-switch", "m-green", "m-extrema", "m-cylinder"],
+  "Vectors, span, and subspaces": ["vectors", "span", "independence", "coords", "subspace"],
+  "Matrices as maps": ["matrix", "compose", "det", "nullcol", "systems"],
   "Dot and cross products": ["projection", "cross"],
   "Eigenvalues and eigenvectors": ["eigen", "powers"],
   "Curves": ["curves", "arclength"],
-  "Functions of two variables": ["level", "partials", "gradient", "critical"],
+  "Functions of two variables": ["level", "partials", "chain", "gradient", "critical"],
   "Double integrals": ["riemann", "order", "polar", "jacobian"],
   "Vector fields and line integrals": ["gradfield", "fields", "work", "conservative", "green"],
   "Surfaces and flux": ["surface", "flux", "stokes"],
@@ -15518,6 +15521,248 @@ stAdd({
   ],
 });
 
+
+/* ---------- Composition: AB means B first, then A ---------- */
+const vzMatH = (name, m) => `<div class="vz-mat"><span class="vz-mat-name">${name} =</span><span class="vz-brk"><table><tr><td>${vzShort(m[0])}</td><td>${vzShort(m[1])}</td></tr><tr><td>${vzShort(m[2])}</td><td>${vzShort(m[3])}</td></tr></table></span></div>`;
+const vzMul = (A, B) => [A[0] * B[0] + A[1] * B[2], A[0] * B[1] + A[1] * B[3], A[2] * B[0] + A[3] * B[2], A[2] * B[1] + A[3] * B[3]];
+const VZ_MAPS = [
+  { name: "Rotate 90°", m: [0, -1, 1, 0] }, { name: "Shear", m: [1, 1, 0, 1] }, { name: "Stretch x by 2", m: [2, 0, 0, 1] },
+  { name: "Reflect in y = x", m: [0, 1, 1, 0] }, { name: "Squash y by ½", m: [1, 0, 0, .5] },
+];
+vzAdd({
+  id: "compose", title: "Matrix multiplication: one map after another", card: "Composition: AB vs BA",
+  tagline: "AB means: do B first, then A.",
+  blurb: "\\(AB\\mathbf x=A(B\\mathbf x)\\): first \\(B\\) moves the picture, then \\(A\\) moves the result.",
+  tryIt: "Play it with Rotate 90° and Shear, then switch the order: the flag ends up in a different place, so AB ≠ BA.",
+  state: { A: 0, B: 1, t: 2, ord: 0 },
+  controls: [{ k: "t", label: "first map, then the second", min: 0, max: 2, step: .01, fmt: v => v < .995 ? "first map" : v < 1.995 ? "second map" : "both done", play: .55, progress: true, rests: () => [1], restMs: 1300 }],
+  panelTop() {
+    const row = (k, lab) => `<div><div class="vz-ptop-k">${lab}</div><div class="vz-chips">${VZ_MAPS.map((M, i) => `<button type="button" class="vz-chip" data-${k}="${i}">${escapeHtml(M.name)}</button>`).join("")}</div></div>`;
+    return row("mb", "B: applied first") + row("ma", "A: applied second") +
+      `<div><div class="vz-ptop-k">Order</div><div class="vz-seg" role="group" aria-label="Order"><button type="button" data-ord="0">AB: B first</button><button type="button" data-ord="1">BA: A first</button></div></div>`;
+  },
+  sync(s, panel) {
+    if (!panel) return;
+    panel.querySelectorAll("[data-ma]").forEach(b => b.classList.toggle("on", +b.dataset.ma === s.A));
+    panel.querySelectorAll("[data-mb]").forEach(b => b.classList.toggle("on", +b.dataset.mb === s.B));
+    panel.querySelectorAll("[data-ord]").forEach(b => b.classList.toggle("on", +b.dataset.ord === s.ord));
+  },
+  onClick(el, s) {
+    const b = el.closest("[data-ma], [data-mb], [data-ord]"); if (!b) return false;
+    if (b.dataset.ma != null) s.A = +b.dataset.ma; else if (b.dataset.mb != null) s.B = +b.dataset.mb; else s.ord = +b.dataset.ord;
+    s.t = 0; vzTweenTo({ t: 2 }, 2400); return true;     // show the two moves again with the new choice
+  },
+  M(s) {
+    const A = VZ_MAPS[s.A].m, B = VZ_MAPS[s.B].m, first = s.ord ? A : B, second = s.ord ? B : A, lerp = (m, u) => [1 + (m[0] - 1) * u, m[1] * u, m[2] * u, 1 + (m[3] - 1) * u];
+    const e = vzEase(vzClamp(s.t, 0, 1)), f = vzEase(vzClamp(s.t - 1, 0, 1));
+    return { now: vzMul(lerp(second, f), lerp(first, e)), first, second, mid: first };
+  },
+  draw(s) {
+    const P = vzPlane(300, 232, 52), { now, mid } = this.M(s), ap = (m, p) => [m[0] * p[0] + m[1] * p[1], m[2] * p[0] + m[3] * p[1]];
+    let o = "";
+    for (let k = -8; k <= 8; k++) {                         // the moving grid
+      o += P.line(ap(now, [k, 0]), ap(now, [0, 1]), `stroke="${VZ.grey}" stroke-opacity="${k ? .22 : .5}"`) + P.line(ap(now, [0, k]), ap(now, [1, 0]), `stroke="${VZ.grey}" stroke-opacity="${k ? .22 : .5}"`);
+    }
+    const flag = [[.2, .15], [.2, .85], [.62, .85], [.62, .68], [.36, .68], [.36, .15]], sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
+    o += P.poly(sq, `fill="none" stroke="${VZ.ink}" stroke-opacity=".35" stroke-dasharray="4 4"`);
+    if (s.t > 1.001) o += P.poly(sq.map(p => ap(mid, p)), `fill="none" stroke="${VZ.gold}" stroke-width="1.6" stroke-dasharray="5 4"`);
+    o += P.poly(sq.map(p => ap(now, p)), `fill="${VZ.red}" fill-opacity=".12" stroke="${VZ.red}" stroke-width="1.6"`);
+    o += P.poly(flag.map(p => ap(now, p)), `fill="${VZ.ink}" fill-opacity=".6" stroke="none"`);
+    o += P.arrow([0, 0], ap(now, [1, 0]), "R", 3) + P.arrow([0, 0], ap(now, [0, 1]), "I", 3) + P.dot([0, 0], 3.6);
+    const nm = s.ord ? ["A", "BA"] : ["B", "AB"], stage = s.t < .995 ? "applying " + nm[0] : s.t < 1.995 ? "after " + nm[0] + ", applying the other" : "after " + nm[1];
+    o += vzPill(300, 30, stage, s.t >= 1.995 ? VZ.red : VZ.grey);
+    o += vzKey([["dash", VZ.ink, "start"], ["dash", VZ.gold, "after the first map"], ["fill", VZ.red, "now"]]);
+    return o;
+  },
+  readout(s) {
+    const A = VZ_MAPS[s.A].m, B = VZ_MAPS[s.B].m, AB = vzMul(A, B), BA = vzMul(B, A), same = AB.every((v, i) => Math.abs(v - BA[i]) < 1e-9);
+    const P = s.ord ? BA : AB, nm = s.ord ? "BA" : "AB", other = s.ord ? AB : BA;
+    return `${vzMatH(nm, P)}
+      <div class="vz-status ${same ? "ok" : "warn"}">${same ? `Here AB = BA: these two maps happen to commute.` : `The other order, ${s.ord ? "AB" : "BA"} = [${vzShort(other[0])}, ${vzShort(other[1])}; ${vzShort(other[2])}, ${vzShort(other[3])}], is a different matrix: order matters.`}</div>`;
+  },
+});
+
+/* ---------- Coordinates in a basis ---------- */
+vzAdd({
+  id: "coords", title: "Coordinates in a basis", card: "Coordinates in a basis",
+  tagline: "The same vector, measured with different rulers.",
+  blurb: "A basis \\(\\{\\mathbf b_1,\\mathbf b_2\\}\\) lays its own grid over the plane. The coordinates \\([\\mathbf x]_B\\) count the steps along \\(\\mathbf b_1\\) and then \\(\\mathbf b_2\\) that reach \\(\\mathbf x\\).",
+  tryIt: "Drag x onto a corner of the slanted grid: its B-coordinates become whole numbers. Drag b₂ onto the line of b₁ and it stops being a basis.",
+  state: { b1x: 2, b1y: 1, b2x: -1, b2y: 1, xx: 3, xy: 3, walk: 1 },
+  controls: [{ k: "walk", label: "walk there: along b₁, then along b₂", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .4, progress: true, rests: () => [.5] }],
+  P: vzPlane(300, 250, 46),
+  c(s) { const d = vzDet2([s.b1x, s.b1y], [s.b2x, s.b2y]); if (Math.abs(d) < 1e-9) return null; return [vzDet2([s.xx, s.xy], [s.b2x, s.b2y]) / d, vzDet2([s.b1x, s.b1y], [s.xx, s.xy]) / d]; },
+  handles(s) { const P = this.P; return [{ k: "x", x: P.X(s.xx), y: P.Y(s.xy) }, { k: "b1", x: P.X(s.b1x), y: P.Y(s.b1y) }, { k: "b2", x: P.X(s.b2x), y: P.Y(s.b2y) }]; },
+  dragTo(s, k, x, y, fine) {
+    let p = vzWorld(this.P, x, y, [6, 4.6], fine);
+    if (k === "x") {                                        // let go near a corner of the B-grid: snap onto it
+      const c = this.c(Object.assign({}, s, { xx: p[0], xy: p[1] }));
+      if (c && !fine) { const r = c.map(Math.round); if (Math.hypot(c[0] - r[0], c[1] - r[1]) < .2) p = [r[0] * s.b1x + r[1] * s.b2x, r[0] * s.b1y + r[1] * s.b2y]; }
+      s.xx = p[0]; s.xy = p[1];
+    } else { s[k + "x"] = p[0]; s[k + "y"] = p[1]; }
+  },
+  draw(s, t, thumb) {
+    const P = this.P, b1 = [s.b1x, s.b1y], b2 = [s.b2x, s.b2y], x = [s.xx, s.xy], c = this.c(s);
+    let o = P.axes(.25);
+    if (c) for (let k = -9; k <= 9; k++) {                  // the basis's own grid
+      o += P.line([k * b1[0], k * b1[1]], b2, `stroke="${VZ.red}" stroke-opacity="${k ? .16 : .4}"`) + P.line([k * b2[0], k * b2[1]], b1, `stroke="${VZ.ink}" stroke-opacity="${k ? .14 : .35}"`);
+    }
+    if (c) {                                                // the walk: c1 steps along b1, then c2 along b2
+      const w = s.walk, e1 = vzEase(vzClamp(w * 2, 0, 1)), e2 = vzEase(vzClamp(w * 2 - 1, 0, 1)), p1 = [c[0] * b1[0] * e1, c[0] * b1[1] * e1], end1 = [c[0] * b1[0], c[0] * b1[1]];
+      if (Math.abs(c[0]) > 1e-6 && e1 > .02) o += P.arrow([0, 0], p1, "R", 3.2) + (e1 > .98 ? vzLabel(P.X(end1[0] / 2), P.Y(end1[1] / 2) + 22, vzCoef(c[0]) + vzB("b", "1"), VZ.red, 15) : "");
+      if (Math.abs(c[1]) > 1e-6 && e2 > .02) { const p2 = [end1[0] + c[1] * b2[0] * e2, end1[1] + c[1] * b2[1] * e2]; o += P.arrow(end1, p2, "I", 3.2) + (e2 > .98 ? vzLabel(P.X((end1[0] + x[0]) / 2) - 18, P.Y((end1[1] + x[1]) / 2), vzCoef(c[1]) + vzB("b", "2"), VZ.ink, 15) : ""); }
+    }
+    if (!thumb) o += vzTipGrip(P, x, VZ.deep, "x") + vzTipGrip(P, b1, VZ.red, "b1") + vzTipGrip(P, b2, VZ.ink, "b2");
+    o += `<g opacity=".55">${P.arrow([0, 0], x, "D", 2.6)}</g>` + P.dot(x, 5, VZ.deep) + P.arrow([0, 0], b1, "R", 2.6) + P.arrow([0, 0], b2, "I", 2.6) + P.dot([0, 0], 3.6);
+    o += vzTipLabels(P, [{ v: x, html: vzB("x"), col: VZ.deep }, { v: b1, html: vzB("b", "1"), col: VZ.red }, { v: b2, html: vzB("b", "2"), col: VZ.ink }]);
+    o += vzKey(c ? [["line", VZ.red, "lines along b₁"], ["line", VZ.ink, "lines along b₂"]] : []);
+    return o;
+  },
+  readout(s) {
+    const c = this.c(s);
+    if (!c) return `<div class="vz-eq"><b>x</b> = ${vzTup([s.xx, s.xy])}</div><div class="vz-status warn">b₁ and b₂ lie on one line, so they are not a basis: most vectors can't be reached at all, and the ones on that line can be reached in many ways.</div>`;
+    return `<div class="vz-eq">standard coordinates: <b>x</b> = ${vzTup([s.xx, s.xy])}</div>
+      <div class="vz-eq">B-coordinates: [<b>x</b>]<sub>B</sub> = <b>${vzTup(c)}</b></div>
+      <div class="vz-eq"><b>x</b> = ${vzCombo([[c[0], "<b>b</b>₁"], [c[1], "<b>b</b>₂"]])}</div>
+      <div class="vz-status ok">Same arrow, different description. The standard coordinates count steps along e₁ and e₂; [<b>x</b>]<sub>B</sub> counts steps along b₁ and b₂. Because they form a basis, there is exactly one way.</div>`;
+  },
+});
+
+/* ---------- The chain rule along a path ---------- */
+const VZ_CHAIN = [
+  { name: "a circle", t0: 0, t1: 2 * Math.PI, r: t => [1.5 * Math.cos(t), 1.5 * Math.sin(t)], dr: t => [-1.5 * Math.sin(t), 1.5 * Math.cos(t)], rT: "(1.5 cos t, 1.5 sin t)", pi: true },
+  { name: "a line", t0: 0, t1: 1, r: t => [-2.2 + 4.4 * t, -1.1 + 2 * t], dr: () => [4.4, 2], rT: "(−2.2 + 4.4t, −1.1 + 2t)" },
+];
+vzAdd({
+  id: "chain", title: "The chain rule along a path", card: "Chain rule",
+  tagline: "How fast f changes as you move: ∇f · r′(t).",
+  blurb: "Walk along a path \\(\\mathbf r(t)\\) across the contour map of \\(f(x,y)=x^2+2y^2\\). The height under you changes at the rate \\(\\tfrac{d}{dt}f(\\mathbf r(t))=\\nabla f\\cdot\\mathbf r'(t)\\).",
+  tryIt: "Play t on the circle: Play pauses where the rate is 0, exactly where the path runs along a level curve (∇f square to r′).",
+  state: { t: .7, path: 0 },
+  controls: [{ k: "t", label: "time t", min: 0, max: 1, step: .001, fmt: v => Math.round(v * 100) + "% of the way", play: .07, wrap: s => VZ_CHAIN[Math.round(s.path)].pi,
+    rests: s => VZ_CHAIN[Math.round(s.path)].pi ? [0, .25, .5, .75] : [] }],
+  presets: [["Circle", { path: 0, t: .7 }], ["Line", { path: 1, t: .2 }]],
+  f: (x, y) => x * x + 2 * y * y, g: (x, y) => [2 * x, 4 * y],
+  at(s) { const C = VZ_CHAIN[Math.round(s.path)], t = C.t0 + (C.t1 - C.t0) * s.t, p = C.r(t), v = C.dr(t), g = this.g(...p); return { C, t, p, v, g, rate: g[0] * v[0] + g[1] * v[1] }; },
+  staticKey: s => String(Math.round(s.path)),
+  static(s) {
+    const P = vzPlane(185, 215, 66), C = VZ_CHAIN[Math.round(s.path)];
+    let o = `<rect x="10" y="20" width="350" height="400" rx="14" fill="#fff" fill-opacity=".55" stroke="${VZ.ink}" stroke-opacity=".08"/>` + P.axes(.22);
+    [.5, 1, 2, 3, 4.5, 6, 8].forEach(L => { const a = Math.sqrt(L), b = Math.sqrt(L / 2); let d = ""; for (let i = 0; i <= 72; i++) { const q = 2 * Math.PI * i / 72; d += (i ? "L" : "M") + q2(P.X(a * Math.cos(q))) + " " + q2(P.Y(b * Math.sin(q))); } o += `<path d="${d}" fill="none" stroke="${VZ.gold}" stroke-opacity=".55" stroke-width="1.2"/>`; });
+    const pts = []; for (let i = 0; i <= 120; i++) pts.push(C.r(C.t0 + (C.t1 - C.t0) * i / 120));
+    o += P.path(pts, `stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="5 5" opacity=".6"`);
+    // the height along the path, as an ordinary graph on the right
+    const gx = t => 388 + 190 * t, zs = pts.map(p => this.f(...p)), zmax = Math.max(...zs) * 1.1 || 1, gy = z => 330 - 220 * z / zmax;
+    o += `<rect x="372" y="20" width="218" height="400" rx="14" fill="#fff" fill-opacity=".55" stroke="${VZ.ink}" stroke-opacity=".08"/>`;
+    o += `<path d="M380 330H586M388 340V96" stroke="${VZ.ink}" stroke-opacity=".3" fill="none"/>` + vzNote(586, 348, "t", "end", VZ.grey) + vzNote(394, 108, "height f(r(t))", "start", VZ.grey);
+    o += `<path d="${zs.map((z, i) => (i ? "L" : "M") + q2(gx(i / 120)) + " " + q2(gy(z))).join("")}" fill="none" stroke="${VZ.red}" stroke-width="2.4"/>`;
+    this._gy = gy; this._gx = gx;
+    return o;
+  },
+  draw(s, t, thumb) {
+    const P = vzPlane(185, 215, 66), { p, v, g, rate, C } = this.at(s);
+    if (!this._gy) this.static(s);
+    const vs = .28, gs = .12, gl = Math.hypot(...g), vl = Math.hypot(...v);
+    let o = P.dot(p, 6, VZ.deep);
+    o += P.arrow(p, [p[0] + g[0] * gs, p[1] + g[1] * gs], "R", 3) + P.arrow(p, [p[0] + v[0] * vs, p[1] + v[1] * vs], "I", 3);
+    const Pp = { X: a => P.X(p[0] + a), Y: b => P.Y(p[1] + b) };   // labels measured from the moving point
+    o += vzTipLabels(Pp, [{ v: [g[0] * gs, g[1] * gs], html: "∇f", col: VZ.red }, { v: [v[0] * vs, v[1] * vs], html: "r′(t)", col: VZ.ink }]);
+    if (gl > 1e-6 && vl > 1e-6 && Math.abs(rate) < .02 * gl * vl) o += P.rightAngle(p, [g[0] / gl, g[1] / gl], [v[0] / vl, v[1] / vl], .18);
+    // the same rate as a slope on the height graph (per unit of the slider, so times the length of the t-range)
+    const z = this.f(...p), X = this._gx(s.t), Y = this._gy(z), dzds = rate * (C.t1 - C.t0), k = (this._gy(z + dzds * .05) - Y) / (this._gx(.05) - this._gx(0));
+    o += `<line x1="${q2(X - 34)}" y1="${q2(Y - k * 34)}" x2="${q2(X + 34)}" y2="${q2(Y + k * 34)}" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="5 4"/>` + `<circle cx="${q2(X)}" cy="${q2(Y)}" r="5.5" fill="${VZ.red}" stroke="#fff" stroke-width="1.5"/>`;
+    o += vzKey([["line", VZ.gold, "level curves of f"], ["line", VZ.red, "∇f"], ["line", VZ.ink, "r′(t)"]]);
+    return o;
+  },
+  readout(s) {
+    const { t, p, v, g, rate, C } = this.at(s);
+    const msg = Math.abs(rate) < .02 * Math.hypot(...g) * Math.hypot(...v) + 1e-9 ? ["ok", "Rate 0: the path runs along a level curve here, so ∇f is square to r′ and the height isn't changing."]
+      : rate > 0 ? ["", "Positive: you're climbing. r′ points partly along ∇f."] : ["", "Negative: you're going down. r′ points partly against ∇f."];
+    return `<div class="vz-eq">r(t) = ${C.rT}, t = ${C.pi ? vzPi(t) : vzNum(t)}</div>
+      <div class="vz-eq">∇f = (2x, 4y) = (${vzNum(g[0])}, ${vzNum(g[1])})</div>
+      <div class="vz-eq">r′(t) = (${vzNum(v[0])}, ${vzNum(v[1])})</div>
+      <div class="vz-eq">d/dt f(r(t)) = ∇f · r′ = <b>${vzNum(rate)}</b></div>
+      <div class="vz-status ${msg[0]}">${msg[1]}</div>`;
+  },
+});
+
+stAdd({
+  id: "m-extrema", title: "Absolute max and min on a closed region", card: "Absolute extrema",
+  tagline: "Inside, along each edge, at each corner: then compare.",
+  blurb: "On a closed, bounded region the absolute max and min exist, and they can only be in three kinds of places. Check them all, then compare.",
+  problem: "Find the absolute maximum and minimum of \\(f(x,y)=x^2+y^2-2x-2y\\) on the closed triangle with corners \\((0,0)\\), \\((4,0)\\) and \\((0,4)\\).",
+  pic(k, b, u) {
+    const P = vzPlane(58, 392, 72), f = (x, y) => x * x + y * y - 2 * x - 2 * y;
+    let o = `<defs><clipPath id="stTri"><path d="M${P.X(0)} ${P.Y(0)}L${P.X(4)} ${P.Y(0)}L${P.X(0)} ${P.Y(4)}Z"/></clipPath></defs>`;
+    o += `<path d="M${P.X(0)} ${P.Y(0)}L${P.X(4)} ${P.Y(0)}L${P.X(0)} ${P.Y(4)}Z" fill="${VZ.red}" fill-opacity=".06"/>`;
+    o += `<g clip-path="url(#stTri)">${[.5, 1, 1.5, 2, 2.5, 3, 3.5, 4].map(r => `<circle cx="${P.X(1)}" cy="${P.Y(1)}" r="${r * 72}" fill="none" stroke="${VZ.gold}" stroke-opacity=".55"/>`).join("")}</g>`;
+    const edge = (a, c, on) => `<line x1="${P.X(a[0])}" y1="${P.Y(a[1])}" x2="${P.X(c[0])}" y2="${P.Y(c[1])}" stroke="${on ? VZ.red : VZ.ink}" stroke-width="${on ? 4 : 1.8}" stroke-opacity="${on ? .8 : .6}" stroke-linecap="round"/>`;
+    o += edge([0, 0], [4, 0], k === 2) + edge([0, 0], [0, 4], k === 3) + edge([4, 0], [0, 4], k === 4);
+    const cands = [[1, 1, 1], [1, 0, 2], [0, 1, 3], [2, 2, 4], [0, 0, 5], [4, 0, 5], [0, 4, 5]];
+    cands.forEach(([x, y, st]) => {
+      if (k < st) return;
+      const v = f(x, y), fin = k >= 6, col = fin ? (v === 8 ? VZ.red : v === -2 ? VZ.green : VZ.grey) : VZ.deep;
+      o += `<circle cx="${P.X(x)}" cy="${P.Y(y)}" r="${fin && (v === 8 || v === -2) ? 9 : 6}" fill="${col}" stroke="#fff" stroke-width="1.6"/>`;
+      o += vzLabel(P.X(x) + (x === 4 ? -6 : 14), P.Y(y) + (y === 0 ? -12 : y === 4 ? 4 : -10), String(v).replace("-", "−"), col, 15, x === 4 ? "end" : "start");
+    });
+    o += stNote(200, 440, k >= 6 ? "max 8 (red), min −2 (green)" : "level curves of f: circles around (1, 1)", VZ.ink);
+    return o;
+  },
+  steps: [
+    { t: "Why a max and a min exist", tex: ["f(x,y)=x^2+y^2-2x-2y", "T:\\quad x\\ge0,\\quad y\\ge0,\\quad x+y\\le4"],
+      why: "\\(f\\) is continuous and the triangle is closed and bounded, so both an absolute max and an absolute min exist. They can only be inside, on an edge, or at a corner.", sum: "closed, bounded: max and min exist" },
+    { t: "Inside: solve ∇f = 0", tex: ["f_x=2x-2=0,\\qquad f_y=2y-2=0", "(1,1)\\ \\text{is inside } T:\\qquad f(1,1)=-2"],
+      why: "An interior max or min must be a critical point. Keep the ones that are inside the region.", sum: "\\(f(1,1)=-2\\)" },
+    { t: "Bottom edge: y = 0", tex: ["f(x,0)=x^2-2x,\\qquad 0\\le x\\le4", "2x-2=0\\ \\Rightarrow\\ x=1:\\qquad f(1,0)=-1"],
+      why: "On an edge, \\(f\\) is a function of one variable. Find its critical points the Calculus I way.", sum: "\\(f(1,0)=-1\\)" },
+    { t: "Left edge: x = 0", tex: ["f(0,y)=y^2-2y\\ \\Rightarrow\\ y=1:\\qquad f(0,1)=-1"],
+      why: "The same as the bottom edge, with \\(x\\) and \\(y\\) swapped.", sum: "\\(f(0,1)=-1\\)" },
+    { t: "Slanted edge: x + y = 4", tex: ["y=4-x:\\quad f=x^2+(4-x)^2-2x-2(4-x)", "=2x^2-8x+8=2(x-2)^2", "x=2:\\qquad f(2,2)=0"],
+      why: "Use the edge's equation to get down to one variable, then look for critical points as before.", sum: "\\(f(2,2)=0\\)" },
+    { t: "Corners", tex: ["f(0,0)=0,\\qquad f(4,0)=8,\\qquad f(0,4)=8"],
+      why: "A one-variable max or min can sit at the end of its interval, so every corner is a candidate too.", sum: "corners: \\(0,\\ 8,\\ 8\\)" },
+    { t: "Compare every candidate", tex: ["\\begin{array}{c|ccccccc}(x,y)&(1,1)&(1,0)&(0,1)&(2,2)&(0,0)&(4,0)&(0,4)\\\\\\hline f&-2&-1&-1&0&0&8&8\\end{array}", "\\text{max } 8 \\text{ at } (4,0),(0,4);\\qquad \\text{min } {-2} \\text{ at } (1,1)"],
+      why: "The biggest value on the list is the absolute max and the smallest is the absolute min. No second-derivative test is needed for this question.", sum: "max \\(8\\), min \\(-2\\)" },
+  ],
+});
+
+stAdd({
+  id: "m-cylinder", title: "Volume with cylindrical coordinates", card: "Triple integral: cylindrical",
+  tagline: "Columns from the floor surface to the lid, swept around the axis.",
+  blurb: "For a solid that is round about the \\(z\\)-axis, describe each vertical column (\\(z\\) from bottom to top), then sweep out in \\(r\\) and around in \\(\\theta\\). Don't forget \\(dV=r\\,dz\\,dr\\,d\\theta\\).",
+  problem: "Find the volume of the solid that lies above the cone \\(z=\\sqrt{x^2+y^2}\\) and below the plane \\(z=2\\).",
+  pic(k, b, u) {
+    const cam = vzCam(180, 345, 72, vzRad(-30), .38), N = 36, R = 2;
+    let o = vzAxes3(cam, 2.7, .28);
+    const ring = (r, z, attrs) => { const pts = []; for (let i = 0; i <= N; i++) { const a = 2 * Math.PI * i / N; pts.push([r * Math.cos(a), r * Math.sin(a), z]); } return vzPath3(cam, pts, attrs); };
+    for (let i = 0; i < N; i += 3) { const a = 2 * Math.PI * i / N; o += vzPath3(cam, [[0, 0, 0], [R * Math.cos(a), R * Math.sin(a), R]], `stroke="${VZ.red}" stroke-opacity=".28"`); }
+    o += ring(1, 1, `stroke="${VZ.red}" stroke-opacity=".3"`) + ring(R, R, `stroke="${VZ.red}" stroke-width="2.4" fill="${VZ.red}" fill-opacity=".08"`);
+    if (k >= 2) {                                          // one column: from the cone z = r up to the lid z = 2
+      const r = 1.1, a = -.9, x = r * Math.cos(a), y = r * Math.sin(a), e = k > 2 ? 1 : stEase(u, .6, 1.4);
+      o += vzPath3(cam, [[x, y, r], [x, y, r + (2 - r) * e]], `stroke="${VZ.deep}" stroke-width="7" stroke-opacity=".75" stroke-linecap="round"`);
+      o += vzDot3(cam, [x, y, r], 4, VZ.ink) + vzLab3(cam, [x, y, r], "z = r", VZ.ink, 30, 8, 14) + (e > .95 ? vzLab3(cam, [x, y, 2], "z = 2", VZ.ink, 30, -4, 14) : "");
+    }
+    if (k === 1) o += vzLab3(cam, [R, 0, R], "cone: z = r", VZ.red, 10, 26, 15);
+    o += stNote(180, 440, k >= 5 ? "V = 8π/3: a cone of radius 2 and height 2" : k >= 2 ? "each column runs from the cone up to the lid" : "an upside-down cone with a flat lid", VZ.ink);
+    return o;
+  },
+  steps: [
+    { t: "Picture the solid", tex: ["\\text{above } z=\\sqrt{x^2+y^2},\\qquad \\text{below } z=2"],
+      why: "An upside-down cone with its tip at the origin, cut off flat at height 2. It's round about the \\(z\\)-axis: a job for cylindrical coordinates.", sum: "cone up to the lid \\(z=2\\)" },
+    { t: "Cylindrical coordinates", tex: ["x=r\\cos\\theta,\\quad y=r\\sin\\theta,\\quad z=z", "\\sqrt{x^2+y^2}=r,\\qquad dV=r\\,dz\\,dr\\,d\\theta"],
+      why: "The cone becomes simply \\(z=r\\). The extra \\(r\\) in \\(dV\\) is the same stretch as in polar coordinates.", sum: "cone: \\(z=r\\); \\(dV=r\\,dz\\,dr\\,d\\theta\\)" },
+    { t: "Bounds", tex: ["r\\le z\\le2,\\qquad 0\\le r\\le2,\\qquad 0\\le\\theta\\le2\\pi"],
+      why: "Each vertical column starts on the cone (\\(z=r\\)) and stops at the lid (\\(z=2\\)). The cone meets the lid where \\(r=2\\), so \\(r\\) runs from 0 to 2, all the way around.", sum: "\\(r\\le z\\le2,\\ 0\\le r\\le2\\)" },
+    { t: "Set up", tex: ["V=\\int_0^{2\\pi}\\!\\!\\int_0^{2}\\!\\!\\int_r^{2}r\\,dz\\,dr\\,d\\theta"],
+      why: "Innermost is the column (\\(z\\)), then out along a radius (\\(r\\)), then around (\\(\\theta\\)).", sum: "\\(\\int_0^{2\\pi}\\int_0^2\\int_r^2 r\\,dz\\,dr\\,d\\theta\\)" },
+    { t: "Integrate z, then r", tex: ["\\int_r^2 r\\,dz=r\\,(2-r)=2r-r^2", "\\int_0^2(2r-r^2)\\,dr=4-\\tfrac83=\\tfrac43"],
+      why: "Each column has height \\(2-r\\), weighted by \\(r\\).", sum: "\\(\\tfrac43\\) after \\(z\\) and \\(r\\)" },
+    { t: "Integrate θ", tex: ["V=\\int_0^{2\\pi}\\tfrac43\\,d\\theta=\\tfrac{8\\pi}{3}"],
+      why: "Nothing depends on \\(\\theta\\), so the last integral just multiplies by \\(2\\pi\\).", sum: "\\(V=\\tfrac{8\\pi}{3}\\)" },
+    { t: "Check with geometry", tex: ["\\tfrac13\\pi R^2h=\\tfrac13\\,\\pi\\,(2)^2(2)=\\tfrac{8\\pi}{3}\\ \\checkmark"],
+      why: "The solid is a cone of radius 2 and height 2, and the volume formula for a cone agrees.", sum: "matches \\(\\tfrac13\\pi R^2h\\)" },
+  ],
+});
 
 // one short line for each card in the index
 const VZ_TAGLINE = {
