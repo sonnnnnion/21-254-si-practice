@@ -134,15 +134,26 @@
     font-variant-ligatures: no-common-ligatures no-contextual;
     color: var(--ink);
     background-color: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+  }
+
+  /* the dotted paper and its two soft glows sit on their own fixed layer: it is composited once, so scrolling
+     (and iPhone momentum scrolling in particular) never repaints the whole screen. (A fixed background on the
+     page itself, under the blurred top bar, made scrolling stutter on iOS.) */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
     background-image:
       radial-gradient(circle at 1px 1px, rgba(31,41,51,.045) 1px, transparent 0),
       radial-gradient(1200px 600px at 80% -10%, rgba(200,16,46,.05), transparent 60%),
       radial-gradient(900px 500px at -10% 110%, rgba(184,150,66,.05), transparent 60%);
     background-size: 26px 26px, 100% 100%, 100% 100%;
-    background-attachment: fixed;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    min-height: 100vh;
+  }
+  @media print { body::before { display: none; } }
+  /* phones: a solid top bar instead of a live blur, which is costly to redraw on every scroll frame */
+  @media (max-width: 760px), (hover: none) {
+    .nav, .walk-outline { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(251, 248, 244, .97); }
   }
 
   ::selection { background: var(--red); color: #fff; }
@@ -471,8 +482,8 @@
   .week-chip .arr { transition: transform .18s var(--ease); }
   .week-chip:hover .arr { transform: translateX(2px); }
   .week-note { margin: 8px 0 0; font-size: 11.5px; line-height: 1.4; color: var(--ink-mute); }
-  @media (max-height: 880px) { body.is-home .week-strip { margin-top: 16px; padding-top: 12px; } }
-  @media (max-height: 790px) {
+  @media (min-width: 900px) and (max-height: 880px) { body.is-home .week-strip { margin-top: 16px; padding-top: 12px; } }
+  @media (min-width: 900px) and (max-height: 790px) {
     body.is-home .week-strip { margin-top: 10px; padding-top: 9px; }
     body.is-home .week-kicker { margin-bottom: 6px; }
     body.is-home .week-note { margin-top: 6px; }
@@ -882,8 +893,9 @@
   body.is-home footer .foot-links { margin-top: 0; font-size: 12.5px; order: 3; }
   body.is-home footer .foot-notes { order: 4; flex-basis: 100%; text-align: center; }
   body.is-home footer .foot-notes .foot-ai { display: inline; margin: 0; font-size: 11px; }
-  @media (max-height: 880px) {
-    /* the whole home page, footer included, fits a laptop screen */
+  @media (min-width: 900px) and (max-height: 880px) {
+    /* the whole home page, footer included, fits a laptop screen. Desktop widths only: on an iPhone the height
+       changes as Safari's toolbar shrinks while scrolling, and these rules would then resize the page mid-scroll */
     body.is-home footer { margin-top: 2px; }
     body.is-home main { padding-top: 16px; padding-bottom: 4px; }
     body.is-home .home-grid { padding: 14px 0 10px; gap: 24px; }
@@ -900,12 +912,12 @@
     body.is-home .hero-chips { display: none; }            /* they repeat the line above; the page fits without them */
     body.is-home .home-left .hero-actions { margin-top: 18px; }
   }
-  @media (max-height: 790px) {
+  @media (min-width: 900px) and (max-height: 790px) {
     body.is-home .home-title { margin: 8px 0 8px; }
     body.is-home .hero-sub { margin-top: 8px; }
     body.is-home .hero-chips { margin-top: 10px; }
   }
-  @media (max-height: 760px) {
+  @media (min-width: 900px) and (max-height: 760px) {
     body.is-home .hero-art { max-height: 220px; }
     body.is-home .home-title { font-size: clamp(30px, 4vw, 44px); margin: 8px 0 8px; }
     body.is-home .hero-sub { font-size: 14px; margin: 0; }
@@ -914,7 +926,7 @@
     body.is-home .home-modules { margin-top: 8px; }
     body.is-home .week-note { display: none; }
   }
-  @media (max-height: 705px) { body.is-home .hero-art { max-height: 196px; } body.is-home .home-grid { gap: 16px; } }
+  @media (min-width: 900px) and (max-height: 705px) { body.is-home .hero-art { max-height: 196px; } body.is-home .home-grid { gap: 16px; } }
 
   /* Respect prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
@@ -2555,6 +2567,8 @@
   .wu-panel .bar.now { fill: #E8909F; }
   .wu-panel .bar-hit:hover + .bar, .wu-panel .bar-hit:focus + .bar { fill: var(--red-deep); }
   .wu-panel .bar-hit { fill: transparent; cursor: default; outline: none; }
+  .wu-panel > svg * { pointer-events: none; }                 /* the bars and labels let the pointer through to the hover areas */
+  .wu-panel > svg .bar-hit { pointer-events: all; }
   .wu-panel .grid { stroke: var(--border); stroke-width: 1; }
   .wu-panel .base { stroke: var(--border-strong); stroke-width: 1.2; }
   .wu-panel text { font-family: var(--font-sans); font-size: 12px; fill: var(--ink-mute); }
@@ -3749,6 +3763,7 @@
     background: radial-gradient(ellipse at 70% 30%, var(--red-tint) 0%, transparent 55%), var(--surface-2);
   }
   .vz-thumb { border-radius: 10px; margin-bottom: 6px; }
+  .vz-thumb.vz-th-in g[clip-path] { animation: vzRootIn .35s ease; }
   /* the picture's key as text under it: only on phones, where the key inside the picture would be too small to read */
   .vz-keyhtml { display: none; }
   @media (max-width: 640px) {
@@ -3783,20 +3798,33 @@
   /* numbers that change during Play keep a fixed width, so the text around them never jiggles */
   .vz-readout, .vz-eq, .vz-status, .st-time { font-variant-numeric: tabular-nums; }
   .vz-play {
-    border: 1px solid var(--border-strong); background: var(--surface); border-radius: 999px; padding: 2px 10px; cursor: pointer;
-    font: 600 11.5px var(--font-sans); color: var(--ink-soft); transition: background .15s var(--ease), color .15s var(--ease), border-color .15s var(--ease);
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 66px; height: 24px;
+    border: 1px solid var(--border-strong); background: var(--surface); border-radius: 999px; padding: 0 10px 0 8px; cursor: pointer;
+    font: 600 11.5px var(--font-sans); color: var(--ink-soft);
+    transition: background .18s var(--ease), color .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease), transform .12s var(--ease);
   }
-  .vz-play:hover { border-color: var(--red); color: var(--red-deep); }
-  .vz-play.on { background: var(--red); border-color: var(--red); color: #fff; }
-  .vz-sl input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; margin: 0; background: transparent; cursor: pointer; }
-  .vz-sl input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 99px; background: var(--border-strong); }
-  .vz-sl input[type="range"]::-moz-range-track { height: 4px; border-radius: 99px; background: var(--border-strong); }
+  .vz-play::before { content: ""; width: 9px; height: 10px; background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); transition: clip-path .2s var(--ease); }
+  .vz-play.on::before { clip-path: polygon(0 0, 34% 0, 34% 100%, 66% 100%, 66% 0, 100% 0, 100% 100%, 0 100%); }
+  .vz-play:hover { border-color: var(--red); color: var(--red-deep); background: var(--red-tint); }
+  .vz-play:active { transform: scale(.96); }
+  .vz-play:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 2px; }
+  .vz-play.on { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 0 0 3px rgba(200, 16, 46, .14); }
+  /* sliders: the part of the track behind the thumb fills in red (--f, set as the value changes); the thumb gets a
+     soft halo on hover and grows a touch while held */
+  .vz-sl input[type="range"] { --f: .5; -webkit-appearance: none; appearance: none; width: 100%; height: 24px; margin: 0; background: transparent; cursor: pointer; }
+  .vz-sl input[type="range"]::-webkit-slider-runnable-track { height: 5px; border-radius: 99px; background: linear-gradient(to right, var(--red) calc(8px + (100% - 16px) * var(--f)), #E3DDD0 0); }
+  .vz-sl input[type="range"]::-moz-range-track { height: 5px; border-radius: 99px; background: #E3DDD0; }
+  .vz-sl input[type="range"]::-moz-range-progress { height: 5px; border-radius: 99px; background: var(--red); }
   .vz-sl input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 50%;
-    background: #fff; border: 2px solid var(--red); box-shadow: 0 1px 3px rgba(31,41,51,.25); transition: transform .12s var(--ease);
+    -webkit-appearance: none; width: 16px; height: 16px; margin-top: -5.5px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--red); box-shadow: 0 1px 3px rgba(31,41,51,.22), 0 0 0 0 rgba(200,16,46,0);
+    transition: transform .18s var(--ease), box-shadow .2s var(--ease);
   }
-  .vz-sl input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--red); box-shadow: 0 1px 3px rgba(31,41,51,.25); }
-  .vz-sl input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); }
+  .vz-sl input[type="range"]::-moz-range-thumb { width: 13px; height: 13px; border-radius: 50%; background: #fff; border: 2px solid var(--red); box-shadow: 0 1px 3px rgba(31,41,51,.22); transition: transform .18s ease, box-shadow .2s ease; }
+  .vz-sl input[type="range"]:hover::-webkit-slider-thumb { box-shadow: 0 1px 3px rgba(31,41,51,.22), 0 0 0 6px rgba(200,16,46,.12); }
+  .vz-sl input[type="range"]:hover::-moz-range-thumb { box-shadow: 0 1px 3px rgba(31,41,51,.22), 0 0 0 6px rgba(200,16,46,.12); }
+  .vz-sl input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); box-shadow: 0 1px 3px rgba(31,41,51,.22), 0 0 0 8px rgba(200,16,46,.16); }
+  .vz-sl input[type="range"]:active::-moz-range-thumb { transform: scale(1.15); }
   .vz-sl input[type="range"]:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 2px; border-radius: 4px; }
   .vz-presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 14px; }
   .vz-chip {
@@ -3818,7 +3846,16 @@
   .vz-status.ok { border-left-color: var(--red); }
   .vz-status.warn { border-left-color: var(--gold); background: #FFFAEB; }
   .vz-key { display: inline-block; width: 12px; height: 3px; border-radius: 2px; vertical-align: middle; margin-left: 4px; }
-  .vz-toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; margin: 0 0 10px; }
+  /* on/off settings are small switches in the site's colours (the real checkbox stays, invisible, for keyboards
+     and screen readers) */
+  .vz-toggle { position: relative; display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; color: var(--ink); margin: 0 0 10px; cursor: pointer; user-select: none; }
+  .vz-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+  .vz-sw { position: relative; flex: none; width: 30px; height: 18px; border-radius: 99px; background: var(--border-strong); transition: background .22s var(--ease); }
+  .vz-sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(31, 41, 51, .3); transition: transform .26s cubic-bezier(.3, 1.4, .5, 1); }
+  .vz-toggle:hover .vz-sw { background: #C9C2B3; }
+  .vz-toggle input:checked + .vz-sw { background: var(--red); }
+  .vz-toggle input:checked + .vz-sw::after { transform: translateX(12px); }
+  .vz-toggle input:focus-visible + .vz-sw { outline: 2px solid var(--red-soft); outline-offset: 2px; }
   .vz-try { margin: 12px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-mute); }
   .vz-try strong { color: var(--ink-soft); }
   .vz-pager { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
@@ -3887,7 +3924,9 @@
   .vz-jump { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
   .vz-top-right { display: flex; align-items: center; gap: 12px; }
   /* draggable pictures: the page doesn't scroll under a finger that is dragging a vector */
-  .vz-stage.vz-draggable { touch-action: none; }
+  /* a finger on a handle drags it; a finger anywhere else on the picture scrolls the page as usual (the touchstart
+     handler claims only touches that land on a handle) */
+  .vz-stage.vz-draggable { touch-action: pan-y pinch-zoom; }
   .vz-stage.vz-clickable { cursor: crosshair; }
   .vz-stage.vz-draggable:focus { outline: none; }
   .vz-stage.vz-draggable:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 3px; }
@@ -3970,7 +4009,10 @@
   .st-text { font-size: 1em; line-height: 1.55; color: var(--ink); margin: 6px 0; }
   .st-why { margin: 4px 0 8px; padding: 9px 12px; border-left: 3px solid var(--gold); background: #FFFAEB; border-radius: 8px; font-size: .93em; line-height: 1.5; color: var(--ink-soft); }
   .st-ctl { display: flex; gap: 8px; margin: 2px 0 10px; }
-  .st-ctl .st-play { min-width: 86px; justify-content: center; }
+  .st-ctl .st-play { min-width: 92px; justify-content: center; gap: 7px; }
+  .st-play::before { content: ""; width: 9px; height: 11px; background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); transition: clip-path .2s var(--ease); }
+  .st-play.on::before { clip-path: polygon(0 0, 34% 0, 34% 100%, 66% 100%, 66% 0, 100% 0, 100% 100%, 0 100%); }
+  .st-play.re::before { width: 11px; height: 11px; clip-path: none; background: none; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; box-sizing: border-box; }
   .st-ctl button:disabled { opacity: .4; cursor: default; }
   .st-speed { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--ink-mute); margin: 0 0 12px; }
   .st-outline-k { margin-top: 2px; }
@@ -5300,7 +5342,10 @@
   }
   // The picture's clock advances by the time between frames, capped at two frames, so a busy moment
   // (or a hidden tab, which gets no frames at all) slows it briefly instead of making it jump ahead.
-  function visible() { return svg.getClientRects().length > 0; }
+  // ...and it rests while scrolled out of sight (no drawing during a scroll past it, on phones especially)
+  let onScreen = true;
+  if (window.IntersectionObserver) new IntersectionObserver(es => { onScreen = es.some(e => e.isIntersecting); }).observe(svg);
+  function visible() { return onScreen && svg.getClientRects().length > 0; }
   let ht = 0, last = 0;
   function tick(now) {
     raf = 0;
@@ -6172,6 +6217,7 @@ function currentRoute() {
 function handleRoute() {
   const route = currentRoute();
   const scrollTarget = beginNavigation(route);
+  const wt = document.querySelector(".wu-tip"); if (wt) wt.hidden = true;     // a chart tooltip never outlives its page
   const parts = route.split("/").filter(Boolean);
   const head = parts[0] || "home";
   // full screen belongs to one Visualize picture: going anywhere else (back, the index, a nav link) leaves it
@@ -6417,6 +6463,7 @@ function renderCookedGrid() {
    from a random starting tile. Skipped with reduced motion, in hidden tabs, and when the tiles are
    scrolled away. */
 let tileReplayTimer = 0, tileReplayNext = -1;
+addEventListener("scroll", () => { window.__lastScroll = performance.now(); }, { passive: true });
 function scheduleTileReplay() {
   clearTimeout(tileReplayTimer);
   const noHover = window.matchMedia && matchMedia("(hover: none)").matches;
@@ -6427,7 +6474,7 @@ function scheduleTileReplay() {
     if (!grid || !home || !home.classList.contains("active")) return;         // left home: stop until it renders again
     const r = grid.getBoundingClientRect();
     const cells = Array.from(grid.querySelectorAll(".cooked-cell[data-pos]"));
-    if (!document.hidden && cells.length && r.bottom > 0 && r.top < window.innerHeight) {
+    if (!document.hidden && cells.length && r.bottom > 0 && r.top < window.innerHeight && performance.now() - (window.__lastScroll || 0) > 700) {   // not mid-scroll
       if (tileReplayNext < 0) tileReplayNext = Math.floor(Math.random() * cells.length);
       const c = cells[tileReplayNext % cells.length]; tileReplayNext = (tileReplayNext + 1) % cells.length;
       c.classList.remove("replay"); void c.offsetWidth; c.classList.add("replay");
@@ -12287,12 +12334,16 @@ function renderVisualize(id) {
         const items = VZ_LIST.filter(v => v.group === g);
         return `<div class="vz-group" id="vzg-${gi}"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map(v => `
           <a class="vz-card" href="#/visualize/${v.id}">
-            <svg class="vz-thumb" viewBox="0 0 ${VZ_W} ${VZ_H}" aria-hidden="true">${vzDefs(v.defs)}<g clip-path="url(#vz-clip)">${vzThumb(v)}</g></svg>
+            <svg class="vz-thumb" viewBox="0 0 ${VZ_W} ${VZ_H}" aria-hidden="true" data-th="${v.id}">${vzDefs(v.defs)}<g clip-path="url(#vz-clip)">${v._th || ""}</g></svg>
             <span class="vz-card-title">${escapeHtml(v.card || v.title)}</span>
             <span class="vz-card-blurb">${escapeHtml(v.tagline || v.blurb)}</span>
           </a>`).join("")}</div></div>`;
       }).join("")}`;
     typesetMath(root);                                       // blurbs carry inline math
+    // thumbnails not drawn yet are filled in a few per frame, so the page never stalls on all 47 at once
+    const todo = [...root.querySelectorAll("svg[data-th]")].filter(el => !VZ_BY_ID[el.dataset.th]._th);
+    const fill = () => { if (!root.isConnected) return; todo.splice(0, 6).forEach(el => { const g = el.querySelector("g[clip-path]"); if (g) g.innerHTML = vzThumb(VZ_BY_ID[el.dataset.th]); el.classList.add("vz-th-in"); }); if (todo.length) requestAnimationFrame(fill); };
+    if (todo.length) requestAnimationFrame(fill);
     root.querySelector(".vz-jump").addEventListener("click", e => {
       const b = e.target.closest("[data-jump]"); if (!b) return;
       const g = document.getElementById(b.dataset.jump); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 80, behavior: "smooth" });
@@ -12388,6 +12439,12 @@ function vzWireDrag(def) {
     return best && bd <= Math.max(reach, 18) ? best : null;
   };
   let drag = null;
+  stage.addEventListener("touchstart", e => {
+    const t = e.touches[0]; if (!t || e.touches.length > 1) return;
+    const [x, y] = toStage(t);
+    if (near(x, y)) e.preventDefault();                   // on a handle: this touch drags, the page stays put
+  }, { passive: false });
+  stage.addEventListener("touchmove", e => { if (drag) e.preventDefault(); }, { passive: false });
   stage.addEventListener("pointerdown", e => {
     const [x, y] = toStage(e), h = near(x, y);
     if (!h) { if (def.onStageClick && def.onStageClick(VzView.st, x, y)) { e.preventDefault(); vzSetPlay(null); vzChanged(); } return; }
@@ -12482,7 +12539,7 @@ function vzControlsHtml(def) {
     if (c.type === "matrix") return `<div class="vz-mx" data-ctl="${c.k}"><span class="vz-mx-name">${c.label || "A ="}</span><span class="vz-brk vz-mx-grid">${c.keys.map(k =>
       `<input type="number" inputmode="decimal" id="vz-${k}" data-k="${k}" step="${c.step}" min="${c.min}" max="${c.max}" value="${vzMxText(st[k])}" aria-label="${escapeHtml(c.names ? c.names[c.keys.indexOf(k)] : k)}">`).join("")}</span>
       <span class="vz-mx-hint">${c.hint || "type or use the arrow keys"}</span></div>`;
-    if (c.type === "toggle") return `<label class="vz-toggle" data-ctl="${c.k}"><input type="checkbox" id="vz-${c.k}" data-k="${c.k}" ${st[c.k] ? "checked" : ""}><span>${c.label}</span></label>`;
+    if (c.type === "toggle") return `<label class="vz-toggle" data-ctl="${c.k}"><input type="checkbox" role="switch" id="vz-${c.k}" data-k="${c.k}" ${st[c.k] ? "checked" : ""}><span class="vz-sw" aria-hidden="true"></span><span>${c.label}</span></label>`;
     return `<div class="vz-sl" data-ctl="${c.k}">
       <div class="vz-sl-top"><label class="vz-sl-name" for="vz-${c.k}">${c.label}</label>
         <span class="vz-sl-right">${c.noPlay ? "" : `<button class="vz-play" type="button" data-play="${c.k}" aria-label="Play ${escapeHtml(c.aria || c.label)}"><span>Play</span></button>`}<output id="vzo-${c.k}">${vzCtlText(c, st[c.k])}</output></span></div>
@@ -12591,16 +12648,20 @@ function vzSyncControls() {
     }
     if (!el) return;
     if (c.type === "toggle") el.checked = !!st[c.k];
-    else { if (Number(el.value) !== st[c.k]) el.value = st[c.k]; if (out) out.textContent = vzCtlText(c, st[c.k]); }
+    else {
+      if (Number(el.value) !== st[c.k]) el.value = st[c.k]; if (out) out.textContent = vzCtlText(c, st[c.k]);
+      el.style.setProperty("--f", vzClamp((st[c.k] - c.min) / (c.max - c.min), 0, 1).toFixed(4));   // the red fill behind the thumb
+    }
   });
 }
 
 /* Three layers: "static" (rebuilt only when def.staticKey(state) changes: contours, field
    arrows), "active" (rebuilt when the state changes), and "moving" (def.frame updates it in
    place every frame: particles, a turning surface). */
-function vzThumb(v) {
+function vzThumb(v) {                                     // drawn once, then reused (a card never changes)
+  if (v._th) return v._th;
   const st = Object.assign({}, v.state, v.thumb || {});
-  return (v.static ? v.static(st) : "") + v.draw(st, 1.2, true) + (v.frame ? v.frame(null, st, 1.2) : "");
+  return (v._th = (v.static ? v.static(st) : "") + v.draw(st, 1.2, true) + (v.frame ? v.frame(null, st, 1.2) : ""));
 }
 function vzDraw(now) {
   const def = VzView.def, stage = document.getElementById("vzStage");
@@ -15237,7 +15298,8 @@ function stTimeline(now) {
 function stSync() {
   const root = $("#vizRoot"), def = ST.def; if (!root || !def) return;
   const done = ST.k === def.steps.length - 1 && ST.b === def.steps[ST.k].tex.length - 1;
-  const pb = root.querySelector("[data-st='play']"); if (pb) pb.textContent = ST.playing ? "Pause" : done ? "Replay" : ST.k < 0 ? "Play" : "Play";
+  const pb = root.querySelector("[data-st='play']");
+  if (pb) { pb.textContent = ST.playing ? "Pause" : done ? "Replay" : "Play"; pb.classList.toggle("on", ST.playing); pb.classList.toggle("re", !ST.playing && done); }
   root.querySelectorAll("[data-speed]").forEach(b => b.classList.toggle("on", +b.dataset.speed === ST.speed));
   const back = root.querySelector("[data-st='back']"), nx = root.querySelector("[data-st='next']");
   if (back) back.disabled = ST.k < 0; if (nx) nx.disabled = done;
@@ -16612,7 +16674,8 @@ function renderUsage(d) {
     tile(N(d.qr), "arrivals via the SI QR code", "scans of the code on the slides or board");
   box.hidden = false;
   const panel = (title, desc, body, wide) => `<section class="wu-panel${wide ? " wide" : ""}"><h4>${title}</h4><p class="wu-desc">${desc}</p>${body}</section>`;
-  const hit = (x, y, w, h, tip) => `<rect class="bar-hit" x="${x}" y="${y}" width="${w}" height="${h}" data-tip="${escapeHtml(tip)}" tabindex="0"><title>${escapeHtml(tip)}</title></rect>`;
+  // (no <title>: the browser's own tooltip would pop up late on top of ours)
+  const hit = (x, y, w, h, tip) => `<rect class="bar-hit" x="${x}" y="${y}" width="${w}" height="${h}" data-tip="${escapeHtml(tip)}" tabindex="0" role="img" aria-label="${escapeHtml(tip)}"></rect>`;
   const hbar = (x, y, w, h) => { const r = Math.min(4, w / 2, h / 2); return w ? `<path class="bar" d="M${x} ${y}H${x + w - r}Q${x + w} ${y} ${x + w} ${y + r}V${y + h - r}Q${x + w} ${y + h} ${x + w - r} ${y + h}H${x}Z"/>` : ""; };
   // 1. home page visits per week: every bar labelled; the current week is still filling in
   let c1 = "";
@@ -16660,11 +16723,19 @@ function renderUsage(d) {
   // one small tooltip for every bar
   let tip = document.querySelector(".wu-tip");
   if (!tip) { tip = document.createElement("div"); tip.className = "wu-tip"; tip.hidden = true; document.body.appendChild(tip); }
-  const show = el => { const r = el.getBoundingClientRect(); tip.textContent = el.dataset.tip; tip.style.left = (r.left + r.width / 2) + "px"; tip.style.top = r.top + "px"; tip.hidden = false; };
-  charts.querySelectorAll("[data-tip]").forEach(el => {
-    el.addEventListener("mouseenter", () => show(el)); el.addEventListener("focus", () => show(el));
-    el.addEventListener("mouseleave", () => { tip.hidden = true; }); el.addEventListener("blur", () => { tip.hidden = true; });
-  });
+  // it follows the pointer (just above it, kept inside the window), switches text as you move from bar to bar
+  // without flickering, and goes away when you leave the chart, scroll, or the chart redraws
+  const place = (x, y) => { const w = tip.offsetWidth, h = tip.offsetHeight; tip.style.left = Math.min(innerWidth - w / 2 - 8, Math.max(w / 2 + 8, x)) + "px"; tip.style.top = Math.max(h + 18, y) + "px"; };
+  const say = t => { if (tip.textContent !== t) tip.textContent = t; tip.hidden = false; };
+  tip.hidden = true;
+  if (!charts._tipWired) {
+    charts._tipWired = true;
+    charts.addEventListener("pointermove", e => { const el = e.target.closest && e.target.closest("[data-tip]"); if (!el || e.pointerType === "touch") { tip.hidden = true; return; } say(el.dataset.tip); place(e.clientX, e.clientY - 6); });
+    charts.addEventListener("pointerleave", () => { tip.hidden = true; });
+    charts.addEventListener("focusin", e => { const el = e.target.closest && e.target.closest("[data-tip]"); if (!el) return; const r = el.getBoundingClientRect(); say(el.dataset.tip); place(r.left + r.width / 2, r.top); });
+    charts.addEventListener("focusout", () => { tip.hidden = true; });
+    addEventListener("scroll", () => { tip.hidden = true; }, { passive: true });
+  }
 }
 
 /* Reported issues, straight from GoatCounter's public count feed: one small request per problem (6 at a time,
