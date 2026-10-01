@@ -3939,22 +3939,23 @@
   .st-math { font-size: clamp(14.5px, 2cqw, 19px); min-height: 0; padding: 16px 20px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; }
   .st-pic { display: block; width: 100%; height: 100%; border-left: 1px solid var(--border);
     background: radial-gradient(ellipse at 70% 25%, var(--red-tint) 0%, transparent 60%), var(--surface-2); }
-  .st-given { font-size: 1em; line-height: 1.5; color: var(--ink); padding-bottom: 10px; border-bottom: 1px dashed var(--border-strong); transition: font-size .3s ease, color .3s ease; }
+  /* the problem stays at the top of the board while the work below it scrolls */
+  .st-given { position: sticky; top: -16px; z-index: 1; margin-top: -16px; padding-top: 16px; background: var(--surface); font-size: 1em; line-height: 1.5; color: var(--ink); padding-bottom: 10px; border-bottom: 1px dashed var(--border-strong); transition: font-size .7s cubic-bezier(.4, 0, .2, 1), color .7s ease; }
   .st-given.small { font-size: .86em; color: var(--ink-soft); }
   .st-kicker, .st-step-n { display: block; font: 800 max(10.5px, .72em) var(--font-sans); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 3px; }
-  .st-past { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-  .st-past li { display: none; align-items: center; gap: 8px; font-size: .9em; line-height: 1.35; color: var(--ink-soft); }
-  .st-past li.on { display: flex; animation: stIn .35s ease; }
-  .st-past li.on.old { display: none; }
+  /* everything that arrives on the board opens its own space smoothly (no jumps below it), then fades in:
+     no wipes, no pops */
+  .st-past { list-style: none; margin: 0; padding: 0; display: grid; }
+  .st-past li { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .6s cubic-bezier(.4, 0, .2, 1), opacity .4s ease; }
+  .st-past li.on { grid-template-rows: 1fr; opacity: 1; transition: grid-template-rows .7s cubic-bezier(.4, 0, .2, 1) .1s, opacity .7s ease .35s; }
+  .st-past li > .st-in { overflow: hidden; min-height: 0; display: flex; align-items: center; gap: 8px; padding: 2px 0; font-size: .9em; line-height: 1.35; color: var(--ink-soft); }
   .st-past-n { flex: none; width: 18px; height: 18px; border-radius: 99px; background: #EAF4EE; color: #245F3A; font: 800 10px var(--font-sans); display: grid; place-items: center; }
   .st-now { position: relative; }
   .st-now > * { display: none; }
   .st-now > .on { display: block; }
-  .st-now > .on.enter { animation: stIn .5s var(--ease-out, ease) .17s both; }
-  .st-now > .leave { display: block; position: absolute; left: 0; right: 0; top: 0; pointer-events: none; animation: stOut .2s ease-in both; }
-  @keyframes stOut { to { opacity: 0; transform: translateY(-6px); } }
-  /* a new line is written in from the left, like chalk, rather than appearing at once */
-  @keyframes stWrite { from { clip-path: inset(-20% 100% -20% 0); opacity: .35; } 60% { opacity: 1; } to { clip-path: inset(-20% -2% -20% 0); opacity: 1; } }
+  .st-now > .on.enter { animation: stIn .8s cubic-bezier(.2, .7, .2, 1) .3s both; }
+  .st-now > .leave { display: block; position: absolute; left: 0; right: 0; top: 0; pointer-events: none; animation: stOut .4s ease both; }
+  @keyframes stOut { to { opacity: 0; } }
   .st-time { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; display: flex; align-items: flex-end; cursor: pointer; z-index: 2; }
   .st-time-track { position: relative; width: 100%; height: 3px; background: rgba(31, 41, 51, .08); transition: height .15s ease; overflow: hidden; }
   .st-time:hover .st-time-track { height: 6px; }
@@ -3963,12 +3964,13 @@
   .st-intro p { margin: 6px 0 0; font-size: 1.03em; line-height: 1.55; color: var(--ink-soft); }
   .st-step-h { font: 700 1.1em/1.3 var(--font-sans); color: var(--ink); margin: 0 0 4px; }
   .st-step-n { color: var(--red); margin-bottom: 2px; }
-  .st-line { display: none; }
-  .st-line.on { display: block; animation: stWrite .8s cubic-bezier(.4, 0, .2, 1) both; }
+  .st-line { display: grid; grid-template-rows: 0fr; opacity: 0; transform: translateY(6px); transition: grid-template-rows .5s cubic-bezier(.4, 0, .2, 1), opacity .3s ease, transform .5s ease; }
+  .st-line.on { grid-template-rows: 1fr; opacity: 1; transform: none; transition: grid-template-rows .65s cubic-bezier(.4, 0, .2, 1), opacity .9s ease .2s, transform .9s cubic-bezier(.2, .7, .2, 1) .2s; }
+  .st-line > .st-in { overflow: hidden; min-height: 0; }
   .st-tex { font-size: 1.03em; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
   .st-tex mjx-container[display="true"] { margin: .45em 0 !important; font-size: 108%; }
   .st-text { font-size: 1em; line-height: 1.55; color: var(--ink); margin: 6px 0; }
-  .st-why { margin: 10px 0 0; padding: 9px 12px; border-left: 3px solid var(--gold); background: #FFFAEB; border-radius: 8px; font-size: .93em; line-height: 1.5; color: var(--ink-soft); }
+  .st-why { margin: 4px 0 8px; padding: 9px 12px; border-left: 3px solid var(--gold); background: #FFFAEB; border-radius: 8px; font-size: .93em; line-height: 1.5; color: var(--ink-soft); }
   .st-ctl { display: flex; gap: 8px; margin: 2px 0 10px; }
   .st-ctl .st-play { min-width: 86px; justify-content: center; }
   .st-ctl button:disabled { opacity: .4; cursor: default; }
@@ -15033,7 +15035,6 @@ function stM(rows, o = {}) {
   };
   return `\\left[\\begin{array}{${spec}}${rows.map((row, r) => row.map((v, c) => cell(v, r, c)).join("&")).join("\\\\")}\\end{array}\\right]`;
 }
-const stTexLen = t => String(t.html || t).replace(/\\[a-zA-Z]+/g, "x").replace(/[{}\\^_&]/g, "").length;
 function stLineHtml(L) { return L && L.html ? `<div class="st-text">${L.html}</div>` : `<div class="st-tex">\\[${L}\\]</div>`; }
 
 function renderSteps(def, i, prev, next) {
@@ -15056,12 +15057,12 @@ function renderSteps(def, i, prev, next) {
         <div class="st-board${def.pic ? " has-pic" : ""}" id="stBoard">
           <div class="st-math" id="stMath">
             <div class="st-given" id="stGiven"><span class="st-kicker">The problem</span><div class="st-given-body">${def.problem}</div></div>
-            <ol class="st-past" id="stPast">${steps.map((s, j) => `<li data-j="${j}"><span class="st-past-n">${j + 1}</span><span class="st-past-t">${s.sum}</span></li>`).join("")}</ol>
+            <ol class="st-past" id="stPast">${steps.map((s, j) => `<li data-j="${j}"><div class="st-in"><span class="st-past-n">${j + 1}</span><span class="st-past-t">${s.sum}</span></div></li>`).join("")}</ol>
             <div class="st-now" id="stNow">
               <div class="st-intro" data-j="-1"><p>Press <b>Play</b> to watch the method unfold, or step through it with <b>Next</b>. Each step shows what to write and why.</p></div>
               ${steps.map((s, j) => `<section class="st-step" data-j="${j}"><div class="st-step-h"><span class="st-step-n">Step ${j + 1}</span>${escapeHtml(s.t)}</div>
-                ${s.tex.map((L, b) => `<div class="st-line" data-b="${b}">${stLineHtml(L)}</div>`).join("")}
-                <p class="st-why">${s.why}</p></section>`).join("")}
+                <p class="st-why">${s.why}</p>
+                ${s.tex.map((L, b) => `<div class="st-line" data-b="${b}"><div class="st-in">${stLineHtml(L)}</div></div>`).join("")}</section>`).join("")}
             </div>
           </div>
           ${def.pic ? `<svg class="st-pic" id="stPic" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${vzDefs()}<g id="stPicOld" pointer-events="none"></g><g id="stPicG"></g></svg>` : ""}
@@ -15116,10 +15117,17 @@ function renderSteps(def, i, prev, next) {
     const r = e.currentTarget.getBoundingClientRect(), x = vzClamp((e.clientX - r.left) / r.width, 0, 1), tot = ST.beats.reduce((a, q) => a + q[2], 0);
     let acc = 0, hit = ST.beats[0];
     for (const q of ST.beats) { if (acc / tot > x) break; hit = q; acc += q[2]; }
-    ST.k = hit[0]; ST.b = hit[1]; stShow(); if (ST.playing) stSchedule();
+    ST.k = hit[0]; ST.b = hit[1] < 0 && !ST.playing ? 0 : hit[1]; stShow(); if (ST.playing) stSchedule();
   });
   // a picture with picLive keeps moving the whole time (a flow, a spin); the others settle once their step's animation is done
-  const loop = now => { if (ST.def !== def) return; if (def.pic && (def.picLive || now - ST.beatT0 < (def.picDur || 3200) + 100)) stPic(now); stTimeline(now); ST.raf = requestAnimationFrame(loop); };
+  const math = document.getElementById("stMath");
+  const loop = now => {
+    if (ST.def !== def) return;
+    if (def.pic && (def.picLive || now - ST.beatT0 < (def.picDur || 3200) + 100)) stPic(now);
+    stTimeline(now);
+    if (ST.followUntil > now && math) { const d = Math.max(0, math.scrollHeight - math.clientHeight) - math.scrollTop; if (Math.abs(d) > .5) math.scrollTop += d * .1; }
+    ST.raf = requestAnimationFrame(loop);
+  };
   ST.raf = requestAnimationFrame(loop);
 }
 function stStop() {
@@ -15127,11 +15135,11 @@ function stStop() {
   if (ST.onKey) document.removeEventListener("keydown", ST.onKey);
   ST.onKey = null; ST.def = null; ST.playing = false;
 }
-function stNext() {
+function stNext(play) {                                  // Play opens each step on its title and reason (b = −1); Next goes straight to the math
   const def = ST.def; if (!def) return false;
-  if (ST.k < 0) { ST.k = 0; ST.b = 0; }
+  if (ST.k < 0) { ST.k = 0; ST.b = play ? -1 : 0; }
   else if (ST.b < def.steps[ST.k].tex.length - 1) ST.b++;
-  else if (ST.k < def.steps.length - 1) { ST.k++; ST.b = 0; }
+  else if (ST.k < def.steps.length - 1) { ST.k++; ST.b = play ? -1 : 0; }
   else return false;
   stShow(); return true;
 }
@@ -15145,22 +15153,37 @@ function stPlay(on) {
   if (on && ST.k === def.steps.length - 1 && ST.b === def.steps[ST.k].tex.length - 1) { ST.k = -1; ST.b = 0; stShow(); }   // replay from the start
   ST.playing = on; stSync(); stSchedule();
 }
-// how long each line stays before the next one: longer lines get a little more time, and a step's last line
-// leaves time to read its reason. Kept brisk so Play runs like a video, not a slideshow.
-function stBeatMs(def, k, b) {
-  if (k < 0) return 900;
-  const s = def.steps[k], last = b === s.tex.length - 1;
-  let ms = vzClamp(1100 + 14 * stTexLen(s.tex[b]), 1500, 3400);
-  if (last) ms += vzClamp(600 + 16 * s.why.replace(/<[^>]+>/g, "").length, 1600, 3800);   // the reason is on screen from the start; this is the last look
-  return ms;
+// How much there is to read. Prose: words (a bit of inline math counts as two). A formula: its symbols, an
+// entry, an operator or a letter each; matrix and spacing commands cost nothing.
+function stWords(html) { return String(html).replace(/\\\(.*?\\\)/g, " w w ").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length; }
+function stSymbols(L) {
+  if (L && L.html) return stWords(L.html) * 1.6;
+  const s = String(L).replace(/\\(begin|end)\{[a-z*]+\}(\{[^}]*\})?/g, " ").replace(/\\(left|right|bigl|bigr|big|Big)\b/g, "")
+    .replace(/\\(,|;|!|quad|qquad|tfrac|dfrac|displaystyle)/g, " ").replace(/\\ /g, " ")
+    .replace(/\\(text|operatorname|mathrm)\{([^}]*)\}/g, (m, c, w) => " " + "w".repeat(2 * Math.max(1, w.trim().split(/\s+/).length)) + " ")
+    .replace(/\\[a-zA-Z]+/g, "x").replace(/\\\\|[{}^_&]/g, " ");
+  return s.replace(/\s+/g, "").length;
 }
-// every beat in order, for the progress bar: [k, b, ms]
-function stBeats(def) { const out = [[-1, 0, stBeatMs(def, -1, 0)]]; def.steps.forEach((s, k) => s.tex.forEach((_, b) => out.push([k, b, stBeatMs(def, k, b)]))); return out; }
+// The rhythm of a step, like a worked example on video: the step's title and its reason come first, with time to
+// read them (about 240 ms a word); then each line of math, held for as long as it takes to read it (a matrix gets
+// more time than a short equation); a short beat after the last line, then the next step.
+function stBeatMs(def, k, b) {
+  if (k < 0) return 1200;                                                     // Play pressed: a moment, then step 1
+  const s = def.steps[k];
+  if (b < 0) return vzClamp(1300 + 240 * stWords(s.why), 3200, 8000);
+  return vzClamp(1500 + 95 * stSymbols(s.tex[b]), 2400, 6200) + (b === s.tex.length - 1 ? 900 : 0);
+}
+// every beat in order, for the progress bar: [k, b, ms]; b = −1 is a step's title and reason before its math
+function stBeats(def) {
+  const out = [[-1, 0, stBeatMs(def, -1, 0)]];
+  def.steps.forEach((s, k) => { out.push([k, -1, stBeatMs(def, k, -1)]); s.tex.forEach((_, b) => out.push([k, b, stBeatMs(def, k, b)])); });
+  return out;
+}
 function stSchedule() {
   clearTimeout(ST.timer); ST.timer = 0;
   const def = ST.def; if (!def || !ST.playing) return;
   ST.lineT0 = performance.now(); ST.lineMs = stBeatMs(def, ST.k, ST.b) * ST.speed;
-  ST.timer = setTimeout(() => { if (!stNext()) { ST.playing = false; stSync(); return; } stSchedule(); }, ST.lineMs);
+  ST.timer = setTimeout(() => { if (!stNext(true)) { ST.playing = false; stSync(); return; } stSchedule(); }, ST.lineMs);
 }
 // the thin progress line along the bottom of the board: it fills smoothly while playing; click to jump to a step
 function stTimeline(now) {
@@ -15185,29 +15208,23 @@ function stShow() {
   const k = ST.k, b = ST.b, key = k + ":" + b;
   root.querySelector("#stGiven").classList.toggle("small", k >= 0);
   root.querySelectorAll("#stPast li").forEach(li => li.classList.toggle("on", +li.dataset.j < k));
-  // only the last few summaries stay, so the current step always has room
-  const shown = [...root.querySelectorAll("#stPast li.on")]; shown.forEach((li, j) => li.classList.toggle("old", j < shown.length - 4));
   root.querySelectorAll("#stNow [data-j]").forEach(el => {
     const on = +el.dataset.j === k;
     if (on && !el.classList.contains("on")) { el.classList.remove("enter", "leave"); void el.offsetWidth; el.classList.add("enter"); }
     if (!on && el.classList.contains("on")) {                // the old step fades out on top while the new one fades in
       el.classList.remove("enter"); el.classList.add("leave"); clearTimeout(el._lt);
-      el._lt = setTimeout(() => el.classList.remove("leave"), 220);
+      el._lt = setTimeout(() => el.classList.remove("leave"), 420);
     }
     el.classList.toggle("on", on);
   });
   const cur = k >= 0 ? root.querySelector(`.st-step[data-j="${k}"]`) : null;
   if (cur) {
     cur.querySelectorAll(".st-line").forEach(l => l.classList.toggle("on", +l.dataset.b <= b));
-    cur.classList.toggle("read", b === def.steps[k].tex.length - 1);
     stFit(cur);
   }
   root.querySelectorAll(".st-outline li").forEach(li => { const j = +li.dataset.goto; li.classList.toggle("done", j < k); li.classList.toggle("now", j === k); });
   const now = root.querySelector(".st-outline li.now"); if (now && now.scrollIntoView) { const ol = now.parentElement; if (now.offsetTop < ol.scrollTop || now.offsetTop + now.offsetHeight > ol.scrollTop + ol.clientHeight) ol.scrollTop = now.offsetTop - 20; }
-  // a tall step folds away more of the older summaries; only if that's not enough does the board scroll to the newest line
-  const m = root.querySelector("#stMath");
-  if (m) { const vis = shown.filter(li => !li.classList.contains("old")); while (m.scrollHeight > m.clientHeight + 2 && vis.length) vis.shift().classList.add("old"); }
-  if (m && m.scrollHeight > m.clientHeight + 2) m.scrollTo({ top: m.scrollHeight, behavior: "smooth" });
+  ST.followUntil = performance.now() + 1600;                 // when the board is full it pans down gently to the newest line (in the loop)
   if (key !== ST.key) {
     if (!ST.key || +ST.key.split(":")[0] !== k) {             // a new step: the picture's clock restarts, and the old picture dissolves away
       ST.beatT0 = performance.now();
