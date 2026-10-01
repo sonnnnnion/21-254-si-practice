@@ -3749,6 +3749,17 @@
     background: radial-gradient(ellipse at 70% 30%, var(--red-tint) 0%, transparent 55%), var(--surface-2);
   }
   .vz-thumb { border-radius: 10px; margin-bottom: 6px; }
+  /* the picture's key as text under it: only on phones, where the key inside the picture would be too small to read */
+  .vz-keyhtml { display: none; }
+  @media (max-width: 640px) {
+    .vz-stage .vz-key { display: none; }
+    .vz-keyhtml:not(:empty) { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 8px 4px 0; font-size: 12.5px; color: var(--ink-soft); }
+    .vz-kh { display: inline-flex; align-items: center; gap: 6px; }
+    .vz-kh i { display: inline-block; flex: none; width: 16px; height: 0; border-top: 3px solid var(--c); border-radius: 2px; }
+    .vz-kh i.vz-kh-dash { border-top: 2px dashed var(--c); }
+    .vz-kh i.vz-kh-fill { height: 10px; border: 1px solid var(--c); background: color-mix(in srgb, var(--c) 22%, transparent); border-radius: 3px; }
+    .vz-kh i.vz-kh-dot { width: 9px; height: 9px; border: 0; background: var(--c); border-radius: 50%; }
+  }
   /* thumbnails are icons: the small notes and keys would be unreadable specks */
   .vz-thumb .vz-note, .vz-thumb .vz-key, .sg-project svg .vz-note, .sg-project svg .vz-key { display: none; }
   .vz-card-title { font-weight: 700; font-size: 14px; padding: 0 3px; }
@@ -12297,7 +12308,7 @@ function renderVisualize(id) {
       </span>
     </div>
     <div class="vz-main">
-      <div class="vz-stage-wrap"><svg class="vz-stage" id="vzStage" viewBox="0 0 ${VZ_W} ${VZ_H}" role="img" aria-label="${escapeHtml(def.title)}"></svg></div>
+      <div class="vz-stage-wrap"><svg class="vz-stage" id="vzStage" viewBox="0 0 ${VZ_W} ${VZ_H}" role="img" aria-label="${escapeHtml(def.title)}"></svg><div class="vz-keyhtml" id="vzKeyHtml"></div></div>
       <aside class="vz-panel">
         <h1 class="vz-title">${escapeHtml(def.title)}</h1>
         <p class="vz-blurb">${escapeHtml(def.blurb)}</p>
@@ -12579,8 +12590,13 @@ function vzDraw(now) {
   const [gs, ga, gd] = stage._layers;
   if (VzView.stale) {
     if (def.static) { const key = def.staticKey ? def.staticKey(st) : "1"; if (key !== stage._key) { gs.innerHTML = def.static(st); stage._key = key; } }
-    VzView.live = true; VzView.frameNo = (VzView.frameNo || 0) + 1; VzView.labSeen = {};
+    VzView.live = true; VzView.frameNo = (VzView.frameNo || 0) + 1; VzView.labSeen = {}; VzView.keyItems = null;
     try { ga.innerHTML = def.draw(st, t, false); } finally { VzView.live = false; }
+    const kh = document.getElementById("vzKeyHtml"), kj = JSON.stringify(VzView.keyItems || []);
+    if (kh && kh._k !== kj) {
+      kh._k = kj;
+      kh.innerHTML = (VzView.keyItems || []).map(([kind, col, label]) => `<span class="vz-kh"><i class="vz-kh-${kind === "fill" ? "fill" : kind === "dot" ? "dot" : kind === "dash" ? "dash" : "line"}" style="--c:${col}"></i>${escapeHtml(label)}</span>`).join("");
+    }
     const ro = document.getElementById("vzReadout");
     if (ro && def.readout) { const html = def.readout(st); if (ro._html !== html) { ro._html = html; ro.innerHTML = html; } }
   }
@@ -13542,6 +13558,7 @@ function vzGrip(x, y, col, hot) {
 }
 // a small key in the bottom-left corner: [[kind, color, label]], kind "fill" | "line" | "dot"
 function vzKey(items, x = 16, y = 432) {
+  if (VzView.live) VzView.keyItems = items;                // on phones the same key is shown as text under the picture
   let o = "", cx = x;
   items.forEach(([kind, col, label]) => {
     if (kind === "fill") o += `<rect x="${cx}" y="${y - 10}" width="16" height="11" rx="3" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-opacity=".7"/>`;
