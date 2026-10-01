@@ -3807,6 +3807,7 @@
   .vz-nw { white-space: nowrap; }
   /* previous / next beside the crumb; report link at the foot of the panel */
   .vz-steps-nav { display: inline-flex; gap: 4px; }
+  @media (max-width: 640px) { .vz-full { display: none; } }
   .vz-nav-btn { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface);
     font-size: 20px; line-height: 1; color: var(--ink-soft); text-decoration: none; padding-bottom: 2px; transition: border-color .14s, color .14s; }
   .vz-nav-btn:hover { border-color: var(--ink-faint); color: var(--ink); text-decoration: none; }
@@ -14977,7 +14978,7 @@ function stSchedule() {
   else {
     const s = def.steps[ST.k], last = ST.b === s.tex.length - 1;
     ms = vzClamp(1700 + 22 * stTexLen(s.tex[ST.b]), 2300, 5200);
-    if (last) ms += vzClamp(1400 + 38 * s.why.replace(/<[^>]+>/g, "").length, 3200, 8500);
+    if (last) ms += vzClamp(800 + 26 * s.why.replace(/<[^>]+>/g, "").length, 2400, 6000);   // the reason is on screen from the start; this is the last look
   }
   ST.timer = setTimeout(() => { if (!stNext()) { ST.playing = false; stSync(); return; } stSchedule(); }, ms * ST.speed);
 }
