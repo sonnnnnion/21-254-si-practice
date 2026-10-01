@@ -5081,9 +5081,9 @@
 
   /* ---------- 9. Double integral as the limit of boxes ---------- */
   const riemann = {
-    label: "Boxes over a square region whose heights follow f(x, y): one box splits into 3 by 3, then 9 by 9, approaching the surface, the double integral; then the boxes sink into the floor and one box rises to start again",
-    poster: 6.9,
-    levels: [1, 3, 9],
+    label: "Boxes over a square region whose heights follow f(x, y): one box splits into 3 by 3, then 6 by 6, then 12 by 12, approaching the surface, the double integral; then the boxes sink into the floor and one box rises to start again",
+    poster: 8.9,
+    levels: [1, 3, 6, 12],
     edge: st => st.n > 4 ? .5 : .65,                           // the white edges between boxes
     f(x, y) { return .22 + .78 * Math.exp(-((x - .62) ** 2 / .08 + (y - .4) ** 2 / .12)) + .3 * Math.exp(-((x - .2) ** 2 + (y - .78) ** 2) / .03); },
     build() {
@@ -5130,20 +5130,20 @@
         labels("riemann", "the limit of sums f · ΔA as the boxes shrink", "1 box");
     },
     // One set of boxes on screen at a time. One box rises from the square; it splits into 3 × 3 boxes that
-    // start at its height (identical at the switch) and glide to their own heights; each of those splits into
-    // 3 × 3 the same way (9 × 9 = 81); the surface shows through and fades again. Then the round ends with its
-    // own move, not the film run backwards: the 81 boxes sink into the floor in a wave from the back corner,
-    // the square sits empty for a beat, and the one box rises again to start the next round.
-    T: { split1: 2.2, split2: 4.9, mesh: 7.3, meshOut: 9.4, drain: 10.1, sink: .7, cyc: 12.1, glide: .95 },
+    // start at its height (identical at the switch) and glide to their own heights; then each box splits into
+    // 2 × 2 the same way (6 × 6), and again (12 × 12); the surface shows through and fades again. Then the round
+    // ends with its own move, not the film run backwards: the boxes sink into the floor in a wave from the back
+    // corner, the square sits empty for a beat, and the one box rises again to start the next round.
+    T: { splits: [2.1, 4.5, 6.9], mesh: 9.3, meshOut: 11.4, drain: 12.1, sink: .7, cyc: 14.1, glide: .95 },
     paint(st, si, g, u) {
       const kids = g.children, P3 = this.P3, T = this.T; let all = true;
       st.bars.forEach((b, i) => {
         let h;
         if (!si) { const w = ease(clamp01(u / 1.05)); if (w < 1) all = false; h = b.h * w; }   // the one box rises
-        else if (si === 2 && u >= T.drain) {                       // the reset: sink into the floor, back corner first
+        else if (si === this.levels.length - 1 && u >= T.drain) {   // the reset: sink into the floor, back corner first
           const w = clamp01((u - T.drain - (.55 - b.delay) * .9) / T.sink), e = w * w * (3 - 2 * w); if (w < 1) all = false; h = b.h * (1 - e);
         } else {
-          const w = ease(clamp01((u - (si === 1 ? T.split1 : T.split2) - b.delay * .45) / T.glide)); if (w < 1) all = false; h = b.hp + (b.h - b.hp) * w;
+          const w = ease(clamp01((u - T.splits[si - 1] - b.delay * .45) / T.glide)); if (w < 1) all = false; h = b.hp + (b.h - b.hp) * w;
           for (let c = 0; c < 3; c++) kids[3 * i + c].setAttribute("fill", rgb(mixA(b.pcols[c], b.cols[c], w)));   // colour glides with the height
         }
         h = Math.max(.002, h);
@@ -5156,12 +5156,12 @@
     },
     frame(t, k) {
       const T = this.T, tt = Math.max(0, t - .3), cycle = Math.floor(tt / T.cyc), u = tt - cycle * T.cyc;
-      const lvl = u < T.split1 ? 0 : u < T.split2 ? 1 : 2, meshOn = smooth(T.mesh, T.mesh + .9, u) * (1 - smooth(T.meshOut, T.meshOut + .7, u));
+      const last = this.levels.length - 1, lvl = T.splits.filter(x => u >= x).length, meshOn = smooth(T.mesh, T.mesh + .9, u) * (1 - smooth(T.meshOut, T.meshOut + .7, u));
       k.base.setAttribute("opacity", n2(faint(t, 0, .5)));
       // at a split the new set takes over at once (identical in shape and colour at that instant). A copy of the
       // old boxes, as they ended, sits on top and dissolves within a third of a second, before the new boxes have
       // moved much: their extra dividing edges come in softly, and nothing lingers as a ghost
-      const since = lvl === 1 ? u - T.split1 : lvl === 2 ? u - T.split2 : 9, fade = ease(clamp01(since / .3));
+      const since = lvl ? u - T.splits[lvl - 1] : 9, fade = ease(clamp01(since / .3));
       if (lvl !== this._lvl) {
         if (lvl && this._lvl === lvl - 1) { k.was.innerHTML = k["set" + (lvl - 1)].innerHTML; k.was.setAttribute("stroke-opacity", n2(this.edge(this.sets[lvl - 1]))); }
         else k.was.innerHTML = "";
@@ -5172,7 +5172,7 @@
       const gone = smooth(T.drain + .85, T.drain + 1.45, u), rise = ease(clamp01(u / .35));
       this.sets.forEach((st, si) => {
         const on = si === lvl;
-        const op = on ? (lvl === 2 ? (1 - .72 * meshOn) * (1 - gone) : lvl ? 1 : rise) : 0;
+        const op = on ? (lvl === last ? (1 - .72 * meshOn) * (1 - gone) : lvl ? 1 : rise) : 0;
         k["set" + si].setAttribute("opacity", n2(op));
 
         if (!on) { st.key = null; return; }
@@ -15118,7 +15118,8 @@ function renderSteps(def, i, prev, next) {
     for (const q of ST.beats) { if (acc / tot > x) break; hit = q; acc += q[2]; }
     ST.k = hit[0]; ST.b = hit[1]; stShow(); if (ST.playing) stSchedule();
   });
-  const loop = now => { if (ST.def !== def) return; if (def.pic && now - ST.beatT0 < (def.picDur || 3200) + 100) stPic(now); stTimeline(now); ST.raf = requestAnimationFrame(loop); };
+  // a picture with picLive keeps moving the whole time (a flow, a spin); the others settle once their step's animation is done
+  const loop = now => { if (ST.def !== def) return; if (def.pic && (def.picLive || now - ST.beatT0 < (def.picDur || 3200) + 100)) stPic(now); stTimeline(now); ST.raf = requestAnimationFrame(loop); };
   ST.raf = requestAnimationFrame(loop);
 }
 function stStop() {
@@ -15593,14 +15594,20 @@ stAdd({
   tagline: "Curl 0? Then only the endpoints matter.",
   blurb: "Before grinding through a messy parametrization, check whether the field is a gradient. If it is, the work is just the change in the potential.",
   problem: "A force \\(\\mathbf F=(2xy+z,\\ x^2+2yz,\\ x+y^2)\\) pushes a bead along the twisted wire \\(\\mathbf r(t)=\\left(t^2,\\ \\sin\\tfrac{\\pi t}{2},\\ t^3\\right)\\), \\(0\\le t\\le1\\). How much work does it do?",
+  picLive: true,
   pic(k, b, u) {
-    const cam = vzCam(112, 350, 128, vzRad(-40), .38), path = [], line = [];
+    const cam = vzCam(112, 350, 128, vzRad(-40), .38), path = [], line = [], T = performance.now() / 1000;
     for (let i = 0; i <= 60; i++) { const t = i / 60; path.push([t * t, Math.sin(Math.PI * t / 2), t * t * t]); line.push([t, t, t]); }
     let o = vzAxes3(cam, 1.25, .3);
     [[[1, 0, 0], [1, 1, 0]], [[0, 1, 0], [1, 1, 0]], [[1, 1, 0], [1, 1, 1]], [[0, 0, 1], [1, 0, 1]], [[0, 0, 1], [0, 1, 1]], [[1, 0, 1], [1, 1, 1]], [[0, 1, 1], [1, 1, 1]], [[1, 0, 0], [1, 0, 1]], [[0, 1, 0], [0, 1, 1]]].forEach(([a, c]) => { o += vzPath3(cam, [a, c], `stroke="${VZ.grey}" stroke-opacity=".3" stroke-dasharray="3 4"`); });
     o += vzPath3(cam, path, `stroke="${VZ.red}" stroke-width="3.2" stroke-linecap="round"`);
     if (k >= 6) o += vzPath3(cam, line, `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray="6 5"`);
     o += vzDot3(cam, [0, 0, 0], 5, VZ.ink) + vzDot3(cam, [1, 1, 1], 5, VZ.ink) + vzLab3(cam, [0, 0, 0], "(0, 0, 0)", VZ.ink, -8, 22, 14) + vzLab3(cam, [1, 1, 1], "(1, 1, 1)", VZ.ink, 0, -14, 14);
+    // a bead rides the wire from start to end, over and over; once the straight path is in, a second bead keeps pace on it
+    const sv = (T / 3.2) % 1, e = sv * sv * (3 - 2 * sv), op = Math.min(1, sv / .08, (1 - sv) / .08);
+    const bead = (q, col) => { const c = cam(...q); return `<circle cx="${q2(c[0])}" cy="${q2(c[1])}" r="6" fill="${col}" stroke="#fff" stroke-width="2" opacity="${q2(op)}"/>`; };
+    o += bead([e * e, Math.sin(Math.PI * e / 2), e * e * e], VZ.red);
+    if (k >= 6) o += bead([e, e, e], VZ.ink);
     o += stNote(180, 440, k >= 7 ? "both paths: W = f(1, 1, 1) − f(0, 0, 0) = 3" : k >= 6 ? "only the endpoints matter" : "the twisted wire", k >= 7 ? VZ.deep : VZ.ink);
     return o;
   },
@@ -15629,13 +15636,19 @@ stAdd({
   tagline: "Parametrize, find the normal, check its direction, integrate.",
   blurb: "The flux recipe: parametrize the surface, get a normal from the cross product, make sure it points the way the problem asks, then integrate \\(\\mathbf F\\cdot\\mathbf N\\) over the parameter region.",
   problem: "Find the flux of \\(\\mathbf F=(2x,\\ y,\\ z)\\) through the triangle cut from the plane \\(x+y+z=3\\) by the first octant, with the normal pointing away from the origin.",
+  picLive: true,
   pic(k, b, u) {
-    const cam = vzCam(165, 330, 56, vzRad(-40), .42), A = [3, 0, 0], B = [0, 3, 0], C = [0, 0, 3];
+    const cam = vzCam(165, 330, 56, vzRad(-40), .42), A = [3, 0, 0], B = [0, 3, 0], C = [0, 0, 3], T = performance.now() / 1000;
     let o = vzAxes3(cam, 3.6, .35);
     const tri = (pts, attrs) => `<path d="M${pts.map(p => { const q = cam(...p); return q2(q[0]) + " " + q2(q[1]); }).join("L")}Z" ${attrs}/>`;
     if (k === 0 || k >= 5) o += tri([[3, 0, 0], [0, 3, 0], [0, 0, 0]], `fill="${VZ.gold}" fill-opacity=".18" stroke="${VZ.gold}" stroke-dasharray="5 4"`) + vzLab3(cam, [1, 1, 0], "D", "#7A5C0F", 0, 6, 16);
     o += tri([A, B, C], `fill="${VZ.red}" fill-opacity=".16" stroke="${VZ.red}" stroke-width="2"`);
-    if (k >= 4) [[.5, .5], [2, .5], [.5, 2], [1, 1], [1.5, .3], [.3, 1.4]].forEach(([x, y]) => { const p = [x, y, 3 - x - y], f = [2 * x, y, 3 - x - y], L = .32; o += `<g opacity=".7">${vzArrow3(cam, p, [p[0] + f[0] * L, p[1] + f[1] * L, p[2] + f[2] * L], "I", 1.8)}</g>`; });
+    if (k >= 4) [[.5, .5], [2, .5], [.5, 2], [1, 1], [1.5, .3], [.3, 1.4]].forEach(([x, y], i) => {
+      const p = [x, y, 3 - x - y], f = [2 * x, y, 3 - x - y], L = .32; o += `<g opacity=".7">${vzArrow3(cam, p, [p[0] + f[0] * L, p[1] + f[1] * L, p[2] + f[2] * L], "I", 1.8)}</g>`;
+      // a speck of the flow passing through the triangle along F, live
+      const ph = (T * .55 + i * .17) % 1, q = p.map((c, j) => c + f[j] * L * (ph * 1.6 - .6)), sc = cam(...q);
+      o += `<circle cx="${q2(sc[0])}" cy="${q2(sc[1])}" r="2.6" fill="${VZ.ink}" opacity="${q2(.75 * Math.min(1, ph / .15, (1 - ph) / .15))}"/>`;
+    });
     if (k >= 2) { const p = [1, 1, 1], e = k > 2 ? 1 : stEase(u, .6, 1.2); o += vzArrow3(cam, p, [1 + 1.1 * e, 1 + 1.1 * e, 1 + 1.1 * e], "O", 3) + (e > .9 ? vzLab3(cam, [2.1, 2.1, 2.1], "N = (1, 1, 1)", "#8A6A12", -58, -2, 15) : ""); }
     if (k === 3) o += vzPath3(cam, [[0, 0, 0], [1, 1, 1]], `stroke="${VZ.ink}" stroke-dasharray="3 4"`) + stNote(180, 440, "N points the same way as (1, 1, 1): away from 0", VZ.ink);
     else o += stNote(180, 440, k >= 4 ? "F (dark) pushes through the red triangle" : "the triangle x + y + z = 3", VZ.ink);
@@ -15698,15 +15711,17 @@ stAdd({
   tagline: "Trade a line integral for a double integral of the spin.",
   blurb: "Green's theorem turns the circulation around a closed curve into a double integral of \\(Q_x-P_y\\) over the region inside, often much easier, especially in polar coordinates.",
   problem: "Find the circulation \\(\\displaystyle\\oint_C (x^2-y^3)\\,dx+(x^3+y^2)\\,dy\\) once counterclockwise around the unit circle.",
+  picLive: true,
   pic(k, b, u) {
-    const cx = 180, cy = 230, R = 135;
+    // live: the arrows on C travel counterclockwise and each little spin turns, faster farther out (the spin is 3r²)
+    const cx = 180, cy = 230, R = 135, T = performance.now() / 1000;
     let o = `<defs><radialGradient id="stGreenG"><stop offset="0" stop-color="${VZ.red}" stop-opacity=".02"/><stop offset="1" stop-color="${VZ.red}" stop-opacity=".42"/></radialGradient></defs>`;
     if (k >= 1) o += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#stGreenG)"/>`;
     o += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${VZ.red}" stroke-width="3"/>`;
-    for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + .3, b2 = a + .2; o += vzArrow(cx + R * Math.cos(a), cy - R * Math.sin(a), cx + R * Math.cos(b2), cy - R * Math.sin(b2), "R", 3); }
+    for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + .3 + .35 * T, b2 = a + .2; o += vzArrow(cx + R * Math.cos(a), cy - R * Math.sin(a), cx + R * Math.cos(b2), cy - R * Math.sin(b2), "R", 3); }
     if (k >= 1) [[0, 0], [.5, 0], [0, .55], [-.6, -.3], [.4, -.6], [-.45, .5], [.75, .45]].forEach(([x, y]) => {   // little spins, bigger farther out
-      const r2 = x * x + y * y, s = 5 + 13 * r2, X = cx + R * x, Y = cy - R * y;
-      if (s < 6) return; o += `<path d="M${q2(X + s)} ${q2(Y)}A${q2(s)} ${q2(s)} 0 1 0 ${q2(X)} ${q2(Y - s)}" fill="none" stroke="${VZ.deep}" stroke-width="1.6"/>` + vzArrow(X + .2, Y - s, X - 3, Y - s - .3, "D", 1.6);
+      const r2 = x * x + y * y, s = 5 + 13 * r2, X = cx + R * x, Y = cy - R * y, turn = -(T * 120 * r2) % 360;
+      if (s < 6) return; o += `<g transform="rotate(${q2(turn)} ${q2(X)} ${q2(Y)})"><path d="M${q2(X + s)} ${q2(Y)}A${q2(s)} ${q2(s)} 0 1 0 ${q2(X)} ${q2(Y - s)}" fill="none" stroke="${VZ.deep}" stroke-width="1.6"/>${vzArrow(X + .2, Y - s, X - 3, Y - s - .3, "D", 1.6)}</g>`;
     });
     o += vzLabel(cx + R * .78, cy - R * .78 - 8, "C", VZ.red, 18) + stNote(180, 440, k >= 1 ? "spin Q_x − P_y = 3r²: strongest near the rim" : "the unit circle, counterclockwise", VZ.ink);
     if (k >= 3) o += `<line x1="${cx}" y1="${cy}" x2="${cx + R * Math.cos(.6)}" y2="${cy - R * Math.sin(.6)}" stroke="${VZ.ink}" stroke-dasharray="4 4"/>` + vzLabel(cx + R * .45 * Math.cos(.6) + 6, cy - R * .45 * Math.sin(.6) - 8, "r", VZ.ink, 16);
