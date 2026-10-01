@@ -3901,6 +3901,56 @@
   .vz-conclude.no { background: var(--red-tint); color: var(--red-deep); border-left: 3px solid var(--red); }
   .vz-btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
   .vz-logic { font-size: 12px; line-height: 1.5; color: var(--ink-mute); margin: 0; }
+
+  /* ---------- Methods, step by step: the board and its outline ---------- */
+  @keyframes stIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .st-board { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); box-shadow: var(--sh-1); aspect-ratio: 4 / 3; overflow: hidden; }
+  .st-board.has-pic { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
+  .st-math { min-height: 0; padding: 16px 20px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; }
+  .st-pic { display: block; width: 100%; height: 100%; border-left: 1px solid var(--border);
+    background: radial-gradient(ellipse at 70% 25%, var(--red-tint) 0%, transparent 60%), var(--surface-2); }
+  .st-given { font-size: 14.5px; line-height: 1.5; color: var(--ink); padding-bottom: 10px; border-bottom: 1px dashed var(--border-strong); transition: font-size .3s ease, color .3s ease; }
+  .st-given.small { font-size: 12.5px; color: var(--ink-soft); }
+  .st-kicker, .st-step-n { display: block; font: 800 10.5px var(--font-sans); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 3px; }
+  .st-past { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .st-past li { display: none; align-items: center; gap: 8px; font-size: 13px; line-height: 1.35; color: var(--ink-soft); }
+  .st-past li.on { display: flex; animation: stIn .35s ease; }
+  .st-past li.on.old { display: none; }
+  .st-past-n { flex: none; width: 18px; height: 18px; border-radius: 99px; background: #EAF4EE; color: #245F3A; font: 800 10px var(--font-sans); display: grid; place-items: center; }
+  .st-now > * { display: none; }
+  .st-now > .on { display: block; }
+  .st-now > .on.enter { animation: stIn .45s ease; }
+  .st-intro p { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--ink-soft); }
+  .st-step-h { font: 700 16px/1.3 var(--font-sans); color: var(--ink); margin: 0 0 4px; }
+  .st-step-n { color: var(--red); margin-bottom: 2px; }
+  .st-line { display: none; }
+  .st-line.on { display: block; animation: stIn .55s ease; }
+  .st-tex { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .st-tex mjx-container[display="true"] { margin: .45em 0 !important; font-size: 108%; }
+  .st-text { font-size: 14.5px; line-height: 1.55; color: var(--ink); margin: 6px 0; }
+  .st-why { margin: 10px 0 0; padding: 9px 12px; border-left: 3px solid var(--gold); background: #FFFAEB; border-radius: 8px; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
+  .st-ctl { display: flex; gap: 8px; margin: 2px 0 10px; }
+  .st-ctl .st-play { min-width: 86px; justify-content: center; }
+  .st-ctl button:disabled { opacity: .4; cursor: default; }
+  .st-speed { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--ink-mute); margin: 0 0 12px; }
+  .st-outline-k { margin-top: 2px; }
+  .st-outline { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .st-outline li { display: flex; gap: 8px; align-items: flex-start; padding: 5px 8px; border-radius: 8px; font-size: 13px; line-height: 1.35; color: var(--ink-mute); cursor: pointer; transition: background .15s, color .15s; }
+  .st-outline li:hover { background: var(--surface-2); color: var(--ink); }
+  .st-outline li.done { color: var(--ink-soft); }
+  .st-outline li.now { background: var(--red-tint); color: var(--red-deep); font-weight: 700; }
+  .st-o-n { flex: none; width: 20px; height: 20px; border-radius: 99px; display: grid; place-items: center; font: 800 10.5px var(--font-sans); background: var(--surface-2); color: var(--ink-mute); }
+  .st-outline li.done .st-o-n { background: #EAF4EE; color: #245F3A; }
+  .st-outline li.now .st-o-n { background: var(--red); color: #fff; }
+  @media (max-width: 980px) {
+    /* phones: Back / Play / Next float at the bottom, so stepping never needs a scroll */
+    .st-ctl { position: fixed; left: 14px; right: 84px; bottom: 14px; z-index: 40; justify-content: center; margin: 0; padding: 8px; background: rgba(255,255,255,.96); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--sh-2); }
+    body.vz-detail main { padding-bottom: 90px; }
+    .st-board, .st-board.has-pic { aspect-ratio: auto; grid-template-columns: minmax(0, 1fr); }
+    .st-pic { order: -1; height: 300px; border-left: 0; border-bottom: 1px solid var(--border); }
+    .st-math { max-height: none; }
+  }
   /* subspace playground: the three conditions, each explored and checked on its own */
   .vz-subtop { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .vz-subtop .vz-seg { margin-right: 4px; }
@@ -12016,6 +12066,7 @@ const VZ = { red: "#C8102E", deep: "#9A0B22", ink: "#1F2933", grey: "#6B7682", f
              tint: "#FCEFF1", soft: "#F7DEE2", paper: "#FBF8F4" };
 // The index is organized by idea; each picture belongs to one group (VZ_GROUP_OF), in VZ_ORDER.
 const VZ_GROUP_OF = {
+  "Methods, step by step": ["m-nullcol", "m-subspace", "m-span", "m-eigen", "m-complex", "m-inverse", "m-markov", "m-wire", "m-potential", "m-flux", "m-switch", "m-green"],
   "Vectors, span, and subspaces": ["vectors", "span", "independence", "subspace"],
   "Matrices as maps": ["matrix", "det", "nullcol", "systems"],
   "Dot and cross products": ["projection", "cross"],
@@ -12172,6 +12223,7 @@ function renderVisualize(id) {
     return;
   }
   const i = VZ_LIST.indexOf(def), prev = VZ_LIST[(i - 1 + VZ_LIST.length) % VZ_LIST.length], next = VZ_LIST[(i + 1) % VZ_LIST.length];
+  if (def.kind === "steps") { renderSteps(def, i, prev, next); VzView.def = def; return; }
   VzView.def = def; VzView.st = Object.assign({}, def.state); VzView.tweens = null; VzView.playing = null; VzView.stale = true;
   if (def.reset) def.reset();
   root.innerHTML = `
@@ -12483,7 +12535,7 @@ function vzStart() {
   VzView.t0 = performance.now(); VzView.lastNow = 0;
   if (!VzView.raf) VzView.raf = requestAnimationFrame(vzTick);
 }
-function vzStop() { if (VzView.raf) cancelAnimationFrame(VzView.raf); VzView.raf = 0; VzView.def = null; }
+function vzStop() { if (VzView.raf) cancelAnimationFrame(VzView.raf); VzView.raf = 0; VzView.def = null; if (typeof stStop === "function") stStop(); }
 
 /* ---------- 2. A matrix moves the whole plane ---------- */
 vzAdd({
@@ -14790,6 +14842,682 @@ vzAdd({
       <div class="vz-status ok">${Math.abs(s.h) < .05 ? "A flat disk: the curl points straight through it." : s.h > 0 ? "A dome: the normals tilt and the surface is bigger, and the two effects cancel exactly." : "A bowl: same edge, same answer."} Only the edge matters.</div>`;
   },
 });
+
+/* ============================================================
+   METHODS, STEP BY STEP
+   Slow worked animations of the big multi-step problem types. The board writes one line at a time,
+   finished steps fold into one-line summaries, a plain-language reason sits under each step, and a
+   picture follows along where the method has one. Every problem here is original to this site.
+   ============================================================ */
+const ST = { def: null, k: -1, b: 0, playing: false, timer: 0, raf: 0, beatT0: 0, speed: 1, key: null };
+const ST_RED = "#C8102E";
+function stAdd(def) { def.kind = "steps"; def.state = def.state || {}; def.controls = []; if (!def.draw) def.draw = () => stThumb(def); vzAdd(def); }
+// a matrix in TeX: o.hl rows drawn red, o.piv [[row, col]] pivots in bold red, o.bar = the column an augmented bar follows
+function stM(rows, o = {}) {
+  const n = rows[0].length, spec = Array.from({ length: n }, (_, c) => "c" + (o.bar === c ? "|" : "")).join("");
+  const cell = (v, r, c) => {
+    const t = String(v);
+    if (o.piv && o.piv.some(p => p[0] === r && p[1] === c)) return `\\color{${ST_RED}}{\\mathbf{${t}}}`;
+    if (o.hl && o.hl.includes(r)) return `\\color{${ST_RED}}{${t}}`;
+    if (o.hlc && o.hlc.includes(c)) return `\\color{${ST_RED}}{${t}}`;
+    return t;
+  };
+  return `\\left[\\begin{array}{${spec}}${rows.map((row, r) => row.map((v, c) => cell(v, r, c)).join("&")).join("\\\\")}\\end{array}\\right]`;
+}
+const stTexLen = t => String(t.html || t).replace(/\\[a-zA-Z]+/g, "x").replace(/[{}\\^_&]/g, "").length;
+function stLineHtml(L) { return L && L.html ? `<div class="st-text">${L.html}</div>` : `<div class="st-tex">\\[${L}\\]</div>`; }
+
+function renderSteps(def, i, prev, next) {
+  const root = $("#vizRoot");
+  stStop();
+  ST.def = def; ST.k = -1; ST.b = 0; ST.playing = false; ST.key = null;
+  try { ST.speed = +(localStorage.getItem("pl254:stSpeed") || 1) || 1; } catch (_) { ST.speed = 1; }
+  const steps = def.steps;
+  root.innerHTML = `
+    <div class="vz-top">
+      <button class="btn btn-ghost btn-sm" data-route="/visualize">&larr; All visualizations</button>
+      <span class="vz-top-right">
+        <span class="vz-crumb">${escapeHtml(def.group)} &middot; ${i + 1} of ${VZ_LIST.length}</span>
+        <span class="vz-steps-nav"><a class="vz-nav-btn" href="#/visualize/${prev.id}" title="Previous: ${escapeHtml(prev.title)}" aria-label="Previous: ${escapeHtml(prev.title)}">&lsaquo;</a><a class="vz-nav-btn" href="#/visualize/${next.id}" title="Next: ${escapeHtml(next.title)}" aria-label="Next: ${escapeHtml(next.title)}">&rsaquo;</a></span>
+        ${document.fullscreenEnabled ? `<button class="btn btn-ghost btn-sm vz-full" id="vzFull" type="button" aria-pressed="false">Full screen</button>` : ""}
+      </span>
+    </div>
+    <div class="vz-main st-main">
+      <div class="vz-stage-wrap st-stage">
+        <div class="st-board${def.pic ? " has-pic" : ""}" id="stBoard">
+          <div class="st-math" id="stMath">
+            <div class="st-given" id="stGiven"><span class="st-kicker">The problem</span><div class="st-given-body">${def.problem}</div></div>
+            <ol class="st-past" id="stPast">${steps.map((s, j) => `<li data-j="${j}"><span class="st-past-n">${j + 1}</span><span class="st-past-t">${s.sum}</span></li>`).join("")}</ol>
+            <div class="st-now" id="stNow">
+              <div class="st-intro" data-j="-1"><p>Press <b>Play</b> to watch the method unfold, or step through it with <b>Next</b>. Each step shows what to write and why.</p></div>
+              ${steps.map((s, j) => `<section class="st-step" data-j="${j}"><div class="st-step-h"><span class="st-step-n">Step ${j + 1}</span>${escapeHtml(s.t)}</div>
+                ${s.tex.map((L, b) => `<div class="st-line" data-b="${b}">${stLineHtml(L)}</div>`).join("")}
+                <p class="st-why">${s.why}</p></section>`).join("")}
+            </div>
+          </div>
+          ${def.pic ? `<svg class="st-pic" id="stPic" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${vzDefs()}<g id="stPicG"></g></svg>` : ""}
+        </div>
+      </div>
+      <aside class="vz-panel st-panel">
+        <h1 class="vz-title">${escapeHtml(def.title)}</h1>
+        <p class="vz-blurb">${def.blurb}</p>
+        <div class="st-ctl">
+          <button class="btn btn-ghost btn-sm" type="button" data-st="back" aria-label="Back one step">&larr; Back</button>
+          <button class="btn btn-red btn-sm st-play" type="button" data-st="play">Play</button>
+          <button class="btn btn-ghost btn-sm" type="button" data-st="next" aria-label="Next line">Next &rarr;</button>
+        </div>
+        <div class="st-speed"><span>Speed</span><div class="vz-seg" role="group" aria-label="Speed">${[[1.5, "Slow"], [1, "Normal"], [.65, "Quick"]].map(([v, l]) => `<button type="button" data-speed="${v}">${l}</button>`).join("")}</div></div>
+        <div class="vz-ptop-k st-outline-k">The method</div>
+        <ol class="st-outline">${steps.map((s, j) => `<li data-goto="${j}"><span class="st-o-n">${j + 1}</span><span>${escapeHtml(s.t)}</span></li>`).join("")}</ol>
+        <button class="vz-report" type="button" id="vzReport">Report a problem</button>
+      </aside>
+    </div>
+    <div class="vz-pager">
+      <a class="btn btn-ghost btn-sm" href="#/visualize/${prev.id}">&larr; ${escapeHtml(prev.title)}</a>
+      <a class="btn btn-ghost btn-sm" href="#/visualize/${next.id}">${escapeHtml(next.title)} &rarr;</a>
+    </div>`;
+  const panel = root.querySelector(".st-panel");
+  panel.addEventListener("click", e => {
+    const b = e.target.closest("[data-st], [data-speed], [data-goto]");
+    if (!b) return;
+    if (b.dataset.st === "play") stPlay(!ST.playing);
+    else if (b.dataset.st === "next") { stPlay(false); stNext(); }
+    else if (b.dataset.st === "back") { stPlay(false); stBack(); }
+    else if (b.dataset.speed) { ST.speed = +b.dataset.speed; try { localStorage.setItem("pl254:stSpeed", String(ST.speed)); } catch (_) {} stSync(); if (ST.playing) stSchedule(); }
+    else if (b.dataset.goto != null) { stPlay(false); ST.k = +b.dataset.goto; ST.b = def.steps[ST.k].tex.length - 1; stShow(); }
+  });
+  document.getElementById("vzReport").addEventListener("click", openPageReport);
+  const full = document.getElementById("vzFull");
+  if (full) full.addEventListener("click", () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else root.requestFullscreen().catch(() => {}); });
+  ST.onKey = e => {
+    const el = e.target && e.target.closest ? e.target : null;
+    if (ST.def !== def || e.metaKey || e.ctrlKey || e.altKey || (el && el.closest("input, textarea, select, [contenteditable], .shortcuts-help"))) return;
+    if (e.key === "ArrowRight") { e.preventDefault(); stPlay(false); stNext(); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); stPlay(false); stBack(); }
+    else if (e.key === " " && !(el && el.closest("button, a"))) { e.preventDefault(); stPlay(!ST.playing); }
+  };
+  document.addEventListener("keydown", ST.onKey);
+  typesetMath(root).then(() => { if (ST.def === def) stShow(); });
+  stShow();
+  const loop = now => { if (ST.def !== def) return; if (def.pic && now - ST.beatT0 < (def.picDur || 3200) + 100) stPic(now); ST.raf = requestAnimationFrame(loop); };
+  ST.raf = requestAnimationFrame(loop);
+}
+function stStop() {
+  clearTimeout(ST.timer); ST.timer = 0; if (ST.raf) cancelAnimationFrame(ST.raf); ST.raf = 0;
+  if (ST.onKey) document.removeEventListener("keydown", ST.onKey);
+  ST.onKey = null; ST.def = null; ST.playing = false;
+}
+function stNext() {
+  const def = ST.def; if (!def) return false;
+  if (ST.k < 0) { ST.k = 0; ST.b = 0; }
+  else if (ST.b < def.steps[ST.k].tex.length - 1) ST.b++;
+  else if (ST.k < def.steps.length - 1) { ST.k++; ST.b = 0; }
+  else return false;
+  stShow(); return true;
+}
+function stBack() {
+  if (!ST.def || ST.k < 0) return;
+  if (ST.k === 0) { ST.k = -1; ST.b = 0; } else { ST.k--; ST.b = ST.def.steps[ST.k].tex.length - 1; }
+  stShow();
+}
+function stPlay(on) {
+  const def = ST.def; if (!def) return;
+  if (on && ST.k === def.steps.length - 1 && ST.b === def.steps[ST.k].tex.length - 1) { ST.k = -1; ST.b = 0; stShow(); }   // replay from the start
+  ST.playing = on; stSync(); stSchedule();
+}
+// how long each line stays before the next one: longer lines get more time, and a step's reason gets reading time
+function stSchedule() {
+  clearTimeout(ST.timer); ST.timer = 0;
+  const def = ST.def; if (!def || !ST.playing) return;
+  let ms;
+  if (ST.k < 0) ms = 1600;
+  else {
+    const s = def.steps[ST.k], last = ST.b === s.tex.length - 1;
+    ms = vzClamp(1700 + 22 * stTexLen(s.tex[ST.b]), 2300, 5200);
+    if (last) ms += vzClamp(1400 + 38 * s.why.replace(/<[^>]+>/g, "").length, 3200, 8500);
+  }
+  ST.timer = setTimeout(() => { if (!stNext()) { ST.playing = false; stSync(); return; } stSchedule(); }, ms * ST.speed);
+}
+function stSync() {
+  const root = $("#vizRoot"), def = ST.def; if (!root || !def) return;
+  const done = ST.k === def.steps.length - 1 && ST.b === def.steps[ST.k].tex.length - 1;
+  const pb = root.querySelector("[data-st='play']"); if (pb) pb.textContent = ST.playing ? "Pause" : done ? "Replay" : ST.k < 0 ? "Play" : "Play";
+  root.querySelectorAll("[data-speed]").forEach(b => b.classList.toggle("on", +b.dataset.speed === ST.speed));
+  const back = root.querySelector("[data-st='back']"), nx = root.querySelector("[data-st='next']");
+  if (back) back.disabled = ST.k < 0; if (nx) nx.disabled = done;
+}
+function stShow() {
+  const def = ST.def, root = $("#vizRoot"); if (!def || !root) return;
+  const k = ST.k, b = ST.b, key = k + ":" + b;
+  root.querySelector("#stGiven").classList.toggle("small", k >= 0);
+  root.querySelectorAll("#stPast li").forEach(li => li.classList.toggle("on", +li.dataset.j < k));
+  // only the last few summaries stay, so the current step always has room
+  const shown = [...root.querySelectorAll("#stPast li.on")]; shown.forEach((li, j) => li.classList.toggle("old", j < shown.length - 4));
+  root.querySelectorAll("#stNow [data-j]").forEach(el => {
+    const on = +el.dataset.j === k;
+    if (on && !el.classList.contains("on")) { el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter"); }
+    el.classList.toggle("on", on);
+  });
+  const cur = k >= 0 ? root.querySelector(`.st-step[data-j="${k}"]`) : null;
+  if (cur) {
+    cur.querySelectorAll(".st-line").forEach(l => l.classList.toggle("on", +l.dataset.b <= b));
+    cur.classList.toggle("read", b === def.steps[k].tex.length - 1);
+    stFit(cur);
+  }
+  root.querySelectorAll(".st-outline li").forEach(li => { const j = +li.dataset.goto; li.classList.toggle("done", j < k); li.classList.toggle("now", j === k); });
+  const now = root.querySelector(".st-outline li.now"); if (now && now.scrollIntoView) { const ol = now.parentElement; if (now.offsetTop < ol.scrollTop || now.offsetTop + now.offsetHeight > ol.scrollTop + ol.clientHeight) ol.scrollTop = now.offsetTop - 20; }
+  // a tall step folds away more of the older summaries; only if that's not enough does the board scroll to the newest line
+  const m = root.querySelector("#stMath");
+  if (m) { const vis = shown.filter(li => !li.classList.contains("old")); while (m.scrollHeight > m.clientHeight + 2 && vis.length) vis.shift().classList.add("old"); }
+  if (m && m.scrollHeight > m.clientHeight + 2) m.scrollTo({ top: m.scrollHeight, behavior: "smooth" });
+  if (key !== ST.key) { ST.key = key; ST.beatT0 = performance.now(); }
+  stSync(); stPic(performance.now());
+}
+function stFit(el) {                                     // a line too wide for the board shrinks to fit (never below 70%)
+  el.querySelectorAll(".st-line.on").forEach(line => {
+    const avail = line.clientWidth - 4; if (avail <= 0) return;
+    line.querySelectorAll("mjx-container").forEach(m => {
+      if (m.closest(".st-text")) return;
+      const svg = m.querySelector("svg"); if (!svg) return;
+      m.style.fontSize = ""; const w = svg.getBoundingClientRect().width;
+      if (w > avail) m.style.fontSize = (Math.max(.68, avail / w) * 108).toFixed(1) + "%";
+    });
+  });
+}
+function stPic(now) {
+  const def = ST.def, g = document.getElementById("stPicG"); if (!def || !def.pic || !g) return;
+  const html = def.pic(ST.k, ST.b, (now - ST.beatT0) / 1000);
+  if (g._h !== html) { g._h = html; g.innerHTML = html; }
+}
+// the index card for a method: its picture at the end (or a small board), with a "step by step" tag
+function stThumb(def) {
+  const k = def.steps.length - 1, inner = def.pic ? `<g transform="translate(120 -5) scale(1.0)">${def.pic(k, def.steps[k].tex.length - 1, 99)}</g>` : def.thumbSvg ? def.thumbSvg() : "";
+  return inner + `<g><rect x="16" y="16" width="146" height="30" rx="15" fill="${VZ.ink}"/><text x="89" y="36" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="15" font-weight="700" fill="#fff">step by step</text></g>`;
+}
+// a small board for methods with no picture: a matrix written out, pivots in red
+function stBoardSvg(rows, piv, bar) {
+  const W = 46, H = 40, x0 = 300 - rows[0].length * W / 2, y0 = 225 - rows.length * H / 2;
+  let o = `<path d="M${x0 - 6} ${y0 - 4}h-8v${rows.length * H + 8}h8M${x0 + rows[0].length * W + 6} ${y0 - 4}h8v${rows.length * H + 8}h-8" fill="none" stroke="${VZ.ink}" stroke-width="2.4"/>`;
+  if (bar != null) o += `<line x1="${x0 + (bar + 1) * W}" y1="${y0}" x2="${x0 + (bar + 1) * W}" y2="${y0 + rows.length * H}" stroke="${VZ.ink}" stroke-width="1.6"/>`;
+  rows.forEach((row, r) => row.forEach((v, c) => { const p = piv && piv.some(q => q[0] === r && q[1] === c);
+    o += `<text x="${x0 + c * W + W / 2}" y="${y0 + r * H + 27}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="24" font-weight="${p ? 700 : 400}" fill="${p ? VZ.red : VZ.ink}">${String(v).replace("-", "−")}</text>`;
+    if (p) o += `<circle cx="${x0 + c * W + W / 2}" cy="${y0 + r * H + 19}" r="17" fill="none" stroke="${VZ.red}" stroke-width="1.6"/>`; }));
+  return o;
+}
+
+/* ---------- Methods: linear algebra ---------- */
+const stPlane = (cx, cy, u) => vzPlane(cx, cy, u);
+const stNote = (x, y, t, col, anchor) => vzNote(x, y, t, anchor || "middle", col || VZ.ink);
+const stEase = (u, a, d) => vzEase(vzClamp((u - a) / (d || .7), 0, 1));
+
+stAdd({
+  id: "m-nullcol", title: "Null space and column space, step by step", card: "Null & column space",
+  tagline: "Row reduce once, then read off both spaces.",
+  blurb: "One row reduction answers two questions: which inputs \\(A\\) sends to \\(\\mathbf 0\\), and which outputs it can reach.",
+  problem: "Find a basis for the null space and for the column space of \\(A=\\begin{bmatrix}1&2&0&3\\\\2&4&1&4\\\\-1&-2&2&-7\\end{bmatrix}\\).",
+  thumbSvg: () => stBoardSvg([[1, 2, 0, 3], [0, 0, 1, -2], [0, 0, 0, 0]], [[0, 0], [1, 2]]),
+  steps: [
+    { t: "Clear below the first pivot",
+      tex: [`A=${stM([[1, 2, 0, 3], [2, 4, 1, 4], [-1, -2, 2, -7]], { piv: [[0, 0]] })}`, `\\xrightarrow[R_3+R_1]{R_2-2R_1}${stM([[1, 2, 0, 3], [0, 0, 1, -2], [0, 0, 2, -4]], { hl: [1, 2] })}`],
+      why: "Use the 1 in the top-left corner as the first pivot and make zeros under it. Row operations never change the solutions of \\(A\\mathbf x=\\mathbf 0\\), so the null space survives them.",
+      sum: "\\(R_2-2R_1,\\ R_3+R_1\\)" },
+    { t: "Clear below the next pivot",
+      tex: [`${stM([[1, 2, 0, 3], [0, 0, 1, -2], [0, 0, 2, -4]], { piv: [[1, 2]] })}\\xrightarrow{R_3-2R_2}${stM([[1, 2, 0, 3], [0, 0, 1, -2], [0, 0, 0, 0]], { hl: [2] })}`],
+      why: "Column 2 has nothing left below row 1, so it gets no pivot. The next pivot is the 1 in column 3; clearing under it leaves a row of zeros.",
+      sum: "\\(R_3-2R_2\\): a row of zeros" },
+    { t: "Circle the pivots",
+      tex: [`\\operatorname{rref}(A)=${stM([[1, 2, 0, 3], [0, 0, 1, -2], [0, 0, 0, 0]], { piv: [[0, 0], [1, 2]] })}`, { html: "Pivots in columns 1 and 3. Columns 2 and 4 have none, so \\(x_2\\) and \\(x_4\\) are <b>free</b>." }],
+      why: "Pivot columns give the basic variables; every other column gives a free variable. Two pivots in four columns: rank 2, and two free variables.",
+      sum: "pivots in columns 1 and 3; \\(x_2,\\ x_4\\) free" },
+    { t: "Write the equations",
+      tex: ["x_1+2x_2+3x_4=0", "x_3-2x_4=0"],
+      why: "Each nonzero row of the rref is one equation of \\(A\\mathbf x=\\mathbf 0\\). The zero row says \\(0=0\\) and can be dropped.",
+      sum: "\\(x_1+2x_2+3x_4=0,\\ x_3-2x_4=0\\)" },
+    { t: "Name the free variables, solve for the rest",
+      tex: ["x_2=s,\\qquad x_4=t", "x_1=-2s-3t,\\qquad x_3=2t"],
+      why: "Free variables can be anything, so give them names. Then each equation gives one pivot variable in terms of them.",
+      sum: "\\(x_1=-2s-3t,\\ x_2=s,\\ x_3=2t,\\ x_4=t\\)" },
+    { t: "Split by parameter: the null space",
+      tex: ["\\mathbf x=\\begin{bmatrix}-2s-3t\\\\s\\\\2t\\\\t\\end{bmatrix}=s\\begin{bmatrix}-2\\\\1\\\\0\\\\0\\end{bmatrix}+t\\begin{bmatrix}-3\\\\0\\\\2\\\\1\\end{bmatrix}",
+            "\\operatorname{Nul}A=\\operatorname{span}\\left\\{\\begin{bmatrix}-2\\\\1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}-3\\\\0\\\\2\\\\1\\end{bmatrix}\\right\\}"],
+      why: "Every solution is a combination of these two vectors, and they're independent (each has a 1 exactly where the other has a 0), so they are a basis for the null space.",
+      sum: "\\(\\operatorname{Nul}A=\\operatorname{span}\\{(-2,1,0,0),\\,(-3,0,2,1)\\}\\)" },
+    { t: "The column space: pivot columns of A itself",
+      tex: [`A=${stM([[1, 2, 0, 3], [2, 4, 1, 4], [-1, -2, 2, -7]], { hlc: [0, 2] })}`, "\\operatorname{Col}A=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\2\\\\-1\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\2\\end{bmatrix}\\right\\}"],
+      why: "Take columns 1 and 3 from the original \\(A\\), not from the rref: row operations change the columns themselves. The rref only says which columns to keep.",
+      sum: "\\(\\operatorname{Col}A=\\operatorname{span}\\{(1,2,-1),\\,(0,1,2)\\}\\)" },
+    { t: "Check",
+      tex: ["A\\begin{bmatrix}-2\\\\1\\\\0\\\\0\\end{bmatrix}=-2\\begin{bmatrix}1\\\\2\\\\-1\\end{bmatrix}+\\begin{bmatrix}2\\\\4\\\\-2\\end{bmatrix}=\\mathbf 0", "\\operatorname{rank}A+\\dim\\operatorname{Nul}A=2+2=4=\\text{number of columns}"],
+      why: "A null-space vector must give \\(\\mathbf 0\\), and rank plus nullity must equal the number of columns. Both checks pass.",
+      sum: "checks pass" },
+  ],
+});
+
+stAdd({
+  id: "m-subspace", title: "Proving a set is (or isn't) a subspace", card: "Subspace proofs",
+  tagline: "General elements for a proof; one example to disprove.",
+  blurb: "Two sets, two outcomes. A subspace needs a reason that works for <i>every</i> vector; a non-subspace needs just one counterexample.",
+  problem: "Decide whether each set is a subspace: \\(W_1=\\{(a+b,\\ a-b,\\ 2a): a,b\\in\\mathbb R\\}\\subseteq\\mathbb R^3\\) and \\(W_2=\\{(x,y): xy\\ge0\\}\\subseteq\\mathbb R^2\\).",
+  pic(k, b, u) {
+    if (k <= 4) {                                          // W1: a plane through 0, spanned by (1, 1, 2) and (1, -1, 0)
+      const cam = vzCam(180, 255, 60, vzRad(-38), .42), pr = p => cam(p[0], p[1], p[2]), A = [1, 1, 2], B = [1, -1, 0];
+      const at = (s, t) => [s * A[0] + t * B[0], s * A[1] + t * B[1], s * A[2] + t * B[2]];
+      let o = vzAxes3(cam, 2.4, .3);
+      const c = [at(-1.3, -1.3), at(1.3, -1.3), at(1.3, 1.3), at(-1.3, 1.3)].map(pr);
+      o += `<path d="M${c.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-opacity=".7" stroke-width="1.5"/>`;
+      o += vzArrow3(cam, [0, 0, 0], A, "I", 2.4) + vzArrow3(cam, [0, 0, 0], B, "I", 2.4) + vzLab3(cam, A, "(1, 1, 2)", VZ.ink, 34, 0, 14) + vzLab3(cam, B, "(1, −1, 0)", VZ.ink, 10, 20, 14);
+      if (k === 1) o += vzDot3(cam, [0, 0, 0], 6, VZ.green) + stNote(180, 420, "a = b = 0 gives 0", VZ.green);
+      if (k === 2) { const p = at(.6, .3), q = at(.2, -.7), r = at(.8, -.4); o += vzArrow3(cam, [0, 0, 0], p, "I", 2) + vzArrow3(cam, [0, 0, 0], q, "I", 2) + vzArrow3(cam, [0, 0, 0], r, "N", 3) + vzLab3(cam, r, "sum, still in the plane", VZ.green, 0, 22, 13); }
+      if (k === 3) { const p = at(.45, .3), q = at(-.9, -.6); o += vzArrow3(cam, [0, 0, 0], q, "N", 3) + vzArrow3(cam, [0, 0, 0], p, "I", 2.2) + vzLab3(cam, q, "−2 × it, still in the plane", VZ.green, 0, 22, 13); }
+      o += stNote(180, 30, "W₁: a plane through 0", VZ.ink);
+      return o;
+    }
+    const P = stPlane(180, 240, 34);                        // W2: the first and third quadrants
+    let o = `<path d="M${P.X(0)} ${P.Y(0)}H360V0H${P.X(0)}Z" fill="${VZ.gold}" fill-opacity=".16"/><path d="M${P.X(0)} ${P.Y(0)}H0V460H${P.X(0)}Z" fill="${VZ.gold}" fill-opacity=".16"/>` + P.axes(.4);
+    o += stNote(300, 90, "xy ≥ 0", "#7A5C0F") + stNote(60, 390, "xy ≥ 0", "#7A5C0F") + stNote(180, 30, "W₂: two quadrants", VZ.ink);
+    if (k === 5) o += P.arrow([0, 0], [2, 1.5], "N", 2.6) + P.arrow([0, 0], [-1.6, -1.2], "N", 2.6) + stNote(180, 430, "multiples stay in the same two quadrants", VZ.green);
+    if (k >= 6) {
+      const e = k > 6 ? 1 : stEase(u, 1.2, 1);
+      o += P.arrow([0, 0], [2, 1], "I", 2.6) + P.tip([0, 0], [2, 1], "(2, 1)", VZ.ink) + P.arrow([0, 0], [-1, -3], "I", 2.6) + P.tip([0, 0], [-1, -3], "(−1, −3)", VZ.ink);
+      if (e > 0) { o += `<g opacity="${q2(e)}">${P.path([[2, 1], [1, -2]], `stroke="${VZ.grey}" stroke-dasharray="4 4"`)}${P.arrow([0, 0], [1, -2], "R", 3.2)}${P.tip([0, 0], [1, -2], "(1, −2) ∉ W₂", VZ.red)}</g>`; }
+    }
+    return o;
+  },
+  steps: [
+    { t: "W₁: write a general element", tex: ["\\mathbf w=(a+b,\\ a-b,\\ 2a)", "=a\\,(1,1,2)+b\\,(1,-1,0)"],
+      why: "Start every subspace question by writing what a vector of the set looks like. Here every vector of \\(W_1\\) is a combination of \\((1,1,2)\\) and \\((1,-1,0)\\).", sum: "\\(W_1\\): \\((a+b,\\,a-b,\\,2a)\\)" },
+    { t: "Contains the zero vector?", tex: ["a=b=0:", "(0+0,\\ 0-0,\\ 0)=(0,0,0)\\in W_1"],
+      why: "Find parameter values that produce \\(\\mathbf 0\\). If none exist, you're already done: not a subspace.", sum: "\\(\\mathbf 0\\in W_1\\) ✓" },
+    { t: "Closed under addition?", tex: ["(a+b,\\,a-b,\\,2a)+(c+d,\\,c-d,\\,2c)", "=\\big(A+B,\\ A-B,\\ 2A\\big)", "\\text{where } A=a+c,\\ \\ B=b+d"],
+      why: "Add two <i>general</i> elements and regroup. The sum has exactly the same shape, with \\(a+c\\) for \\(a\\) and \\(b+d\\) for \\(b\\). That works for every pair: a proof, not an example.", sum: "sums stay in \\(W_1\\) ✓" },
+    { t: "Closed under scalar multiplication?", tex: ["k\\,(a+b,\\,a-b,\\,2a)=(ka+kb,\\ ka-kb,\\ 2ka)"],
+      why: "Same shape again, with \\(ka\\) and \\(kb\\) as the new parameters, for every number \\(k\\).", sum: "multiples stay in \\(W_1\\) ✓" },
+    { t: "Conclude for W₁", tex: ["W_1=\\operatorname{span}\\{(1,1,2),\\,(1,-1,0)\\}", "\\text{is a subspace of } \\mathbb R^3"],
+      why: "All three conditions hold for general elements. (A span is always a subspace, which is another way to see it.)", sum: "\\(W_1\\) is a subspace" },
+    { t: "W₂: zero and multiples", tex: ["0\\cdot0=0\\ge0\\ \\Rightarrow\\ \\mathbf 0\\in W_2", "(kx)(ky)=k^2\\,xy\\ge0\\quad\\text{whenever } xy\\ge0"],
+      why: "\\(W_2\\) is the first and third quadrants, edges included. It contains \\(\\mathbf 0\\), and scaling keeps the sign of \\(xy\\) because \\(k^2\\ge0\\). So far so good.", sum: "\\(W_2\\): zero ✓, multiples ✓" },
+    { t: "W₂: test addition where it's likely to break", tex: ["(2,1)\\in W_2,\\qquad (-1,-3)\\in W_2", "(2,1)+(-1,-3)=(1,-2)", "1\\cdot(-2)=-2<0"],
+      why: "Look for trouble where it's most likely: one vector from each quadrant. Their sum lands in the fourth quadrant, outside \\(W_2\\).", sum: "\\((2,1)+(-1,-3)=(1,-2)\\notin W_2\\)" },
+    { t: "Conclude for W₂", tex: ["\\text{one counterexample}\\ \\Rightarrow\\ W_2\\text{ is not a subspace}"],
+      why: "Closure has to hold for every pair. One pair that fails settles it, even though \\(W_2\\) passed the other two tests.", sum: "\\(W_2\\) is not a subspace" },
+  ],
+});
+
+stAdd({
+  id: "m-span", title: "Linear combination, span, and basis", card: "Combination vs span vs basis",
+  tagline: "One recipe, every recipe, and the smallest set that does the job.",
+  blurb: "Three words that get mixed up. Watch the difference: one combination is one vector, the span is all of them, and a basis is a spanning set with nothing extra.",
+  problem: "Take \\(\\mathbf v_1=(2,1)\\), \\(\\mathbf v_2=(1,2)\\) and \\(\\mathbf v_3=(3,3)\\) in \\(\\mathbb R^2\\). What is a linear combination of them, what is their span, and which of these sets is a basis?",
+  picDur: 6000,
+  pic(k, b, u) {
+    const P = stPlane(150, 290, 36), v1 = [2, 1], v2 = [1, 2], v3 = [3, 3];
+    let o = P.axes(.3);
+    const base = (op = 1) => `<g opacity="${op}">${P.arrow([0, 0], v1, "R", 2.8)}${P.tip([0, 0], v1, vzB("v", "1"), VZ.red)}${P.arrow([0, 0], v2, "I", 2.8)}${P.tip([0, 0], v2, vzB("v", "2"), VZ.ink)}</g>`;
+    const chain = (pts, keys, e) => { let s = ""; for (let i = 0; i < pts.length - 1; i++) { const f = vzClamp(e * (pts.length - 1) - i, 0, 1); if (f <= 0) break; const a = pts[i], c = pts[i + 1]; s += P.arrow(a, [a[0] + (c[0] - a[0]) * f, a[1] + (c[1] - a[1]) * f], keys[i], 2.6); } return s; };
+    if (k < 0) return o + base();
+    if (k === 0 || k === 1) {
+      const e = stEase(u, .4, 2.2), pts = k === 0 ? [[0, 0], [4, 2], [3, 0]] : [[0, 0], [-2, -1], [-.5, 2]], end = pts[2];
+      o += base(.45) + chain(pts, ["R", "I"], e);
+      if (e >= 1) o += P.arrow([0, 0], end, "D", 3.4) + P.dot(end, 5, VZ.deep) + P.tip([0, 0], end, k === 0 ? "(3, 0)" : "(−½, 2)", VZ.deep, 20);
+      o += stNote(180, 440, k === 0 ? "2v₁ then −v₂, tip to tail" : "−v₁ then 1.5v₂", VZ.ink);
+      return o;
+    }
+    if (k === 2) {                                         // every recipe at once: the combinations fill the plane
+      const e = stEase(u, .2, 3.4); let n = 0;
+      for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) { n++; if (n / 49 > e) continue; const p = [.5 * i * 2 + .5 * j, .5 * i + .5 * j * 2]; o += P.dot(p, 3, VZ.deep); }
+      o += `<rect width="360" height="460" fill="${VZ.red}" fill-opacity="${q2(.07 * e)}"/>` + base() + stNote(180, 440, "c₁v₁ + c₂v₂ for many c₁, c₂: the whole plane", VZ.ink);
+      return o;
+    }
+    if (k === 3) return o + P.line([0, 0], v1, `stroke="${VZ.red}" stroke-width="8" stroke-opacity=".2" stroke-linecap="round"`) + P.arrow([0, 0], v1, "R", 2.8) + P.tip([0, 0], v1, vzB("v", "1"), VZ.red) + stNote(180, 440, "span{v₁}: a line through 0", VZ.ink);
+    if (k === 4) { const e = stEase(u, .4, 1.4); return o + base() + `<g opacity="${q2(e)}">${P.path([v1, v3], `stroke="${VZ.ink}" stroke-dasharray="5 4"`)}${P.path([v2, v3], `stroke="${VZ.red}" stroke-dasharray="5 4"`)}${P.arrow([0, 0], v3, "O", 3)}${P.tip([0, 0], v3, vzB("v", "3") + " = " + vzB("v", "1") + " + " + vzB("v", "2"), "#8A6A12")}</g>` + stNote(180, 440, "v₃ is already reachable: redundant", VZ.ink); }
+    if (k === 5) return o + base() + P.arrow([0, 0], v3, "G", 2.4) + P.tip([0, 0], v3, vzB("v", "3"), VZ.grey) + stNote(180, 440, "basis: {v₁, v₂}", VZ.deep);
+    const e1 = stEase(u, .3, 1.6), e2 = stEase(u, 2.6, 1.6);   // two recipes for (4, 5)
+    o += base(.5) + chain([[0, 0], [2, 1], [4, 5]], ["R", "I"], e1) + `<g opacity=".9">${chain([[0, 0], [1, 2], [4, 5]], ["I", "O"], e2)}</g>`;
+    o += P.dot([4, 5], 5, VZ.deep) + P.tip([0, 0], [4, 5], "(4, 5)", VZ.deep, 16) + stNote(180, 440, "with v₃ there are many recipes; with a basis, one", VZ.ink);
+    return o;
+  },
+  steps: [
+    { t: "A linear combination is one recipe", tex: ["2\\mathbf v_1-\\mathbf v_2=2(2,1)-(1,2)=(3,0)"],
+      why: "Choose weights, scale the vectors, add them tip to tail. One choice of weights gives one vector.", sum: "\\(2\\mathbf v_1-\\mathbf v_2=(3,0)\\)" },
+    { t: "Different weights, a different vector", tex: ["-\\mathbf v_1+\\tfrac32\\mathbf v_2=(-2,-1)+\\left(\\tfrac32,3\\right)=\\left(-\\tfrac12,\\ 2\\right)"],
+      why: "Change the weights and you land somewhere else.", sum: "\\(-\\mathbf v_1+\\tfrac32\\mathbf v_2=(-\\tfrac12,2)\\)" },
+    { t: "The span is every recipe at once", tex: ["\\operatorname{span}\\{\\mathbf v_1,\\mathbf v_2\\}=\\{c_1\\mathbf v_1+c_2\\mathbf v_2:\\ c_1,c_2\\in\\mathbb R\\}", "=\\mathbb R^2"],
+      why: "Let both weights run over all numbers. Because \\(\\mathbf v_1\\) and \\(\\mathbf v_2\\) point in different directions, the combinations fill the whole plane.", sum: "\\(\\operatorname{span}\\{\\mathbf v_1,\\mathbf v_2\\}=\\mathbb R^2\\)" },
+    { t: "One vector spans only a line", tex: ["\\operatorname{span}\\{\\mathbf v_1\\}=\\{c\\,(2,1):\\ c\\in\\mathbb R\\}"],
+      why: "With one nonzero vector the only freedom is how far along it you go: a line through \\(\\mathbf 0\\).", sum: "\\(\\operatorname{span}\\{\\mathbf v_1\\}\\) is a line" },
+    { t: "A third vector can add nothing", tex: ["\\mathbf v_3=(3,3)=\\mathbf v_1+\\mathbf v_2", "\\operatorname{span}\\{\\mathbf v_1,\\mathbf v_2,\\mathbf v_3\\}=\\operatorname{span}\\{\\mathbf v_1,\\mathbf v_2\\}"],
+      why: "\\(\\mathbf v_3\\) is already a combination of the other two, so it's redundant: the span doesn't grow, and the three vectors are dependent.", sum: "\\(\\mathbf v_3=\\mathbf v_1+\\mathbf v_2\\): redundant" },
+    { t: "A basis spans, with nothing extra", tex: ["\\begin{array}{lcc}\\text{set}&\\text{spans }\\mathbb R^2?&\\text{independent?}\\\\\\hline\\{\\mathbf v_1\\}&\\text{no}&\\text{yes}\\\\\\{\\mathbf v_1,\\mathbf v_2\\}&\\text{yes}&\\text{yes}\\\\\\{\\mathbf v_1,\\mathbf v_2,\\mathbf v_3\\}&\\text{yes}&\\text{no}\\end{array}"],
+      why: "A basis needs both: enough vectors to reach everything, and none you could throw away. Only \\(\\{\\mathbf v_1,\\mathbf v_2\\}\\) does both.", sum: "basis: \\(\\{\\mathbf v_1,\\mathbf v_2\\}\\)" },
+    { t: "Why it matters: one recipe per vector", tex: ["(4,5)=1\\,\\mathbf v_1+2\\,\\mathbf v_2\\qquad\\text{(the only way)}", "(4,5)=1\\mathbf v_1+2\\mathbf v_2+0\\mathbf v_3=0\\mathbf v_1+1\\mathbf v_2+1\\mathbf v_3"],
+      why: "With a basis, every vector has exactly one recipe: its coordinates. Add a redundant vector and the recipes stop being unique.", sum: "coordinates are unique only with a basis" },
+  ],
+});
+
+stAdd({
+  id: "m-eigen", title: "Eigenvalues and eigenvectors, step by step", card: "Eigenvectors by row reduction",
+  tagline: "det(A − λI) = 0, then row reduce A − λI for each λ.",
+  blurb: "The two-stage method: find the numbers λ that make \\(A-\\lambda I\\) singular, then solve \\((A-\\lambda I)\\mathbf v=\\mathbf 0\\) for each one.",
+  problem: "Find the eigenvalues and eigenvectors of \\(A=\\begin{bmatrix}1&2\\\\3&2\\end{bmatrix}\\).",
+  pic(k, b, u) {
+    const P = stPlane(180, 250, 34), A = [[1, 2], [3, 2]], Ax = p => [A[0][0] * p[0] + A[0][1] * p[1], A[1][0] * p[0] + A[1][1] * p[1]];
+    let o = P.axes(.3);
+    const d1 = [2 / Math.sqrt(13), 3 / Math.sqrt(13)], d2 = [-Math.SQRT1_2, Math.SQRT1_2];
+    if (k < 3) {                                           // most vectors get turned
+      [[1, 0], [0, 1], [Math.SQRT1_2, -Math.SQRT1_2]].forEach(p => { o += P.arrow([0, 0], p, "I", 2) + `<g opacity=".7">${P.arrow([0, 0], Ax(p), "R", 2.4)}</g>`; });
+      return o + `<circle cx="180" cy="250" r="34" fill="none" stroke="${VZ.grey}" opacity=".6"/>` + stNote(180, 440, "most vectors get turned off their own line", VZ.ink);
+    }
+    if (k >= 3) o += P.line([0, 0], d1, `stroke="${VZ.red}" stroke-width="2" stroke-dasharray=".01 7" stroke-linecap="round" opacity="${k >= 4 ? .7 : .25}"`);
+    if (k >= 5) o += P.line([0, 0], d2, `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray=".01 7" stroke-linecap="round" opacity=".6"`);
+    if (k >= 4) { const e = k > 4 ? 1 : stEase(u, .8, 1.4); o += P.arrow([0, 0], d1, "I", 2.6) + P.arrow([0, 0], [d1[0] * (1 + 3 * e), d1[1] * (1 + 3 * e)], "R", 3) + P.tip([0, 0], [4 * d1[0], 4 * d1[1]], "A" + vzB("v", "1") + " = 4" + vzB("v", "1"), VZ.red, 20); }
+    if (k >= 5) { const e = k > 5 ? 1 : stEase(u, 1.6, 1.4); o += P.arrow([0, 0], d2, "I", 2.6) + P.tip([0, 0], d2, vzB("v", "2"), VZ.ink) + `<g opacity="${q2(e)}">${P.arrow([0, 0], [-d2[0], -d2[1]], "R", 3)}${P.tip([0, 0], [-d2[0], -d2[1]], "A" + vzB("v", "2") + " = −" + vzB("v", "2"), VZ.red)}</g>`; }
+    o += stNote(180, 440, k >= 5 ? "two lines A doesn't turn: stretch by 4, flip" : "λ = 4 and λ = −1", VZ.ink);
+    return o;
+  },
+  steps: [
+    { t: "Set up det(A − λI) = 0", tex: ["A-\\lambda I=\\begin{bmatrix}1-\\lambda&2\\\\3&2-\\lambda\\end{bmatrix}", "\\det(A-\\lambda I)=(1-\\lambda)(2-\\lambda)-6"],
+      why: "\\(\\lambda\\) is an eigenvalue exactly when \\(A-\\lambda I\\) squashes some nonzero vector to \\(\\mathbf 0\\), which happens exactly when its determinant is 0.", sum: "\\(\\det(A-\\lambda I)=(1-\\lambda)(2-\\lambda)-6\\)" },
+    { t: "Expand and factor", tex: ["=\\lambda^2-3\\lambda+2-6=\\lambda^2-3\\lambda-4", "=(\\lambda-4)(\\lambda+1)"],
+      why: "Expand slowly, then factor: two numbers that multiply to \\(-4\\) and add to \\(-3\\) are \\(-4\\) and \\(1\\).", sum: "\\((\\lambda-4)(\\lambda+1)=0\\)" },
+    { t: "The eigenvalues, with a free check", tex: ["\\lambda_1=4,\\qquad \\lambda_2=-1", "\\lambda_1+\\lambda_2=3=\\operatorname{tr}A,\\qquad \\lambda_1\\lambda_2=-4=\\det A"],
+      why: "Eigenvalues always add to the trace and multiply to the determinant. Both match, so the algebra is right.", sum: "\\(\\lambda=4,\\ -1\\)" },
+    { t: "λ = 4: row reduce A − 4I", tex: [`\\left[A-4I\\mid\\mathbf 0\\right]=${stM([[-3, 2, 0], [3, -2, 0]], { bar: 1 })}`, `\\xrightarrow{R_2+R_1}${stM([[-3, 2, 0], [0, 0, 0]], { bar: 1, hl: [1] })}`],
+      why: "Solve \\((A-4I)\\mathbf v=\\mathbf 0\\). Its rows must be dependent (the determinant is 0), so one row always clears to zero: a built-in check.", sum: "\\(-3x+2y=0\\)" },
+    { t: "Free variable, then the eigenvector", tex: ["-3x+2y=0\\ \\Rightarrow\\ x=\\tfrac23\\,y", "y=3:\\qquad \\mathbf v_1=\\begin{bmatrix}2\\\\3\\end{bmatrix}"],
+      why: "\\(y\\) is free, so any nonzero choice works; \\(y=3\\) clears the fraction. Every multiple of \\(\\mathbf v_1\\) is also an eigenvector.", sum: "\\(\\mathbf v_1=(2,3)\\) for \\(\\lambda=4\\)" },
+    { t: "λ = −1: the same two moves", tex: [`\\left[A+I\\mid\\mathbf 0\\right]=${stM([[2, 2, 0], [3, 3, 0]], { bar: 1 })}\\xrightarrow{R_2-\\frac32R_1}${stM([[2, 2, 0], [0, 0, 0]], { bar: 1, hl: [1] })}`, "2x+2y=0\\ \\Rightarrow\\ x=-y,\\qquad \\mathbf v_2=\\begin{bmatrix}-1\\\\1\\end{bmatrix}"],
+      why: "Subtracting \\(\\lambda=-1\\) means adding 1 down the diagonal. Again one equation survives and \\(y\\) is free.", sum: "\\(\\mathbf v_2=(-1,1)\\) for \\(\\lambda=-1\\)" },
+    { t: "Check Av = λv", tex: ["A\\mathbf v_1=\\begin{bmatrix}1&2\\\\3&2\\end{bmatrix}\\begin{bmatrix}2\\\\3\\end{bmatrix}=\\begin{bmatrix}8\\\\12\\end{bmatrix}=4\\,\\mathbf v_1", "A\\mathbf v_2=\\begin{bmatrix}1&2\\\\3&2\\end{bmatrix}\\begin{bmatrix}-1\\\\1\\end{bmatrix}=\\begin{bmatrix}1\\\\-1\\end{bmatrix}=-1\\cdot\\mathbf v_2"],
+      why: "Along \\(\\mathbf v_1\\), \\(A\\) stretches by 4. Along \\(\\mathbf v_2\\), it flips the arrow around (\\(\\lambda=-1\\)).", sum: "checks pass" },
+  ],
+});
+
+stAdd({
+  id: "m-complex", title: "Complex eigenvalues, step by step", card: "Complex eigenvalues",
+  tagline: "No real eigenvectors: find the complex ones and read the turn.",
+  blurb: "When the characteristic polynomial has no real roots, the method doesn't change: row reduce \\(A-\\lambda I\\) with complex numbers. The answer tells you how \\(A\\) turns and stretches.",
+  problem: "The matrix \\(A=\\begin{bmatrix}3&-5\\\\1&-1\\end{bmatrix}\\) turns every vector. Find its complex eigenvalues and eigenvectors, and use them to see how \\(A\\) turns and stretches.",
+  picDur: 6500,
+  pic(k, b, u) {
+    const A = [[3, -5], [1, -1]], Ax = p => [A[0][0] * p[0] + A[0][1] * p[1], A[1][0] * p[0] + A[1][1] * p[1]];
+    if (k < 7) {
+      const P = stPlane(200, 250, 30);
+      let o = P.axes(.3);
+      [[1, 0], [0, 1]].forEach((p, i) => { const q = Ax(p); o += P.arrow([0, 0], p, "I", 2.4) + P.tip([0, 0], p, vzB("e", String(i + 1)), VZ.ink) + `<g opacity=".8">${P.arrow([0, 0], q, "R", 2.8)}${P.tip([0, 0], q, "A" + vzB("e", String(i + 1)), VZ.red)}</g>`; });
+      return o + stNote(180, 440, "no real direction stays on its own line", VZ.ink);
+    }
+    // the meaning: x, Ax, A²x, A³x, A⁴x = −4x
+    const P = stPlane(200, 250, 32), pts = [[1, 0], [3, 1], [4, 2], [2, 2], [-4, 0]], n = Math.min(5, Math.floor(u / .9) + 1), names = ["x", "Ax", "A²x", "A³x", "A⁴x = −4x"];
+    let o = P.axes(.3), d = "";
+    for (let i = 0; i < n; i++) d += (i ? "L" : "M") + q2(P.X(pts[i][0])) + " " + q2(P.Y(pts[i][1]));
+    o += `<path d="${d}" fill="none" stroke="${VZ.grey}" stroke-width="1.4" stroke-dasharray="4 4"/>`;
+    for (let i = 0; i < n; i++) o += P.arrow([0, 0], pts[i], i === 4 ? "R" : "I", i === 4 ? 3 : 2.2);
+    o += vzTipLabels(P, pts.slice(0, n).map((p, i) => ({ v: p, html: names[i], col: i === 4 ? VZ.red : VZ.ink, gap: 14 })).reverse());
+    return o + stNote(180, 440, "each step: stretch by √2, turn by π/4", VZ.ink);
+  },
+  steps: [
+    { t: "Characteristic polynomial", tex: ["\\det(A-\\lambda I)=\\begin{vmatrix}3-\\lambda&-5\\\\1&-1-\\lambda\\end{vmatrix}", "=(3-\\lambda)(-1-\\lambda)+5=\\lambda^2-2\\lambda+2"],
+      why: "The same first step as always. Check: the \\(\\lambda\\) coefficient is minus the trace (2), and the constant is the determinant (\\(-3+5=2\\)).", sum: "\\(\\lambda^2-2\\lambda+2=0\\)" },
+    { t: "Quadratic formula: a negative discriminant", tex: ["\\lambda=\\dfrac{2\\pm\\sqrt{4-8}}{2}=\\dfrac{2\\pm\\sqrt{-4}}{2}=\\dfrac{2\\pm2i}{2}", "\\lambda=1\\pm i"],
+      why: "\\(4-8<0\\), so there are no real eigenvalues: no real direction stays on its own line. Complex eigenvalues of a real matrix always come as a conjugate pair.", sum: "\\(\\lambda=1\\pm i\\)" },
+    { t: "Take λ = 1 + i", tex: ["A-(1+i)I=\\begin{bmatrix}2-i&-5\\\\1&-2-i\\end{bmatrix}"],
+      why: "Subtract \\(\\lambda\\) from each diagonal entry, exactly as with real eigenvalues.", sum: "\\(A-(1+i)I\\)" },
+    { t: "Row reduce with complex numbers", tex: [`${stM([["2-i", "-5"], ["1", "-2-i"]])}\\xrightarrow{R_1\\leftrightarrow R_2}${stM([["1", "-2-i"], ["2-i", "-5"]], { hl: [0, 1] })}`, `\\xrightarrow{R_2-(2-i)R_1}${stM([["1", "-2-i"], ["0", "-5+(2-i)(2+i)"]], { hl: [1] })}`, `=${stM([["1", "-2-i"], ["0", "0"]])}`],
+      why: "Swap so the pivot is a plain 1. Then \\((2-i)(2+i)=4-i^2=5\\), so the second row becomes 0: the same built-in check as in the real case.", sum: "\\(x-(2+i)\\,y=0\\)" },
+    { t: "Free variable, then the eigenvector", tex: ["x=(2+i)\\,y,\\qquad y=1:\\quad \\mathbf v=\\begin{bmatrix}2+i\\\\1\\end{bmatrix}"],
+      why: "\\(y\\) is free and \\(y=1\\) keeps it simple. A complex eigenvalue has an eigenvector with complex entries.", sum: "\\(\\mathbf v=(2+i,\\ 1)\\)" },
+    { t: "The conjugate comes for free", tex: ["\\lambda=1-i:\\qquad \\bar{\\mathbf v}=\\begin{bmatrix}2-i\\\\1\\end{bmatrix}"],
+      why: "\\(A\\) has real entries, so conjugating \\(A\\mathbf v=\\lambda\\mathbf v\\) gives \\(A\\bar{\\mathbf v}=\\bar\\lambda\\bar{\\mathbf v}\\). Flip every \\(i\\) to \\(-i\\): no second row reduction.", sum: "\\(\\bar{\\mathbf v}=(2-i,\\ 1)\\) for \\(1-i\\)" },
+    { t: "Check Av = λv", tex: ["A\\mathbf v=\\begin{bmatrix}3(2+i)-5\\\\(2+i)-1\\end{bmatrix}=\\begin{bmatrix}1+3i\\\\1+i\\end{bmatrix}", "(1+i)\\,\\mathbf v=\\begin{bmatrix}(1+i)(2+i)\\\\1+i\\end{bmatrix}=\\begin{bmatrix}1+3i\\\\1+i\\end{bmatrix}"],
+      why: "\\((1+i)(2+i)=2+i+2i+i^2=1+3i\\). Both entries match.", sum: "\\(A\\mathbf v=(1+i)\\,\\mathbf v\\) ✓" },
+    { t: "What it means: turn and stretch", tex: ["|1+i|=\\sqrt2,\\qquad \\arg(1+i)=\\tfrac{\\pi}{4}", "(1\\pm i)^4=-4\\ \\Rightarrow\\ A^4=-4I"],
+      why: "Each application of \\(A\\) stretches by \\(\\sqrt2\\) and turns by \\(\\pi/4\\) (measured in the eigenvector's own coordinates). Four steps make half a turn and stretch by 4: \\(A^4\\mathbf x=-4\\mathbf x\\) for every \\(\\mathbf x\\).", sum: "\\(A^4=-4I\\)" },
+  ],
+});
+
+stAdd({
+  id: "m-inverse", title: "The inverse by row reduction", card: "Inverse by row reduction",
+  tagline: "Row reduce [A | I] until the left side is I.",
+  blurb: "Put \\(I\\) next to \\(A\\) and row reduce. Whatever turns \\(A\\) into \\(I\\) turns \\(I\\) into \\(A^{-1}\\).",
+  problem: "Find \\(A^{-1}\\) for \\(A=\\begin{bmatrix}1&2&0\\\\0&1&1\\\\1&2&1\\end{bmatrix}\\), then use it to solve \\(A\\mathbf x=(1,0,2)\\).",
+  thumbSvg: () => stBoardSvg([[1, 0, 0, -1, -2, 2], [0, 1, 0, 1, 1, -1], [0, 0, 1, -1, 0, 1]], [[0, 0], [1, 1], [2, 2]], 2),
+  steps: [
+    { t: "Put A and I side by side", tex: [`\\left[A\\mid I\\right]=${stM([[1, 2, 0, 1, 0, 0], [0, 1, 1, 0, 1, 0], [1, 2, 1, 0, 0, 1]], { bar: 2 })}`],
+      why: "Each row operation is the same as multiplying on the left by a matrix. Do the ones that turn \\(A\\) into \\(I\\) and they multiply up to \\(A^{-1}\\), which is exactly what happens to the \\(I\\) riding along.", sum: "\\([A\\mid I]\\)" },
+    { t: "Clear below the first pivot", tex: [`\\xrightarrow{R_3-R_1}${stM([[1, 2, 0, 1, 0, 0], [0, 1, 1, 0, 1, 0], [0, 0, 1, -1, 0, 1]], { bar: 2, hl: [2] })}`],
+      why: "Row 2 already has a 0 under the first pivot; only row 3 needs fixing. Every operation acts on the whole row, right side included.", sum: "\\(R_3-R_1\\)" },
+    { t: "Work upward: clear above the last pivot", tex: [`\\xrightarrow{R_2-R_3}${stM([[1, 2, 0, 1, 0, 0], [0, 1, 0, 1, 1, -1], [0, 0, 1, -1, 0, 1]], { bar: 2, hl: [1] })}`],
+      why: "The left side is already triangular with 1s on the diagonal, so now clear the entries above the pivots, starting from the bottom.", sum: "\\(R_2-R_3\\)" },
+    { t: "Clear above the middle pivot", tex: [`\\xrightarrow{R_1-2R_2}${stM([[1, 0, 0, -1, -2, 2], [0, 1, 0, 1, 1, -1], [0, 0, 1, -1, 0, 1]], { bar: 2, hl: [0] })}`],
+      why: "The left side is now \\(I\\), so the right side is \\(A^{-1}\\). (Had a row of zeros appeared on the left, \\(A\\) would have no inverse.)", sum: "\\(R_1-2R_2\\): left side is \\(I\\)" },
+    { t: "Read off the inverse", tex: ["A^{-1}=\\begin{bmatrix}-1&-2&2\\\\1&1&-1\\\\-1&0&1\\end{bmatrix}"],
+      why: "The right half of the final matrix.", sum: "\\(A^{-1}\\) found" },
+    { t: "Check: A times A⁻¹ is I", tex: ["\\begin{bmatrix}1&2&0\\\\0&1&1\\\\1&2&1\\end{bmatrix}\\begin{bmatrix}-1&-2&2\\\\1&1&-1\\\\-1&0&1\\end{bmatrix}=\\begin{bmatrix}1&0&0\\\\0&1&0\\\\0&0&1\\end{bmatrix}"],
+      why: "Multiplying back is the surest check. Row 1 times column 1, for example: \\((1)(-1)+(2)(1)+(0)(-1)=1\\).", sum: "\\(AA^{-1}=I\\) ✓" },
+    { t: "Use it: x = A⁻¹b", tex: ["\\mathbf x=A^{-1}\\begin{bmatrix}1\\\\0\\\\2\\end{bmatrix}=\\begin{bmatrix}-1+0+4\\\\1+0-2\\\\-1+0+2\\end{bmatrix}=\\begin{bmatrix}3\\\\-1\\\\1\\end{bmatrix}"],
+      why: "With \\(A^{-1}\\) in hand, every right-hand side is one multiplication away. Check: \\(A(3,-1,1)=(1,0,2)\\).", sum: "\\(\\mathbf x=(3,-1,1)\\)" },
+  ],
+});
+
+stAdd({
+  id: "m-markov", title: "Diagonalize, then look at the long run", card: "Diagonalize: the long run",
+  tagline: "Eigenvalues 1 and 0.7: one part stays, the other fades.",
+  blurb: "Writing the start in eigenvector coordinates turns \\(A^k\\) into simple powers of the eigenvalues, so the long run can be read off.",
+  problem: "Two bike stations swap bikes overnight: 10% of the bikes at station A move to B, and 20% of those at B move to A. Starting with 300 bikes at A and none at B, where do the bikes end up in the long run?",
+  picDur: 9000,
+  pic(k, b, u) {
+    const xk = n => [200 + 100 * Math.pow(.7, n), 100 - 100 * Math.pow(.7, n)];
+    const K = k >= 5 ? Math.min(14, u / .55) : 0, n = Math.floor(K), f = K - n, a = xk(n), c = xk(n + 1), x = [a[0] + (c[0] - a[0]) * vzEase(f), a[1] + (c[1] - a[1]) * vzEase(f)];
+    const base = 380, s = .9;
+    let o = `<line x1="40" y1="${base}" x2="320" y2="${base}" stroke="${VZ.ink}" stroke-opacity=".35"/>`;
+    [["A", 110, x[0], VZ.red], ["B", 250, x[1], VZ.ink]].forEach(([nm, cx, v, col]) => {
+      o += `<rect x="${cx - 40}" y="${q2(base - v * s)}" width="80" height="${q2(v * s)}" rx="6" fill="${col}" fill-opacity=".75"/>`;
+      o += vzLabel(cx, base + 26, "station " + nm, VZ.ink, 16) + vzLabel(cx, base - v * s - 10, Math.round(v) + " bikes", col, 15);
+    });
+    if (k >= 6) o += `<g opacity="${q2(stEase(u, .3, 1))}"><line x1="60" y1="${base - 200 * s}" x2="160" y2="${base - 200 * s}" stroke="${VZ.red}" stroke-dasharray="5 4"/><line x1="200" y1="${base - 100 * s}" x2="300" y2="${base - 100 * s}" stroke="${VZ.ink}" stroke-dasharray="5 4"/></g>`;
+    o += stNote(180, 40, k >= 5 ? "night " + n : "start: all 300 bikes at A", VZ.ink) + stNote(180, 64, "10% A → B each night, 20% B → A", VZ.grey);
+    return o;
+  },
+  steps: [
+    { t: "Write the model", tex: ["\\mathbf x_{k+1}=A\\,\\mathbf x_k", "A=\\begin{bmatrix}0.9&0.2\\\\0.1&0.8\\end{bmatrix},\\qquad \\mathbf x_0=\\begin{bmatrix}300\\\\0\\end{bmatrix}"],
+      why: "\\(\\mathbf x_k\\) lists the bikes at A and at B after \\(k\\) nights. Column 1 says where A's bikes go (90% stay, 10% leave); column 2 does the same for B. Each column adds to 1: no bike is lost.", sum: "\\(\\mathbf x_{k+1}=A\\mathbf x_k\\)" },
+    { t: "Eigenvalues", tex: ["\\lambda^2-1.7\\lambda+0.7=(\\lambda-1)(\\lambda-0.7)=0", "\\lambda_1=1,\\qquad \\lambda_2=0.7"],
+      why: "Trace \\(1.7\\), determinant \\(0.72-0.02=0.7\\). Columns that add to 1 always give the eigenvalue 1.", sum: "\\(\\lambda=1,\\ 0.7\\)" },
+    { t: "Eigenvectors", tex: ["\\lambda=1:\\quad -0.1x+0.2y=0\\ \\Rightarrow\\ \\mathbf v_1=\\begin{bmatrix}2\\\\1\\end{bmatrix}", "\\lambda=0.7:\\quad 0.2x+0.2y=0\\ \\Rightarrow\\ \\mathbf v_2=\\begin{bmatrix}1\\\\-1\\end{bmatrix}"],
+      why: "Row reduce \\(A-\\lambda I\\) for each eigenvalue; one equation survives each time. \\(\\mathbf v_1\\) is a split of bikes that the swapping leaves exactly as it is.", sum: "\\(\\mathbf v_1=(2,1),\\ \\mathbf v_2=(1,-1)\\)" },
+    { t: "Diagonalize", tex: ["A=PDP^{-1}", "P=\\begin{bmatrix}2&1\\\\1&-1\\end{bmatrix},\\qquad D=\\begin{bmatrix}1&0\\\\0&0.7\\end{bmatrix}"],
+      why: "Eigenvectors are the columns of \\(P\\); the eigenvalues go down \\(D\\) in the same order.", sum: "\\(A=PDP^{-1}\\)" },
+    { t: "The start in eigenvector coordinates", tex: ["\\begin{bmatrix}300\\\\0\\end{bmatrix}=c_1\\begin{bmatrix}2\\\\1\\end{bmatrix}+c_2\\begin{bmatrix}1\\\\-1\\end{bmatrix}", "2c_1+c_2=300,\\quad c_1-c_2=0", "\\Rightarrow\\ c_1=c_2=100"],
+      why: "This is the job \\(P^{-1}\\) does: it splits the start into the part along each eigenvector.", sum: "\\(\\mathbf x_0=100\\,\\mathbf v_1+100\\,\\mathbf v_2\\)" },
+    { t: "Apply A night after night", tex: ["\\mathbf x_k=A^k\\mathbf x_0=100\\cdot1^k\\begin{bmatrix}2\\\\1\\end{bmatrix}+100\\,(0.7)^k\\begin{bmatrix}1\\\\-1\\end{bmatrix}", "\\mathbf x_1=\\begin{bmatrix}270\\\\30\\end{bmatrix},\\qquad \\mathbf x_2=\\begin{bmatrix}249\\\\51\\end{bmatrix},\\ \\dots"],
+      why: "Each eigen-part just gets multiplied by its own \\(\\lambda\\) every night: that's \\(A^k=PD^kP^{-1}\\) with \\(D^k=\\operatorname{diag}(1,\\ 0.7^k)\\).", sum: "\\(\\mathbf x_k=100\\mathbf v_1+100(0.7)^k\\mathbf v_2\\)" },
+    { t: "The long run", tex: ["(0.7)^k\\to0\\quad\\Rightarrow\\quad \\mathbf x_k\\to100\\begin{bmatrix}2\\\\1\\end{bmatrix}=\\begin{bmatrix}200\\\\100\\end{bmatrix}"],
+      why: "The \\(\\lambda=0.7\\) part fades away; only the \\(\\lambda=1\\) part survives. In the long run two thirds of the bikes sit at A, whatever the starting split.", sum: "\\(\\mathbf x_k\\to(200,\\ 100)\\)" },
+  ],
+});
+
+/* ---------- Methods: vector calculus ---------- */
+stAdd({
+  id: "m-wire", title: "Mass of a wire: a scalar line integral", card: "Line integral: mass of a wire",
+  tagline: "Density times length, added up along a helix.",
+  blurb: "A scalar line integral adds up a quantity per unit length along a curve. The key conversion is \\(ds=\\|\\mathbf r'(t)\\|\\,dt\\).",
+  problem: "A wire is bent along the helix \\(\\mathbf r(t)=(\\cos t,\\ \\sin t,\\ t)\\), \\(0\\le t\\le2\\pi\\). Its density is \\(\\rho(x,y,z)=x^2+y^2+z\\) grams per unit length. Find the mass of the wire.",
+  picDur: 6000,
+  pic(k, b, u) {
+    const cam = vzCam(180, 360, 92, vzRad(-28), .62), N = 160, T = 2 * Math.PI, fill = k >= 4 ? (k === 4 ? stEase(u, .3, 3.2) : 1) : 0;
+    const pt = t => cam(Math.cos(t), Math.sin(t), t * .5), col = t => { const w = t / T; return `rgb(${Math.round(240 - 40 * w)},${Math.round(206 - 190 * w)},${Math.round(206 - 160 * w)})`; };
+    let o = vzPath3(cam, [[0, 0, 0], [0, 0, T * .5 + .4]], `stroke="${VZ.ink}" stroke-opacity=".25"`);
+    for (let i = 0; i < N; i++) {
+      const t0 = T * i / N, t1 = T * (i + 1) / N, a = pt(t0), c = pt(t1), front = a[2] < cam(0, 0, t0 * .5)[2];   // nearer than the axis
+      const shaded = k >= 3, done = t1 <= fill * T + 1e-9;
+      o += `<line x1="${q2(a[0])}" y1="${q2(a[1])}" x2="${q2(c[0])}" y2="${q2(c[1])}" stroke="${shaded ? col(t0) : VZ.grey}" stroke-width="${done ? 7 : shaded ? 4.5 : 3}" stroke-linecap="round" opacity="${front ? 1 : .55}"/>`;
+    }
+    if (k === 1 || k === 2) {                              // velocity and a little piece ds at t = π/2
+      const t = Math.PI / 2, p = [Math.cos(t), Math.sin(t), t * .5], v = [-Math.sin(t), Math.cos(t), .5];
+      o += vzArrow3(cam, p, [p[0] + v[0] * 1.4, p[1] + v[1] * 1.4, p[2] + v[2] * 1.4], "R", 2.8) + vzLab3(cam, [p[0] + v[0] * 1.6, p[1] + v[1] * 1.6, p[2] + v[2] * 1.6], k === 1 ? "r′(t)" : "speed √2", VZ.red, 16, 0, 15) + vzDot3(cam, p, 5, VZ.deep);
+    }
+    if (k >= 3) { const hi = pt(T * .97), lo = pt(.15); o += stNote(hi[0] + 46, hi[1] + 4, "heavier", VZ.red) + stNote(lo[0] + 52, lo[1] + 4, "lighter", "#B88990"); }
+    if (k >= 4) o += stNote(180, 30, "mass so far: " + (fill >= 1 ? "2√2 π(1 + π)" : "adding up ρ ds…"), VZ.deep);
+    return o;
+  },
+  steps: [
+    { t: "Mass is a scalar line integral", tex: ["m=\\int_C\\rho\\,ds=\\int_0^{2\\pi}\\rho(\\mathbf r(t))\\,\\|\\mathbf r'(t)\\|\\,dt"],
+      why: "Cut the wire into tiny pieces, multiply each piece's length by the density there, and add. \\(ds=\\|\\mathbf r'(t)\\|\\,dt\\) turns a step in \\(t\\) into actual length.", sum: "\\(m=\\int_C\\rho\\,ds\\)" },
+    { t: "Velocity", tex: ["\\mathbf r'(t)=(-\\sin t,\\ \\cos t,\\ 1)"],
+      why: "Differentiate each component.", sum: "\\(\\mathbf r'(t)=(-\\sin t,\\cos t,1)\\)" },
+    { t: "Speed", tex: ["\\|\\mathbf r'(t)\\|=\\sqrt{\\sin^2t+\\cos^2t+1}=\\sqrt2"],
+      why: "\\(\\sin^2t+\\cos^2t=1\\) makes the speed constant: every step in \\(t\\) covers \\(\\sqrt2\\) times as much wire.", sum: "\\(ds=\\sqrt2\\,dt\\)" },
+    { t: "Density along the wire", tex: ["\\rho(\\mathbf r(t))=\\cos^2t+\\sin^2t+t=1+t"],
+      why: "Put \\(x=\\cos t,\\ y=\\sin t,\\ z=t\\) into \\(\\rho\\). The wire gets heavier as it climbs.", sum: "\\(\\rho=1+t\\)" },
+    { t: "Set up the integral", tex: ["m=\\int_0^{2\\pi}(1+t)\\,\\sqrt2\\,dt"],
+      why: "Density times speed, over the whole range of \\(t\\).", sum: "\\(m=\\int_0^{2\\pi}\\sqrt2\\,(1+t)\\,dt\\)" },
+    { t: "Evaluate", tex: ["=\\sqrt2\\left[t+\\tfrac{t^2}{2}\\right]_0^{2\\pi}=\\sqrt2\\,\\left(2\\pi+2\\pi^2\\right)", "=2\\sqrt2\\,\\pi\\,(1+\\pi)"],
+      why: "Keep it exact; there's no need for decimals.", sum: "\\(m=2\\sqrt2\\,\\pi(1+\\pi)\\)" },
+    { t: "Sense check", tex: ["\\text{length}=2\\pi\\sqrt2,\\qquad \\text{average density}=1+\\pi", "m=(\\text{length})\\times(\\text{average density})\\ \\checkmark"],
+      why: "The density \\(1+t\\) averages \\(1+\\pi\\) over \\(0\\le t\\le2\\pi\\), and the length is speed times time. Their product is the mass we found.", sum: "matches length × average density" },
+  ],
+});
+
+stAdd({
+  id: "m-potential", title: "Work in a conservative field", card: "Work: find a potential",
+  tagline: "Curl 0? Then only the endpoints matter.",
+  blurb: "Before grinding through a messy parametrization, check whether the field is a gradient. If it is, the work is just the change in the potential.",
+  problem: "A force \\(\\mathbf F=(2xy+z,\\ x^2+2yz,\\ x+y^2)\\) pushes a bead along the twisted wire \\(\\mathbf r(t)=\\left(t^2,\\ \\sin\\tfrac{\\pi t}{2},\\ t^3\\right)\\), \\(0\\le t\\le1\\). How much work does it do?",
+  pic(k, b, u) {
+    const cam = vzCam(112, 350, 128, vzRad(-40), .38), path = [], line = [];
+    for (let i = 0; i <= 60; i++) { const t = i / 60; path.push([t * t, Math.sin(Math.PI * t / 2), t * t * t]); line.push([t, t, t]); }
+    let o = vzAxes3(cam, 1.25, .3);
+    [[[1, 0, 0], [1, 1, 0]], [[0, 1, 0], [1, 1, 0]], [[1, 1, 0], [1, 1, 1]], [[0, 0, 1], [1, 0, 1]], [[0, 0, 1], [0, 1, 1]], [[1, 0, 1], [1, 1, 1]], [[0, 1, 1], [1, 1, 1]], [[1, 0, 0], [1, 0, 1]], [[0, 1, 0], [0, 1, 1]]].forEach(([a, c]) => { o += vzPath3(cam, [a, c], `stroke="${VZ.grey}" stroke-opacity=".3" stroke-dasharray="3 4"`); });
+    o += vzPath3(cam, path, `stroke="${VZ.red}" stroke-width="3.2" stroke-linecap="round"`);
+    if (k >= 6) o += vzPath3(cam, line, `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray="6 5"`);
+    o += vzDot3(cam, [0, 0, 0], 5, VZ.ink) + vzDot3(cam, [1, 1, 1], 5, VZ.ink) + vzLab3(cam, [0, 0, 0], "(0, 0, 0)", VZ.ink, -8, 22, 14) + vzLab3(cam, [1, 1, 1], "(1, 1, 1)", VZ.ink, 0, -14, 14);
+    o += stNote(180, 440, k >= 7 ? "both paths: W = f(1, 1, 1) − f(0, 0, 0) = 3" : k >= 6 ? "only the endpoints matter" : "the twisted wire", k >= 7 ? VZ.deep : VZ.ink);
+    return o;
+  },
+  steps: [
+    { t: "Notice: the direct way is painful", tex: ["W=\\int_0^1\\mathbf F(\\mathbf r(t))\\cdot\\mathbf r'(t)\\,dt"],
+      why: "Plugging in \\(t^2\\), \\(\\sin\\frac{\\pi t}2\\) and \\(t^3\\) gives a long, messy integrand. Before grinding, check whether \\(\\mathbf F\\) is conservative: then only the endpoints matter.", sum: "look for a shortcut first" },
+    { t: "Compute the curl", tex: ["\\nabla\\times\\mathbf F=\\big(R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y\\big)", "=\\big(2y-2y,\\ \\ 1-1,\\ \\ 2x-2x\\big)=\\mathbf 0"],
+      why: "With \\(P=2xy+z\\), \\(Q=x^2+2yz\\), \\(R=x+y^2\\), every component cancels.", sum: "\\(\\nabla\\times\\mathbf F=\\mathbf 0\\)" },
+    { t: "So F has a potential", tex: ["\\mathbf F=\\nabla f\\quad\\text{for some } f"],
+      why: "Curl \\(\\mathbf 0\\) on a region with no holes (here all of space) means \\(\\mathbf F\\) is a gradient field.", sum: "\\(\\mathbf F=\\nabla f\\)" },
+    { t: "Integrate the first component", tex: ["f=\\int(2xy+z)\\,dx=x^2y+xz+g(y,z)"],
+      why: "The \"constant\" of integration may depend on the other two variables.", sum: "\\(f=x^2y+xz+g(y,z)\\)" },
+    { t: "Match the second component", tex: ["f_y=x^2+g_y\\overset{!}{=}x^2+2yz", "\\Rightarrow\\ g_y=2yz\\ \\Rightarrow\\ g=y^2z+h(z)"],
+      why: "The \\(x^2\\) terms agree (the conservative test succeeding live); what's left decides \\(g\\).", sum: "\\(g=y^2z+h(z)\\)" },
+    { t: "Match the third component", tex: ["f_z=x+y^2+h'(z)\\overset{!}{=}x+y^2\\ \\Rightarrow\\ h'(z)=0", "f=x^2y+xz+y^2z"],
+      why: "Nothing is left over, so \\(h\\) is a constant; take it to be 0.", sum: "\\(f=x^2y+xz+y^2z\\)" },
+    { t: "Where the wire starts and ends", tex: ["\\mathbf r(0)=(0,0,0)", "\\mathbf r(1)=\\left(1,\\ \\sin\\tfrac{\\pi}{2},\\ 1\\right)=(1,1,1)"],
+      why: "Only the endpoints matter now, not the twists in between.", sum: "from \\((0,0,0)\\) to \\((1,1,1)\\)" },
+    { t: "Work = change in potential", tex: ["W=f(1,1,1)-f(0,0,0)=(1+1+1)-0=3"],
+      why: "Any path between these two points, twisted or straight, gives the same work: 3.", sum: "\\(W=3\\)" },
+  ],
+});
+
+stAdd({
+  id: "m-flux", title: "Flux through a surface, step by step", card: "Flux through a triangle",
+  tagline: "Parametrize, take r_x × r_y, check the direction, integrate.",
+  blurb: "The flux recipe: parametrize the surface, get a normal from the cross product, make sure it points the way the problem asks, then integrate \\(\\mathbf F\\cdot\\mathbf N\\) over the parameter region.",
+  problem: "Find the flux of \\(\\mathbf F=(2x,\\ y,\\ z)\\) through the triangle cut from the plane \\(x+y+z=3\\) by the first octant, with the normal pointing away from the origin.",
+  pic(k, b, u) {
+    const cam = vzCam(165, 330, 56, vzRad(-40), .42), A = [3, 0, 0], B = [0, 3, 0], C = [0, 0, 3];
+    let o = vzAxes3(cam, 3.6, .35);
+    const tri = (pts, attrs) => `<path d="M${pts.map(p => { const q = cam(...p); return q2(q[0]) + " " + q2(q[1]); }).join("L")}Z" ${attrs}/>`;
+    if (k === 0 || k >= 5) o += tri([[3, 0, 0], [0, 3, 0], [0, 0, 0]], `fill="${VZ.gold}" fill-opacity=".18" stroke="${VZ.gold}" stroke-dasharray="5 4"`) + vzLab3(cam, [1, 1, 0], "D", "#7A5C0F", 0, 6, 16);
+    o += tri([A, B, C], `fill="${VZ.red}" fill-opacity=".16" stroke="${VZ.red}" stroke-width="2"`);
+    if (k >= 4) [[.5, .5], [2, .5], [.5, 2], [1, 1], [1.5, .3], [.3, 1.4]].forEach(([x, y]) => { const p = [x, y, 3 - x - y], f = [2 * x, y, 3 - x - y], L = .32; o += `<g opacity=".7">${vzArrow3(cam, p, [p[0] + f[0] * L, p[1] + f[1] * L, p[2] + f[2] * L], "I", 1.8)}</g>`; });
+    if (k >= 2) { const p = [1, 1, 1], e = k > 2 ? 1 : stEase(u, .6, 1.2); o += vzArrow3(cam, p, [1 + 1.1 * e, 1 + 1.1 * e, 1 + 1.1 * e], "O", 3) + (e > .9 ? vzLab3(cam, [2.1, 2.1, 2.1], "N = (1, 1, 1)", "#8A6A12", -58, -2, 15) : ""); }
+    if (k === 3) o += vzPath3(cam, [[0, 0, 0], [1, 1, 1]], `stroke="${VZ.ink}" stroke-dasharray="3 4"`) + stNote(180, 440, "N points the same way as (1, 1, 1): away from 0", VZ.ink);
+    else o += stNote(180, 440, k >= 4 ? "F (dark) pushes through the red triangle" : "the triangle x + y + z = 3", VZ.ink);
+    return o;
+  },
+  steps: [
+    { t: "The surface as a graph", tex: ["z=3-x-y", "\\text{over } D=\\{x\\ge0,\\ y\\ge0,\\ x+y\\le3\\}"],
+      why: "Solve the plane for \\(z\\). The triangle's shadow \\(D\\) on the floor is where \\(x,y\\ge0\\) and \\(z\\ge0\\), that is \\(x+y\\le3\\).", sum: "\\(z=3-x-y\\) over \\(D\\)" },
+    { t: "Parametrize", tex: ["\\mathbf r(x,y)=(x,\\ y,\\ 3-x-y),\\qquad (x,y)\\in D"],
+      why: "Use \\(x\\) and \\(y\\) themselves as the parameters.", sum: "\\(\\mathbf r(x,y)=(x,y,3-x-y)\\)" },
+    { t: "Tangent vectors and the normal", tex: ["\\mathbf r_x=(1,0,-1),\\qquad \\mathbf r_y=(0,1,-1)", "\\mathbf N=\\mathbf r_x\\times\\mathbf r_y=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\1&0&-1\\\\0&1&-1\\end{vmatrix}", "=(0+1)\\,\\mathbf i-(-1-0)\\,\\mathbf j+(1-0)\\,\\mathbf k=(1,1,1)"],
+      why: "The cross product of the two tangent vectors is normal to the surface, and its length is the area stretch, so \\(d\\mathbf S=\\mathbf N\\,dx\\,dy\\).", sum: "\\(\\mathbf N=(1,1,1)\\)" },
+    { t: "Check the direction", tex: ["\\text{at }(1,1,1):\\quad \\mathbf N\\cdot(1,1,1)=3>0"],
+      why: "At the point \\((1,1,1)\\) of the triangle, \"away from the origin\" is the direction \\((1,1,1)\\). \\(\\mathbf N\\) agrees, so keep it (otherwise flip its sign).", sum: "orientation ✓" },
+    { t: "F on the surface, dotted with N", tex: ["\\mathbf F(\\mathbf r(x,y))=(2x,\\ y,\\ 3-x-y)", "\\mathbf F\\cdot\\mathbf N=2x+y+3-x-y=x+3"],
+      why: "Replace \\(z\\) by \\(3-x-y\\), then dot with \\(\\mathbf N\\). The \\(y\\) terms cancel.", sum: "\\(\\mathbf F\\cdot\\mathbf N=x+3\\)" },
+    { t: "Set up over the shadow", tex: ["\\iint_S\\mathbf F\\cdot d\\mathbf S=\\int_0^3\\!\\!\\int_0^{3-x}(x+3)\\,dy\\,dx"],
+      why: "With \\(d\\mathbf S=\\mathbf N\\,dx\\,dy\\), the flux becomes an ordinary double integral over \\(D\\).", sum: "\\(\\int_0^3\\int_0^{3-x}(x+3)\\,dy\\,dx\\)" },
+    { t: "Evaluate", tex: ["\\int_0^{3-x}(x+3)\\,dy=(x+3)(3-x)=9-x^2", "\\int_0^3(9-x^2)\\,dx=27-9=18"],
+      why: "The integrand doesn't depend on \\(y\\), so the inner integral just multiplies by the strip's length \\(3-x\\).", sum: "flux \\(=18\\)" },
+  ],
+});
+
+stAdd({
+  id: "m-switch", title: "Switch the order to make it doable", card: "Switch the order",
+  tagline: "Stuck inside? Describe the same region the other way.",
+  blurb: "Some double integrals can't be done in the order they're written. Redraw the region from its bounds and describe it with strips going the other way.",
+  problem: "Evaluate \\(\\displaystyle\\int_0^1\\!\\!\\int_{\\sqrt y}^{1}e^{x^3}\\,dx\\,dy\\).",
+  pic(k, b, u) {
+    const P = { X: x => 70 + 250 * x, Y: y => 380 - 250 * y };
+    let o = `<path d="M40 380H350M70 410V100" stroke="${VZ.ink}" stroke-opacity=".35" fill="none"/>` + stNote(350, 398, "x", VZ.grey, "end") + stNote(60, 108, "y", VZ.grey, "end");
+    let reg = "M" + P.X(0) + " " + P.Y(0); for (let i = 0; i <= 40; i++) { const x = i / 40; reg += "L" + q2(P.X(x)) + " " + q2(P.Y(x * x)); } reg += "L" + P.X(1) + " " + P.Y(0) + "Z";
+    if (k >= 1) o += `<path d="${reg}" fill="${VZ.red}" fill-opacity=".12" stroke="none"/>`;
+    let cur = ""; for (let i = 0; i <= 40; i++) { const x = i / 40; cur += (i ? "L" : "M") + q2(P.X(x)) + " " + q2(P.Y(x * x)); }
+    if (k >= 1) o += `<path d="${cur}" fill="none" stroke="${VZ.red}" stroke-width="2.4"/><line x1="${P.X(1)}" y1="${P.Y(0)}" x2="${P.X(1)}" y2="${P.Y(1.05)}" stroke="${VZ.red}" stroke-width="2"/>`;
+    if (k >= 2) o += vzLabel(P.X(.62), P.Y(.62 * .62) - 14, "y = x²  (x = √y)", VZ.red, 15, "end") + vzLabel(P.X(1) + 8, P.Y(.7), "x = 1", VZ.red, 15, "start");
+    if (k >= 1 && k <= 2) { const y = .45, x0 = Math.sqrt(y); o += `<rect x="${P.X(x0)}" y="${P.Y(y) - 7}" width="${P.X(1) - P.X(x0)}" height="14" fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}"/>` + stNote(180, 440, "dx dy: horizontal strips, from x = √y to x = 1", VZ.ink); }
+    if (k >= 3) { const x = .72, e = k > 3 ? 1 : stEase(u, .5, 1.2); o += `<rect x="${P.X(x) - 7}" y="${q2(P.Y(x * x * e))}" width="14" height="${q2(P.Y(0) - P.Y(x * x * e))}" fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}"/>` + stNote(180, 440, "dy dx: vertical strips, from y = 0 up to y = x²", VZ.ink); }
+    if (k === 0) o += stNote(180, 440, "∫ e^(x³) dx has no formula: stuck", VZ.ink);
+    return o;
+  },
+  steps: [
+    { t: "Stuck in this order", tex: ["\\int e^{x^3}\\,dx\\ \\text{ has no elementary antiderivative}"],
+      why: "When the inner integral can't be done, try describing the same region the other way round.", sum: "switch the order" },
+    { t: "Read the region from the bounds", tex: ["0\\le y\\le1,\\qquad \\sqrt y\\le x\\le1"],
+      why: "The limits are inequalities that describe a region. The inside limits run from \\(x=\\sqrt y\\) to \\(x=1\\); the outside ones from \\(y=0\\) to \\(y=1\\).", sum: "\\(0\\le y\\le1,\\ \\sqrt y\\le x\\le1\\)" },
+    { t: "Sketch it", tex: ["x=\\sqrt y\\quad\\Longleftrightarrow\\quad y=x^2\\quad(x\\ge0)"],
+      why: "The region sits under the parabola \\(y=x^2\\), to the left of \\(x=1\\) and above \\(y=0\\).", sum: "under \\(y=x^2\\), \\(0\\le x\\le1\\)" },
+    { t: "Describe it with vertical strips", tex: ["0\\le x\\le1,\\qquad 0\\le y\\le x^2"],
+      why: "Now \\(x\\) is the outside variable: each vertical strip runs from the floor \\(y=0\\) up to the curve \\(y=x^2\\).", sum: "\\(0\\le x\\le1,\\ 0\\le y\\le x^2\\)" },
+    { t: "The new integral", tex: ["\\int_0^1\\!\\!\\int_0^{x^2}e^{x^3}\\,dy\\,dx=\\int_0^1x^2\\,e^{x^3}\\,dx"],
+      why: "Inside, \\(e^{x^3}\\) is a constant in \\(y\\), so the inner integral just multiplies by the strip's height \\(x^2\\).", sum: "\\(\\int_0^1x^2e^{x^3}\\,dx\\)" },
+    { t: "Substitute u = x³", tex: ["u=x^3,\\qquad du=3x^2\\,dx", "\\int_0^1x^2e^{x^3}\\,dx=\\tfrac13\\int_0^1e^u\\,du", "=\\tfrac13\\,(e-1)"],
+      why: "The \\(x^2\\) that appeared from the strip height is exactly what the substitution needs.", sum: "\\(\\tfrac13(e-1)\\)" },
+  ],
+});
+
+stAdd({
+  id: "m-green", title: "Circulation with Green's theorem", card: "Green's theorem, step by step",
+  tagline: "Trade a line integral for a double integral of the spin.",
+  blurb: "Green's theorem turns the circulation around a closed curve into a double integral of \\(Q_x-P_y\\) over the region inside, often much easier, especially in polar coordinates.",
+  problem: "Find the circulation \\(\\displaystyle\\oint_C (x^2-y^3)\\,dx+(x^3+y^2)\\,dy\\) once counterclockwise around the unit circle.",
+  pic(k, b, u) {
+    const cx = 180, cy = 230, R = 135;
+    let o = `<defs><radialGradient id="stGreenG"><stop offset="0" stop-color="${VZ.red}" stop-opacity=".02"/><stop offset="1" stop-color="${VZ.red}" stop-opacity=".42"/></radialGradient></defs>`;
+    if (k >= 1) o += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#stGreenG)"/>`;
+    o += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${VZ.red}" stroke-width="3"/>`;
+    for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + .3, b2 = a + .2; o += vzArrow(cx + R * Math.cos(a), cy - R * Math.sin(a), cx + R * Math.cos(b2), cy - R * Math.sin(b2), "R", 3); }
+    if (k >= 1) [[0, 0], [.5, 0], [0, .55], [-.6, -.3], [.4, -.6], [-.45, .5], [.75, .45]].forEach(([x, y]) => {   // little spins, bigger farther out
+      const r2 = x * x + y * y, s = 5 + 13 * r2, X = cx + R * x, Y = cy - R * y;
+      if (s < 6) return; o += `<path d="M${q2(X + s)} ${q2(Y)}A${q2(s)} ${q2(s)} 0 1 0 ${q2(X)} ${q2(Y - s)}" fill="none" stroke="${VZ.deep}" stroke-width="1.6"/>` + vzArrow(X + .2, Y - s, X - 3, Y - s - .3, "D", 1.6);
+    });
+    o += vzLabel(cx + R * .78, cy - R * .78 - 8, "C", VZ.red, 18) + stNote(180, 440, k >= 1 ? "spin Q_x − P_y = 3r²: strongest near the rim" : "the unit circle, counterclockwise", VZ.ink);
+    if (k >= 3) o += `<line x1="${cx}" y1="${cy}" x2="${cx + R * Math.cos(.6)}" y2="${cy - R * Math.sin(.6)}" stroke="${VZ.ink}" stroke-dasharray="4 4"/>` + vzLabel(cx + R * .45 * Math.cos(.6) + 6, cy - R * .45 * Math.sin(.6) - 8, "r", VZ.ink, 16);
+    return o;
+  },
+  steps: [
+    { t: "Identify P and Q", tex: ["P=x^2-y^3,\\qquad Q=x^3+y^2"],
+      why: "\\(P\\) is what multiplies \\(dx\\), \\(Q\\) what multiplies \\(dy\\).", sum: "\\(P=x^2-y^3,\\ Q=x^3+y^2\\)" },
+    { t: "Compute Q_x − P_y", tex: ["Q_x-P_y=3x^2-(-3y^2)=3x^2+3y^2"],
+      why: "This is the field's spin at each point. Here it is \\(3r^2\\): zero at the centre, strongest at the rim.", sum: "\\(Q_x-P_y=3(x^2+y^2)\\)" },
+    { t: "Apply Green's theorem", tex: ["\\oint_C P\\,dx+Q\\,dy=\\iint_D(Q_x-P_y)\\,dA", "=\\iint_D3(x^2+y^2)\\,dA"],
+      why: "\\(C\\) is closed, goes counterclockwise, and encloses the disk \\(D\\): exactly the setting of Green's theorem. Clockwise would flip the sign.", sum: "\\(\\iint_D3(x^2+y^2)\\,dA\\)" },
+    { t: "Switch to polar coordinates", tex: ["x^2+y^2=r^2,\\qquad dA=r\\,dr\\,d\\theta", "0\\le r\\le1,\\qquad 0\\le\\theta\\le2\\pi"],
+      why: "A disk and an \\(x^2+y^2\\) both say polar. Don't forget the extra \\(r\\) in \\(dA\\).", sum: "polar coordinates" },
+    { t: "Evaluate", tex: ["\\int_0^{2\\pi}\\!\\!\\int_0^1 3r^2\\cdot r\\,dr\\,d\\theta=\\int_0^{2\\pi}\\tfrac34\\,d\\theta=\\tfrac{3\\pi}{2}"],
+      why: "\\(\\int_0^1 3r^3\\,dr=\\tfrac34\\), and the \\(\\theta\\) integral multiplies by \\(2\\pi\\).", sum: "\\(\\tfrac{3\\pi}{2}\\)" },
+    { t: "Sense check", tex: ["\\tfrac{3\\pi}{2}>0", { html: "The net push around \\(C\\) is counterclockwise." }],
+      why: "The spin is positive everywhere inside, so the circulation around the edge is positive. Working the line integral directly gives the same \\(\\tfrac{3\\pi}{2}\\), with far more work.", sum: "circulation \\(=\\tfrac{3\\pi}{2}\\)" },
+  ],
+});
+
 
 // one short line for each card in the index
 const VZ_TAGLINE = {
