@@ -2527,26 +2527,37 @@
   }
   .wu-body { display: grid; gap: 8px; min-width: 0; }
   .wu-kicker { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-ink); font-weight: 600; }
-  .wu-stats { display: flex; flex-wrap: wrap; gap: 10px 28px; }
-  .wu-stat { display: grid; gap: 2px; }
-  .wu-num { font-family: var(--font-display); font-size: 26px; line-height: 1; color: var(--ink); font-weight: 500; }
-  .wu-lab { font-size: 12.5px; color: var(--ink-mute); }
+  .wu-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 4px 0 6px; }
+  .wu-tile { display: grid; gap: 3px; align-content: start; padding: 13px 15px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; }
+  .wu-num { font-family: var(--font-display); font-size: 30px; line-height: 1; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .wu-num small { font-size: 17px; color: var(--ink-mute); font-weight: 500; }
+  .wu-lab { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); }
+  .wu-sub { font-size: 12px; color: var(--ink-mute); }
+  .wu-meter { display: block; height: 5px; margin-top: 6px; border-radius: 99px; background: var(--border); overflow: hidden; }
+  .wu-meter i { display: block; height: 100%; border-radius: 99px; background: var(--red); }
   .wu-note { margin: 0; font-size: 12.5px; color: var(--ink-mute); line-height: 1.45; max-width: 560px; }
   .wu-link { white-space: nowrap; }
   .walk-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: -8px 0 24px; }
   .walk-cards .walk-usage { margin: 0; align-items: flex-start; }
   .walk-cards .wu-full { grid-column: 1 / -1; }
 
-  .wu-full .wu-body { flex: 1 1 520px; }
-  .wu-charts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 28px; margin: 6px 0 4px; }
-  @media (max-width: 760px) { .wu-charts { grid-template-columns: minmax(0, 1fr); } }
-  .wu-chart h4 { margin: 0 0 8px; font: 600 12.5px/1.3 var(--font-sans); color: var(--ink-soft); }
-  .wu-chart svg { display: block; width: 100%; max-width: 440px; height: auto; overflow: visible; }
-  .wu-chart .bar { fill: var(--red); transition: fill .14s var(--ease); }
-  .wu-chart .bar-hit:hover + .bar, .wu-chart .bar-hit:focus + .bar { fill: var(--red-deep); }
-  .wu-chart .bar-hit { fill: transparent; cursor: default; }
-  .wu-chart text { font-family: var(--font-sans); font-size: 11px; fill: var(--ink-mute); }
-  .wu-chart text.val { fill: var(--ink-soft); font-weight: 600; }
+  .wu-full .wu-body { flex: 1 1 100%; }
+  .wu-charts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin: 6px 0 6px; }
+  @media (max-width: 860px) { .wu-charts { grid-template-columns: minmax(0, 1fr); } }
+  .wu-panel { min-width: 0; padding: 14px 16px 12px; background: #FFFFFF; border: 1px solid var(--border); border-radius: 12px; }
+  .wu-panel h4 { margin: 0; font: 650 13.5px/1.3 var(--font-sans); color: var(--ink); }
+  .wu-desc { margin: 2px 0 10px; font-size: 12px; color: var(--ink-mute); line-height: 1.4; }
+  .wu-panel svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .wu-panel .bar { fill: var(--red); transition: fill .14s var(--ease); }
+  .wu-panel .bar.now { fill: #E8909F; }
+  .wu-panel .bar-hit:hover + .bar, .wu-panel .bar-hit:focus + .bar { fill: var(--red-deep); }
+  .wu-panel .bar-hit { fill: transparent; cursor: default; outline: none; }
+  .wu-panel .grid { stroke: var(--border); stroke-width: 1; }
+  .wu-panel .base { stroke: var(--border-strong); stroke-width: 1.2; }
+  .wu-panel text { font-family: var(--font-sans); font-size: 12px; fill: var(--ink-mute); }
+  .wu-panel text.lab { fill: var(--ink-soft); font-size: 12.5px; }
+  .wu-panel text .num { font-family: var(--font-mono); font-size: 11px; fill: var(--ink-mute); }
+  .wu-panel text.val { fill: var(--ink); font-weight: 650; font-size: 12.5px; }
   .wu-ext { font-weight: 600; white-space: nowrap; }
   .wr-empty { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-soft); }
   .wr-item { display: grid; gap: 4px; }
@@ -2558,12 +2569,17 @@
   .wr-fix:hover { border-color: var(--ink-mute); color: var(--ink); }
   .wr-fixed { font-size: 12.5px; color: var(--ink-mute); }
   .wr-fixed button { border: 0; background: none; color: var(--red-deep); font: 600 12.5px var(--font-sans); cursor: pointer; padding: 0 0 0 4px; }
-  .wu-top { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
-  .wu-top li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: baseline; font-size: 13px; }
-  .wu-top .id { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-mute); }
-  .wu-top a { color: var(--ink); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wu-top { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+  .wu-top li { display: grid; grid-template-columns: 18px minmax(0, 1fr) 72px 26px; gap: 10px; align-items: center; padding: 6px 4px; border-radius: 8px; font-size: 13px; }
+  .wu-top li:hover { background: var(--bg); }
+  .wu-top .rk { font: 650 12px var(--font-mono); color: var(--ink-mute); text-align: right; }
+  .wu-top .tt { display: grid; min-width: 0; }
+  .wu-top a { color: var(--ink); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 550; }
   .wu-top a:hover { color: var(--red-deep); text-decoration: none; }
-  .wu-top .n { font-weight: 600; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .wu-top .id { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); }
+  .wu-top .mb { height: 6px; border-radius: 99px; background: var(--border); overflow: hidden; }
+  .wu-top .mb i { display: block; height: 100%; background: var(--red); border-radius: 99px; }
+  .wu-top .n { font-weight: 650; color: var(--ink); font-variant-numeric: tabular-nums; text-align: right; }
   .wu-tip { position: fixed; z-index: 60; pointer-events: none; padding: 5px 9px; border-radius: 8px; background: var(--ink); color: #fff;
     font: 600 12px/1.3 var(--font-sans); box-shadow: var(--sh-2); transform: translate(-50%, calc(-100% - 10px)); white-space: nowrap; }
   @media (max-width: 900px) { .walk-cards { grid-template-columns: 1fr; } }
@@ -3713,9 +3729,10 @@
   /* ============================================================
      VISUALIZE (slider-driven concept pictures)
      ============================================================ */
-  .vz-group { margin: 26px 0 6px; }
-  .vz-group-title { font-family: var(--font-display); font-weight: 600; font-size: 20px; letter-spacing: -.01em; margin: 0 0 12px; color: var(--ink); }
-  .vz-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  .vz-group { margin: 24px 0 4px; scroll-margin-top: 80px; }
+  .vz-group-title { font-family: var(--font-display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; margin: 0 0 10px; color: var(--ink); }
+  .vz-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 12px; }
+  @media (max-width: 460px) { .vz-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
   .vz-card {
     display: flex; flex-direction: column; gap: 5px; padding: 10px 10px 14px; text-decoration: none; color: var(--ink);
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); box-shadow: var(--sh-1);
@@ -3728,8 +3745,8 @@
     background: radial-gradient(ellipse at 70% 30%, var(--red-tint) 0%, transparent 55%), var(--surface-2);
   }
   .vz-thumb { border-radius: 10px; margin-bottom: 6px; }
-  .vz-card-title { font-weight: 700; font-size: 14.5px; padding: 0 4px; }
-  .vz-card-blurb { font-size: 12.5px; line-height: 1.45; color: var(--ink-mute); padding: 0 4px; }
+  .vz-card-title { font-weight: 700; font-size: 14px; padding: 0 3px; }
+  .vz-card-blurb { font-size: 12px; line-height: 1.4; color: var(--ink-mute); padding: 0 3px; }
 
   .vz-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 4px 0 16px; }
   .vz-crumb { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-mute); }
@@ -3794,18 +3811,26 @@
       background: linear-gradient(var(--bg) calc(100% - 14px), rgba(251, 248, 244, 0)); }
   }
   .vz-nw { white-space: nowrap; }
+  /* integrals with stacked limits in the readouts */
+  .vz-int { display: inline-flex; align-items: center; font-size: 1.7em; line-height: 1; margin-right: 2px; }
+  .vz-lim { display: inline-flex; flex-direction: column; justify-content: space-between; gap: 6px; font-size: .48em; line-height: 1.05; margin-left: 0; font-style: italic; }
+  .vz-eq.vz-on, .vz-eq.vz-off { font-size: 17px; margin: 2px 0 8px; }
+  .vz-lim sup, .vz-lim sub { position: static; font-size: 1em; }
+  .vz-eq.vz-on { color: var(--ink); font-weight: 600; } .vz-eq.vz-off { color: var(--ink-faint); }
   /* index: the six concept pictures lead */
-  .vz-group.is-lead { margin-top: 18px; }
-  .vz-group.is-lead .vz-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  @media (max-width: 900px) { .vz-group.is-lead .vz-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 540px) { .vz-group.is-lead .vz-cards { grid-template-columns: minmax(0, 1fr); } }
-  .vz-group.is-lead .vz-card-title { font-size: 16px; }
+  .vz-jump { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
   .vz-top-right { display: flex; align-items: center; gap: 12px; }
   /* draggable pictures: the page doesn't scroll under a finger that is dragging a vector */
   .vz-stage.vz-draggable { touch-action: none; }
   .vz-stage.vz-draggable:focus { outline: none; }
   .vz-stage.vz-draggable:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 3px; }
   .vz-stage.dragging { cursor: grabbing !important; }
+  @keyframes vzSwapIn { from { opacity: .35; } to { opacity: 1; } }
+  @keyframes vzReadIn { from { opacity: .3; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  .vz-stage.vz-swap g[clip-path] { animation: vzSwapIn .34s ease; }
+  .vz-readout.vz-swap { animation: vzReadIn .3s ease; }
+  @keyframes vzFlash { 0% { background: rgba(200,16,46,.16); } 100% { background: transparent; } }
+  .vz-check li.flash { animation: vzFlash 1.1s ease; border-radius: 6px; }
   /* full screen, for projecting in a session */
   body.vz-fullscreen #vizRoot { background: var(--bg); padding: 18px 28px 24px; overflow: auto; }
   body.vz-fullscreen .vz-main { grid-template-columns: minmax(0, 1fr) 360px; }
@@ -7955,7 +7980,12 @@ const Viz3D = (() => {
       ctx.closePath();
       ctx.fillStyle = p.color;
       ctx.fill();
-      if (p.label) { ctx.globalAlpha = 1; texLabel(ctx, p.label, B.x + (p.ldx || 0), B.y + (p.ldy || 0), p.size || 15, p.labelColor || p.color, [ux, uy]); }
+      if (p.label) {
+        // past the tip; for an arrow lying along a drawn line, turned 65° off it (toward the upper side) so the label clears the line
+        let dir = [ux, uy];
+        if (p.side) { const c = Math.cos(1.13), sn = Math.sin(1.13), r1 = [ux * c - uy * sn, ux * sn + uy * c], r2 = [ux * c + uy * sn, -ux * sn + uy * c]; dir = r1[1] < r2[1] ? r1 : r2; }
+        ctx.globalAlpha = 1; texLabel(ctx, p.label, B.x + (p.ldx || 0), B.y + (p.ldy || 0), p.size || 15, p.labelColor || p.color, dir);
+      }
     } else if (p.type === "head") {
       const A = proj(p.a), B = proj(p.b);
       const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
@@ -7967,7 +7997,12 @@ const Viz3D = (() => {
       ctx.closePath();
       ctx.fillStyle = p.color;
       ctx.fill();
-      if (p.label) { ctx.globalAlpha = 1; texLabel(ctx, p.label, B.x + (p.ldx || 0), B.y + (p.ldy || 0), p.size || 15, p.labelColor || p.color, [ux, uy]); }
+      if (p.label) {
+        // past the tip; for an arrow lying along a drawn line, turned 65° off it (toward the upper side) so the label clears the line
+        let dir = [ux, uy];
+        if (p.side) { const c = Math.cos(1.13), sn = Math.sin(1.13), r1 = [ux * c - uy * sn, ux * sn + uy * c], r2 = [ux * c + uy * sn, -ux * sn + uy * c]; dir = r1[1] < r2[1] ? r1 : r2; }
+        ctx.globalAlpha = 1; texLabel(ctx, p.label, B.x + (p.ldx || 0), B.y + (p.ldy || 0), p.size || 15, p.labelColor || p.color, dir);
+      }
     } else if (p.type === "point") {
       const q = proj(p.p);
       ctx.beginPath();
@@ -10848,7 +10883,9 @@ WALK_SKETCH.cylindrical_triple_integral = s => {
       const u1 = scl(norm(d1), sz || .3), u2 = scl(norm(d2), sz || .3);
       prims.push({ type: "line", a: s(add(c, u1)), b: s(add(add(c, u1), u2)), color: T.inkMute, lw: 1.2 }, { type: "line", a: s(add(add(c, u1), u2)), b: s(add(c, u2)), color: T.inkMute, lw: 1.2 });
     });
-    (spec.arrows || []).forEach(a => prims.push({ type: "arrow", a: s(a.from || [0, 0, 0]), b: s(a.to), color: col(a.c), lw: a.lw || 2.7, label: a.label, labelColor: a.lc ? col(a.lc) : undefined, size: a.size || 15, ldx: a.ldx, ldy: a.ldy }));
+    // an arrow lying along one of the scene's lines gets its label beside the tip, not on the line
+    const along = a => (spec.lines || []).some(l => { const d = sub(l.b, l.a), v = sub(a.to, a.from || [0, 0, 0]), c = cross(d, v); return Math.hypot(...c) < 1e-6 * Math.hypot(...d) * Math.hypot(...v) + 1e-12; });
+    (spec.arrows || []).forEach(a => prims.push({ type: "arrow", a: s(a.from || [0, 0, 0]), b: s(a.to), color: col(a.c), lw: a.lw || 2.7, label: a.label, labelColor: a.lc ? col(a.lc) : undefined, size: a.size || 15, ldx: a.ldx, ldy: a.ldy, side: a.side || along(a) }));
     (spec.points || []).forEach(q => prims.push({ type: "point", p: s(q.p), color: col(q.c), r: q.r || 3.6 }));
     (spec.labels || []).forEach(l => prims.push({ type: "label", p: s(l.p), text: l.text, color: col(l.c || "inkMute"), size: l.size || 14, anchor: l.anchor || "center", dx: l.dx, dy: l.dy }));
     prims.push({ type: "point", p: [0, 0, 0], color: T.ink, r: 3 });
@@ -10903,7 +10940,7 @@ WALK_SKETCH.cylindrical_triple_integral = s => {
       points: [{ p }], labels: [{ p, text: "(1,-2,3)", c: "ink", dx: -34, dy: 12 }] }); }
 
   /* ----- Eigenspaces as clean interactive scenes (round 9): solid lines and planes, plain arrows ----- */
-  const eigLine = (d, c, text, len) => { const u = norm(d), L = len || 2; return { line: { a: scl(u, -L), b: scl(u, L), c, lw: 1.6, solid: true }, label: { p: scl(u, -L * 1.1), text, c } }; };   // named at the empty end
+  const eigLine = (d, c, text, len) => { const u = norm(d), L = len || 2; return { line: { a: scl(u, -L), b: scl(u, L), c, lw: 1.6, solid: true }, label: { p: scl(u, -L * 1.26), text, c } }; };   // named past the empty end
   const withLines = (spec, ls) => { spec.lines = (spec.lines || []).concat(ls.map(l => l.line)); spec.labels = (spec.labels || []).concat(ls.map(l => l.label)); return spec; };
   as3D("eig-002", withLines({ K: .5, noAxes: true, yaw: -.35, pitch: .3, arrows: [{ to: [1, 0, 0], label: "e_1" }, { to: [0, 0, 1], label: "e_3" },
       { to: [0, 1, 0], c: "inkMute", lw: 2, label: "e_2", lc: "inkMute" }, { to: [1, 2, 0], c: "inkMute", lw: 2, label: "Ae_2", lc: "inkMute" }] },
@@ -10911,9 +10948,9 @@ WALK_SKETCH.cylindrical_triple_integral = s => {
   as3D("diagprojcross-003", withLines({ K: .5, noAxes: true, yaw: -.35, pitch: .3, arrows: [{ to: [1, 0, 0], label: "e_1" }, { to: [0, 0, 1], label: "e_3" },
       { to: [0, 1, 0], c: "inkMute", lw: 2, label: "e_2", lc: "inkMute" }, { to: [.4, 1.6, 0], c: "inkMute", lw: 2, label: "Ae_2\\ (\\text{scaled})", lc: "inkMute", size: 13 }] },
     [eigLine([1, 0, 0], "red", "E_{\\lambda_1}", 1.6), eigLine([0, 0, 1], "gold", "E_{\\lambda_2}", 1.6)]));
-  as3D("eig-004", withLines({ K: .55, noAxes: true, yaw: .47, pitch: .15, planes: [{ u: [1, 0, 0], v: [0, 1, 1], ru: [-1.2, 1.3], rv: [-1.1, 1.3] }],
+  as3D("eig-004", withLines({ K: .55, noAxes: true, yaw: .8, pitch: .2, planes: [{ u: [1, 0, 0], v: [0, 1, 1], ru: [-1.2, 1.3], rv: [-1.1, 1.3] }],
       arrows: [{ to: [1, 0, 0], label: "v_1" }, { to: [0, 1, 1], label: "v_2" }, { to: [0, 2, 1], c: "gold", label: "v_3" }],
-      labels: [{ p: add(scl([1, 0, 0], 1.2), scl([0, 1, 1], -1)), text: "E_{\\lambda_1}", c: "redDeep" }] },
+      labels: [{ p: add(scl([1, 0, 0], -1.3), scl([0, 1, 1], -1.05)), text: "E_{\\lambda_1}", c: "redDeep" }] },
     [eigLine([0, 2, 1], "gold", "E_{\\lambda_2}", 2.35)]));
   as3D("eig-007", withLines({ K: .6, noAxes: true, n: [1, 1, 0], pitch: .35, planes: [{ u: [1, -1, 0], v: [0, 0, 1], ru: [-1.1, 1.1], rv: [-1.1, 1.2], fill: "#F6EEDB", stroke: "#E2CF95" }],
       arrows: [{ to: [1, 1, 0], c: "red", label: "v_1" }, { to: [1, -1, 0], label: "v_2" }, { to: [0, 0, 1], label: "v_3" }],
@@ -11914,10 +11951,20 @@ const VZ_LIST = [], VZ_BY_ID = {};
 const VZ_W = 600, VZ_H = 450;
 const VZ = { red: "#C8102E", deep: "#9A0B22", ink: "#1F2933", grey: "#6B7682", faint: "#95A0AB", gold: "#B89642",
              tint: "#FCEFF1", soft: "#F7DEE2", paper: "#FBF8F4" };
-const VZ_GROUPS = ["Linear algebra concepts", "More linear algebra", "Eigenvalues", "Calculus of several variables", "Vector calculus"];
-// the order of the index and of the previous / next pager
-const VZ_ORDER = ["subspace", "span", "independence", "matrix", "det", "nullcol",
-  "vectors", "systems", "projection", "cross", "eigen", "powers", "curves", "gradient", "critical", "fields", "work", "riemann", "polar"];
+// The index is organized by idea; each picture belongs to one group (VZ_GROUP_OF), in VZ_ORDER.
+const VZ_GROUP_OF = {
+  "Vectors, span, and subspaces": ["vectors", "span", "independence", "subspace"],
+  "Matrices as maps": ["matrix", "det", "nullcol", "systems"],
+  "Dot and cross products": ["projection", "cross"],
+  "Eigenvalues and eigenvectors": ["eigen", "powers"],
+  "Curves": ["curves", "arclength"],
+  "Functions of two variables": ["level", "partials", "gradient", "critical"],
+  "Double integrals": ["riemann", "order", "polar", "jacobian"],
+  "Vector fields and line integrals": ["fields", "work", "conservative", "green"],
+  "Surfaces and flux": ["surface", "flux", "stokes"],
+};
+const VZ_GROUPS = Object.keys(VZ_GROUP_OF);
+const VZ_ORDER = VZ_GROUPS.flatMap(g => VZ_GROUP_OF[g]);
 function vzAdd(def) { VZ_LIST.push(def); VZ_BY_ID[def.id] = def; }
 const q2 = v => Math.round(v * 100) / 100;
 function vzNum(v, d = 2) {
@@ -11952,22 +11999,22 @@ function vzArrow(x1, y1, x2, y2, key, w, extra) {
     `<path d="M${q2(x2)} ${q2(y2)}L${q2(bx - uy * hw)} ${q2(by + ux * hw)}L${q2(bx + uy * hw)} ${q2(by - ux * hw)}Z" fill="${c}" stroke="${c}" stroke-width=".8" stroke-linejoin="round"/></g>`;
 }
 function vzLabel(x, y, html, col, size, anchor) {
-  return `<text x="${q2(x)}" y="${q2(y)}" font-family="'Fraunces', Georgia, serif" font-size="${size || 16}" font-style="italic" fill="${col || VZ.ink}" text-anchor="${anchor || "middle"}" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${html}</text>`;
+  return `<text x="${q2(x)}" y="${q2(y)}" font-family="'Fraunces', Georgia, serif" font-size="${size || 17}" font-style="italic" fill="${col || VZ.ink}" text-anchor="${anchor || "middle"}" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${html}</text>`;
 }
 function vzTip(ox, oy, tx, ty, html, col, gap) {         // label just past an arrow tip
   const dx = tx - ox, dy = ty - oy, L = Math.hypot(dx, dy) || 1;
   if (L < 3) return "";
   return vzLabel(tx + dx / L * (gap || 17), ty + dy / L * (gap || 17) + 5, html, col);
 }
-const vzB = (n, s) => `<tspan font-weight="700">${n}</tspan>${s ? `<tspan baseline-shift="sub" font-size="11">${s}</tspan>` : ""}`;
-const vzI = (n, s) => `${n}${s ? `<tspan baseline-shift="sub" font-size="11">${s}</tspan>` : ""}`;
+const vzB = (n, s) => `<tspan font-weight="700">${n}</tspan>${s ? `<tspan baseline-shift="sub" font-size="12.5">${s}</tspan>` : ""}`;
+const vzI = (n, s) => `${n}${s ? `<tspan baseline-shift="sub" font-size="12.5">${s}</tspan>` : ""}`;
 function vzNote(x, y, text, anchor, col) {
-  return `<text x="${q2(x)}" y="${q2(y)}" font-family="'Manrope', sans-serif" font-size="12" fill="${col || VZ.grey}" text-anchor="${anchor || "start"}" stroke="${VZ.paper}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke">${text}</text>`;
+  return `<text x="${q2(x)}" y="${q2(y)}" font-family="'Manrope', sans-serif" font-size="13.5" fill="${col || VZ.grey}" text-anchor="${anchor || "start"}" stroke="${VZ.paper}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke">${text}</text>`;
 }
-function vzPlane(cx, cy, u) {
-  const X = x => cx + x * u, Y = y => cy - y * u;
+function vzPlane(cx, cy, u, uy = u) {                   // uy: a different vertical scale (regions much taller than wide)
+  const X = x => cx + x * u, Y = y => cy - y * uy;
   return {
-    cx, cy, u, X, Y,
+    cx, cy, u, uy, X, Y,
     axes(op) { return `<path d="M0 ${q2(cy)}H${VZ_W}M${q2(cx)} 0V${VZ_H}" stroke="${VZ.ink}" stroke-width="1.2" opacity="${op == null ? .32 : op}" fill="none"/>`; },
     // a whole line through point p with direction d, clipped by the frame
     line(p, d, attrs) {
@@ -12036,10 +12083,10 @@ function renderVisualize(id) {
           <p>Interactive pictures of the core ideas. Drag the vectors, move the sliders, and watch what changes and what stays put.</p>
         </div>
       </div>
-      ${VZ_GROUPS.map((g, gi) => {
+      <nav class="vz-jump" aria-label="Jump to a group">${VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g)).map((g, gi) => `<button type="button" class="vz-chip" data-jump="vzg-${gi}">${escapeHtml(g)}</button>`).join("")}</nav>
+      ${VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g)).map((g, gi) => {
         const items = VZ_LIST.filter(v => v.group === g);
-        if (!items.length) return "";
-        return `<div class="vz-group${gi ? "" : " is-lead"}"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map(v => `
+        return `<div class="vz-group" id="vzg-${gi}"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map(v => `
           <a class="vz-card" href="#/visualize/${v.id}">
             <svg class="vz-thumb" viewBox="0 0 ${VZ_W} ${VZ_H}" aria-hidden="true">${vzDefs(v.defs)}<g clip-path="url(#vz-clip)">${vzThumb(v)}</g></svg>
             <span class="vz-card-title">${escapeHtml(v.card || v.title)}</span>
@@ -12047,6 +12094,10 @@ function renderVisualize(id) {
           </a>`).join("")}</div></div>`;
       }).join("")}`;
     typesetMath(root);                                       // blurbs carry inline math
+    root.querySelector(".vz-jump").addEventListener("click", e => {
+      const b = e.target.closest("[data-jump]"); if (!b) return;
+      const g = document.getElementById(b.dataset.jump); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 80, behavior: "smooth" });
+    });
     return;
   }
   const i = VZ_LIST.indexOf(def), prev = VZ_LIST[(i - 1 + VZ_LIST.length) % VZ_LIST.length], next = VZ_LIST[(i + 1) % VZ_LIST.length];
@@ -12087,7 +12138,7 @@ function renderVisualize(id) {
     vzChanged();
   });
   panel.addEventListener("click", e => {
-    if (def.onClick && def.onClick(e.target, VzView.st)) { VzView.tweens = null; vzSetPlay(null); vzChanged(); return; }
+    if (def.onClick && def.onClick(e.target, VzView.st)) { vzSetPlay(null); vzSwap(); vzChanged(); return; }
     const chip = e.target.closest("[data-preset]");
     if (chip) { vzPreset(def.presets[Number(chip.dataset.preset)][1]); return; }
     const play = e.target.closest("[data-play]");
@@ -12130,22 +12181,23 @@ function vzWireDrag(def) {
     const [x, y] = toStage(e), h = near(x, y);
     if (!h) return;
     e.preventDefault();
-    drag = { k: h.k, dx: h.x - x, dy: h.y - y, id: e.pointerId };
+    drag = { k: h.k, dx: h.x - x, dy: h.y - y, id: e.pointerId, x: h.x, y: h.y };
     try { stage.setPointerCapture(e.pointerId); } catch (_) {}
-    VzView.hot = h.k; VzView.active = h.k; VzView.tweens = null; vzSetPlay(null);
+    VzView.hot = h.k; VzView.active = h.k; VzView.tweens = null; VzView.dragging = true; vzSetPlay(null);
     stage.classList.add("dragging"); vzChanged();
   });
   stage.addEventListener("pointermove", e => {
     const [x, y] = toStage(e);
     if (!drag) { const h = near(x, y), k = h ? h.k : null; if (k !== VzView.hot) { VzView.hot = k; stage.style.cursor = k ? "grab" : ""; vzChanged(); } return; }
-    def.dragTo(VzView.st, drag.k, x + drag.dx, y + drag.dy);
+    drag.x = x + drag.dx; drag.y = y + drag.dy;
+    def.dragTo(VzView.st, drag.k, drag.x, drag.y, true);          // fine: follows the pointer, no grid
     vzChanged();
   });
   const end = e => {
     if (!drag || (e && e.pointerId !== drag.id)) return;
-    drag = null; stage.classList.remove("dragging");
-    if (def.dragEnd) def.dragEnd(VzView.st);
-    vzChanged();
+    const k = drag.k, x = drag.x, y = drag.y;
+    drag = null; VzView.dragging = false; stage.classList.remove("dragging");
+    vzSettle(def, () => def.dragTo(VzView.st, k, x, y, false));
   };
   stage.addEventListener("pointerup", end); stage.addEventListener("pointercancel", end);
   stage.addEventListener("pointerleave", () => { if (!drag && VzView.hot) { VzView.hot = null; stage.style.cursor = ""; vzChanged(); } });
@@ -12160,14 +12212,35 @@ function vzWireDrag(def) {
     const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
     if (!d) return;
     e.preventDefault();
-    const h = hs.find(q => q.k === VzView.active) || hs[0], step = e.shiftKey ? 4 : 12;
+    const h = hs.find(q => q.k === VzView.active) || hs[0], step = e.shiftKey ? 8 : 16;
     VzView.active = VzView.hot = h.k;
-    def.dragTo(VzView.st, h.k, h.x + d[0] * step, h.y + d[1] * step, true);
-    if (def.dragEnd) def.dragEnd(VzView.st);
-    vzChanged();
+    // a picture may step in its own coordinates (3-D sets step along their own directions)
+    vzSettle(def, () => def.nudge && def.nudge(VzView.st, h.k, d[0], -d[1]) !== false ? null : def.dragTo(VzView.st, h.k, h.x + d[0] * step, h.y + d[1] * step, false));
   });
   stage.addEventListener("focus", () => { if (!VzView.active) { VzView.active = def.handles(VzView.st)[0]?.k || null; } VzView.hot = VzView.active; vzChanged(); });
   stage.addEventListener("blur", () => { VzView.hot = null; vzChanged(); });
+}
+
+// Put a dragged handle where it belongs (snapped), let the picture record the example, then glide there
+function vzSettle(def, place) {
+  const st = VzView.st, before = Object.assign({}, st);
+  place();
+  const moved = Object.keys(st).filter(k => typeof st[k] === "number" && typeof before[k] === "number" && Math.abs(st[k] - before[k]) > 1e-12);
+  const to = {}; moved.forEach(k => { to[k] = st[k]; });
+  if (def.dragEnd) def.dragEnd(st);
+  moved.forEach(k => { st[k] = before[k]; });
+  if (moved.length) VzView.tweens = { from: before, to, t0: performance.now(), dur: 220 };
+  vzChanged();
+}
+// a picture's own smooth move (a new example set, a new tab): tween these numbers from where they are
+function vzTweenTo(to, dur = 480) {
+  const st = VzView.st, from = {};
+  Object.keys(to).forEach(k => { from[k] = st[k]; });
+  VzView.tweens = { from, to, t0: performance.now(), dur };
+}
+// a soft fade when a picture switches what it shows, so nothing just jumps
+function vzSwap() {
+  ["vzStage", "vzReadout"].forEach(id => { const el = document.getElementById(id); if (!el) return; el.classList.remove("vz-swap"); void el.getBoundingClientRect(); el.classList.add("vz-swap"); });
 }
 
 function vzControlsHtml(def) {
@@ -12244,7 +12317,7 @@ function vzDraw(now) {
     if (def.static) { const key = def.staticKey ? def.staticKey(st) : "1"; if (key !== stage._key) { gs.innerHTML = def.static(st); stage._key = key; } }
     ga.innerHTML = def.draw(st, t, false);
     const ro = document.getElementById("vzReadout");
-    if (ro && def.readout) ro.innerHTML = def.readout(st);
+    if (ro && def.readout) { const html = def.readout(st); if (ro._html !== html) { ro._html = html; ro.innerHTML = html; } }
   }
   if (def.frame) def.frame(gd, st, t);
   VzView.stale = false;
@@ -12257,7 +12330,7 @@ function vzTick(now) {
   const tw = VzView.tweens;
   if (tw) {
     const u = vzClamp((now - tw.t0) / tw.dur, 0, 1), e = vzEase(u);
-    Object.keys(tw.to).forEach(k => { VzView.st[k] = tw.from[k] + (tw.to[k] - tw.from[k]) * e; });
+    Object.keys(tw.to).forEach(k => { if (typeof tw.from[k] === "number") VzView.st[k] = tw.from[k] + (tw.to[k] - tw.from[k]) * e; });
     if (u >= 1) { Object.keys(tw.to).forEach(k => { VzView.st[k] = tw.to[k]; }); VzView.tweens = null; }
     VzView.stale = true; vzSyncControls();
   }
@@ -12310,8 +12383,9 @@ vzAdd({
   presets: [["Identity", { a: 1, b: 0, c: 0, d: 1 }], ["Shear", { a: 1, b: 1, c: 0, d: 1 }], ["Rotate 45°", { a: Math.SQRT1_2, b: -Math.SQRT1_2, c: Math.SQRT1_2, d: Math.SQRT1_2 }],
             ["Reflection", { a: 1, b: 0, c: 0, d: -1 }], ["Stretch", { a: 1.8, b: 0, c: 0, d: .6 }], ["Squash (det 0)", { a: 1, b: .5, c: 2, d: 1 }]],
   handles(s) { return s.t < .999 ? [] : [{ k: "e1", x: 300 + 58 * s.a, y: 240 - 58 * s.c }, { k: "e2", x: 300 + 58 * s.b, y: 240 - 58 * s.d }]; },
-  dragTo(s, k, x, y) {
-    const p = [vzClamp(vzSnap((x - 300) / 58), -2, 2), vzClamp(vzSnap((240 - y) / 58), -2, 2)];
+  dragTo(s, k, x, y, fine) {
+    const q = fine ? v => v : v => vzSnap(v, .05);
+    const p = [vzClamp(q((x - 300) / 58), -2, 2), vzClamp(q((240 - y) / 58), -2, 2)];
     if (k === "e1") { s.a = p[0]; s.c = p[1]; } else { s.b = p[0]; s.d = p[1]; }
   },
   draw(s, t, thumb) {
@@ -12906,7 +12980,7 @@ vzAdd({
   id: "riemann", group: "Vector calculus", title: "Double integrals as a limit of boxes",
   blurb: "Split \\(R\\) into \\(n\\times n\\) squares, put a box of height \\(f\\) over each, and add the volumes. More boxes, closer to \\(\\iint_R f\\,dA\\).",
   tryIt: "Pick the hill and slide \\(n\\) from 1 to 16: the error shrinks toward 0.",
-  state: { n: 1, yaw: -42, fn: 0 },
+  state: { n: 4, yaw: -42, fn: 0 },
   thumb: { n: 6 },
   fns: [
     { name: "a hill", f: (x, y) => .25 + .8 * Math.exp(-((x - .6) ** 2 / .08 + (y - .45) ** 2 / .12)) },
@@ -13016,6 +13090,7 @@ vzAdd({
    ============================================================ */
 VZ.green = "#2F7A4A"; VZ_COL.N = VZ.green;
 const vzSnap = (v, step = .25) => Math.round(v / step) * step;
+const vzQ = (fine, v) => fine ? v : vzSnap(v);            // snap unless the point is still being dragged
 const vzShort = v => { const r = Math.round(v * 10000) / 10000 || 0; return (r < 0 ? "−" : "") + Math.abs(r); };   // 1.5, −2, 0.25, 3.125
 const vzTup = p => "(" + p.map(vzShort).join(", ") + ")";
 // the ring that marks a draggable tip (brighter while hovered or dragged)
@@ -13029,17 +13104,18 @@ function vzKey(items, x = 16, y = 432) {
   items.forEach(([kind, col, label]) => {
     if (kind === "fill") o += `<rect x="${cx}" y="${y - 10}" width="16" height="11" rx="3" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-opacity=".7"/>`;
     else if (kind === "dot") o += `<circle cx="${cx + 8}" cy="${y - 4.5}" r="4.5" fill="${col}"/>`;
+    else if (kind === "dash") o += `<line x1="${cx}" y1="${y - 4.5}" x2="${cx + 16}" y2="${y - 4.5}" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>`;
     else o += `<line x1="${cx}" y1="${y - 4.5}" x2="${cx + 16}" y2="${y - 4.5}" stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;
     o += vzNote(cx + 22, y, label, "start", VZ.ink);
-    cx += 22 + label.length * 6.6 + 16;
+    cx += 22 + label.length * 7.3 + 18;
   });
   return o;
 }
 // a pill label ("in W", "not in W") beside a point
 function vzPill(x, y, text, col) {
-  const w = text.length * 6.9 + 14;
-  return `<g><rect x="${q2(x - w / 2)}" y="${q2(y - 10)}" width="${q2(w)}" height="19" rx="9.5" fill="${col}"/>` +
-    `<text x="${q2(x)}" y="${q2(y + 4)}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="11.5" font-weight="700" fill="#fff">${text}</text></g>`;
+  const w = text.length * 7.7 + 18;
+  return `<g><rect x="${q2(x - w / 2)}" y="${q2(y - 11.5)}" width="${q2(w)}" height="23" rx="11.5" fill="${col}"/>` +
+    `<text x="${q2(x)}" y="${q2(y + 4.6)}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="13" font-weight="700" fill="#fff">${text}</text></g>`;
 }
 // where a label goes so it clears an arrow: past the tip, nudged to the side
 function vzSideTip(P, a, b, html, col, gap = 20) {
@@ -13055,31 +13131,31 @@ const VZ_SETS = {
   2: [
     { chip: "x + y = 0", w: "W = {(x, y) : x + y = 0}, a line through 0",
       has: p => Math.abs(p[0] + p[1]) < 1e-9,
-      snap: p => { const t = vzSnap((p[0] - p[1]) / 2); return [t, -t]; },
+      snap: (p, fine) => { const t = vzQ(fine, (p[0] - p[1]) / 2); return [t, -t]; },
       draw: P => P.line([0, 0], [1, -1], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`),
       truth: [1, 1, 1], u: [-1.5, 1.5], v: [2.5, -2.5],
       why: ["0 + 0 = 0, so 0 is on the line.", "If u₁ + u₂ = 0 and v₁ + v₂ = 0, then (u₁ + v₁) + (u₂ + v₂) = 0 + 0 = 0.", "If v₁ + v₂ = 0, then cv₁ + cv₂ = c(v₁ + v₂) = 0."] },
     { chip: "y = x + 1", w: "W = {(x, y) : y = x + 1}, a line that misses 0",
       has: p => Math.abs(p[1] - p[0] - 1) < 1e-9,
-      snap: p => { const t = vzSnap((p[0] + p[1] - 1) / 2); return [t, t + 1]; },
+      snap: (p, fine) => { const t = vzQ(fine, (p[0] + p[1] - 1) / 2); return [t, t + 1]; },
       draw: P => P.line([0, 1], [1, 1], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`),
       truth: [0, 0, 0], u: [1, 2], v: [-2.5, -1.5],
       why: ["0 ≠ 0 + 1, so 0 is not on the line.", "u₂ = u₁ + 1 and v₂ = v₁ + 1 give u₂ + v₂ = (u₁ + v₁) + 2, not + 1.", "cv₂ = cv₁ + c, which is cv₁ + 1 only when c = 1."] },
     { chip: "Quadrant", w: "W = {(x, y) : x ≥ 0 and y ≥ 0}, the first quadrant",
       has: p => p[0] > -1e-9 && p[1] > -1e-9,
-      snap: p => [Math.max(0, vzSnap(p[0])), Math.max(0, vzSnap(p[1]))],
+      snap: (p, fine) => [Math.max(0, vzQ(fine, p[0])), Math.max(0, vzQ(fine, p[1]))],
       draw: P => P.poly([[0, 0], [9, 0], [9, 9], [0, 9]], `fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="2.4" stroke-opacity=".75"`),
       truth: [1, 1, 0], u: [2, 1], v: [1, 2.5],
       why: ["(0, 0) has both coordinates ≥ 0.", "Adding numbers that are ≥ 0 gives a number ≥ 0.", "c = −1 sends (1, 2) to (−1, −2), outside the quadrant."] },
     { chip: "Disk", w: "W = {(x, y) : x² + y² ≤ 4}, a disk of radius 2",
       has: p => Math.hypot(p[0], p[1]) <= 2 + 1e-9,
-      snap: p => { const q = [vzSnap(p[0]), vzSnap(p[1])], r = Math.hypot(q[0], q[1]); return r > 2 ? [p[0] * 2 / Math.hypot(p[0], p[1]), p[1] * 2 / Math.hypot(p[0], p[1])] : q; },
+      snap: (p, fine) => { const q = [vzQ(fine, p[0]), vzQ(fine, p[1])], r = Math.hypot(q[0], q[1]); return r > 2 ? [p[0] * 2 / Math.hypot(p[0], p[1]), p[1] * 2 / Math.hypot(p[0], p[1])] : q; },
       draw: P => `<circle cx="${P.X(0)}" cy="${P.Y(0)}" r="${2 * P.u}" fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="2.4" stroke-opacity=".75"/>`,
       truth: [1, 0, 0], u: [1, 0.5], v: [-0.5, 1],
       why: ["‖0‖ = 0 ≤ 2.", "(2, 0) and (0, 2) are in W, but (2, 2) has length 2√2 > 2.", "c = 3 sends (1, 0) to (3, 0), which has length 3 > 2."] },
     { chip: "The axes", w: "W = {(x, y) : xy = 0}, the two axes together",
       has: p => Math.abs(p[0]) < 1e-9 || Math.abs(p[1]) < 1e-9,
-      snap: p => Math.abs(p[0]) >= Math.abs(p[1]) ? [vzSnap(p[0]), 0] : [0, vzSnap(p[1])],
+      snap: (p, fine) => Math.abs(p[0]) >= Math.abs(p[1]) ? [vzQ(fine, p[0]), 0] : [0, vzQ(fine, p[1])],
       draw: P => P.line([0, 0], [1, 0], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`) + P.line([0, 0], [0, 1], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`),
       truth: [1, 0, 1], u: [2, 0], v: [-1, 0],
       why: ["0 lies on both axes.", "(1, 0) + (0, 1) = (1, 1), which is on neither axis.", "A multiple of a point on an axis stays on that axis."] },
@@ -13091,7 +13167,7 @@ const VZ_SETS = {
       why: ["W is exactly {0}.", "0 + 0 = 0.", "c · 0 = 0 for every c."] },
     { chip: "All of ℝ²", w: "W = ℝ², the whole plane",
       has: () => true,
-      snap: p => [vzSnap(p[0]), vzSnap(p[1])],
+      snap: (p, fine) => [vzQ(fine, p[0]), vzQ(fine, p[1])],
       draw: () => `<rect width="${VZ_W}" height="${VZ_H}" fill="${VZ.gold}" fill-opacity=".1"/>`,
       truth: [1, 1, 1], u: [2, 1.5], v: [1.5, -1],
       why: ["0 is a vector in ℝ².", "The sum of two vectors in ℝ² is in ℝ².", "A multiple of a vector in ℝ² is in ℝ²."] },
@@ -13137,9 +13213,22 @@ vzAdd({
     if (s.step === 2) { const r = v.map(x => s.c * x); return { r, inW: W.has(r) }; }
     return { r: u.map(() => 0), inW: W.has(u.map(() => 0)) };
   },
-  pick(s, set) {                                         // a new set: its starting vectors, nothing found yet
+  pick(s, set) {                                         // a new set: nothing found yet; its starting vectors glide in
     const W = VZ_SETS[s.dim][set];
-    Object.assign(s, { set, ux: W.u[0], uy: W.u[1], uz: W.u[2] || 0, vx: W.v[0], vy: W.v[1], vz: W.v[2] || 0, c: 1.5, z0: 0, f1: 0, f2: 0, n1: 0, n2: 0, x1: "", x2: "", done: 0, _key: "" });
+    Object.assign(s, { set, z0: 0, f1: 0, f2: 0, n1: 0, n2: 0, x1: "", x2: "", done: 0, _key: "", _outT: null, _wasIn: true });
+    this._marks = null;
+    vzTweenTo({ ux: W.u[0], uy: W.u[1], uz: W.u[2] || 0, vx: W.v[0], vy: W.v[1], vz: W.v[2] || 0, c: 1.5 }, 520);
+  },
+  dragEnd(s) { this.note(s); },                          // a settled example counts (not every point passed while dragging)
+  nudge(s, k, dx, dy) {                                  // arrow keys in ℝ³: a quarter step along the set's own directions
+    if (s.dim !== 3) return false;
+    const W = this.W(s), p = k === "u" ? [s.ux, s.uy, s.uz] : [s.vx, s.vy, s.vz], st = .25;
+    let q;
+    if (W.kind === "line") q = p.map((c, i) => c + (dx + dy) * st * W.d[i] / 3);
+    else if (W.kind === "union" && Math.abs(p[0]) < 1e-9 && Math.abs(p[1]) < 1e-9 && Math.abs(p[2]) > 1e-9) q = [0, 0, vzClamp(p[2] + dy * st, -2.5, 2.5)];
+    else q = p.map((c, i) => c + dx * st * W.a[i] + dy * st * W.b[i]);
+    if (k === "u") { s.ux = q[0]; s.uy = q[1]; s.uz = q[2]; } else { s.vx = q[0]; s.vy = q[1]; s.vz = q[2]; }
+    return true;
   },
   panelTop() {
     return `<div><div class="vz-ptop-k">Space</div><div class="vz-seg" role="group" aria-label="Space"><button type="button" data-dim="2">ℝ²</button><button type="button" data-dim="3">ℝ³</button></div></div>
@@ -13173,8 +13262,8 @@ vzAdd({
     if (b.dataset.set) { this.pick(s, +b.dataset.set); return true; }
     if (b.dataset.step) { s.step = +b.dataset.step; return true; }
     const act = b.dataset.act;
-    if (act === "zero") s.z0 = 1;
-    else if (act === "check") { s.done = 1; s.z0 = 1; }
+    if (act === "zero") { s.z0 = 1; s._z0At = performance.now(); }
+    else if (act === "check") { if (!s.z0) s._z0At = performance.now(); s.done = 1; s.z0 = 1; }
     else if (act === "reset") this.pick(s, s.set);
     return true;
   },
@@ -13199,27 +13288,27 @@ vzAdd({
     put("v", this.v(s));
     return hs;
   },
-  dragTo(s, k, x, y) {
+  dragTo(s, k, x, y, fine) {
     const W = this.W(s);
     let p;
     if (s.dim === 2) {
       const w = [vzClamp((x - this.P2.cx) / this.P2.u, -4.75, 4.75), vzClamp((this.P2.cy - y) / this.P2.u, -3.5, 3.5)];
-      p = W.snap(w);
+      p = W.snap(w, fine);
     } else {
       const O = this.proj(s, [0, 0, 0]), M = e => { const q = this.proj(s, e); return [q[0] - O[0], q[1] - O[1]]; };
       const onPlane = (p0, a, b) => {
         const A = M(a), B = M(b), Q = this.proj(s, p0), rx = x - Q[0], ry = y - Q[1], det = A[0] * B[1] - A[1] * B[0];
         if (Math.abs(det) < 1e-6) return null;
-        const t1 = vzClamp(vzSnap((rx * B[1] - ry * B[0]) / det), -2.5, 2.5), t2 = vzClamp(vzSnap((A[0] * ry - A[1] * rx) / det), -2.5, 2.5);
+        const t1 = vzClamp(vzQ(fine, (rx * B[1] - ry * B[0]) / det), -2.5, 2.5), t2 = vzClamp(vzQ(fine, (A[0] * ry - A[1] * rx) / det), -2.5, 2.5);
         return p0.map((c, i) => c + t1 * a[i] + t2 * b[i]);
       };
-      const onLine = d => { const D = M(d), t = vzClamp(vzSnap(((x - O[0]) * D[0] + (y - O[1]) * D[1]) / (D[0] * D[0] + D[1] * D[1]), .125), -1.5, 1.5); return d.map(c => c * t); };
+      const onLine = d => { const D = M(d), r = ((x - O[0]) * D[0] + (y - O[1]) * D[1]) / (D[0] * D[0] + D[1] * D[1]), t = vzClamp(fine ? r : vzSnap(r, .25), -1.5, 1.5); return d.map(c => c * t); };
       if (W.kind === "plane") p = onPlane(W.p0, W.a, W.b);
       else if (W.kind === "line") p = onLine(W.d);
       else {                                              // the plane, unless the pointer is right on the z-axis
         const Z = M([0, 0, 1]), t = ((x - O[0]) * Z[0] + (y - O[1]) * Z[1]) / (Z[0] * Z[0] + Z[1] * Z[1]);
         const dist = Math.hypot(x - O[0] - Z[0] * t, y - O[1] - Z[1] * t);
-        p = dist < 14 && Math.abs(t) > .3 ? [0, 0, vzClamp(vzSnap(t), -2.5, 2.5)] : onPlane(W.p0, W.a, W.b);
+        p = dist < 14 && Math.abs(t) > .3 ? [0, 0, vzClamp(vzQ(fine, t), -2.5, 2.5)] : onPlane(W.p0, W.a, W.b);
       }
       if (!p) return;
     }
@@ -13227,10 +13316,12 @@ vzAdd({
   },
   draw(s, t, thumb) {
     const W = this.W(s), e = this.ev(s), u = this.u(s), v = this.v(s), hot = thumb ? null : VzView.hot;
-    if (!thumb) this.note(s);
+    const moving = !thumb && !!VzView.tweens;              // gliding to a new example: no verdict until it lands
+    if (!thumb && !VzView.dragging && !moving) this.note(s);
     // a result that has just left W gets a ring (drawn by frame)
-    if (!thumb) { if (!e.inW && s._wasIn !== false && s.step) s._outT = t; s._wasIn = e.inW; }
-    const col = e.inW ? VZ.green : VZ.red, key = e.inW ? "N" : "R";
+    if (!thumb && !moving) { if (!e.inW && s._wasIn !== false && s.step) s._outT = t; s._wasIn = e.inW; }
+    if (moving) e.pending = true;
+    const col = moving ? VZ.grey : e.inW ? VZ.green : VZ.red, key = moving ? "G" : e.inW ? "N" : "R";
     let o = "";
     if (s.dim === 2) {
       const P = this.P2, pt = p => [P.X(p[0]), P.Y(p[1])];
@@ -13260,7 +13351,7 @@ vzAdd({
   },
   // the result's name with its verdict: "u + v ∈ W" (green) or "u + v ∉ W" (red); at 0 it sits below the origin
   resLabel(P, e, name) {
-    const col = e.inW ? VZ.green : VZ.red, txt = name + (e.inW ? " ∈ " : " ∉ ") + "<tspan font-style=\"italic\">W</tspan>";
+    const col = e.pending ? VZ.grey : e.inW ? VZ.green : VZ.red, txt = e.pending ? name : name + (e.inW ? " ∈ " : " ∉ ") + "<tspan font-style=\"italic\">W</tspan>";
     if (Math.hypot(e.r[0], e.r[1]) < .05) return vzLabel(P.X(0), P.Y(0) + 30, txt, col, 16);
     return vzSideTip(P, [0, 0], e.r, txt, col, 34);
   },
@@ -13292,11 +13383,11 @@ vzAdd({
     if (W.kind === "plane" || W.kind === "union") o += patch(W.p0, W.a, W.b, 2.6);
     if (W.kind === "line") o += seg(W.d.map(c => -c * 1.6), W.d.map(c => c * 1.6), `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`);
     if (W.kind === "union") o += seg([0, 0, -2.2], [0, 0, 2.8], `stroke="${VZ.gold}" stroke-width="6" stroke-opacity=".5" stroke-linecap="round"`);
-    const O = pr([0, 0, 0]), col = e.inW ? VZ.green : VZ.red, key = e.inW ? "N" : "R", r = e.r;
+    const O = pr([0, 0, 0]), col = e.pending ? VZ.grey : e.inW ? VZ.green : VZ.red, key = e.pending ? "G" : e.inW ? "N" : "R", r = e.r;
     if (s.step === 1) {
       o += seg(u, r, `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`) + seg(v, r, `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`);
     }
-    if (s.step && !e.inW && (W.kind === "plane")) {       // how far the result sits off the plane
+    if (s.step && !e.inW && !e.pending && (W.kind === "plane")) {       // how far the result sits off the plane
       const n = [W.a[1] * W.b[2] - W.a[2] * W.b[1], W.a[2] * W.b[0] - W.a[0] * W.b[2], W.a[0] * W.b[1] - W.a[1] * W.b[0]], nn = n[0] * n[0] + n[1] * n[1] + n[2] * n[2];
       const k = ((r[0] - W.p0[0]) * n[0] + (r[1] - W.p0[1]) * n[1] + (r[2] - W.p0[2]) * n[2]) / nn, foot = r.map((c, i) => c - k * n[i]);
       o += seg(r, foot, `stroke="${VZ.red}" stroke-width="1.6" stroke-dasharray="3 4"`) + `<circle cx="${q2(pr(foot)[0])}" cy="${q2(pr(foot)[1])}" r="3" fill="${VZ.red}"/>`;
@@ -13305,15 +13396,20 @@ vzAdd({
     if (s.step) o += arrow([0, 0, 0], r, key, 3.4);
     if (s.step === 1) o += arrow([0, 0, 0], u, "I", 2.6) + lab(u, vzB("u"), VZ.ink);
     if (s.step) o += arrow([0, 0, 0], v, "I", 2.6) + lab(v, vzB("v"), VZ.ink);
-    if (s.step) { const txt = (s.step === 1 ? vzB("u") + " + " + vzB("v") : vzShort(s.c) + vzB("v")) + (e.inW ? " ∈ " : " ∉ ") + "<tspan font-style=\"italic\">W</tspan>"; o += Math.hypot(...r) > .05 ? lab(r, txt, col, 34) : vzLabel(O[0], O[1] + 30, txt, col, 16); }
+    if (s.step) { const txt = (s.step === 1 ? vzB("u") + " + " + vzB("v") : vzShort(s.c) + vzB("v")) + (e.pending ? "" : (e.inW ? " ∈ " : " ∉ ") + "<tspan font-style=\"italic\">W</tspan>"); o += Math.hypot(...r) > .05 ? lab(r, txt, col, 34) : vzLabel(O[0], O[1] + 30, txt, col, 16); }
     if (s.step === 0) o += this.zeroMark(s, O, W, thumb);
     else o += `<circle cx="${q2(O[0])}" cy="${q2(O[1])}" r="4" fill="${VZ.ink}"/>`;
     if (s.step && !thumb) s._tip = pr(r);
     return o;
   },
-  frame(g, s, t) {                                        // the ring when a vector breaks out of W
+  frame(g, s, t) {                                        // the ring when a vector breaks out of W; a pulse when 0 is checked
     const on = s._outT != null && t - s._outT < .9 && s._tip && s.step;
-    const html = on ? (() => { const u = (t - s._outT) / .9; return `<circle cx="${q2(s._tip[0])}" cy="${q2(s._tip[1])}" r="${q2(8 + 34 * u)}" fill="none" stroke="${VZ.red}" stroke-width="${q2(3 * (1 - u) + .5)}" opacity="${q2(1 - u)}"/>`; })() : "";
+    let html = on ? (() => { const u = (t - s._outT) / .9; return `<circle cx="${q2(s._tip[0])}" cy="${q2(s._tip[1])}" r="${q2(8 + 34 * u)}" fill="none" stroke="${VZ.red}" stroke-width="${q2(3 * (1 - u) + .5)}" opacity="${q2(1 - u)}"/>`; })() : "";
+    const z = s._z0At ? (performance.now() - s._z0At) / 700 : 2;
+    if (z < 1 && s.step === 0) {
+      const O = s.dim === 3 ? this.proj(s, [0, 0, 0]) : [this.P2.X(0), this.P2.Y(0)], ok = this.W(s).truth[0];
+      html += `<circle cx="${q2(O[0])}" cy="${q2(O[1])}" r="${q2(20 + 26 * vzEase(z))}" fill="none" stroke="${ok ? VZ.green : VZ.red}" stroke-width="${q2(3 * (1 - z) + .4)}" opacity="${q2(1 - z)}"/>`;
+    }
     if (!g) return "";
     if (g._h !== html) { g._h = html; g.innerHTML = html; }
     return "";
@@ -13321,7 +13417,7 @@ vzAdd({
   readout(s) {
     const W = this.W(s), space = s.dim === 3 ? "ℝ³" : "ℝ²", T = W.truth;
     const found = [s.z0 ? (T[0] ? 1 : 2) : 0, s.f1, s.f2];
-    const names = ["Contains 0", "Closed under addition", "Closed under scalar multiplication"];
+    const names = ["Contains 0", "Closed under addition", "Closed under scalar multiplication"], marks = [];
     const rows = names.map((n, i) => {
       let mk, cls, why;
       if (s.done) {
@@ -13332,8 +13428,13 @@ vzAdd({
         mk = "✓"; cls = i === 0 ? "yes" : "open";
         why = i === 0 ? W.why[0] : `Held for the ${i === 1 ? s.n1 : s.n2} example${(i === 1 ? s.n1 : s.n2) === 1 ? "" : "s"} you tried. That is not a proof yet.`;
       } else { mk = "?"; cls = "open"; why = "Not tested yet."; }
-      return `<li class="${cls}"><span class="mk ${cls}">${mk}</span><span>${n}<span class="why">${escapeHtml(why)}</span></span></li>`;
+      marks.push(mk + cls);
+      this._flashAt = this._flashAt || [0, 0, 0];
+      if (this._marks && this._marks[i] !== mk + cls) this._flashAt[i] = performance.now();
+      const flash = performance.now() - this._flashAt[i] < 1100 ? " flash" : "";
+      return `<li class="${cls}${flash}"><span class="mk ${cls}">${mk}</span><span>${n}<span class="why">${escapeHtml(why)}</span></span></li>`;
     }).join("");
+    this._marks = marks;
     const fails = found.some(f => f === 2);
     let concl = "";
     if (s.done) concl = T.every(Boolean) ? `<div class="vz-conclude yes">Therefore, W is a subspace of ${space}.</div>` : `<div class="vz-conclude no">Therefore, W is not a subspace of ${space}.</div>`;
@@ -13354,8 +13455,9 @@ vzAdd({
 
 /* ---------- helpers for the draggable-vector pictures ---------- */
 // screen -> world on a vzPlane, clamped to what is on screen, snapped to a quarter grid
-function vzWorld(P, x, y, lim = [5.6, 4.2]) {
-  return [vzClamp(vzSnap((x - P.cx) / P.u), -lim[0], lim[0]), vzClamp(vzSnap((P.cy - y) / P.u), -lim[1], lim[1])];
+function vzWorld(P, x, y, lim = [5.6, 4.2], fine) {
+  const q = fine ? v => v : vzSnap;                     // fine: while dragging, follow the pointer exactly
+  return [vzClamp(q((x - P.cx) / P.u), -lim[0], lim[0]), vzClamp(q((P.cy - y) / P.u), -lim[1], lim[1])];
 }
 // if w is nearly on the line of v (small angle either way), put it exactly on that line: dependence is
 // a knife-edge, so the picture holds it once you are close
@@ -13384,7 +13486,7 @@ vzAdd({
   ],
   P: vzPlane(300, 250, 52),
   handles(s) { return [{ k: "u", x: this.P.X(s.ux), y: this.P.Y(s.uy) }, { k: "v", x: this.P.X(s.vx), y: this.P.Y(s.vy) }]; },
-  dragTo(s, k, x, y) { const p = vzWorld(this.P, x, y); s[k + "x"] = p[0]; s[k + "y"] = p[1]; },
+  dragTo(s, k, x, y, fine) { const p = vzWorld(this.P, x, y, undefined, fine); s[k + "x"] = p[0]; s[k + "y"] = p[1]; },
   draw(s, t, thumb) {
     const P = this.P, u = [s.ux, s.uy], v = [s.vx, s.vy], w = [u[0] + v[0], u[1] + v[1]], cu = [s.c * u[0], s.c * u[1]];
     let o = P.axes(.26);
@@ -13432,8 +13534,8 @@ vzAdd({
     return Math.abs(vzDet2(v1, v2)) < 1e-9 ? "line" : "plane";
   },
   handles(s) { const [v1, v2] = this.vs(s), h = [{ k: "v1", x: this.P.X(v1[0]), y: this.P.Y(v1[1]) }]; if (s.two) h.push({ k: "v2", x: this.P.X(v2[0]), y: this.P.Y(v2[1]) }); return h; },
-  dragTo(s, k, x, y) {
-    let p = vzWorld(this.P, x, y);
+  dragTo(s, k, x, y, fine) {
+    let p = vzWorld(this.P, x, y, undefined, fine);
     const other = k === "v1" ? [s.v2x, s.v2y] : [s.v1x, s.v1y];
     if (s.two) p = vzOntoLine(p, other);
     s[k + "x"] = p[0]; s[k + "y"] = p[1];
@@ -13491,8 +13593,8 @@ vzAdd({
     if (s.three) h.push({ k: "v3", x: P.X(c[0]), y: P.Y(c[1]) });
     return h;
   },
-  dragTo(s, k, x, y) {
-    let p = vzWorld(this.P, x, y);
+  dragTo(s, k, x, y, fine) {
+    let p = vzWorld(this.P, x, y, undefined, fine);
     if (k !== "v3") p = vzOntoLine(p, k === "v1" ? [s.v2x, s.v2y] : [s.v1x, s.v1y]);
     s[k + "x"] = p[0]; s[k + "y"] = p[1];
   },
@@ -13532,84 +13634,93 @@ vzAdd({
 });
 
 /* ---------- Determinants: area scaling ---------- */
+// One picture: the unit square (dashed) and its image. The area is written inside the image, and a small
+// turning arrow from Ae1 to Ae2 shows orientation: counterclockwise kept, clockwise flipped (det < 0).
 vzAdd({
-  id: "det", group: "Linear algebra concepts", title: "Determinants and area", card: "Determinants",
-  tagline: "Understand the determinant as area scaling.",
-  blurb: "Apply \\(A\\) to the unit square. Every area is multiplied by \\(|\\det A|\\); a negative determinant also flips the orientation.",
-  tryIt: "Pick Reflection and play the slider: the square flattens to zero area on its way to flipping over.",
+  id: "det", group: "Matrices as maps", title: "Determinants and area", card: "Determinants",
+  tagline: "The determinant is how much A scales area.",
+  blurb: "\\(A\\) turns the unit square into a parallelogram with area \\(|\\det A|\\). The sign says whether the turn from \\(A\\mathbf e_1\\) to \\(A\\mathbf e_2\\) still goes counterclockwise.",
+  tryIt: "Pick Reflection, then drag the first slider back and forth: on its way to flipping over, the square flattens to area 0.",
   state: { a: 2, b: 0.5, c: 0.5, d: 1.5, t: 1 },
-  thumb: { a: 1.75, b: .75, c: .5, d: -1, t: 1 },                      // a flipped image, unlike the transformation card
+  thumb: { a: 1.75, b: .75, c: .5, d: -1, t: 1 },
   controls: [
-    { k: "t", label: "apply A", min: 0, max: 1, step: .01, fmt: v => vzNum(v * 100, 0) + "%", play: .45, progress: true, aria: "applying A" },
+    { k: "t", label: "before → after", min: 0, max: 1, step: .01, fmt: v => vzNum(v * 100, 0) + "%", play: .4, progress: true, aria: "before to after" },
     { k: "a", label: "a", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), noPlay: true }, { k: "b", label: "b", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), noPlay: true },
     { k: "c", label: "c", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), noPlay: true }, { k: "d", label: "d", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), noPlay: true },
   ],
   presets: [["Stretch", { a: 2, b: 0, c: 0, d: 1.5 }], ["Shear", { a: 1, b: 1, c: 0, d: 1 }], ["Reflection", { a: -1, b: 0, c: 0, d: 1 }],
             ["Rotation", { a: 0, b: -1, c: 1, d: 0 }], ["Squash (det 0)", { a: 1, b: 2, c: .5, d: 1 }], ["Double", { a: 2, b: 0, c: 0, d: 2 }]],
-  P: vzPlane(290, 260, 50),
+  P: vzPlane(300, 262, 58),
   M(s) { const t = s.t; return [1 + (s.a - 1) * t, s.b * t, s.c * t, 1 + (s.d - 1) * t]; },   // (1 − t) I + t A
-  handles(s) {
-    if (s.t < .999) return [];
-    const P = this.P; return [{ k: "e1", x: P.X(s.a), y: P.Y(s.c) }, { k: "e2", x: P.X(s.b), y: P.Y(s.d) }];
-  },
-  dragTo(s, k, x, y) { const p = vzWorld(this.P, x, y, [4.2, 4]); if (k === "e1") { s.a = p[0]; s.c = p[1]; } else { s.b = p[0]; s.d = p[1]; } },
+  handles(s) { if (s.t < .999) return []; const P = this.P; return [{ k: "e1", x: P.X(s.a), y: P.Y(s.c) }, { k: "e2", x: P.X(s.b), y: P.Y(s.d) }]; },
+  dragTo(s, k, x, y, fine) { const p = vzWorld(this.P, x, y, [4.4, 3.3], fine); if (k === "e1") { s.a = p[0]; s.c = p[1]; } else { s.b = p[0]; s.d = p[1]; } },
   draw(s, t, thumb) {
-    const P = this.P, [a, b, c, d] = this.M(s), M = p => [a * p[0] + b * p[1], c * p[0] + d * p[1]], det = a * d - b * c, flip = det < -1e-9, flat = Math.abs(det) < .015;
-    let o = P.axes(.18);
-    // the 2 × 2 block of unit cells: each one's image has the same area |det|
-    for (let i = -3; i <= 4; i++) {
-      o += P.path([M([i, -3]), M([i, 4])], `stroke="${VZ.grey}" stroke-width="1" stroke-opacity=".25"`);
-      o += P.path([M([-3, i]), M([4, i])], `stroke="${VZ.grey}" stroke-width="1" stroke-opacity=".25"`);
+    const P = this.P, [a, b, c, d] = this.M(s), det = a * d - b * c, flip = det < -1e-9, flat = Math.abs(det) < .012;
+    const e1 = [a, c], e2 = [b, d], far = [a + b, c + d], col = flip ? VZ.gold : VZ.red;
+    let o = P.axes(.22);
+    o += P.poly([[0, 0], [1, 0], [1, 1], [0, 1]], `fill="none" stroke="${VZ.grey}" stroke-width="1.6" stroke-dasharray="5 5" opacity=".8"`);
+    o += P.poly([[0, 0], e1, far, e2], `fill="${col}" fill-opacity="${flat ? 0 : .17}" stroke="${col}" stroke-width="${flat ? 4 : 2}" stroke-linejoin="round"`);
+    // orientation: a small arrow turning from Ae1 toward Ae2, the short way round
+    if (!flat) {
+      const a1 = Math.atan2(-e1[1], e1[0]), a2 = Math.atan2(-e2[1], e2[0]);
+      let dA = a2 - a1; while (dA > Math.PI) dA -= 2 * Math.PI; while (dA < -Math.PI) dA += 2 * Math.PI;
+      const r = Math.max(14, Math.min(30, .42 * Math.min(Math.hypot(...e1), Math.hypot(...e2)) * P.u)), n = 20, pts = [];
+      for (let i = 0; i <= n; i++) { const th = a1 + dA * (.12 + .76 * i / n); pts.push([P.X(0) + r * Math.cos(th), P.Y(0) + r * Math.sin(th)]); }
+      o += `<path d="M${pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" stroke="${VZ.ink}" stroke-width="1.8"/>`;
+      o += vzArrow(pts[n - 3][0], pts[n - 3][1], pts[n][0], pts[n][1], "I", 1.8);
     }
-    o += P.poly([[0, 0], [1, 0], [1, 1], [0, 1]], `fill="none" stroke="${VZ.grey}" stroke-width="1.4" stroke-dasharray="4 4" opacity=".8"`);
-    const sq = [[0, 0], M([1, 0]), M([1, 1]), M([0, 1])], col = flip ? VZ.gold : VZ.red;
-    o += P.poly(sq, `fill="${col}" fill-opacity="${flat ? 0 : .2}" stroke="${col}" stroke-width="${flat ? 3.4 : 1.8}" stroke-linejoin="round"`);
-    const flag = [[.2, .15], [.2, .85], [.62, .85], [.62, .68], [.36, .68], [.36, .15]].map(M);
-    o += P.poly(flag, `fill="${VZ.ink}" fill-opacity=".55" stroke="none"`);
-    const e1 = M([1, 0]), e2 = M([0, 1]);
     if (!thumb && s.t >= .999) o += vzTipGrip(P, e1, VZ.red, "e1") + vzTipGrip(P, e2, VZ.ink, "e2");
-    o += P.arrow([0, 0], e1, "R", 3) + P.arrow([0, 0], e2, "I", 3) + P.dot([0, 0], 3.6);
+    o += P.arrow([0, 0], e1, "R", 3.2) + P.arrow([0, 0], e2, "I", 3.2) + P.dot([0, 0], 3.8);
     o += vzSideTip(P, [0, 0], e1, "A" + vzB("e", "1"), VZ.red, 20) + vzSideTip(P, [0, 0], e2, "A" + vzB("e", "2"), VZ.ink, 20);
-    const far = M([1, 1]);                                 // the area is named past the square's far corner
-    if (!flat && Math.hypot(...far) > .3) o += vzSideTip(P, [0, 0], far, `area ${vzShort(Math.abs(det))}`, flip ? "#6E5518" : VZ.deep, 30);
-    else if (!flat) o += vzLabel(P.X(0) + 40, P.Y(0) + 40, `area ${vzShort(Math.abs(det))}`, flip ? "#6E5518" : VZ.deep, 15);
-    o += vzKey([["line", VZ.grey, "unit square (area 1)"], ["fill", flip ? VZ.gold : VZ.red, flip ? "its image, flipped" : "its image"]]);
+    // the area, inside the image when it has room, otherwise just past its far corner
+    const txt = "area " + (flat ? "0" : vzShort(Math.round(Math.abs(det) * 100) / 100));
+    const L1 = Math.hypot(...e1) * P.u, L2 = Math.hypot(...e2) * P.u, room = Math.abs(det) * P.u * P.u / Math.max(L1, L2);
+    const m = [far[0] / 2, far[1] / 2];
+    if (!flat && room > 38 && Math.min(L1, L2) > 70) o += vzLabel(P.X(m[0]), P.Y(m[1]) + 6, txt, flip ? "#6E5518" : VZ.deep, 18);
+    else o += vzSideTip(P, [0, 0], Math.hypot(...far) > .2 ? far : [.7, .7], txt, flip ? "#6E5518" : VZ.deep, 34);
+    o += vzKey([["dash", VZ.grey, "unit square (area 1)"], ["fill", col, flip ? "its image (flipped)" : "its image"]]);
     return o;
   },
   readout(s) {
     const det = s.a * s.d - s.b * s.c, [a, b, c, d] = this.M(s), dt = a * d - b * c;
-    const msg = Math.abs(det) < 1e-9 ? "det A = 0: the square is squashed flat, so A has no inverse."
-      : det < 0 ? `Areas are multiplied by |det A| = ${vzShort(-det)}, and the orientation flips (the flag is mirrored).`
-      : `Areas are multiplied by det A = ${vzShort(det)}; the orientation is kept.`;
+    const msg = Math.abs(det) < 1e-9 ? "det A = 0: the square is squashed flat onto a line. Area 0, so A has no inverse."
+      : det < 0 ? `The image has area |det A| = ${vzShort(-det)}, and the turn from Ae₁ to Ae₂ now goes clockwise: the orientation is flipped.`
+      : `The image has area det A = ${vzShort(det)}, and the turn from Ae₁ to Ae₂ still goes counterclockwise. Every region's area is multiplied by ${vzShort(det)}.`;
     return `<div class="vz-mat"><span class="vz-mat-name">A =</span><span class="vz-brk"><table><tr><td>${vzShort(s.a)}</td><td>${vzShort(s.b)}</td></tr><tr><td>${vzShort(s.c)}</td><td>${vzShort(s.d)}</td></tr></table></span></div>
-      <div class="vz-eq">det A = ad − bc = <b>${vzShort(det)}</b></div>
-      ${s.t < .999 ? `<div class="vz-eq">so far (${vzNum(s.t * 100, 0)}% of the way): area × <b>${vzNum(dt)}</b></div>` : ""}
+      <div class="vz-eq">det A = ad − bc = ${vzShort(s.a)}·${vzShort(s.d)} − ${vzShort(s.b)}·${vzShort(s.c)} = <b>${vzShort(det)}</b></div>
+      ${s.t < .999 ? `<div class="vz-eq">${vzNum(s.t * 100, 0)}% of the way: area ${vzNum(Math.abs(dt))}${dt < -1e-9 ? ", flipped" : ""}</div>` : ""}
       <div class="vz-status ${Math.abs(det) < 1e-9 ? "warn" : "ok"}">${msg}</div>`;
   },
 });
 
 /* ---------- Null space and column space ---------- */
+// Inputs on the left, outputs on the right. For a rank-1 A the inputs fall into parallel lines, one per
+// output: each colored line on the left lands on the dot of its color on the right. The line through 0 is
+// the null space (it lands on 0); every dot sits on the column space.
+const VZ_FIBER = [["#7A5C0F", "#B89642", "#DDC37E"], "#1F2933", ["#EE9AAA", "#D5304D", "#8E0A21"]];
 vzAdd({
-  id: "nullcol", group: "Linear algebra concepts", title: "Null space and column space", card: "Null & column space",
-  tagline: "Connect Ax = 0 and Ax = b to geometry.",
-  blurb: "Left: inputs \\(\\mathbf x\\). Right: outputs \\(A\\mathbf x\\). The null space is everything sent to \\(\\mathbf 0\\); the column space is everything \\(A\\) can reach.",
-  tryIt: "In Ax = b, drag b off the gold line: no input reaches it. Back on the line, a whole line of inputs does.",
-  defs: `<clipPath id="vz-cl"><rect x="0" y="0" width="297" height="450"/></clipPath><clipPath id="vz-cr"><rect x="303" y="0" width="297" height="450"/></clipPath>`,
-  state: { a: 1, b: 2, c: 0.5, d: 1, tab: 0, xx: 1, xy: 1, x1: 1, x2: 0.5, bx: 1, by: 0.5 },
+  id: "nullcol", group: "Matrices as maps", title: "Null space and column space", card: "Null & column space",
+  tagline: "Which inputs land on 0, and which outputs A can reach.",
+  blurb: "Left: inputs \\(\\mathbf x\\). Right: outputs \\(A\\mathbf x\\). Each colored line of inputs lands on the dot of the same color. The dark line lands on \\(\\mathbf 0\\): it is the null space.",
+  tryIt: "In Solve Ax = b, drag b off the gold line: no input reaches it. Put it back on the line and a whole line of inputs does.",
+  defs: `<clipPath id="vz-cl"><rect x="10" y="50" width="280" height="390" rx="14"/></clipPath><clipPath id="vz-cr"><rect x="310" y="50" width="280" height="390" rx="14"/></clipPath>`,
+  state: { a: 1, b: 2, c: 0.5, d: 1, tab: 0, xx: 1.5, xy: 0.5, x1: 1, x2: 0.5, bx: 1, by: 0.5 },
   controls: [
     { k: "x1", label: "x₁ (how much of column 1)", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), show: s => s.tab === 1, snap: true },
     { k: "x2", label: "x₂ (how much of column 2)", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), show: s => s.tab === 1, snap: true },
   ],
-  presets: [["Rank 1", { a: 1, b: 2, c: .5, d: 1 }], ["Rank 1, other line", { a: 1, b: -1, c: -1, d: 1 }], ["Invertible", { a: 1.5, b: .5, c: .5, d: 1 }], ["Zero matrix", { a: 0, b: 0, c: 0, d: 0 }]],
-  L: vzPlane(150, 248, 34), R: vzPlane(450, 248, 34),
+  presets: [["Rank 1", { a: 1, b: 2, c: .5, d: 1 }], ["Rank 1, another line", { a: 1, b: -1, c: -1, d: 1 }], ["Invertible", { a: 1.5, b: .5, c: .5, d: 1 }], ["Zero matrix", { a: 0, b: 0, c: 0, d: 0 }]],
+  L: vzPlane(150, 250, 36), R: vzPlane(450, 250, 36),
   panelTop() {
     return `<div class="vz-steps" role="tablist" aria-label="What to explore">
-      <button type="button" role="tab" data-tab="0"><span>1</span>Ax = 0</button>
+      <button type="button" role="tab" data-tab="0"><span>1</span>Where inputs go</button>
       <button type="button" role="tab" data-tab="1"><span>2</span>Column space</button>
-      <button type="button" role="tab" data-tab="2"><span>3</span>Ax = b</button></div>
+      <button type="button" role="tab" data-tab="2"><span>3</span>Solve Ax = b</button></div>
       <p class="vz-do" id="vzDo"></p>`;
   },
-  DO: ["Drag x on the left. Which inputs land on 0 on the right?", "Slide x₁ and x₂: Ax is x₁(column 1) + x₂(column 2). Drag the columns to change A.", "Drag b on the right. When can Ax = b be solved, and how many solutions are there?"],
+  DO: ["Drag x on the left. Slide it along its colored line: Ax doesn't move. On the dark line, Ax = 0.",
+       "Slide x₁ and x₂: Ax = x₁(column 1) + x₂(column 2), so every output lies in the span of the columns. Drag the columns to change A.",
+       "Drag b on the right. Ax = b has a solution only when b is on the column space, and then a whole line of them (or one)."],
   sync(s, panel) {
     if (!panel) return;
     panel.querySelectorAll("[data-tab]").forEach(b => { const on = +b.dataset.tab === s.tab; b.classList.toggle("on", on); b.setAttribute("aria-selected", String(on)); });
@@ -13630,59 +13741,14 @@ vzAdd({
     if (s.tab === 1) return [{ k: "a1", x: R.X(s.a), y: R.Y(s.c) }, { k: "a2", x: R.X(s.b), y: R.Y(s.d) }];
     return [{ k: "b", x: R.X(s.bx), y: R.Y(s.by) }];
   },
-  dragTo(s, k, x, y) {
-    const I = this.info(s), lim = [4, 5.5];
-    if (k === "x") { let p = vzWorld(this.L, x, y, lim); if (I.rank === 1) p = vzOntoLine(p, I.nul, .09); s.xx = p[0]; s.xy = p[1]; }
-    else if (k === "b") { let p = vzWorld(this.R, x, y, lim); if (I.rank === 1) p = vzOntoLine(p, I.col, .09); s.bx = p[0]; s.by = p[1]; }
+  dragTo(s, k, x, y, fine) {
+    const I = this.info(s), lim = [3.6, 5];
+    if (k === "x") { let p = vzWorld(this.L, x, y, lim, fine); if (I.rank === 1) p = vzOntoLine(p, I.nul, .08); s.xx = p[0]; s.xy = p[1]; }
+    else if (k === "b") { let p = vzWorld(this.R, x, y, lim, fine); if (I.rank === 1) p = vzOntoLine(p, I.col, .08); s.bx = p[0]; s.by = p[1]; }
     else {
-      let p = vzWorld(this.R, x, y, lim); p = vzOntoLine(p, k === "a1" ? [s.b, s.d] : [s.a, s.c]);
+      let p = vzWorld(this.R, x, y, lim, fine); p = vzOntoLine(p, k === "a1" ? [s.b, s.d] : [s.a, s.c]);
       if (k === "a1") { s.a = p[0]; s.c = p[1]; } else { s.b = p[0]; s.d = p[1]; }
     }
-  },
-  draw(s, t, thumb) {
-    const L = this.L, R = this.R, I = this.info(s);
-    let left = L.axes(.26), right = R.axes(.26);
-    // column space on the right (gold), null space on the left (red)
-    if (I.rank === 2) right += `<rect x="303" width="297" height="${VZ_H}" fill="${VZ.gold}" fill-opacity=".1"/>`;
-    else if (I.rank === 1) right += R.line([0, 0], I.col, `stroke="${VZ.gold}" stroke-width="7" stroke-opacity=".45" stroke-linecap="round"`);
-    else right += `<circle cx="${R.X(0)}" cy="${R.Y(0)}" r="9" fill="${VZ.gold}" fill-opacity=".45"/>`;
-    const nulShow = s.tab !== 1;
-    if (nulShow) {
-      if (I.rank === 0) left += `<rect width="297" height="${VZ_H}" fill="${VZ.red}" fill-opacity=".08"/>`;
-      else if (I.rank === 1) left += L.line([0, 0], I.nul, `stroke="${VZ.red}" stroke-width="6" stroke-opacity=".35" stroke-linecap="round"`);
-      else left += `<circle cx="${L.X(0)}" cy="${L.Y(0)}" r="8" fill="${VZ.red}" fill-opacity=".35"/>`;
-    }
-    const cols = [[s.a, s.c], [s.b, s.d]];
-    if (s.tab === 0) {
-      const x = [s.xx, s.xy], y = this.Ax(s, x), zero = Math.hypot(...y) < 1e-9;
-      left += (thumb ? "" : vzTipGrip(L, x, VZ.ink, "x")) + L.arrow([0, 0], x, "I", 3) + vzSideTip(L, [0, 0], x, vzB("x"), VZ.ink, 20);
-      if (zero) right += `<circle cx="${R.X(0)}" cy="${R.Y(0)}" r="16" fill="none" stroke="${VZ.red}" stroke-width="2.4"/>` + vzPill(R.X(0), R.Y(0) - 34, "Ax = 0", VZ.red);
-      else right += R.arrow([0, 0], y, "I", 3) + vzSideTip(R, [0, 0], y, "A" + vzB("x"), VZ.ink, 22);
-      if (zero && Math.hypot(...x) > 1e-9) left += vzPill(L.X(x[0]), L.Y(x[1]) + (L.Y(x[1]) < 80 ? 30 : -30), "x in Nul A", VZ.red);
-    } else if (s.tab === 1) {
-      const p = [s.x1 * cols[0][0], s.x1 * cols[0][1]], y = this.Ax(s, [s.x1, s.x2]);
-      if (!thumb) right += vzTipGrip(R, cols[0], VZ.red, "a1") + vzTipGrip(R, cols[1], VZ.gold, "a2");
-      right += R.arrow([0, 0], cols[0], "R", 1.8) + R.arrow([0, 0], cols[1], "O", 1.8);
-      right += R.path([[0, 0], p], `stroke="${VZ.red}" stroke-width="2.4" stroke-dasharray="5 4"`) + R.path([p, y], `stroke="${VZ.gold}" stroke-width="2.4" stroke-dasharray="5 4"`);
-      if (Math.hypot(...y) > .02) right += R.arrow([0, 0], y, "I", 3.2) + vzSideTip(R, [0, 0], y, "A" + vzB("x"), VZ.ink, 22);
-      right += vzSideTip(R, [0, 0], cols[0], vzB("a", "1"), VZ.red, 18) + vzSideTip(R, [0, 0], cols[1], vzB("a", "2"), "#8A6A12", 18);
-      left += L.arrow([0, 0], [s.x1, s.x2], "I", 3) + vzSideTip(L, [0, 0], [s.x1, s.x2], vzB("x"), VZ.ink, 20);
-    } else {
-      const b = [s.bx, s.by], sol = this.solve(s, b), ok = sol.kind !== "none";
-      right += (thumb ? "" : vzTipGrip(R, b, ok ? VZ.green : VZ.red, "b")) + R.arrow([0, 0], b, ok ? "N" : "R", 3) + vzSideTip(R, [0, 0], b, vzB("b"), ok ? VZ.green : VZ.red, 20);
-      if (sol.kind === "point") left += L.arrow([0, 0], sol.x, "N", 3) + `<circle cx="${L.X(sol.x[0])}" cy="${L.Y(sol.x[1])}" r="5" fill="${VZ.green}"/>` + vzSideTip(L, [0, 0], sol.x, vzB("x"), VZ.green, 20);
-      else if (sol.kind === "line") left += L.line(sol.x, I.nul, `stroke="${VZ.green}" stroke-width="3.2" stroke-linecap="round"`) + `<circle cx="${L.X(sol.x[0])}" cy="${L.Y(sol.x[1])}" r="5" fill="${VZ.green}"/>` + vzLabel(L.X(sol.x[0]) + 16, L.Y(sol.x[1]) + 20, vzB("x", "p"), VZ.green, 15);
-      else if (sol.kind === "all") left += `<rect width="297" height="${VZ_H}" fill="${VZ.green}" fill-opacity=".12"/>`;
-      else left += vzPill(150, 70, "no x works", VZ.red);
-    }
-    left += L.dot([0, 0], 3.6); right += R.dot([0, 0], 3.6);
-    let o = `<g clip-path="url(#vz-cl)">${left}</g><g clip-path="url(#vz-cr)">${right}</g>`;
-    o += `<line x1="300" y1="14" x2="300" y2="${VZ_H - 14}" stroke="${VZ.ink}" stroke-opacity=".18" stroke-width="1.5"/>`;
-    const head = (x, t) => `<text x="${x}" y="30" font-family="'Manrope', sans-serif" font-size="16" font-weight="700" fill="${VZ.ink}" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${t}</text>`;
-    o += head(16, "input x") + head(318, "output Ax");
-    const key = s.tab === 1 ? [["fill", VZ.gold, "Col A"]] : s.tab === 0 ? [["fill", VZ.red, "Nul A"], ["fill", VZ.gold, "Col A"]] : [["fill", VZ.gold, "Col A"], ["line", VZ.green, "solutions"]];
-    o += vzKey(key);
-    return o;
   },
   solve(s, b) {                                          // the solution set of Ax = b: none, one point, a line, or everything
     const I = this.info(s);
@@ -13692,31 +13758,712 @@ vzAdd({
     const f = s.a * s.a + s.b * s.b + s.c * s.c + s.d * s.d;   // for rank 1, A⁺ = Aᵀ / (sum of squares): the shortest solution
     return { kind: "line", x: [(s.a * b[0] + s.c * b[1]) / f, (s.b * b[0] + s.d * b[1]) / f] };
   },
+  fiberColor(k) { return k === 0 ? VZ_FIBER[1] : k < 0 ? VZ_FIBER[0][3 + k] : VZ_FIBER[2][k - 1]; },
+  draw(s, t, thumb) {
+    const L = this.L, R = this.R, I = this.info(s), hot = thumb ? null : VzView.hot;
+    const card = x => `<rect x="${x}" y="50" width="280" height="390" rx="14" fill="#FFFFFF" fill-opacity=".62" stroke="${VZ.ink}" stroke-opacity=".1"/>`;
+    let left = L.axes(.22), right = R.axes(.22);
+    // the colored families of inputs and the dots they land on
+    if (I.rank === 1) {
+      const n = I.nul, nl = Math.hypot(...n), w = [-n[1] / nl, n[0] / nl], Aw = Math.hypot(...this.Ax(s, w));
+      const sp = Math.min(.95, 1.05 / Math.max(Aw, 1e-9));   // spaced so every dot it lands on stays in view
+      right += R.line([0, 0], I.col, `stroke="${VZ.gold}" stroke-width="8" stroke-opacity=".3" stroke-linecap="round"`);
+      for (let k = -3; k <= 3; k++) {
+        if (s.tab === 1 && k) continue;                  // the column-space tab keeps to the columns
+        const p = [w[0] * k * sp, w[1] * k * sp], img = this.Ax(s, p), col = this.fiberColor(k), dark = k === 0;
+        left += L.line(p, n, `stroke="${col}" stroke-width="${dark ? 4 : 2.4}" stroke-opacity="${dark ? .95 : .8}" stroke-linecap="round"`);
+        right += `<circle cx="${q2(R.X(img[0]))}" cy="${q2(R.Y(img[1]))}" r="${dark ? 7.5 : 6}" fill="${col}" stroke="#fff" stroke-width="1.6"/>`;
+      }
+      const e = [n[0] / nl * 3.1, n[1] / nl * 3.1];
+      left += vzLabel(L.X(e[0]) + (e[0] >= 0 ? -6 : 6), L.Y(e[1]) + (e[1] >= 0 ? 26 : -12), "Nul <tspan font-style=\"italic\">A</tspan>", VZ.ink, 16);
+      const g = [I.col[0] / Math.hypot(...I.col) * 3.2, I.col[1] / Math.hypot(...I.col) * 3.2];
+      right += vzLabel(R.X(-g[0]) + 4, R.Y(-g[1]) + 26, "Col <tspan font-style=\"italic\">A</tspan>", "#7A5C0F", 16);
+    } else if (I.rank === 2) {
+      right += `<rect x="310" y="50" width="280" height="390" rx="14" fill="${VZ.gold}" fill-opacity=".1"/>`;
+      for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) {
+        if ((!i && !j) || s.tab === 1) continue;
+        const p = [i * .9, j * .9], img = this.Ax(s, p), col = this.fiberColor(i);   // a column of dots lands on a line of the same color
+        left += `<circle cx="${q2(L.X(p[0]))}" cy="${q2(L.Y(p[1]))}" r="4.6" fill="${col}" opacity=".85"/>`;
+        right += `<circle cx="${q2(R.X(img[0]))}" cy="${q2(R.Y(img[1]))}" r="4.6" fill="${col}" opacity=".85"/>`;
+      }
+      left += `<circle cx="${L.X(0)}" cy="${L.Y(0)}" r="7.5" fill="${VZ.ink}" stroke="#fff" stroke-width="1.6"/>` + vzLabel(270, 76, "Nul <tspan font-style=\"italic\">A</tspan> = {<tspan font-weight=\"700\">0</tspan>}", VZ.ink, 15, "end");
+      right += vzLabel(572, 76, "Col <tspan font-style=\"italic\">A</tspan> = ℝ²", "#7A5C0F", 15, "end");
+    } else {
+      left += `<rect x="10" y="50" width="280" height="390" rx="14" fill="${VZ.ink}" fill-opacity=".07"/>` + vzLabel(270, 76, "Nul <tspan font-style=\"italic\">A</tspan> = ℝ²", VZ.ink, 15, "end");
+      right += `<circle cx="${R.X(0)}" cy="${R.Y(0)}" r="8" fill="${VZ.ink}" stroke="#fff" stroke-width="1.6"/>` + vzLabel(R.X(0) + 12, R.Y(0) - 14, "Col <tspan font-style=\"italic\">A</tspan> = {<tspan font-weight=\"700\">0</tspan>}", "#7A5C0F", 15, "start");
+    }
+    const cols = [[s.a, s.c], [s.b, s.d]];
+    if (s.tab === 0) {
+      const x = [s.xx, s.xy], y = this.Ax(s, x), zero = Math.hypot(...y) < 1e-9;
+      if (I.rank === 1) left += L.line(x, I.nul, `stroke="${VZ.ink}" stroke-width="1.4" stroke-dasharray="3 6" opacity=".55"`);
+      if (!thumb) left += vzTipGrip(L, x, VZ.ink, "x");
+      left += L.arrow([0, 0], x, "I", 3.2) + vzSideTip(L, [0, 0], x, vzB("x"), VZ.ink, 20);
+      if (zero) right += `<circle cx="${R.X(0)}" cy="${R.Y(0)}" r="17" fill="none" stroke="${VZ.ink}" stroke-width="2.4"/>` + vzPill(R.X(0), R.Y(0) + 36, "Ax = 0", VZ.ink);
+      else right += R.arrow([0, 0], y, "I", 3.2) + vzSideTip(R, [0, 0], y, "A" + vzB("x"), VZ.ink, 22);
+    } else if (s.tab === 1) {
+      const p = [s.x1 * cols[0][0], s.x1 * cols[0][1]], y = this.Ax(s, [s.x1, s.x2]);
+      if (!thumb) right += vzTipGrip(R, cols[0], VZ.red, "a1") + vzTipGrip(R, cols[1], VZ.gold, "a2");
+      right += R.arrow([0, 0], cols[0], "R", 2.4) + R.arrow([0, 0], cols[1], "O", 2.4);
+      right += R.path([[0, 0], p], `stroke="${VZ.red}" stroke-width="2.4" stroke-dasharray="5 4"`) + R.path([p, y], `stroke="${VZ.gold}" stroke-width="2.4" stroke-dasharray="5 4"`);
+      if (Math.hypot(...y) > .02) right += R.arrow([0, 0], y, "I", 3.2) + vzSideTip(R, [0, 0], y, "A" + vzB("x"), VZ.ink, 22);
+      right += vzSideTip(R, [0, 0], cols[0], vzB("a", "1"), VZ.red, 18) + vzSideTip(R, [0, 0], cols[1], vzB("a", "2"), "#8A6A12", 18);
+      left += L.arrow([0, 0], [s.x1, s.x2], "I", 3.2) + vzSideTip(L, [0, 0], [s.x1, s.x2], vzB("x"), VZ.ink, 20);
+    } else {
+      const b = [s.bx, s.by], sol = this.solve(s, b), ok = sol.kind !== "none";
+      if (!thumb) right += vzTipGrip(R, b, ok ? VZ.green : VZ.red, "b");
+      right += R.arrow([0, 0], b, ok ? "N" : "R", 3.2) + vzSideTip(R, [0, 0], b, vzB("b"), ok ? VZ.green : VZ.red, 20);
+      if (sol.kind === "point") left += L.arrow([0, 0], sol.x, "N", 3.2) + vzSideTip(L, [0, 0], sol.x, vzB("x"), VZ.green, 20);
+      else if (sol.kind === "line") left += L.line(sol.x, I.nul, `stroke="${VZ.green}" stroke-width="5" stroke-linecap="round"`) + `<circle cx="${q2(L.X(sol.x[0]))}" cy="${q2(L.Y(sol.x[1]))}" r="5.5" fill="${VZ.green}" stroke="#fff" stroke-width="1.5"/>` + vzLabel(L.X(sol.x[0]) + 14, L.Y(sol.x[1]) + 24, vzB("x", "p"), VZ.green, 16, "start");
+      else if (sol.kind === "all") left += `<rect x="10" y="50" width="280" height="390" rx="14" fill="${VZ.green}" fill-opacity=".14"/>`;
+      else left += vzPill(150, 88, "no x lands on b", VZ.red);
+    }
+    left += L.dot([0, 0], 3.6); right += R.dot([0, 0], 3.6);
+    let o = card(10) + card(310) + `<g clip-path="url(#vz-cl)">${left}</g><g clip-path="url(#vz-cr)">${right}</g>`;
+    const head = (x, t) => `<text x="${x}" y="34" font-family="'Manrope', sans-serif" font-size="16" font-weight="700" fill="${VZ.ink}" text-anchor="middle">${t}</text>`;
+    o += head(150, "inputs x") + head(450, "outputs Ax");
+    o += vzArrow(226, 28, 374, 28, "I", 2) + vzLabel(300, 20, "multiply by <tspan font-style=\"italic\">A</tspan>", VZ.ink, 14);
+    return o;
+  },
   readout(s) {
-    const I = this.info(s), sp = ["{0}", "a line", "all of ℝ²"];
-    const nul = I.rank === 2 ? "{0}" : I.rank === 1 ? `the line through ${vzTup(I.nul)}` : "all of ℝ²", col = I.rank === 2 ? "all of ℝ²" : I.rank === 1 ? `the line through ${vzTup(I.col)}` : "{0}";
+    const I = this.info(s);
+    const nul = I.rank === 2 ? "{0}: only x = 0" : I.rank === 1 ? `the dark line, through ${vzTup(I.nul)}` : "all of ℝ²", col = I.rank === 2 ? "all of ℝ²" : I.rank === 1 ? `the gold line, through ${vzTup(I.col)}` : "{0}";
     let now = "";
     if (s.tab === 0) {
       const y = this.Ax(s, [s.xx, s.xy]), zero = Math.hypot(...y) < 1e-9;
-      now = zero ? `A${vzTup([s.xx, s.xy])} = 0, so x is in the null space.` : `A${vzTup([s.xx, s.xy])} = ${vzTup(y)}, not 0.` + (I.rank === 1 ? " Drag x onto the red line." : I.rank === 2 ? " Only x = 0 is sent to 0 here." : "");
+      now = zero ? `A${vzTup([s.xx, s.xy])} = 0: this x is in the null space.` : `A${vzTup([s.xx, s.xy])} = ${vzTup(y)}.` + (I.rank === 1 ? " Every x on the same colored line gives this same output." : I.rank === 2 ? " Different inputs always give different outputs here." : "");
     } else if (s.tab === 1) {
       const y = this.Ax(s, [s.x1, s.x2]);
-      now = `Ax = ${vzShort(s.x1)}·${vzTup([s.a, s.c])} + ${vzShort(s.x2)}·${vzTup([s.b, s.d])} = ${vzTup(y)}. Every output is a combination of the columns, so Col A = span of the columns = ${sp[I.rank]}.`;
+      now = `Ax = ${vzShort(s.x1)}·${vzTup([s.a, s.c])} + ${vzShort(s.x2)}·${vzTup([s.b, s.d])} = ${vzTup(y)}. The column space is the span of the columns: ${["{0}", "a line", "all of ℝ²"][I.rank]}.`;
     } else {
       const sol = this.solve(s, [s.bx, s.by]);
       now = sol.kind === "none" ? "b is not in Col A, so Ax = b has no solution."
-        : sol.kind === "point" ? `Exactly one solution, x = ${vzTup(sol.x)}: Nul A = {0}.`
+        : sol.kind === "point" ? `Exactly one solution, x = ${vzTup(sol.x)}, because Nul A = {0}.`
         : sol.kind === "all" ? "b = 0 and A = 0: every x is a solution."
-        : `b is in Col A. The solutions form a line: x = x_p + (anything in Nul A), with x_p = ${vzTup(sol.x)}.`;
+        : `b is in Col A. The solutions are the green line: x = x_p + (anything in Nul A), with x_p = ${vzTup(sol.x)}.`;
     }
     return `<div class="vz-mat"><span class="vz-mat-name">A =</span><span class="vz-brk"><table><tr><td>${vzShort(s.a)}</td><td>${vzShort(s.b)}</td></tr><tr><td>${vzShort(s.c)}</td><td>${vzShort(s.d)}</td></tr></table></span></div>
-      <div class="vz-eq">rank A = ${I.rank}, so dim Nul A = ${2 - I.rank}</div>
+      <div class="vz-eq">rank A = ${I.rank}, dim Nul A = ${2 - I.rank}</div>
       <div class="vz-eq" style="font-size:14px">Nul A: ${nul}<br>Col A: ${col}</div>
       <div class="vz-status ${s.tab === 2 && this.solve(s, [s.bx, s.by]).kind === "none" ? "warn" : "ok"}">${now}</div>`;
   },
 });
 
-VZ_LIST.sort((a, b) => VZ_ORDER.indexOf(a.id) - VZ_ORDER.indexOf(b.id));
+/* ============================================================
+   MULTIVARIABLE AND VECTOR CALCULUS PICTURES (round 13)
+   Shared 3-D pieces first; vzCam is x right, y into the page, z up.
+   ============================================================ */
+const vzMix = (A, B, t) => A.map((v, i) => v + (B[i] - v) * t);
+const VZ_RAMP = t => vzMix([246, 226, 222], [196, 22, 52], .12 + .78 * vzClamp(t, 0, 1));   // light to red with height
+// shaded quads of a surface p(i, j) on an (n+1) × (m+1) grid of world points, far ones first
+function vzQuads(cam, grid, tint, opts = {}) {
+  const n = grid.length - 1, m = grid[0].length - 1, pr = grid.map(r => r.map(p => cam(p[0], p[1], p[2]))), out = [];
+  for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) {
+    const a = grid[i][j], b = grid[i + 1][j], c = grid[i + 1][j + 1], d = grid[i][j + 1];
+    const ux = c[0] - a[0], uy = c[1] - a[1], uz = c[2] - a[2], vx = d[0] - b[0], vy = d[1] - b[1], vz = d[2] - b[2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx, nl = Math.hypot(nx, ny, nz) || 1;
+    const lit = .66 + .34 * Math.abs((-.35 * nx - .45 * ny + .82 * nz) / nl), col = tint(i, j, (a[2] + b[2] + c[2] + d[2]) / 4);
+    const P = [pr[i][j], pr[i + 1][j], pr[i + 1][j + 1], pr[i][j + 1]];
+    out.push({ dep: (P[0][2] + P[1][2] + P[2][2] + P[3][2]) / 4, z: (a[2] + b[2] + c[2] + d[2]) / 4, i, j,
+      d: "M" + P.map(p => q2(p[0]) + " " + q2(p[1])).join("L") + "Z", fill: `rgb(${col.map(v => Math.round(Math.min(255, v * lit))).join(",")})` });
+  }
+  return out.sort((A, B) => B.dep - A.dep);
+}
+const vzQuadSvg = (qs, opts = {}) => qs.map(q => `<path d="${q.d}" fill="${q.fill}"${opts.op != null ? ` fill-opacity="${opts.op}"` : ""} stroke="#FFFFFF" stroke-opacity="${opts.mesh == null ? .5 : opts.mesh}" stroke-width=".7" stroke-linejoin="round"/>`).join("");
+const vzPath3 = (cam, pts, attrs) => `<path d="M${pts.map(p => { const q = cam(p[0], p[1], p[2]); return q2(q[0]) + " " + q2(q[1]); }).join("L")}" fill="none" ${attrs}/>`;
+const vzArrow3 = (cam, a, b, key, w) => { const A = cam(a[0], a[1], a[2]), B = cam(b[0], b[1], b[2]); return vzArrow(A[0], A[1], B[0], B[1], key, w); };
+const vzDot3 = (cam, p, r, col) => { const q = cam(p[0], p[1], p[2]); return `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="${r}" fill="${col}" stroke="#fff" stroke-width="1.5"/>`; };
+const vzLab3 = (cam, p, html, col, dx = 0, dy = 0, size) => { const q = cam(p[0], p[1], p[2]); return vzLabel(q[0] + dx, q[1] + dy, html, col, size); };
+// the point on the horizontal plane z = h under a screen point (the camera is orthographic)
+function vzOnFloor(cam, x, y, h = 0) {
+  const O = cam(0, 0, h), X = cam(1, 0, h), Y = cam(0, 1, h), ax = X[0] - O[0], ay = X[1] - O[1], bx = Y[0] - O[0], by = Y[1] - O[1], det = ax * by - ay * bx;
+  if (Math.abs(det) < 1e-9) return null;
+  const rx = x - O[0], ry = y - O[1];
+  return [(rx * by - ry * bx) / det, (ax * ry - ay * rx) / det];
+}
+// x, y, z axes from the origin, light, labelled at their ends
+function vzAxes3(cam, L, op = .32) {
+  let o = "";
+  [[L, 0, 0, "x"], [0, L, 0, "y"], [0, 0, L * .8, "z"]].forEach(([x, y, z, n]) => {
+    const A = cam(0, 0, 0), B = cam(x, y, z);
+    o += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${VZ.ink}" stroke-width="1.1" opacity="${op}"/>`;
+    const T = cam(x * 1.08, y * 1.08, z * 1.08); o += vzLabel(T[0], T[1] + 5, n, VZ.grey, 15);
+  });
+  return o;
+}
+// integrals with stacked limits, for the readouts
+const vzInt = (lo, hi) => `<span class="vz-int">∫<span class="vz-lim"><sup>${hi}</sup><sub>${lo}</sub></span></span>`;
+
+/* ---------- Level curves and the surface ---------- */
+vzAdd({
+  id: "level", title: "Level curves and the surface", card: "Level curves",
+  tagline: "A contour map is the surface seen from above.",
+  blurb: "Each level curve \\(f(x,y)=c\\) is where the flat plane \\(z=c\\) cuts the surface. Flatten the surface and the same curves become the contour map.",
+  tryIt: "Play the height c and follow the red cut, on the surface and on the floor. Then flatten it.",
+  state: { fn: 0, c: .55, flat: 0, yaw: -32 },
+  thumb: { c: .5, flat: 0 },
+  controls: [
+    { k: "c", label: "height of the plane", min: .04, max: .96, step: .01, fmt: v => Math.round(v * 100) + "%", play: .16, aria: "the height" },
+    { k: "flat", label: "flatten into a map", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .35, progress: true, aria: "flattening" },
+    { k: "yaw", label: "turn the view", min: -80, max: 20, step: 1, unit: "°", digits: 0, noPlay: true },
+  ],
+  presets: [["Two hills", { fn: 0 }], ["Bowl", { fn: 1 }], ["Saddle", { fn: 2 }]],
+  fns: [
+    { name: "two hills", f: (x, y) => 1.1 * Math.exp(-((x - .7) ** 2 + (y - .35) ** 2) / .75) + .75 * Math.exp(-((x + .95) ** 2 + (y + .55) ** 2) / .5) },
+    { name: "a bowl", f: (x, y) => .2 * (x * x + 1.6 * y * y) },
+    { name: "a saddle", f: (x, y) => .22 * (x * x - y * y) },
+  ],
+  range(fi) {                                            // min and max of f over the square, sampled once
+    this._r = this._r || {};
+    if (!this._r[fi]) { const f = this.fns[fi].f; let lo = Infinity, hi = -Infinity; for (let i = 0; i <= 60; i++) for (let j = 0; j <= 60; j++) { const v = f(-2 + i / 15, -2 + j / 15); lo = Math.min(lo, v); hi = Math.max(hi, v); } this._r[fi] = [lo, hi]; }
+    return this._r[fi];
+  },
+  draw(s) {
+    const fi = Math.round(s.fn), f = this.fns[fi].f, [lo, hi] = this.range(fi), H = 1.7 / (hi - lo), sq = 1 - vzEase(s.flat);
+    const Z = (x, y) => (f(x, y) - lo) * H * sq, cam = vzCam(300, 262 - 40 * vzEase(s.flat), 80, vzRad(s.yaw), .5 + .95 * vzEase(s.flat));
+    const n = 24, grid = [];
+    for (let i = 0; i <= n; i++) { const row = []; for (let j = 0; j <= n; j++) { const x = -2 + 4 * i / n, y = -2 + 4 * j / n; row.push([x, y, Z(x, y)]); } grid.push(row); }
+    const hc = s.c * 1.7 * sq, qs = vzQuads(cam, grid, (i, j, z) => VZ_RAMP(sq > .02 ? z / (1.7 * sq) : (f(-2 + 4 * (i + .5) / n, -2 + 4 * (j + .5) / n) - lo) / (hi - lo)));
+    // the floor: the square under the surface
+    let o = vzPath3(cam, [[-2, -2, 0], [2, -2, 0], [2, 2, 0], [-2, 2, 0], [-2, -2, 0]], `stroke="${VZ.grey}" stroke-width="1.2" opacity=".5" fill="${VZ.ink}" fill-opacity=".03"`);
+    // level curves by marching squares on a finer grid
+    const N = 56; this._F = this._F || {};
+    const F = this._F[fi] || (this._F[fi] = Array.from({ length: N + 1 }, (_, j) => Array.from({ length: N + 1 }, (_, i) => f(-2 + 4 * i / N, -2 + 4 * j / N))));   // the same for every c
+    const curve = (L, z, attrs) => { const segs = vzContour(F, N, N, -2, -2, 4 / N, 4 / N, L); let d = ""; segs.forEach(([a, b]) => { const A = cam(a[0], a[1], z), B = cam(b[0], b[1], z); d += `M${q2(A[0])} ${q2(A[1])}L${q2(B[0])} ${q2(B[1])}`; }); return `<path d="${d}" fill="none" ${attrs}/>`; };
+    const Lc = lo + s.c * (hi - lo);
+    // the cut drops to the floor as a dashed curve: the contour on the map
+    if (sq > .03) o += curve(Lc, 0, `stroke="${VZ.red}" stroke-width="2" stroke-dasharray="5 5" opacity=".8"`);
+    const below = qs.filter(q => q.z < hc), above = qs.filter(q => q.z >= hc);
+    o += vzQuadSvg(below, { op: .96 });
+    if (sq > .03) o += vzPath3(cam, [[-2, -2, hc], [2, -2, hc], [2, 2, hc], [-2, 2, hc], [-2, -2, hc]], `stroke="${VZ.gold}" stroke-width="1.4" fill="${VZ.gold}" fill-opacity=".2"`);
+    o += vzQuadSvg(above, { op: .96 });
+    // a few other levels, thin, then the chosen one on the surface
+    for (let k = 1; k <= 7; k++) { const t = k / 8; if (Math.abs(t - s.c) < .04) continue; o += curve(lo + t * (hi - lo), t * 1.7 * sq, `stroke="${VZ.ink}" stroke-width="1" opacity=".35"`); }
+    o += curve(Lc, hc, `stroke="${VZ.red}" stroke-width="3.2" stroke-linecap="round"`);
+    o += vzKey(sq > .03 ? [["line", VZ.red, "where z = c cuts the surface"], ["dash", VZ.red, "the same curve on the map"]] : [["line", VZ.red, "the level curve f = c"], ["line", VZ.grey, "other levels"]]);
+    return o;
+  },
+  readout(s) {
+    const fi = Math.round(s.fn), [lo, hi] = this.range(fi), c = lo + s.c * (hi - lo);
+    return `<div class="vz-eq">f is ${this.fns[fi].name}; the plane is at z = c = <b>${vzNum(c)}</b></div>
+      <div class="vz-status ok">${s.flat < .5 ? "The red curve is every point of the surface at height c: the level curve f(x, y) = c. Its shadow on the floor is the same curve on the contour map."
+        : "Seen from above, the surface is gone and only its level curves are left: a contour map. Curves close together mean a steep surface."}</div>`;
+  },
+});
+
+/* ---------- Partial derivatives and the tangent plane ---------- */
+vzAdd({
+  id: "partials", title: "Partial derivatives and the tangent plane", card: "Partial derivatives",
+  tagline: "Slice the surface two ways; the slopes make the tangent plane.",
+  blurb: "Hold \\(y=b\\) and the surface becomes a curve in \\(x\\) with slope \\(f_x\\). Hold \\(x=a\\) for the slope \\(f_y\\). The two tangent lines span the tangent plane.",
+  tryIt: "Drag the point on the floor. Where both slopes are 0, the tangent plane is level: a critical point.",
+  state: { fn: 0, a: .7, b: -.5, plane: true, yaw: -38 },
+  controls: [
+    { k: "plane", label: "show the tangent plane", type: "toggle" },
+    { k: "yaw", label: "turn the view", min: -80, max: 20, step: 1, unit: "°", digits: 0, noPlay: true },
+  ],
+  presets: [["Hill", { fn: 0 }], ["Saddle", { fn: 1 }], ["Wave", { fn: 2 }]],
+  fns: [
+    { name: "1.6 − 0.25x² − 0.35y²", f: (x, y) => 1.6 - .25 * x * x - .35 * y * y, fx: (x, y) => -.5 * x, fy: (x, y) => -.7 * y },
+    { name: "0.8 + 0.3(x² − y²)", f: (x, y) => .8 + .3 * (x * x - y * y), fx: (x, y) => .6 * x, fy: (x, y) => -.6 * y },
+    { name: "0.8 + 0.5 sin x cos 0.8y", f: (x, y) => .8 + .5 * Math.sin(x) * Math.cos(.8 * y), fx: (x, y) => .5 * Math.cos(x) * Math.cos(.8 * y), fy: (x, y) => -.4 * Math.sin(x) * Math.sin(.8 * y) },
+  ],
+  cam(s) { return vzCam(300, 280, 70, vzRad(s.yaw), .5); },
+  handles(s) { const q = this.cam(s)(s.a, s.b, 0); return [{ k: "p", x: q[0], y: q[1] }]; },
+  dragTo(s, k, x, y, fine) { const p = vzOnFloor(this.cam(s), x, y, 0); if (!p) return; s.a = vzClamp(fine ? p[0] : vzSnap(p[0], .1), -1.8, 1.8); s.b = vzClamp(fine ? p[1] : vzSnap(p[1], .1), -1.8, 1.8); },
+  draw(s, t, thumb) {
+    const F = this.fns[Math.round(s.fn)], f = F.f, cam = this.cam(s), a = s.a, b = s.b, z0 = f(a, b), fx = F.fx(a, b), fy = F.fy(a, b);
+    const n = 20, grid = [];
+    for (let i = 0; i <= n; i++) { const row = []; for (let j = 0; j <= n; j++) { const x = -2 + 4 * i / n, y = -2 + 4 * j / n; row.push([x, y, f(x, y)]); } grid.push(row); }
+    let o = vzPath3(cam, [[-2, -2, 0], [2, -2, 0], [2, 2, 0], [-2, 2, 0], [-2, -2, 0]], `stroke="${VZ.grey}" stroke-width="1.2" opacity=".5"`);
+    o += vzQuadSvg(vzQuads(cam, grid, (i, j, z) => vzMix([250, 244, 238], [214, 196, 186], .25 + .3 * z / 1.6)), { op: .9, mesh: .7 });
+    // the two slices through the point, and their tangent lines
+    const xs = [], ys = [];
+    for (let i = 0; i <= 60; i++) { const u = -2 + 4 * i / 60; xs.push([u, b, f(u, b)]); ys.push([a, u, f(a, u)]); }
+    o += vzPath3(cam, xs, `stroke="${VZ.red}" stroke-width="2.6"`) + vzPath3(cam, ys, `stroke="${VZ.gold}" stroke-width="2.6"`);
+    const P = [a, b, z0], tx = [1, 0, fx], ty = [0, 1, fy], L = .9;
+    if (s.plane) {
+      const c = (p, q) => [a + p * tx[0] + q * ty[0], b + p * tx[1] + q * ty[1], z0 + p * tx[2] + q * ty[2]];
+      o += vzPath3(cam, [c(-L, -L), c(L, -L), c(L, L), c(-L, L), c(-L, -L)], `stroke="${VZ.ink}" stroke-width="1.3" stroke-opacity=".55" fill="${VZ.ink}" fill-opacity=".12"`);
+    }
+    const seg = (d, key) => vzArrow3(cam, [a - L * d[0], b - L * d[1], z0 - L * d[2]], [a + L * d[0], b + L * d[1], z0 + L * d[2]], key, 2.4);
+    o += seg(tx, "R") + seg(ty, "O");
+    // the point, its shadow on the floor, and the drop between them
+    o += vzPath3(cam, [[a, b, 0], P], `stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="4 4"`);
+    if (!thumb) { const q = cam(a, b, 0); o += vzGrip(q[0], q[1], VZ.ink, VzView.hot === "p"); }
+    o += vzDot3(cam, [a, b, 0], 4.2, VZ.ink) + vzDot3(cam, P, 5.2, VZ.deep);
+    o += vzLab3(cam, [a + L * tx[0], b, z0 + L * tx[2]], "slope f<tspan baseline-shift=\"sub\" font-size=\"12\">x</tspan>", VZ.red, 18, -10, 16);
+    o += vzLab3(cam, [a, b + L * ty[1], z0 + L * ty[2]], "slope f<tspan baseline-shift=\"sub\" font-size=\"12\">y</tspan>", "#8A6A12", 22, 4, 16);
+    o += vzKey([["line", VZ.red, "slice y = b"], ["line", VZ.gold, "slice x = a"]].concat(s.plane ? [["fill", VZ.ink, "tangent plane"]] : []));
+    return o;
+  },
+  readout(s) {
+    const F = this.fns[Math.round(s.fn)], a = s.a, b = s.b, z0 = F.f(a, b), fx = F.fx(a, b), fy = F.fy(a, b);
+    const sgn = v => (v < 0 ? " − " : " + ") + vzNum(Math.abs(v));
+    return `<div class="vz-eq">f(x, y) = ${F.name}</div>
+      <div class="vz-eq">at (a, b) = (${vzNum(a, 1)}, ${vzNum(b, 1)}): f<sub>x</sub> = <b>${vzNum(fx)}</b>, f<sub>y</sub> = <b>${vzNum(fy)}</b></div>
+      <div class="vz-eq">tangent plane: z = ${vzNum(z0)}${sgn(fx)}(x − ${vzNum(a, 1)})${sgn(fy)}(y − ${vzNum(b, 1)})</div>
+      <div class="vz-status ${Math.abs(fx) < .02 && Math.abs(fy) < .02 ? "warn" : "ok"}">${Math.abs(fx) < .02 && Math.abs(fy) < .02 ? "Both slopes are 0: the tangent plane is level. This is a critical point." : "f_x is the slope of the red slice, f_y the slope of the gold one. Together they tilt the tangent plane."}</div>`;
+  },
+});
+
+/* ---------- Arc length ---------- */
+vzAdd({
+  id: "arclength", title: "Arc length", card: "Arc length",
+  tagline: "Add up tiny straight pieces of a curve.",
+  blurb: "Cut the curve into \\(n\\) straight pieces and add their lengths. As \\(n\\) grows, the total closes in on \\(\\int_a^b\\|\\mathbf r'(t)\\|\\,dt\\).",
+  tryIt: "Play n: the polygon hugs the curve and the gap to the exact length shrinks.",
+  state: { n: 3, fn: 0 },
+  thumb: { n: 6 },
+  controls: [{ k: "n", label: "n (straight pieces)", min: 1, max: 40, step: 1, digits: 0, play: 5, progress: true, aria: "n" }],
+  presets: [["Parabola", { fn: 0 }], ["Circle arc", { fn: 1 }], ["Spiral", { fn: 2 }]],
+  curves: [
+    { name: "r(t) = (t, t²/2), −2 ≤ t ≤ 2", r: t => [t, t * t / 2], a: -2, b: 2, exact: "2√5 + ln(2 + √5)" },
+    { name: "r(t) = (2 cos t, 2 sin t), 0 ≤ t ≤ 3π/2", r: t => [2 * Math.cos(t), 2 * Math.sin(t)], a: 0, b: 1.5 * Math.PI, exact: "3π" },
+    { name: "r(t) = (t cos t, t sin t)/2, 0 ≤ t ≤ 4π", r: t => [t * Math.cos(t) / 2, t * Math.sin(t) / 2], a: 0, b: 4 * Math.PI, exact: null },
+  ],
+  len(c) {                                               // the exact length, by a fine sum
+    if (c._L) return c._L;
+    const N = 6000, h = (c.b - c.a) / N; let L = 0, p = c.r(c.a);
+    for (let i = 1; i <= N; i++) { const q = c.r(c.a + i * h); L += Math.hypot(q[0] - p[0], q[1] - p[1]); p = q; }
+    return (c._L = L);
+  },
+  fit(c) {                                               // a plane that fits the curve in the frame
+    if (c._P) return c._P;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (let i = 0; i <= 200; i++) { const p = c.r(c.a + (c.b - c.a) * i / 200); x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); }
+    const u = Math.min(520 / (x1 - x0), 330 / (y1 - y0)), cx = 300 - u * (x0 + x1) / 2, cy = 222 + u * (y0 + y1) / 2;
+    return (c._P = vzPlane(cx, cy, u));
+  },
+  draw(s) {
+    const c = this.curves[Math.round(s.fn)], P = this.fit(c), n = Math.round(s.n), pts = [];
+    let o = P.axes(.22);
+    for (let i = 0; i <= 160; i++) pts.push(c.r(c.a + (c.b - c.a) * i / 160));
+    o += P.path(pts, `stroke="${VZ.ink}" stroke-width="8" stroke-opacity=".1" stroke-linecap="round"`) + P.path(pts, `stroke="${VZ.ink}" stroke-width="1.6"`);
+    const v = []; for (let i = 0; i <= n; i++) v.push(c.r(c.a + (c.b - c.a) * i / n));
+    o += P.path(v, `stroke="${VZ.red}" stroke-width="2.8" stroke-linejoin="round"`);
+    v.forEach((p, i) => { o += `<circle cx="${q2(P.X(p[0]))}" cy="${q2(P.Y(p[1]))}" r="${i === 0 || i === n ? 4.6 : 3.6}" fill="${VZ.red}" stroke="#fff" stroke-width="1.3"/>`; });
+    o += vzKey([["line", VZ.ink, "the curve"], ["line", VZ.red, n + " straight piece" + (n === 1 ? "" : "s")]]);
+    return o;
+  },
+  readout(s) {
+    const c = this.curves[Math.round(s.fn)], n = Math.round(s.n), L = this.len(c);
+    let Ln = 0, p = c.r(c.a);
+    for (let i = 1; i <= n; i++) { const q = c.r(c.a + (c.b - c.a) * i / n); Ln += Math.hypot(q[0] - p[0], q[1] - p[1]); p = q; }
+    return `<div class="vz-eq">${c.name}</div>
+      <div class="vz-eq">${n} piece${n === 1 ? "" : "s"}: Σ ‖Δ<b>r</b>‖ = <b>${vzNum(Ln, 3)}</b></div>
+      <div class="vz-eq">exact: ${vzInt("a", "b")} ‖<b>r</b>′(t)‖ dt = ${c.exact ? c.exact + " ≈ " : ""}<b>${vzNum(L, 3)}</b></div>
+      <div class="vz-status ${L - Ln < .005 ? "ok" : ""}">Each straight piece is a little shorter than the curve it cuts across, so the sum is always a bit low. The gap is ${vzNum(L - Ln, 3)} and shrinks as n grows.</div>`;
+  },
+});
+
+/* ---------- Changing the order of integration ---------- */
+vzAdd({
+  id: "order", title: "Changing the order of integration", card: "Order of integration",
+  tagline: "Slice the same region with vertical or horizontal strips.",
+  blurb: "In \\(dy\\,dx\\) a vertical strip runs from the bottom curve to the top curve, and \\(x\\) sweeps across. In \\(dx\\,dy\\) a horizontal strip runs from the left curve to the right curve, and \\(y\\) sweeps up.",
+  tryIt: "Play the strip in one order, then switch orders: the region stays the same, only how you slice it changes.",
+  state: { reg: 1, ord: 0, s: .45 },
+  controls: [{ k: "s", label: "move the strip", min: .04, max: .96, step: .01, fmt: v => Math.round(v * 100) + "%", play: .3, aria: "the strip" }],
+  presets: [["Triangle", { reg: 0 }], ["Between y = x² and y = 2x", { reg: 1 }], ["Under y = √x", { reg: 2 }]],
+  regions: [
+    { xs: [0, 2], ylo: x => x, yhi: () => 2, ys: [0, 2], xlo: () => 0, xhi: y => y,
+      dydx: ["0", "2", "x", "2"], dxdy: ["0", "2", "0", "y"], curves: [[t => [t, t], [-.3, 2.3], "y = x", 2.3, [8, 4]], [t => [t, 2], [-.3, 2.4], "y = 2", 2.4, [8, 4]], [t => [0, t], [-.3, 2.4], "x = 0", 2.4, [-8, -6, "end"]]] },
+    { xs: [0, 2], ylo: x => x * x, yhi: x => 2 * x, ys: [0, 4], xlo: y => y / 2, xhi: y => Math.sqrt(y),
+      dydx: ["0", "2", "x²", "2x"], dxdy: ["0", "4", "y/2", "√y"], curves: [[t => [t, t * t], [-.2, 2.12], "y = x²", 1.55, [10, 8]], [t => [t, 2 * t], [-.15, 2.2], "y = 2x", 1.1, [-10, -8, "end"]]] },
+    { xs: [0, 4], ylo: () => 0, yhi: x => Math.sqrt(x), ys: [0, 2], xlo: y => y * y, xhi: () => 4,
+      dydx: ["0", "4", "0", "√x"], dxdy: ["0", "2", "y²", "4"], curves: [[t => [t, Math.sqrt(Math.max(0, t))], [0, 4.4], "y = √x", 1.2, [-8, -10, "end"]], [t => [4, t], [-.3, 2.3], "x = 4", 2.3, [8, 4]], [t => [t, 0], [-.3, 4.5], "y = 0", 4.5, [6, 18]]] },
+  ],
+  panelTop() {
+    return `<div><div class="vz-ptop-k">Order</div><div class="vz-seg" role="group" aria-label="Order of integration"><button type="button" data-ord="0">dy dx: vertical strips</button><button type="button" data-ord="1">dx dy: horizontal strips</button></div></div>`;
+  },
+  sync(s, panel) { panel && panel.querySelectorAll("[data-ord]").forEach(b => b.classList.toggle("on", +b.dataset.ord === s.ord)); },
+  onClick(el, s) { const b = el.closest("[data-ord]"); if (!b) return false; s.ord = +b.dataset.ord; return true; },
+  fit(R) {                                               // each axis scaled to fill the frame: shapes stretch, the slicing reads
+    const ux = Math.min(110, 360 / (R.xs[1] - R.xs[0])), uy = Math.min(110, 280 / (R.ys[1] - R.ys[0]));
+    return vzPlane(300 - ux * (R.xs[0] + R.xs[1]) / 2 + 20, 222 + uy * (R.ys[0] + R.ys[1]) / 2, ux, uy);
+  },
+  draw(s) {
+    const R = this.regions[Math.round(s.reg)], P = this.fit(R), vert = s.ord === 0;
+    let o = P.axes(.3);
+    const top = [], bot = [];
+    for (let i = 0; i <= 80; i++) { const x = R.xs[0] + (R.xs[1] - R.xs[0]) * i / 80; top.push([x, R.yhi(x)]); bot.push([x, R.ylo(x)]); }
+    o += P.poly(top.concat(bot.reverse()), `fill="${VZ.red}" fill-opacity=".1" stroke="none"`);
+    R.curves.forEach(([r, [t0, t1], name, lt, off]) => {
+      const pts = []; for (let i = 0; i <= 60; i++) pts.push(r(t0 + (t1 - t0) * i / 60));
+      o += P.path(pts, `stroke="${VZ.red}" stroke-width="2"`);
+      const e = r(lt); o += vzLabel(P.X(e[0]) + off[0], P.Y(e[1]) + off[1], name, VZ.red, 16, off[2] || "start");
+    });
+    // the strip and its two ends
+    const w = vert ? (R.xs[1] - R.xs[0]) * .045 : (R.ys[1] - R.ys[0]) * .045;
+    if (vert) {
+      const x = R.xs[0] + (R.xs[1] - R.xs[0]) * s.s, lo = R.ylo(x), hi = R.yhi(x);
+      o += P.poly([[x - w / 2, lo], [x + w / 2, lo], [x + w / 2, hi], [x - w / 2, hi]], `fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}" stroke-width="1.2"`);
+      o += P.dot([x, lo], 4.6, VZ.ink) + P.dot([x, hi], 4.6, VZ.ink);
+      o += vzLabel(P.X(x) + 12, P.Y(lo) + 20, "bottom: y = " + R.dydx[2], VZ.ink, 15, "start") + vzLabel(P.X(x) - 12, P.Y(hi) - 12, "top: y = " + R.dydx[3], VZ.ink, 15, "end");
+      // the outer range: x from a to b, under the axis
+      const y = P.Y(0) + 30; o += `<path d="M${P.X(R.xs[0])} ${y - 6}V${y}H${P.X(R.xs[1])}V${y - 6}" fill="none" stroke="${VZ.gold}" stroke-width="2.2"/>` + vzLabel((P.X(R.xs[0]) + P.X(R.xs[1])) / 2, y + 20, "x from " + R.dydx[0] + " to " + R.dydx[1], "#7A5C0F", 15);
+    } else {
+      const y = R.ys[0] + (R.ys[1] - R.ys[0]) * s.s, lo = R.xlo(y), hi = R.xhi(y);
+      o += P.poly([[lo, y - w / 2], [hi, y - w / 2], [hi, y + w / 2], [lo, y + w / 2]], `fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}" stroke-width="1.2"`);
+      o += P.dot([lo, y], 4.6, VZ.ink) + P.dot([hi, y], 4.6, VZ.ink);
+      o += vzLabel(P.X(lo) - 10, P.Y(y) - 12, "left: x = " + R.dxdy[2], VZ.ink, 15, "end") + vzLabel(P.X(hi) + 10, P.Y(y) + 22, "right: x = " + R.dxdy[3], VZ.ink, 15, "start");
+      const x = P.X(0) - 30; o += `<path d="M${x + 6} ${P.Y(R.ys[0])}H${x}V${P.Y(R.ys[1])}H${x + 6}" fill="none" stroke="${VZ.gold}" stroke-width="2.2"/>` + vzLabel(x - 8, (P.Y(R.ys[0]) + P.Y(R.ys[1])) / 2, "y: " + R.dxdy[0] + " to " + R.dxdy[1], "#7A5C0F", 15, "end");
+    }
+    o += vzKey([["fill", VZ.red, "the region"], ["line", VZ.gold, vert ? "x sweeps across" : "y sweeps up"]]);
+    return o;
+  },
+  readout(s) {
+    const R = this.regions[Math.round(s.reg)], one = (L, d) => `${vzInt(L[0], L[1])}${vzInt(L[2], L[3])} f ${d}`;
+    return `<div class="vz-eq ${s.ord === 0 ? "vz-on" : "vz-off"}">${one(R.dydx, "dy dx")}</div>
+      <div class="vz-eq ${s.ord === 1 ? "vz-on" : "vz-off"}">${one(R.dxdy, "dx dy")}</div>
+      <div class="vz-status ok">Both describe the same region. The inside limits are the strip's two ends (they may depend on the outside variable); the outside limits are numbers: how far the strip sweeps.</div>`;
+  },
+});
+
+/* ---------- Change of variables and the Jacobian ---------- */
+vzAdd({
+  id: "jacobian", title: "Change of variables", card: "Change of variables",
+  tagline: "A small cell's area is multiplied by |J|.",
+  blurb: "\\(T\\) carries the \\((u,v)\\) grid onto curved \\((x,y)\\) cells. A small cell of area \\(\\Delta u\\,\\Delta v\\) lands on a cell of area about \\(|J|\\,\\Delta u\\,\\Delta v\\), where \\(J\\) is the Jacobian determinant.",
+  tryIt: "Shrink the cell: its image gets closer and closer to the dashed parallelogram, and the area ratio settles on |J|.",
+  defs: `<clipPath id="vz-jl"><rect x="10" y="50" width="250" height="364" rx="14"/></clipPath><clipPath id="vz-jr"><rect x="280" y="50" width="310" height="364" rx="14"/></clipPath>`,
+  state: { map: 0, u0: .55, v0: .45, h: .18 },
+  controls: [{ k: "h", label: "cell size", min: .04, max: .3, step: .01, fmt: v => vzNum(v, 2), play: .08, aria: "the cell size" }],
+  presets: [["Polar", { map: 0 }], ["Linear", { map: 1 }], ["Curved", { map: 2 }]],
+  maps: [
+    { name: "polar: x = r cos θ, y = r sin θ", u: "r", v: "θ", U: [0, 2], V: [0, Math.PI], T: (u, v) => [u * Math.cos(v), u * Math.sin(v)], J: (u, v) => u, Jt: "J = r" },
+    { name: "x = 1.5u + 0.5v, y = 0.5u + v", u: "u", v: "v", U: [0, 2], V: [0, 2], T: (u, v) => [1.5 * u + .5 * v, .5 * u + v], J: () => 1.25, Jt: "J = 1.5·1 − 0.5·0.5 = 1.25" },
+    { name: "x = u² − v², y = 2uv", u: "u", v: "v", U: [.2, 1.5], V: [0, 1.2], T: (u, v) => [u * u - v * v, 2 * u * v], J: (u, v) => 4 * (u * u + v * v), Jt: "J = 4(u² + v²)" },
+  ],
+  M(s) { return this.maps[Math.round(s.map)]; },
+  planes(s) {                                            // left: the (u, v) rectangle; right: the image, fitted
+    const m = this.M(s), uL = Math.min(200 / (m.U[1] - m.U[0]), 290 / (m.V[1] - m.V[0]));
+    const Lp = vzPlane(140 - uL * (m.U[0] + m.U[1]) / 2, 228 + uL * (m.V[0] + m.V[1]) / 2, uL);
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (let i = 0; i <= 20; i++) for (let j = 0; j <= 20; j++) { const p = m.T(m.U[0] + (m.U[1] - m.U[0]) * i / 20, m.V[0] + (m.V[1] - m.V[0]) * j / 20); x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); }
+    const uR = Math.min(270 / (x1 - x0), 300 / (y1 - y0));
+    return [Lp, vzPlane(435 - uR * (x0 + x1) / 2, 232 + uR * (y0 + y1) / 2, uR)];
+  },
+  cell(s) { const m = this.M(s), h = s.h; return [m.U[0] + (m.U[1] - m.U[0] - h * (m.U[1] - m.U[0])) * s.u0, m.V[0] + (m.V[1] - m.V[0] - h * (m.V[1] - m.V[0])) * s.v0, h * (m.U[1] - m.U[0]), h * (m.V[1] - m.V[0])]; },
+  handles(s) { const [Lp] = this.planes(s), [u, v, du, dv] = this.cell(s); return [{ k: "c", x: Lp.X(u + du / 2), y: Lp.Y(v + dv / 2) }]; },
+  dragTo(s, k, x, y, fine) {
+    const m = this.M(s), [Lp] = this.planes(s), [, , du, dv] = this.cell(s), u = (x - Lp.cx) / Lp.u - du / 2, v = (Lp.cy - y) / Lp.u - dv / 2;
+    const q = fine ? z => z : z => Math.round(z * 20) / 20;
+    s.u0 = vzClamp(q((u - m.U[0]) / (m.U[1] - m.U[0] - du)), 0, 1); s.v0 = vzClamp(q((v - m.V[0]) / (m.V[1] - m.V[0] - dv)), 0, 1);
+  },
+  draw(s, t, thumb) {
+    const m = this.M(s), [Lp, Rp] = this.planes(s), [u, v, du, dv] = this.cell(s);
+    const card = (x, w) => `<rect x="${x}" y="50" width="${w}" height="364" rx="14" fill="#FFFFFF" fill-opacity=".62" stroke="${VZ.ink}" stroke-opacity=".1"/>`;
+    let L = "", R = "";
+    // the grid, and where it goes
+    for (let i = 0; i <= 8; i++) {
+      const uu = m.U[0] + (m.U[1] - m.U[0]) * i / 8, vv = m.V[0] + (m.V[1] - m.V[0]) * i / 8, a = [], b = [];
+      L += Lp.path([[uu, m.V[0]], [uu, m.V[1]]], `stroke="${VZ.grey}" stroke-width="1" opacity=".45"`) + Lp.path([[m.U[0], vv], [m.U[1], vv]], `stroke="${VZ.grey}" stroke-width="1" opacity=".45"`);
+      for (let k = 0; k <= 40; k++) { const w = k / 40; a.push(m.T(uu, m.V[0] + (m.V[1] - m.V[0]) * w)); b.push(m.T(m.U[0] + (m.U[1] - m.U[0]) * w, vv)); }
+      R += Rp.path(a, `stroke="${VZ.grey}" stroke-width="1" opacity=".45"`) + Rp.path(b, `stroke="${VZ.grey}" stroke-width="1" opacity=".45"`);
+    }
+    L += Lp.poly([[m.U[0], m.V[0]], [m.U[1], m.V[0]], [m.U[1], m.V[1]], [m.U[0], m.V[1]]], `fill="none" stroke="${VZ.ink}" stroke-width="1.4" opacity=".6"`);
+    L += vzLabel(Lp.X((m.U[0] + m.U[1]) / 2), Lp.Y(m.V[0]) + 24, m.u + " →", VZ.grey, 15) + vzLabel(Lp.X(m.U[0]) - 14, Lp.Y((m.V[0] + m.V[1]) / 2) + 5, m.v, VZ.grey, 15, "end");
+    // the cell, its image, and the parallelogram that approximates the image
+    L += Lp.poly([[u, v], [u + du, v], [u + du, v + dv], [u, v + dv]], `fill="${VZ.red}" fill-opacity=".45" stroke="${VZ.deep}" stroke-width="1.6"`);
+    const img = [], N = 12;
+    for (let k = 0; k < N; k++) img.push(m.T(u + du * k / N, v));
+    for (let k = 0; k < N; k++) img.push(m.T(u + du, v + dv * k / N));
+    for (let k = 0; k < N; k++) img.push(m.T(u + du - du * k / N, v + dv));
+    for (let k = 0; k < N; k++) img.push(m.T(u, v + dv - dv * k / N));
+    R += Rp.poly(img, `fill="${VZ.red}" fill-opacity=".45" stroke="${VZ.deep}" stroke-width="1.6"`);
+    const e = 1e-5, p0 = m.T(u, v), Tu = m.T(u + e, v).map((c, i) => (c - p0[i]) / e * du), Tv = m.T(u, v + e).map((c, i) => (c - p0[i]) / e * dv);
+    R += Rp.poly([p0, [p0[0] + Tu[0], p0[1] + Tu[1]], [p0[0] + Tu[0] + Tv[0], p0[1] + Tu[1] + Tv[1]], [p0[0] + Tv[0], p0[1] + Tv[1]]], `fill="none" stroke="${VZ.ink}" stroke-width="1.4" stroke-dasharray="4 4"`);
+    if (!thumb) L += vzGrip(Lp.X(u + du / 2), Lp.Y(v + dv / 2), VZ.deep, VzView.hot === "c");
+    let o = card(10, 250) + card(280, 310) + `<g clip-path="url(#vz-jl)">${L}</g><g clip-path="url(#vz-jr)">${R}</g>`;
+    const head = (x, t) => `<text x="${x}" y="34" font-family="'Manrope', sans-serif" font-size="16" font-weight="700" fill="${VZ.ink}" text-anchor="middle">${t}</text>`;
+    o += head(135, `(${m.u}, ${m.v}) plane`) + head(435, "(x, y) plane");
+    o += vzArrow(212, 28, 360, 28, "I", 2) + vzLabel(286, 20, "<tspan font-style=\"italic\">T</tspan>", VZ.ink, 15);
+    o += vzKey([["fill", VZ.red, "a small cell and its image"], ["dash", VZ.ink, "the parallelogram from J"]], 16, 438);
+    return o;
+  },
+  readout(s) {
+    const m = this.M(s), [u, v, du, dv] = this.cell(s), N = 40, pts = [];
+    for (let k = 0; k < N; k++) pts.push(m.T(u + du * k / N, v));
+    for (let k = 0; k < N; k++) pts.push(m.T(u + du, v + dv * k / N));
+    for (let k = 0; k < N; k++) pts.push(m.T(u + du - du * k / N, v + dv));
+    for (let k = 0; k < N; k++) pts.push(m.T(u, v + dv - dv * k / N));
+    let A = 0; for (let k = 0; k < pts.length; k++) { const a = pts[k], b = pts[(k + 1) % pts.length]; A += a[0] * b[1] - b[0] * a[1]; }
+    A = Math.abs(A) / 2;
+    const J = Math.abs(m.J(u + du / 2, v + dv / 2));
+    return `<div class="vz-eq">${m.name}</div>
+      <div class="vz-eq">${m.Jt}; at the cell |J| ≈ <b>${vzNum(J)}</b></div>
+      <div class="vz-eq">cell area Δ${m.u}Δ${m.v} = ${vzNum(du * dv, 3)}; image area = ${vzNum(A, 3)}</div>
+      <div class="vz-eq">ratio = <b>${vzNum(A / (du * dv))}</b></div>
+      <div class="vz-status ok">That ratio is the Jacobian: dA = |J| d${m.u} d${m.v}.${Math.round(s.map) === 0 ? " For polar coordinates |J| = r, which is the r in r dr dθ." : ""}</div>`;
+  },
+});
+
+/* ---------- Path independence ---------- */
+vzAdd({
+  id: "conservative", title: "Path independence", card: "Path independence",
+  tagline: "In a conservative field the path doesn't matter.",
+  blurb: "Two paths from \\(A\\) to \\(B\\). In a gradient field \\(\\mathbf F=\\nabla\\phi\\) both give \\(\\int_C\\mathbf F\\cdot d\\mathbf r=\\phi(B)-\\phi(A)\\). In a swirling field they don't.",
+  tryIt: "Play the bend: in the conservative field the red path's work never changes. Switch to the swirl and it does.",
+  state: { fld: 0, bend: .6, ax: -2, ay: -1, bx: 2.25, by: 1.25 },
+  controls: [{ k: "bend", label: "bend the red path", min: -1, max: 1, step: .02, fmt: v => vzNum(v, 2), play: .5, aria: "the bend" }],
+  presets: [["Conservative: F = ∇φ", { fld: 0 }], ["Not conservative: a swirl", { fld: 1 }]],
+  fields: [
+    { name: "F = ∇φ with φ = xy + 0.3x²", F: (x, y) => [y + .6 * x, x], phi: (x, y) => x * y + .3 * x * x },
+    { name: "F = (−y, x)/2: a swirl, curl = 1", F: (x, y) => [-y / 2, x / 2] },
+  ],
+  P: vzPlane(300, 228, 58),
+  handles(s) { const P = this.P; return [{ k: "a", x: P.X(s.ax), y: P.Y(s.ay) }, { k: "b", x: P.X(s.bx), y: P.Y(s.by) }]; },
+  dragTo(s, k, x, y, fine) { const p = vzWorld(this.P, x, y, [4.6, 3.6], fine); s[k + "x"] = p[0]; s[k + "y"] = p[1]; },
+  paths(s) {
+    const A = [s.ax, s.ay], B = [s.bx, s.by], d = [B[0] - A[0], B[1] - A[1]], L = Math.hypot(...d) || 1, m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
+    const C = [m[0] - d[1] / L * s.bend * L * .7, m[1] + d[0] / L * s.bend * L * .7];
+    return [t => [A[0] + d[0] * t, A[1] + d[1] * t], t => { const u = 1 - t; return [u * u * A[0] + 2 * u * t * C[0] + t * t * B[0], u * u * A[1] + 2 * u * t * C[1] + t * t * B[1]]; }];
+  },
+  work(F, r) { let W = 0; const N = 300; for (let i = 0; i < N; i++) { const p = r(i / N), q = r((i + 1) / N), m = r((i + .5) / N), f = F(m[0], m[1]); W += f[0] * (q[0] - p[0]) + f[1] * (q[1] - p[1]); } return W; },
+  static(s) {
+    const fl = this.fields[Math.round(s.fld)], P = this.P;
+    let o = P.axes(.2);
+    if (fl.phi) {                                           // level curves of the potential, faint
+      const N = 50, G = [];
+      for (let j = 0; j <= N; j++) { const row = []; for (let i = 0; i <= N; i++) row.push(fl.phi(-5.2 + 10.4 * i / N, -4 + 8 * j / N)); G.push(row); }
+      for (let L = -6; L <= 8; L += 1.5) { let d = ""; vzContour(G, N, N, -5.2, -4, 10.4 / N, 8 / N, L).forEach(([a, b]) => { d += `M${q2(P.X(a[0]))} ${q2(P.Y(a[1]))}L${q2(P.X(b[0]))} ${q2(P.Y(b[1]))}`; }); o += `<path d="${d}" fill="none" stroke="${VZ.gold}" stroke-width="1" opacity=".45" stroke-dasharray="2 4"/>`; }
+    }
+    for (let i = -5; i <= 5; i++) for (let j = -3; j <= 3; j++) {
+      const x = i * .95, y = j * 1.05, f = fl.F(x, y), m = Math.hypot(...f); if (m < 1e-6) continue;
+      const k = .36 / Math.max(1.6, m) * Math.min(1.6, m) / m * 1.1;
+      o += vzArrow(P.X(x - f[0] * k), P.Y(y - f[1] * k), P.X(x + f[0] * k), P.Y(y + f[1] * k), "G", 1.3).replace("<g ", '<g opacity=".55" ');
+    }
+    return o;
+  },
+  staticKey: s => String(Math.round(s.fld)),
+  draw(s, t, thumb) {
+    const P = this.P, fl = this.fields[Math.round(s.fld)], [r1, r2] = this.paths(s), W1 = this.work(fl.F, r1), W2 = this.work(fl.F, r2);
+    const pts = r => { const a = []; for (let i = 0; i <= 60; i++) a.push(r(i / 60)); return a; };
+    let o = P.path(pts(r1), `stroke="${VZ.ink}" stroke-width="2.6"`) + P.path(pts(r2), `stroke="${VZ.red}" stroke-width="2.8"`);
+    [[r1, "I"], [r2, "R"]].forEach(([r, key]) => { const a = r(.52), b = r(.56); o += vzArrow(P.X(a[0]), P.Y(a[1]), P.X(b[0]), P.Y(b[1]), key, 2.6); });
+    const lab = (r, W, col, side) => { const p = r(.5), q = r(.53), d = [q[0] - p[0], q[1] - p[1]], L = Math.hypot(...d) || 1; return vzLabel(P.X(p[0]) - d[1] / L * 26 * side, P.Y(p[1]) - d[0] / L * 26 * side + 5, "W = " + vzNum(W), col, 15); };
+    o += lab(r1, W1, VZ.ink, s.bend >= 0 ? -1 : 1) + lab(r2, W2, VZ.red, s.bend >= 0 ? 1 : -1);
+    if (!thumb) o += vzGrip(P.X(s.ax), P.Y(s.ay), VZ.ink, VzView.hot === "a") + vzGrip(P.X(s.bx), P.Y(s.by), VZ.ink, VzView.hot === "b");
+    o += P.dot([s.ax, s.ay], 5.5, VZ.ink) + P.dot([s.bx, s.by], 5.5, VZ.ink);
+    o += vzLabel(P.X(s.ax) - 14, P.Y(s.ay) + 22, "A", VZ.ink, 18) + vzLabel(P.X(s.bx) + 14, P.Y(s.by) - 12, "B", VZ.ink, 18);
+    o += vzKey(fl.phi ? [["line", VZ.ink, "straight path"], ["line", VZ.red, "bent path"], ["dash", VZ.gold, "level curves of φ"]] : [["line", VZ.ink, "straight path"], ["line", VZ.red, "bent path"]]);
+    return o;
+  },
+  readout(s) {
+    const fl = this.fields[Math.round(s.fld)], [r1, r2] = this.paths(s), W1 = this.work(fl.F, r1), W2 = this.work(fl.F, r2);
+    const same = Math.abs(W1 - W2) < 5e-3;
+    return `<div class="vz-eq">${fl.name}</div>
+      <div class="vz-eq">straight: <b>${vzNum(W1)}</b> &nbsp; bent: <b style="color:var(--red-deep)">${vzNum(W2)}</b></div>
+      ${fl.phi ? `<div class="vz-eq">φ(B) − φ(A) = ${vzNum(fl.phi(s.bx, s.by) - fl.phi(s.ax, s.ay))}</div>` : ""}
+      <div class="vz-status ${fl.phi ? "ok" : same ? "ok" : "warn"}">${fl.phi ? "Every path from A to B gives φ(B) − φ(A): the work depends only on the endpoints."
+        : same ? "Here the two works happen to agree: the bent path has no area between it and the straight one." : `They differ by ${vzNum(W2 - W1)}: the swirl's curl (1) times the signed area between the two paths. Not path independent.`}</div>`;
+  },
+});
+
+/* ---------- Green's theorem: little circulations add up ---------- */
+vzAdd({
+  id: "green", title: "Green's theorem", card: "Green's theorem",
+  tagline: "Small circulations add up to the circulation around the edge.",
+  blurb: "Split \\(D\\) into small cells and go counterclockwise around each. Inside, every shared edge is crossed twice in opposite directions and cancels; only the outer edge is left. So \\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_D(Q_x-P_y)\\,dA\\).",
+  tryIt: "Play the number of cells: however finely you cut, the inside edges cancel in pairs and the total stays the circulation around C.",
+  state: { n: 3 },
+  thumb: { n: 3 },
+  controls: [{ k: "n", label: "cells across", min: 1, max: 6, step: 1, digits: 0, play: 1.2, progress: true, aria: "the number of cells" }],
+  P: vzPlane(300, 238, 92),
+  X: [-2.4, 2.4], Y: [-1.6, 1.6],
+  F: (x, y) => [-y * (1 + .25 * x), x],                   // curl Q_x − P_y = 2 + 0.25x
+  draw(s) {
+    const P = this.P, n = Math.round(s.n), [x0, x1] = this.X, [y0, y1] = this.Y, hx = (x1 - x0) / n, hy = (y1 - y0) / n;
+    let o = P.poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], `fill="${VZ.red}" fill-opacity=".07" stroke="none"`);
+    // every cell's counterclockwise edges, drawn just inside the cell; shared edges show two opposite arrows
+    const inset = .1 * Math.min(hx, hy), edge = (a, b, outer) => {
+      const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], d = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(...d), len = Math.min(L * .32, .45);
+      const u = [d[0] / L, d[1] / L], p = [m[0] - u[0] * len / 2, m[1] - u[1] * len / 2], q = [m[0] + u[0] * len / 2, m[1] + u[1] * len / 2];
+      return vzArrow(P.X(p[0]), P.Y(p[1]), P.X(q[0]), P.Y(q[1]), outer ? "R" : "G", outer ? 2.4 : 1.6).replace("<g ", outer ? "<g " : '<g opacity=".7" ');
+    };
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      const a = x0 + i * hx, b = y0 + j * hy, c = [[a + inset, b + inset], [a + hx - inset, b + inset], [a + hx - inset, b + hy - inset], [a + inset, b + hy - inset]];
+      o += P.poly(c, `fill="none" stroke="${VZ.grey}" stroke-width="1" stroke-dasharray="3 4" opacity=".55"`);
+      o += edge(c[0], c[1], j === 0) + edge(c[1], c[2], i === n - 1) + edge(c[2], c[3], j === n - 1) + edge(c[3], c[0], i === 0);
+    }
+    o += P.poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], `fill="none" stroke="${VZ.red}" stroke-width="2.4"`);
+    o += vzLabel(P.X(x1) + 14, P.Y(y1) - 6, "C", VZ.red, 18) + vzLabel(P.X(x0) + 22, P.Y(y1) + 26, "D", VZ.deep, 17);
+    o += vzKey([["line", VZ.red, "edges on C: they count"], ["line", VZ.grey, "inside edges: they cancel in pairs"]]);
+    return o;
+  },
+  readout(s) {
+    const n = Math.round(s.n), [x0, x1] = this.X, [y0, y1] = this.Y, hx = (x1 - x0) / n, hy = (y1 - y0) / n, F = this.F;
+    const line = (a, b) => { let W = 0; const N = 80; for (let k = 0; k < N; k++) { const t = (k + .5) / N, x = a[0] + (b[0] - a[0]) * t, y = a[1] + (b[1] - a[1]) * t, f = F(x, y); W += (f[0] * (b[0] - a[0]) + f[1] * (b[1] - a[1])) / N; } return W; };
+    const loop = (a, b, c, d) => line(a, b) + line(b, c) + line(c, d) + line(d, a);
+    let sum = 0;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const a = x0 + i * hx, b = y0 + j * hy; sum += loop([a, b], [a + hx, b], [a + hx, b + hy], [a, b + hy]); }
+    const edgeC = loop([x0, y0], [x1, y0], [x1, y1], [x0, y1]), area = (x1 - x0) * (y1 - y0), dbl = 2 * area + .25 * ((x1 * x1 - x0 * x0) / 2) * (y1 - y0);
+    return `<div class="vz-eq">F = (−y(1 + 0.25x), x), so Q<sub>x</sub> − P<sub>y</sub> = 2 + 0.25x</div>
+      <div class="vz-eq">sum of the ${n * n} cell circulation${n * n === 1 ? "" : "s"} = <b>${vzNum(sum)}</b></div>
+      <div class="vz-eq">∮<sub>C</sub> F · dr = <b>${vzNum(edgeC)}</b></div>
+      <div class="vz-eq">∬<sub>D</sub> (Q<sub>x</sub> − P<sub>y</sub>) dA = <b>${vzNum(dbl)}</b></div>
+      <div class="vz-status ok">All three agree for every n. A cell's circulation is about (Q<sub>x</sub> − P<sub>y</sub>) × its area, which is why the double integral of the curl counts them all.</div>`;
+  },
+});
+
+/* ---------- Parametric surfaces ---------- */
+vzAdd({
+  id: "surface", title: "Parametric surfaces", card: "Parametric surfaces",
+  tagline: "A (u, v) rectangle bent into a surface.",
+  blurb: "\\(\\mathbf r(u,v)\\) bends a flat \\((u,v)\\) rectangle into a surface. A small cell becomes a patch spanned by \\(\\mathbf r_u\\,\\Delta u\\) and \\(\\mathbf r_v\\,\\Delta v\\), with area about \\(\\|\\mathbf r_u\\times\\mathbf r_v\\|\\,\\Delta u\\,\\Delta v\\).",
+  tryIt: "Play the bend from flat to the surface, then move the patch: where the surface stretches more, \\(\\|\\mathbf r_u\\times\\mathbf r_v\\|\\) is larger.",
+  state: { kind: 0, m: 1, u0: .35, v0: .5, yaw: -30 },
+  controls: [
+    { k: "m", label: "flat → surface", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .35, progress: true, aria: "the bend" },
+    { k: "u0", label: "patch: u", min: 0, max: 1, step: .01, fmt: v => vzNum(v, 2), noPlay: true },
+    { k: "v0", label: "patch: v", min: 0, max: 1, step: .01, fmt: v => vzNum(v, 2), noPlay: true },
+    { k: "yaw", label: "turn the view", min: -80, max: 20, step: 1, unit: "°", digits: 0, noPlay: true },
+  ],
+  presets: [["Sphere", { kind: 0 }], ["Cylinder", { kind: 1 }], ["Paraboloid", { kind: 2 }]],
+  kinds: [
+    { name: "r(u, v) = (2 sin v cos u, −2 sin v sin u, 2 cos v)", U: [0, 1.5 * Math.PI], V: [.25, Math.PI - .25], r: (u, v) => [2 * Math.sin(v) * Math.cos(u), -2 * Math.sin(v) * Math.sin(u), 2 * Math.cos(v)] },   // u runs clockwise so r_u × r_v points out
+    { name: "r(u, v) = (1.5 cos u, 1.5 sin u, v)", U: [0, 1.5 * Math.PI], V: [-1.4, 1.4], r: (u, v) => [1.5 * Math.cos(u), 1.5 * Math.sin(u), v] },
+    { name: "r(u, v) = (v cos u, v sin u, 0.6v²)", U: [0, 2 * Math.PI], V: [0, 1.8], r: (u, v) => [v * Math.cos(u), v * Math.sin(u), .6 * v * v - .9] },
+  ],
+  K(s) { return this.kinds[Math.round(s.kind)]; },
+  pos(K, u, v, m) {                                      // flat rectangle (in the plane z = −1.6) to the surface
+    const a = (u - K.U[0]) / (K.U[1] - K.U[0]), b = (v - K.V[0]) / (K.V[1] - K.V[0]), flat = [-1.9 + 3.8 * a, -1.4 + 2.8 * b, -1.6], p = K.r(u, v), e = vzEase(m);
+    return [flat[0] + (p[0] - flat[0]) * e, flat[1] + (p[1] - flat[1]) * e, flat[2] + (p[2] - flat[2]) * e];
+  },
+  draw(s) {
+    const K = this.K(s), cam = vzCam(300, 250, 70, vzRad(s.yaw), .45), n = 12, m = 8, grid = [];
+    for (let i = 0; i <= n; i++) { const row = []; for (let j = 0; j <= m; j++) row.push(this.pos(K, K.U[0] + (K.U[1] - K.U[0]) * i / n, K.V[0] + (K.V[1] - K.V[0]) * j / m, s.m)); grid.push(row); }
+    const iu = Math.min(n - 1, Math.floor(s.u0 * n)), jv = Math.min(m - 1, Math.floor(s.v0 * m));
+    const qs = vzQuads(cam, grid, (i, j) => i === iu && j === jv ? [205, 40, 70] : vzMix([250, 238, 230], [232, 196, 190], j / m));
+    let o = vzQuadSvg(qs, { op: .93, mesh: .9 });
+    // the patch's edges and the vectors r_u Δu, r_v Δv and their cross product
+    const du = (K.U[1] - K.U[0]) / n, dv = (K.V[1] - K.V[0]) / m, u = K.U[0] + iu * du, v = K.V[0] + jv * dv, e = 1e-4;
+    const P0 = this.pos(K, u, v, s.m), Pu = this.pos(K, u + e, v, s.m), Pv = this.pos(K, u, v + e, s.m);
+    const ru = Pu.map((c, i) => (c - P0[i]) / e), rv = Pv.map((c, i) => (c - P0[i]) / e), N = [ru[1] * rv[2] - ru[2] * rv[1], ru[2] * rv[0] - ru[0] * rv[2], ru[0] * rv[1] - ru[1] * rv[0]];
+    const A = ru.map((c, i) => P0[i] + c * du), B = rv.map((c, i) => P0[i] + c * dv), Nl = Math.hypot(...N) || 1, Nn = N.map((c, i) => P0[i] + c / Nl * .95);
+    o += vzArrow3(cam, P0, A, "R", 2.6) + vzArrow3(cam, P0, B, "I", 2.6) + vzArrow3(cam, P0, Nn, "O", 2.6);
+    const past = (to, html, col, gap) => { const a = cam(P0[0], P0[1], P0[2]), b = cam(to[0], to[1], to[2]), L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return vzLabel(b[0] + (b[0] - a[0]) / L * gap, b[1] + (b[1] - a[1]) / L * gap + 5, html, col, 16); };
+    const sub = (x, y) => `<tspan font-weight="700">r</tspan><tspan baseline-shift="sub" font-size="12">${x}</tspan>${y || ""}`;
+    o += past(A, sub("u", "Δu"), VZ.red, 26) + past(B, sub("v", "Δv"), VZ.ink, 26) + past(Nn, sub("u") + " × " + sub("v"), "#8A6A12", 30);
+    o += vzKey([["fill", VZ.red, "one small (u, v) cell"], ["line", VZ.gold, "the normal"]]);
+    return o;
+  },
+  readout(s) {
+    const K = this.K(s), n = 12, m = 8, iu = Math.min(n - 1, Math.floor(s.u0 * n)), jv = Math.min(m - 1, Math.floor(s.v0 * m));
+    const du = (K.U[1] - K.U[0]) / n, dv = (K.V[1] - K.V[0]) / m, u = K.U[0] + iu * du, v = K.V[0] + jv * dv, e = 1e-5, p = K.r(u, v);
+    const ru = K.r(u + e, v).map((c, i) => (c - p[i]) / e), rv = K.r(u, v + e).map((c, i) => (c - p[i]) / e);
+    const N = Math.hypot(ru[1] * rv[2] - ru[2] * rv[1], ru[2] * rv[0] - ru[0] * rv[2], ru[0] * rv[1] - ru[1] * rv[0]);
+    return `<div class="vz-eq">${K.name}</div>
+      <div class="vz-eq">at this patch ‖<b>r</b><sub>u</sub> × <b>r</b><sub>v</sub>‖ = <b>${vzNum(N)}</b></div>
+      <div class="vz-eq">patch area ≈ ${vzNum(N)} × Δu Δv = ${vzNum(N * du * dv, 3)}</div>
+      <div class="vz-status ok">Adding up ‖r<sub>u</sub> × r<sub>v</sub>‖ Δu Δv over every cell gives the surface area: dS = ‖r<sub>u</sub> × r<sub>v</sub>‖ du dv.</div>`;
+  },
+});
+
+/* ---------- Flux through a surface ---------- */
+vzAdd({
+  id: "flux", title: "Flux through a surface", card: "Flux",
+  tagline: "How much of the flow passes through a surface.",
+  blurb: "A steady upward flow \\(\\mathbf F\\) passes through a square of area \\(A\\) with unit normal \\(\\mathbf n\\). The flux is \\(\\mathbf F\\cdot\\mathbf n\\,A\\): tilt the square and less flow gets through.",
+  tryIt: "Tilt the square to 90°: the flow slides along it and the flux is 0. Past 90° it goes through the back side, so the flux is negative.",
+  state: { tilt: 25, k: 1, yaw: -32 },
+  animate: true,
+  controls: [
+    { k: "tilt", label: "tilt of the square", min: 0, max: 180, step: 1, unit: "°", digits: 0, play: 30, aria: "the tilt" },
+    { k: "k", label: "strength of F", min: .2, max: 1.5, step: .05, fmt: v => vzNum(v, 2), noPlay: true },
+    { k: "yaw", label: "turn the view", min: -80, max: 20, step: 1, unit: "°", digits: 0, noPlay: true },
+  ],
+  cam(s) { return vzCam(300, 262, 72, vzRad(s.yaw), .38); },
+  geo(s) { const a = vzRad(s.tilt), n = [0, -Math.sin(a), Math.cos(a)], e1 = [1, 0, 0], e2 = [0, Math.cos(a), Math.sin(a)]; return { a, n, e1, e2, h: 1.1 }; },
+  draw(s) {
+    const cam = this.cam(s), G = this.geo(s), h = G.h, c = (p, q) => [p * G.e1[0] + q * G.e2[0], p * G.e1[1] + q * G.e2[1], p * G.e1[2] + q * G.e2[2]];
+    const sq = [c(-h, -h), c(h, -h), c(h, h), c(-h, h), c(-h, -h)], shadow = sq.map(p => [p[0], p[1], -1.7]);
+    let o = vzPath3(cam, shadow, `stroke="${VZ.gold}" stroke-width="1.6" stroke-dasharray="5 4" fill="${VZ.gold}" fill-opacity=".14"`);
+    sq.slice(0, 4).forEach(p => { o += vzPath3(cam, [p, [p[0], p[1], -1.7]], `stroke="${VZ.gold}" stroke-width="1" stroke-dasharray="2 4" opacity=".6"`); });
+    o += vzPath3(cam, sq, `stroke="${VZ.red}" stroke-width="2.2" fill="${VZ.red}" fill-opacity="${G.n[2] >= 0 ? .2 : .1}"`);
+    o += vzArrow3(cam, [0, 0, 0], G.n.map(v => v * 1.2), "I", 2.6) + vzLab3(cam, G.n.map(v => v * 1.42), "<tspan font-weight=\"700\">n</tspan>", VZ.ink, 0, 5, 17);
+    o += vzLab3(cam, [1.9, -1.9, -1.7], "shadow: area A cos θ", "#7A5C0F", 0, 22, 14);
+    o += vzKey([["line", VZ.grey, "flow F (upward)"], ["fill", VZ.red, "the square"], ["dash", VZ.gold, "its shadow"]]);
+    return o;
+  },
+  frame(g, s, t) {                                       // the flow: streaks rising; those crossing the square turn red
+    if (!g) return "";
+    const cam = this.cam(s), G = this.geo(s), h = G.h, out = [];
+    for (let i = 0; i < 64; i++) {
+      const hsh = k => { const v = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return v - Math.floor(v); };
+      const x = -1.9 + 3.8 * hsh(1), y = -1.9 + 3.8 * hsh(2), ph = hsh(3), z = -1.7 + ((t * .55 * s.k + ph) % 1) * 3.6;
+      // does this streak's vertical line pass through the square?
+      const den = G.n[2]; let through = false;
+      if (Math.abs(den) > 1e-6) { const zc = -(G.n[0] * x + G.n[1] * y) / den, w1 = x, w2 = y * G.e2[1] + zc * G.e2[2]; through = Math.abs(w1) <= h && Math.abs(w2) <= h; }
+      const A = cam(x, y, z), B = cam(x, y, z + .32), col = through ? VZ.red : VZ.grey;
+      out.push(`<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${col}" stroke-width="${through ? 2.2 : 1.5}" stroke-linecap="round" opacity="${through ? .9 : .45}"/>`);
+    }
+    g.innerHTML = out.join("");
+    return "";
+  },
+  readout(s) {
+    const G = this.geo(s), A = (2 * G.h) ** 2, flux = s.k * G.n[2] * A;
+    return `<div class="vz-eq">F = (0, 0, ${vzNum(s.k, 2)}), square area A = ${vzNum(A, 2)}</div>
+      <div class="vz-eq">F · n = ${vzNum(s.k, 2)} cos ${Math.round(s.tilt)}° = ${vzNum(s.k * G.n[2])}</div>
+      <div class="vz-eq">flux = F · n A = <b>${vzNum(flux)}</b></div>
+      <div class="vz-status ${Math.abs(flux) < .01 ? "warn" : "ok"}">${Math.abs(flux) < .01 ? "Edge-on: the flow slides along the square, so nothing passes through." : flux < 0 ? "The normal points down now, against the flow, so the flux is negative." : "The flux equals the flow strength times the area of the square's shadow on the floor."}</div>`;
+  },
+});
+
+/* ---------- Stokes' theorem: same edge, same answer ---------- */
+vzAdd({
+  id: "stokes", title: "Stokes' theorem", card: "Stokes' theorem",
+  tagline: "Any surface with the same edge gives the same answer.",
+  blurb: "Stokes' theorem: \\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_S(\\nabla\\times\\mathbf F)\\cdot\\mathbf n\\,dS\\). Raise or sink the surface: as long as its edge stays the circle \\(C\\), the flux of the curl doesn't change.",
+  tryIt: "Play the height from a bowl through a flat disk to a dome: the surface changes, both numbers stay put.",
+  state: { h: 1.2, yaw: -32 },
+  controls: [
+    { k: "h", label: "height of the surface", min: -1.4, max: 1.8, step: .02, fmt: v => vzNum(v, 2), play: .9, aria: "the height" },
+    { k: "yaw", label: "turn the view", min: -80, max: 20, step: 1, unit: "°", digits: 0, noPlay: true },
+  ],
+  R: 1.6,
+  draw(s) {
+    const R = this.R, cam = vzCam(300, 262, 92, vzRad(s.yaw), .46), z = r => s.h * (1 - (r / R) ** 2), n = 10, m = 32, grid = [];
+    for (let i = 0; i <= n; i++) { const row = []; for (let j = 0; j <= m; j++) { const r = R * i / n, th = 2 * Math.PI * j / m; row.push([r * Math.cos(th), r * Math.sin(th), z(r)]); } grid.push(row); }
+    let o = "";
+    const qs = vzQuads(cam, grid, (i) => vzMix([250, 236, 232], [224, 120, 136], .25 + .5 * (1 - i / n)));
+    o += vzQuadSvg(qs, { op: .9, mesh: .8 });
+    // upward normals at a few points, and the curl (0, 0, 2) beside them
+    [[0, 0], [.9, 0], [-.45, .78], [-.45, -.78]].forEach(([x, y]) => {
+      const r = Math.hypot(x, y), zz = z(r), gx = -2 * s.h * x / (R * R), gy = -2 * s.h * y / (R * R), N = [-gx, -gy, 1], L = Math.hypot(...N);
+      o += vzArrow3(cam, [x, y, zz], [x + N[0] / L * .7, y + N[1] / L * .7, zz + N[2] / L * .7], "O", 2);
+    });
+    // the edge C, counterclockwise from above
+    const C = []; for (let j = 0; j <= 72; j++) { const th = 2 * Math.PI * j / 72; C.push([R * Math.cos(th), R * Math.sin(th), 0]); }
+    o += vzPath3(cam, C, `stroke="${VZ.red}" stroke-width="3"`);
+    [.1, .6].forEach(f => { const a = 2 * Math.PI * f, b = a + .12; o += vzArrow3(cam, [R * Math.cos(a), R * Math.sin(a), 0], [R * Math.cos(b), R * Math.sin(b), 0], "R", 3); });
+    o += vzLab3(cam, [R * Math.cos(-.5), R * Math.sin(-.5), 0], "C", VZ.red, 16, 16, 18) + vzLab3(cam, [0, -R * .45, z(R * .45)], "S", VZ.deep, -24, 0, 18);
+    o += vzKey([["line", VZ.red, "the edge C (fixed)"], ["line", VZ.gold, "normals n"], ["fill", VZ.red, "the surface S"]]);
+    return o;
+  },
+  readout(s) {
+    // F = (−y, x, 0), curl F = (0, 0, 2). Flux of the curl, summed patch by patch (exactly 2·πR² for any height)
+    const R = this.R, n = 40, m = 80; let flux = 0;
+    for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) { const r = R * (i + .5) / n, dr = R / n, dth = 2 * Math.PI / m; flux += 2 * r * dr * dth; }   // curl·(r_r × r_θ) = 2r for a graph
+    const circ = 2 * Math.PI * R * R;
+    return `<div class="vz-eq">F = (−y, x, 0), so ∇ × F = (0, 0, 2)</div>
+      <div class="vz-eq">∮<sub>C</sub> F · dr = 2π·${vzNum(R, 1)}² = <b>${vzNum(circ)}</b></div>
+      <div class="vz-eq">∬<sub>S</sub> (∇ × F) · n dS = <b>${vzNum(flux)}</b></div>
+      <div class="vz-status ok">${Math.abs(s.h) < .05 ? "A flat disk: the curl points straight through it." : s.h > 0 ? "A dome: the normals tilt and the surface is bigger, and the two effects cancel exactly." : "A bowl: same edge, same answer."} Only the edge matters.</div>`;
+  },
+});
+
+// one short line for each card in the index
+const VZ_TAGLINE = {
+  systems: "Two lines meet once, never, or everywhere.", projection: "The shadow of one vector on another.",
+  cross: "Perpendicular to both; as long as their area.", eigen: "Directions a matrix only stretches.",
+  powers: "Repeated multiplication lines up with the biggest eigenvalue.", curves: "Velocity and acceleration along a path.",
+  gradient: "The direction of steepest climb.", critical: "Minimum, maximum, or saddle.", fields: "Spreading out and spinning around.",
+  work: "The work a field does along a path.", riemann: "Boxes that add up to a double integral.", polar: "Why dA = r dr dθ.",
+};
+VZ_LIST.forEach(v => { v.group = VZ_GROUPS.find(g => VZ_GROUP_OF[g].includes(v.id)) || v.group; v.tagline = v.tagline || VZ_TAGLINE[v.id]; });
+VZ_LIST.sort((a, b) => (VZ_ORDER.indexOf(a.id) + 1 || 999) - (VZ_ORDER.indexOf(b.id) + 1 || 999));
 
 
 /* ============================================================
@@ -14260,59 +15007,61 @@ async function loadSiteUsage() {
 function renderUsage(d) {
   const box = $("#walkUsageStats"), charts = $("#walkUsageCharts");
   const probs = [...State.problemsById.values()], views = probs.reduce((t, p) => t + (d.per[p.id] || 0), 0), opened = probs.filter(p => d.per[p.id] > 0).length;
-  const stat = (n, label) => '<div class="wu-stat"><span class="wu-num">' + escapeHtml(typeof n === "number" ? n.toLocaleString() : n) + '</span><span class="wu-lab">' + label + '</span></div>';
-  box.innerHTML = stat(d.home, "home page visits") + stat(views, "problem views") + stat(opened + " / " + probs.length, "problems opened") + (d.qr ? stat(d.qr, "arrivals via the SI QR code") : "");
+  const wk = d.weekly || [], wkOk = wk.length > 1 && wk.every(v => v != null) && wk.reduce((a, b) => a + b, 0) <= d.home;
+  const fmt = t => new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric" }), N = v => Number(v || 0).toLocaleString();
+  // the headline numbers
+  const tile = (num, label, sub, extra) => `<div class="wu-tile"><span class="wu-num">${num}</span><span class="wu-lab">${label}</span>${sub ? `<span class="wu-sub">${sub}</span>` : ""}${extra || ""}</div>`;
+  const pct = probs.length ? Math.round(100 * opened / probs.length) : 0;
+  box.innerHTML =
+    tile(N(d.home), "home page visits", wkOk ? `${N(wk[wk.length - 1])} this week · ${N(wk[wk.length - 2])} last week` : "") +
+    tile(N(views), "problem views", opened ? `${(views / opened).toFixed(1)} views per opened problem` : "") +
+    tile(`${opened}<small> / ${probs.length}</small>`, "problems opened at least once", `${pct}% of the problem bank`, `<span class="wu-meter" aria-hidden="true"><i style="width:${pct}%"></i></span>`) +
+    tile(N(d.qr), "arrivals via the SI QR code", "scans of the code on the slides or board");
   box.hidden = false;
-  // chart 1: home page visits per week (hidden if the feed ignored the date range)
-  const wk = d.weekly || [], wkOk = wk.length && wk.every(v => v != null) && wk.reduce((a, b) => a + b, 0) <= d.home;
-  const fmt = t => new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const panel = (title, desc, body, wide) => `<section class="wu-panel${wide ? " wide" : ""}"><h4>${title}</h4><p class="wu-desc">${desc}</p>${body}</section>`;
+  const hit = (x, y, w, h, tip) => `<rect class="bar-hit" x="${x}" y="${y}" width="${w}" height="${h}" data-tip="${escapeHtml(tip)}" tabindex="0"><title>${escapeHtml(tip)}</title></rect>`;
+  const hbar = (x, y, w, h) => { const r = Math.min(4, w / 2, h / 2); return w ? `<path class="bar" d="M${x} ${y}H${x + w - r}Q${x + w} ${y} ${x + w} ${y + r}V${y + h - r}Q${x + w} ${y + h} ${x + w - r} ${y + h}H${x}Z"/>` : ""; };
+  // 1. home page visits per week: every bar labelled; the current week is still filling in
   let c1 = "";
   if (wkOk) {
-    const W = 320, H = 150, L = 4, B = 22, top = 16, max = Math.max(1, ...wk), bw = (W - L) / wk.length, bar = bw - 6;
-    c1 = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Home page visits per week, last eight weeks">` +
-      `<line x1="${L}" y1="${H - B}" x2="${W}" y2="${H - B}" stroke="var(--border-strong)" stroke-width="1"/>` +
-      wk.map((v, i) => {
-        const h = v ? Math.max(3, (H - B - top) * v / max) : 0, x = L + i * bw + 3, y = H - B - h, r = Math.min(4, h / 2, bar / 2);
-        const path = h ? `M${x} ${H - B}V${y + r}Q${x} ${y} ${x + r} ${y}H${x + bar - r}Q${x + bar} ${y} ${x + bar} ${y + r}V${H - B}Z` : "";
-        const tip = `Week of ${fmt(d.weeks[i])}: ${v} visit${v === 1 ? "" : "s"}`;
-        return `<g><rect class="bar-hit" x="${x - 3}" y="${top - 6}" width="${bw}" height="${H - B - top + 6}" data-tip="${escapeHtml(tip)}" tabindex="0"><title>${escapeHtml(tip)}</title></rect>` +
-          (path ? `<path class="bar" d="${path}"/>` : "") +
-          ((v === max || i === wk.length - 1) && v ? `<text class="val" x="${x + bar / 2}" y="${y - 5}" text-anchor="middle">${v}</text>` : "") +
-          (i % 2 === 0 || i === wk.length - 1 ? `<text x="${x + bar / 2}" y="${H - 6}" text-anchor="middle">${escapeHtml(fmt(d.weeks[i]))}</text>` : "") + `</g>`;
-      }).join("") + `</svg>`;
-    c1 = `<div class="wu-chart"><h4>Home page visits per week</h4>${c1}</div>`;
+    const W = 440, H = 190, L = 30, B = 26, top = 22, max = Math.max(1, ...wk), step = max <= 5 ? 1 : max <= 20 ? 5 : max <= 50 ? 10 : max <= 100 ? 25 : 50, ymax = Math.ceil(max / step) * step;
+    const y = v => H - B - (H - B - top) * v / ymax, bw = (W - L) / wk.length, bar = Math.min(34, bw - 10);
+    let g = "";
+    for (let v = 0; v <= ymax; v += step) g += `<line class="grid" x1="${L}" x2="${W}" y1="${q2(y(v))}" y2="${q2(y(v))}"/><text class="axis" x="${L - 6}" y="${q2(y(v)) + 3.5}" text-anchor="end">${v}</text>`;
+    c1 = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Home page visits per week, last ${wk.length} weeks">${g}` + wk.map((v, i) => {
+      const x = L + i * bw + (bw - bar) / 2, h = v ? Math.max(3, H - B - y(v)) : 0, yy = H - B - h, r = Math.min(4, h / 2, bar / 2), now = i === wk.length - 1;
+      const path = h ? `<path class="bar${now ? " now" : ""}" d="M${q2(x)} ${H - B}V${q2(yy + r)}Q${q2(x)} ${q2(yy)} ${q2(x + r)} ${q2(yy)}H${q2(x + bar - r)}Q${q2(x + bar)} ${q2(yy)} ${q2(x + bar)} ${q2(yy + r)}V${H - B}Z"/>` : "";
+      const tip = `Week of ${fmt(d.weeks[i])}: ${v} visit${v === 1 ? "" : "s"}${now ? " so far" : ""}`;
+      return `<g>${hit(q2(L + i * bw), top - 8, q2(bw), H - B - top + 8, tip)}${path}<text class="val" x="${q2(x + bar / 2)}" y="${q2(yy - 6)}" text-anchor="middle">${v}</text>` +
+        `<text class="axis" x="${q2(x + bar / 2)}" y="${H - 8}" text-anchor="middle">${now ? "this wk" : escapeHtml(fmt(d.weeks[i]))}</text></g>`;
+    }).join("") + `<line class="base" x1="${L}" x2="${W}" y1="${H - B}" y2="${H - B}"/></svg>`;
+    c1 = panel("Home page visits per week", `Last ${wk.length} weeks, Monday to Sunday. The lighter bar is this week, still filling in.`, c1, true);
   }
-  // chart 2: problem views by section
-  const secs = State.sectionsData.map(sec => ({ n: sec.pos, v: probs.filter(p => p.sectionPos === sec.pos).reduce((t, p) => t + (d.per[p.id] || 0), 0) }));
-  const mx = Math.max(1, ...secs.map(x => x.v)), rowH = 13, W2 = 320, lab = 26, valW = 30;
-  const c2 = `<div class="wu-chart"><h4>Problem views by section</h4><svg viewBox="0 0 ${W2} ${secs.length * rowH + 4}" role="img" aria-label="Problem views by section">` +
-    secs.map((x, i) => {
-      const y = 2 + i * rowH, w = x.v ? Math.max(3, (W2 - lab - valW) * x.v / mx) : 0, h = rowH - 4, r = Math.min(4, w / 2, h / 2);
-      const tip = `Section ${x.n}: ${x.v} view${x.v === 1 ? "" : "s"}`;
-      return `<g><rect class="bar-hit" x="0" y="${y - 1}" width="${W2}" height="${rowH}" data-tip="${escapeHtml(tip)}" tabindex="0"><title>${escapeHtml(tip)}</title></rect>` +
-        (w ? `<path class="bar" d="M${lab} ${y}H${lab + w - r}Q${lab + w} ${y} ${lab + w} ${y + r}V${y + h - r}Q${lab + w} ${y + h} ${lab + w - r} ${y + h}H${lab}Z"/>` : "") +
-        `<text x="${lab - 7}" y="${y + h - 1.5}" text-anchor="end">${String(x.n).padStart(2, "0")}</text>` +
-        `<text class="val" x="${lab + w + 5}" y="${y + h - 1.5}">${x.v}</text></g>`;
-    }).join("") + `</svg></div>`;
-  // where students go: visits to each part of the site
-  let c4 = "";
+  // 2. where students go, largest first
+  let c2 = "";
   if (d.areas) {
     const [topics, sections, exam, runs, review, viz, walk] = d.areas;
-    const rows = [["Home", d.home], ["Topics", topics], ["Section pages", sections], ["Problems", views], ["Exam Mode", exam], ["Exam runs started", runs], ["Need Review", review], ["Visualize", viz], ["SI walkthroughs", walk]];
-    const mx4 = Math.max(1, ...rows.map(r => r[1])), rh = 13, W4 = 320, lw = 96, vw = 30;
-    c4 = `<div class="wu-chart"><h4>Where students go</h4><svg viewBox="0 0 ${W4} ${rows.length * rh + 4}" role="img" aria-label="Visits to each part of the site">` +
-      rows.map(([name, v], i) => {
-        const y = 2 + i * rh, w = v ? Math.max(3, (W4 - lw - vw) * v / mx4) : 0, h = rh - 4, r = Math.min(4, w / 2, h / 2), tip = `${name}: ${v} visit${v === 1 ? "" : "s"}`;
-        return `<g><rect class="bar-hit" x="0" y="${y - 1}" width="${W4}" height="${rh}" data-tip="${escapeHtml(tip)}" tabindex="0"><title>${escapeHtml(tip)}</title></rect>` +
-          (w ? `<path class="bar" d="M${lw} ${y}H${lw + w - r}Q${lw + w} ${y} ${lw + w} ${y + r}V${y + h - r}Q${lw + w} ${y + h} ${lw + w - r} ${y + h}H${lw}Z"/>` : "") +
-          `<text x="${lw - 7}" y="${y + h - 1.5}" text-anchor="end">${escapeHtml(name)}</text><text class="val" x="${lw + w + 5}" y="${y + h - 1.5}">${v}</text></g>`;
-      }).join("") + `</svg></div>`;
+    const rows = [["Problems", views], ["Home page", d.home], ["Section pages", sections], ["Practice (topics)", topics], ["Exam Mode", exam], ["Exam runs started", runs], ["Need Review", review], ["Visualize", viz], ["SI walkthroughs", walk]].sort((a, b) => b[1] - a[1]);
+    const mx = Math.max(1, ...rows.map(r => r[1])), rh = 22, W = 440, lw = 124, vw = 40;
+    c2 = panel("Where students go", "Page views in each part of the site.", `<svg viewBox="0 0 ${W} ${rows.length * rh}" role="img" aria-label="Page views in each part of the site">` + rows.map(([name, v], i) => {
+      const yy = i * rh + 4, w = v ? Math.max(3, (W - lw - vw) * v / mx) : 0, h = rh - 9;
+      return `<g>${hit(0, yy - 3, W, rh, `${name}: ${v} view${v === 1 ? "" : "s"}`)}${hbar(lw, yy, w, h)}<text class="axis lab" x="${lw - 8}" y="${yy + h - 2}" text-anchor="end">${escapeHtml(name)}</text><text class="val" x="${lw + w + 6}" y="${yy + h - 2}">${N(v)}</text></g>`;
+    }).join("") + `</svg>`);
   }
-  // most opened problems
-  const top = probs.filter(p => d.per[p.id] > 0).sort((a, b) => d.per[b.id] - d.per[a.id] || a.id.localeCompare(b.id)).slice(0, 5);
-  const c3 = top.length ? `<div class="wu-chart"><h4>Most opened problems</h4><ol class="wu-top">` + top.map(p =>
-    `<li><span class="id">${escapeHtml(p.id)}</span><a href="#/problem/${escapeHtml(p.id)}" data-route="/problem/${escapeHtml(p.id)}">${escapeHtml(p.title)}</a><span class="n">${d.per[p.id]}</span></li>`).join("") + `</ol></div>` : "";
-  charts.innerHTML = c1 + c2 + c4 + c3;
+  // 3. problem views by section, with the sections' names
+  const secs = State.sectionsData.map(sec => ({ n: sec.pos, name: String(sec.title || "").split(/,| and /)[0].trim(), v: probs.filter(p => p.sectionPos === sec.pos).reduce((t, p) => t + (d.per[p.id] || 0), 0) }));
+  const mx3 = Math.max(1, ...secs.map(x => x.v)), rh3 = 22, W3 = 440, lw3 = 170, vw3 = 40;
+  const c3 = panel("Problem views by section", "Which parts of the course students practice most.", `<svg viewBox="0 0 ${W3} ${secs.length * rh3}" role="img" aria-label="Problem views by section">` + secs.map((x, i) => {
+    const yy = i * rh3 + 4, w = x.v ? Math.max(3, (W3 - lw3 - vw3) * x.v / mx3) : 0, h = rh3 - 9;
+    return `<g>${hit(0, yy - 3, W3, rh3, `Section ${x.n}, ${x.name}: ${x.v} view${x.v === 1 ? "" : "s"}`)}${hbar(lw3, yy, w, h)}` +
+      `<text class="axis lab" x="${lw3 - 8}" y="${yy + h - 2}" text-anchor="end"><tspan class="num">${String(x.n).padStart(2, "0")}</tspan>  ${escapeHtml(x.name)}</text><text class="val" x="${lw3 + w + 6}" y="${yy + h - 2}">${N(x.v)}</text></g>`;
+  }).join("") + `</svg>`);
+  // 4. the most opened problems, ranked, with a small bar for each
+  const top = probs.filter(p => d.per[p.id] > 0).sort((a, b) => d.per[b.id] - d.per[a.id] || a.id.localeCompare(b.id)).slice(0, 6), tmax = top.length ? d.per[top[0].id] : 1;
+  const c4 = top.length ? panel("Most opened problems", "Click one to open it.", `<ol class="wu-top">` + top.map((p, i) =>
+    `<li><span class="rk">${i + 1}</span><span class="tt"><a href="#/problem/${escapeHtml(p.id)}" data-route="/problem/${escapeHtml(p.id)}">${escapeHtml(p.title)}</a><span class="id">${escapeHtml(p.id)}</span></span>` +
+    `<span class="mb" aria-hidden="true"><i style="width:${Math.max(6, 100 * d.per[p.id] / tmax)}%"></i></span><span class="n">${d.per[p.id]}</span></li>`).join("") + `</ol>`) : "";
+  charts.innerHTML = c1 + c2 + c3 + c4;
   charts.hidden = false;
   typesetMath(charts);                                         // some problem titles carry math
   // one small tooltip for every bar
