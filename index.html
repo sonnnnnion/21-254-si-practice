@@ -3874,6 +3874,15 @@
       background: linear-gradient(var(--bg) calc(100% - 14px), rgba(251, 248, 244, 0)); }
   }
   .vz-nw { white-space: nowrap; }
+  /* stacked fractions and small notes inside the readouts (the full worked equations) */
+  .vz-fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 2px; font-size: .9em; line-height: 1.25; }
+  .vz-fr > span:first-child { border-bottom: 1px solid currentColor; padding: 0 3px 1px; }
+  .vz-fr > span:last-child { padding: 1px 3px 0; }
+  .vz-tag { display: inline-block; font: 600 10.5px var(--font-sans); letter-spacing: .02em; color: var(--ink-mute); background: var(--surface-2); border: 1px solid var(--border); border-radius: 99px; padding: 0 7px; vertical-align: 2px; }
+  .vz-approx { color: var(--ink-mute); font-weight: 400; }
+  .vz-eq.vz-small { font-size: 13.5px; line-height: 1.9; }
+  .vz-readout .vz-dim { opacity: .28; transition: opacity .45s ease; }
+  .vz-readout .vz-eq, .vz-readout .vz-status { transition: opacity .45s ease; }
   /* previous / next beside the crumb; report link at the foot of the panel */
   .vz-steps-nav { display: inline-flex; gap: 4px; }
   @media (max-width: 640px) { .vz-full { display: none; } }
@@ -3887,7 +3896,7 @@
   .vz-mx { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 4px 10px; margin: 0 0 12px; }
   .vz-mx-name { font-family: var(--font-display); font-style: italic; font-size: 17px; }
   .vz-mx-grid { display: grid !important; grid-template-columns: repeat(2, 62px); gap: 4px 6px; padding: 3px 9px; }
-  .vz-mx-grid input { width: 62px; height: 30px; box-sizing: border-box; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); text-align: center;
+  .vz-mx-grid input { width: 100%; height: 30px; box-sizing: border-box; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); text-align: center;
     font: 600 14px var(--font-mono); color: var(--ink); padding: 0 4px; -moz-appearance: textfield; }
   .vz-mx-grid input:focus { outline: none; border-color: var(--red); background: #fff; box-shadow: 0 0 0 3px var(--red-tint); }
   .vz-mx-grid input::-webkit-outer-spin-button, .vz-mx-grid input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -12181,10 +12190,10 @@ const VZ = { red: "#C8102E", deep: "#9A0B22", ink: "#1F2933", grey: "#6B7682", f
              tint: "#FCEFF1", soft: "#F7DEE2", paper: "#FBF8F4" };
 // The index is organized by idea; each picture belongs to one group (VZ_GROUP_OF), in VZ_ORDER.
 const VZ_GROUP_OF = {
-  "Methods, step by step": ["m-nullcol", "m-subspace", "m-span", "m-eigen", "m-complex", "m-inverse", "m-markov", "m-wire", "m-potential", "m-flux", "m-switch", "m-green", "m-extrema", "m-cylinder"],
+  "Methods, step by step": ["m-nullcol", "m-subspace", "m-span", "m-eigen", "m-complex", "m-inverse", "m-markov", "m-planedist", "m-wire", "m-potential", "m-flux", "m-switch", "m-green", "m-extrema", "m-cylinder"],
   "Vectors, span, and subspaces": ["vectors", "span", "independence", "coords", "subspace"],
   "Matrices as maps": ["matrix", "compose", "det", "nullcol", "systems"],
-  "Dot and cross products": ["projection", "cross"],
+  "Dot and cross products": ["projection", "projplane", "cross"],
   "Eigenvalues and eigenvectors": ["eigen", "powers"],
   "Curves": ["curves", "arclength"],
   "Functions of two variables": ["level", "partials", "chain", "gradient", "critical"],
@@ -12554,7 +12563,7 @@ function vzSwap(ghost = true) {
 function vzControlsHtml(def) {
   const st = def.state;
   return def.controls.map(c => {
-    if (c.type === "matrix") return `<div class="vz-mx" data-ctl="${c.k}"><span class="vz-mx-name">${c.label || "A ="}</span><span class="vz-brk vz-mx-grid">${c.keys.map(k =>
+    if (c.type === "matrix") return `<div class="vz-mx" data-ctl="${c.k}"><span class="vz-mx-name">${c.label || "A ="}</span><span class="vz-brk vz-mx-grid"${c.cols ? ` style="grid-template-columns:repeat(${c.cols}, 54px)"` : ""}>${c.keys.map(k =>
       `<input type="number" inputmode="decimal" id="vz-${k}" data-k="${k}" step="${c.step}" min="${c.min}" max="${c.max}" value="${vzMxText(st[k])}" aria-label="${escapeHtml(c.names ? c.names[c.keys.indexOf(k)] : k)}">`).join("")}</span>
       <span class="vz-mx-hint">${c.hint || "type or use the arrow keys"}</span></div>`;
     if (c.type === "toggle") return `<label class="vz-toggle" data-ctl="${c.k}"><input type="checkbox" role="switch" id="vz-${c.k}" data-k="${c.k}" ${st[c.k] ? "checked" : ""}><span class="vz-sw" aria-hidden="true"></span><span>${c.label}</span></label>`;
@@ -12843,56 +12852,249 @@ vzAdd({
   },
 });
 
-/* ---------- 4. Projection onto a line ---------- */
+/* ---------- 4. The dot product and projection onto a line (Lecture 16) ----------
+   What v · w measures: the signed length of v's shadow on the line of w (comp_w(v), a number), times |w|.
+   So the picture draws the shadow (proj_w(v), a vector), the part left over (v⊥, square to w), the signed
+   length as a brace, and v · w itself as a rectangle: sides |w| and comp_w(v). Swap the roles to see that
+   proj_w(v) and proj_v(w) are different vectors with the same dot product behind them. */
+// readout helpers in the course's notation: [a, b, c] vectors, stacked fractions, expanded dot products
+const vzVec = p => `<span class="vz-nw">[${p.map(vzShort).join(", ")}]</span>`;   // a vector never breaks across lines
+const vzFrac = (n, d) => `<span class="vz-fr"><span>${n}</span><span>${d}</span></span>`;
+const vzDotX = (a, b) => a.map((x, i) => `(${vzShort(x)})(${vzShort(b[i])})`).join(" + ");
+const vzSqX = a => a.map(x => `(${vzShort(x)})²`).join(" + ");
+const vzDot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
+// √(n) written exactly when it can be (√10, 3, 2√2), with a decimal beside it when it isn't whole
+function vzRoot(n2) {
+  const r = Math.sqrt(Math.max(0, n2)), k = Math.round(n2);
+  if (Math.abs(r - Math.round(r)) < 1e-9) return vzShort(Math.round(r));
+  if (Math.abs(n2 - k) < 1e-9) {
+    let out = 1, inn = k;
+    for (let f = 2; f * f <= inn; f++) while (inn % (f * f) === 0) { out *= f; inn /= f * f; }
+    return (out > 1 ? out : "") + "√" + inn + ` <span class="vz-approx">≈ ${vzNum(r)}</span>`;
+  }
+  return vzNum(r);
+}
+// subscripted names for SVG labels: proj_w(v), comp_w(v), v∥, v⊥
+const vzSub = (base, sub, after = "") => `${base}<tspan baseline-shift="sub" font-size="11">${sub}</tspan>${after ? `<tspan>${after}</tspan>` : ""}`;
+// v stored by direction and length (so Play can turn it), set from exact grid points so the numbers stay exact
+const vzPolarSt = (x, y) => ({ th: ((Math.atan2(y, x) * 180 / Math.PI) + 360) % 360, lv: Math.hypot(x, y) });
 vzAdd({
-  id: "projection", group: "More linear algebra", title: "Projection and the dot product",
-  blurb: "The shadow of \\(\\mathbf b\\) on the line through \\(\\mathbf u\\). Its signed length is \\(\\mathbf b\\cdot\\hat{\\mathbf u}\\), and what is left over is perpendicular.",
-  tryIt: "Drag the tip of \\(\\mathbf b\\), or press Play: it pauses where \\(\\mathbf b\\) is perpendicular to the line (no shadow) and where it lies along it. Drag the grey dot to turn the line.",
-  state: { tb: 58, lb: 2.4, tu: 12 },
+  id: "projection", group: "More linear algebra", title: "The dot product and projection", card: "Dot product and projection",
+  tagline: "v · w is the length of v's shadow on w, times |w|.",
+  blurb: "Only the part of \\(\\mathbf v\\) along \\(\\mathbf w\\) counts. Its signed length is \\(\\operatorname{comp}_{\\mathbf w}(\\mathbf v)=\\frac{\\mathbf v\\cdot\\mathbf w}{|\\mathbf w|}\\) (a number), the shadow itself is \\(\\operatorname{proj}_{\\mathbf w}(\\mathbf v)\\) (a vector), and \\(\\mathbf v\\cdot\\mathbf w=\\operatorname{comp}_{\\mathbf w}(\\mathbf v)\\,|\\mathbf w|\\).",
+  tryIt: "Drag v or w, or press Play to turn v: the shadow shrinks to nothing at 90° and points backwards past it. Then swap the roles: proj_v(w) is a different vector, but the dot product is the same.",
+  state: Object.assign({ wx: 3, wy: 1, role: 0 }, vzPolarSt(1, 3)),
   controls: [
-    { k: "tb", label: "direction of b", min: 0, max: 360, step: 1, unit: "°", digits: 0, play: 40, magnet: 3, rests: s => [0, 90, 180, 270].map(d => (s.tu + d) % 360) },
-    { k: "lb", label: "length of b", min: .4, max: 3.1, step: .05, noPlay: true },   // 3.1: b stays on the picture at every angle
+    { k: "th", label: "direction of v", min: 0, max: 360, step: 1, unit: "°", digits: 0, play: 40, magnet: 3, aria: "v",
+      rests: s => { const a = Math.atan2(s.wy, s.wx) * 180 / Math.PI; return [0, 90, 180, 270].map(d => ((a + d) % 360 + 360) % 360); } },
   ],
-  handles(s) { const P = vzPlane(300, 250, 62), b = [s.lb * Math.cos(vzRad(s.tb)), s.lb * Math.sin(vzRad(s.tb))], u = [3 * Math.cos(vzRad(s.tu)), 3 * Math.sin(vzRad(s.tu))]; return [{ k: "b", x: P.X(b[0]), y: P.Y(b[1]) }, { k: "line", x: P.X(u[0]), y: P.Y(u[1]) }]; },
+  presets: [["Acute", Object.assign({ wx: 3, wy: 1 }, vzPolarSt(1, 3))], ["Right angle", Object.assign({ wx: 3, wy: 1 }, vzPolarSt(-1, 3))],
+    ["Obtuse", Object.assign({ wx: 3, wy: 1 }, vzPolarSt(-2, 1))], ["Along w", Object.assign({ wx: 3, wy: 1 }, vzPolarSt(1.5, .5))]],
+  P: vzPlane(300, 228, 50),
+  lim: { x0: -5.6, x1: 5.6, y0: -4, y1: 4.2 },
+  maxLen: 4,                                             // v can turn all the way round and stay on the picture
+  v(s) { const r = c => Math.abs(c - Math.round(c * 4) / 4) < 1e-9 ? Math.round(c * 4) / 4 : c, l = Math.min(s.lv, this.maxLen); return [r(l * Math.cos(vzRad(s.th))), r(l * Math.sin(vzRad(s.th)))]; },   // grid points come back exact
+  w(s) { return [s.wx, s.wy]; },
+  handles(s) { const P = this.P, v = this.v(s); return [{ k: "v", x: P.X(v[0]), y: P.Y(v[1]) }, { k: "w", x: P.X(s.wx), y: P.Y(s.wy) }]; },
   dragTo(s, k, x, y, fine) {
-    const dx = (x - 300) / 62, dy = (250 - y) / 62, a = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
-    if (k === "line") { s.tu = fine ? a % 180 : Math.round(a % 180); return; }
-    const r = [0, 90, 180, 270].map(d => (s.tu + d) % 360).find(r => Math.abs(((a - r + 540) % 360) - 180) < 4);
-    s.tb = r != null ? r : fine ? a : Math.round(a); s.lb = vzClamp(fine ? Math.hypot(dx, dy) : vzSnap(Math.hypot(dx, dy), .05), .4, 3.1);
+    const P = this.P, L = this.lim;
+    let p = [vzClamp((x - P.cx) / P.u, L.x0, L.x1), vzClamp((P.cy - y) / P.u, L.y0, L.y1)];
+    const len = Math.hypot(...p);
+    if (len > this.maxLen) p = p.map(c => c * this.maxLen / len);
+    if (!fine) {                                          // let go: a grid point, still inside the limit
+      p = p.map(c => vzSnap(c, .5));
+      if (Math.hypot(...p) > this.maxLen + 1e-9) p = p.map(c => Math.sign(c) * Math.floor(Math.abs(c) * 2 + 1e-9) / 2);
+    }
+    if (Math.hypot(...p) < .5) { const an = Math.atan2(p[1], p[0]) || 0; p = fine ? [.5 * Math.cos(an), .5 * Math.sin(an)] : [vzSnap(Math.cos(an), .5) || .5, vzSnap(Math.sin(an), .5)]; }   // never the zero vector
+    if (k === "w") { s.wx = p[0]; s.wy = p[1]; return; }
+    s.th = ((Math.atan2(p[1], p[0]) * 180 / Math.PI) + 360) % 360; s.lv = Math.hypot(...p);
   },
-  presets: [["Acute", { tb: 58, tu: 12 }], ["Right angle", { tb: 102, tu: 12 }], ["Obtuse", { tb: 150, tu: 12 }]],
+  panelTop() { return `<div><div class="vz-ptop-k">Project</div><div class="vz-seg" role="group" aria-label="Which vector to project"><button type="button" data-role="0">v onto w</button><button type="button" data-role="1">w onto v</button></div></div>`; },
+  sync(s, panel) { panel && panel.querySelectorAll("[data-role]").forEach(b => b.classList.toggle("on", +b.dataset.role === s.role)); },
+  onClick(el, s) { const b = el.closest("[data-role]"); if (!b) return false; s.role = +b.dataset.role; return true; },
+  // a: the vector being projected, b: the one it is projected onto
   geo(s) {
-    const u = [Math.cos(vzRad(s.tu)), Math.sin(vzRad(s.tu))], b = [s.lb * Math.cos(vzRad(s.tb)), s.lb * Math.sin(vzRad(s.tb))];
-    const k = b[0] * u[0] + b[1] * u[1];
-    return { u, b, k, p: [k * u[0], k * u[1]] };
+    const v = this.v(s), w = this.w(s), a = s.role ? w : v, b = s.role ? v : w;
+    const ab = vzDot(a, b), bb = vzDot(b, b), lb = Math.sqrt(bb), comp = ab / lb, pr = [b[0] * ab / bb, b[1] * ab / bb], perp = [a[0] - pr[0], a[1] - pr[1]];
+    return { v, w, a, b, ab, bb, lb, comp, pr, perp, an: s.role ? "w" : "v", bn: s.role ? "v" : "w" };
   },
-  draw(s) {
-    const P = vzPlane(300, 250, 62), { u, b, k, p } = this.geo(s);
-    let o = P.axes(.18) + P.line([0, 0], u, `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="6 6"`);
-    const r = [b[0] - p[0], b[1] - p[1]], rl = Math.hypot(r[0], r[1]);
-    if (rl > .05) o += `<line x1="${q2(P.X(b[0]))}" y1="${q2(P.Y(b[1]))}" x2="${q2(P.X(p[0]))}" y2="${q2(P.Y(p[1]))}" stroke="${VZ.deep}" stroke-width="2.2" stroke-dasharray=".01 6" stroke-linecap="round"/>`;
-    if (rl > .3 && Math.abs(k) > .3) o += P.rightAngle(p, [r[0] / rl, r[1] / rl], [-Math.sign(k) * u[0], -Math.sign(k) * u[1]], .22);
-    // angle arc between u and b
-    const a0 = vzRad(s.tu), a1 = vzRad(s.tb); let da = ((a1 - a0) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-    let arc = ""; for (let i = 0; i <= 24; i++) { const t = a0 + da * i / 24; arc += (i ? "L" : "M") + q2(P.X(.55 * Math.cos(t))) + " " + q2(P.Y(.55 * Math.sin(t))); }
-    o += Math.abs(k) < .02 ? P.rightAngle([0, 0], u, [b[0] / s.lb, b[1] / s.lb], .3) : `<path d="${arc}" fill="none" stroke="${VZ.grey}" stroke-width="1.3"/>`;   // square to the line: a right-angle mark
-    o += vzLabel(P.X(.82 * Math.cos(a0 + da / 2)), P.Y(.82 * Math.sin(a0 + da / 2)) + 5, "θ", VZ.grey, 15);
-    o += P.arrow([0, 0], p, "R", 3.4) + P.arrow([0, 0], b, "I", 2.6);
-    const ul = [3 * u[0], 3 * u[1]];
-    o += vzGrip(P.X(b[0]), P.Y(b[1]), VZ.ink, VzView.hot === "b") + vzGrip(P.X(ul[0]), P.Y(ul[1]), VZ.grey, VzView.hot === "line") + P.dot(ul, 3.6, VZ.grey);
-    o += P.dot([0, 0], 3.6) + P.tip([0, 0], b, vzB("b"), VZ.ink);
-    // the line's name at its far end, and the shadow's name on the side away from b
-    const end = [u[0] * 3.3, u[1] * 3.3], side = Math.sign(u[0] * b[1] - u[1] * b[0]) || 1, nx = u[1] * side, ny = -u[0] * side;
-    o += vzLabel(vzClamp(P.X(end[0]) + nx * 18, 70, 530), vzClamp(P.Y(end[1]) - ny * 18 + 5, 24, 440), "line along " + vzB("û"), VZ.grey, 14);
-    if (Math.abs(k) > .35) o += vzLabel(P.X(p[0] / 2) + nx * 22, P.Y(p[1] / 2) - ny * 22 + 5, "proj", VZ.red, 15);
+  draw(s, t, thumb) {
+    const P = this.P, g = this.geo(s), { a, b, pr, perp, comp, lb } = g, ub = [b[0] / lb, b[1] / lb];
+    let o = P.axes(.16) + P.line([0, 0], b, `stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="6 6" opacity=".8"`);
+    // which side of the line a lies on: the brace goes on the other side
+    const side = Math.sign(ub[0] * a[1] - ub[1] * a[0]) || 1, nrm = [ub[1] * side, -ub[0] * side];   // points away from a
+    // the angle between them
+    const a0 = Math.atan2(b[1], b[0]), a1 = Math.atan2(a[1], a[0]); let da = ((a1 - a0) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+    const thDeg = Math.abs(da) * 180 / Math.PI, right = Math.abs(thDeg - 90) < .6;
+    if (right) o += P.rightAngle([0, 0], ub, [a[0] / Math.hypot(...a), a[1] / Math.hypot(...a)], .32);
+    else { let arc = ""; for (let i = 0; i <= 28; i++) { const tt = a0 + da * i / 28; arc += (i ? "L" : "M") + q2(P.X(.6 * Math.cos(tt))) + " " + q2(P.Y(.6 * Math.sin(tt))); }
+      o += `<path d="${arc}" fill="none" stroke="${VZ.grey}" stroke-width="1.3"/>` + vzLabel(P.X(.88 * Math.cos(a0 + da / 2)), P.Y(.88 * Math.sin(a0 + da / 2)) + 5, "θ", VZ.grey, 15); }
+    // the brace: comp, measured along the line from 0 to the foot of the drop
+    const pl = Math.hypot(...pr);
+    if (pl > .12) {
+      const off = .34, A = [nrm[0] * off, nrm[1] * off], B = [pr[0] + nrm[0] * off, pr[1] + nrm[1] * off], tick = .14;
+      o += `<path d="M${q2(P.X(A[0] - nrm[0] * tick))} ${q2(P.Y(A[1] - nrm[1] * tick))}L${q2(P.X(A[0]))} ${q2(P.Y(A[1]))}L${q2(P.X(B[0]))} ${q2(P.Y(B[1]))}L${q2(P.X(B[0] - nrm[0] * tick))} ${q2(P.Y(B[1] - nrm[1] * tick))}" fill="none" stroke="${VZ.gold}" stroke-width="2" stroke-linejoin="round"/>`;
+      const m = [(A[0] + B[0]) / 2 + nrm[0] * .42, (A[1] + B[1]) / 2 + nrm[1] * .42];
+      o += vzLabel(P.X(m[0]), P.Y(m[1]) + 5, `${vzSub("comp", g.bn)}(${g.an}) = ${vzNum(comp)}`, "#7A5C0F", 14);
+    }
+    // the part left over: from the foot of the drop up to a's tip, square to the line
+    const ql = Math.hypot(...perp);
+    if (ql > .06) {
+      o += `<line x1="${q2(P.X(pr[0]))}" y1="${q2(P.Y(pr[1]))}" x2="${q2(P.X(a[0]))}" y2="${q2(P.Y(a[1]))}" stroke="${VZ.deep}" stroke-width="2" stroke-dasharray="5 4"/>`;
+      if (pl > .3 && ql > .3) o += P.rightAngle(pr, [perp[0] / ql, perp[1] / ql], [-Math.sign(comp) * ub[0], -Math.sign(comp) * ub[1]], .2);
+      const mid = [(pr[0] + a[0]) / 2, (pr[1] + a[1]) / 2], away = [-nrm[0] * Math.sign(comp || 1), -nrm[1] * Math.sign(comp || 1)];
+      if (ql > .7) o += vzLabel(P.X(mid[0] + ub[0] * .38 * Math.sign(comp || 1)), P.Y(mid[1] + ub[1] * .38 * Math.sign(comp || 1)) + 5, vzB(g.an) + "<tspan>⊥</tspan>", VZ.deep, 15);
+    }
+    // the vectors
+    if (!thumb) o += vzGrip(P.X(g.v[0]), P.Y(g.v[1]), VZ.ink, VzView.hot === "v") + vzGrip(P.X(g.w[0]), P.Y(g.w[1]), VZ.red, VzView.hot === "w");
+    if (pl > .05) o += P.arrow([0, 0], pr, "O", 4.2);
+    o += P.arrow([0, 0], g.w, "R", 2.8) + P.arrow([0, 0], g.v, "I", 2.8) + P.dot([0, 0], 3.6);
+    o += vzTipLabels(P, [{ v: g.v, html: vzB("v"), col: VZ.ink }, { v: g.w, html: vzB("w"), col: VZ.red }]);
+    // the shadow's name: inside the right triangle (v, its shadow, the drop) when there is room, else past its tip
+    if (pl > .6 && ql > .3) {
+      const roomy = ql > .9 && pl > 1.2, at = roomy ? [pr[0] * .58 - nrm[0] * .36, pr[1] * .58 - nrm[1] * .36] : [pr[0] + ub[0] * Math.sign(comp) * .5 - nrm[0] * .3, pr[1] + ub[1] * Math.sign(comp) * .5 - nrm[1] * .3];
+      o += vzLabel(P.X(at[0]), P.Y(at[1]) + 5, vzSub("proj", g.bn, `(${g.an})`), "#7A5C0F", 15);
+    }
+    if (!thumb) {                                         // the card sits in whichever corner the arrows leave free
+      const W = 170, H = 168, corners = [[418, 268], [12, 12], [418, 12], [12, 240]], segs = [[[0, 0], g.v], [[0, 0], g.w], [[0, 0], pr], [pr, a]];
+      const hits = (x0, y0) => segs.some(([p, q]) => { for (let i = 0; i <= 20; i++) { const X = P.X(p[0] + (q[0] - p[0]) * i / 20), Y = P.Y(p[1] + (q[1] - p[1]) * i / 20); if (X > x0 - 14 && X < x0 + W + 14 && Y > y0 - 14 && Y < y0 + H + 14) return true; } return false; });
+      const want = this._corner != null && !hits(...corners[this._corner]) ? this._corner : Math.max(0, corners.findIndex(c => !hits(...c)));
+      this._corner = want;
+      const [cx, cy] = vzGlide("card@", corners[want], 30);
+      o += this.card(g, cx, cy);
+    }
+    o += vzKey([["line", VZ.ink, "v"], ["line", VZ.red, "w"], ["line", VZ.gold, "the shadow: proj"], ["dash", VZ.deep, "what's left: ⊥"]]);
+    return o;
+  },
+  // v · w as an area: a rectangle |b| wide and comp tall (below the line when comp is negative)
+  card(g, x0 = 418, y0 = 268) {
+    const W = 170, H = 168, k = Math.min(30, 118 / g.lb, 40 / Math.max(Math.abs(g.comp), .01));
+    const bx = x0 + 44, base = y0 + 92, rw = g.lb * k, rh = g.comp * k, neg = g.comp < -1e-9, zero = Math.abs(g.comp) < 1e-9;
+    let o = `<g class="vz-card-ins"><rect x="${x0}" y="${y0}" width="${W}" height="${H}" rx="12" fill="#FFFDF9" fill-opacity=".94" stroke="${VZ.ink}" stroke-opacity=".14"/>`;
+    o += `<text x="${x0 + 12}" y="${y0 + 20}" font-family="'Manrope', sans-serif" font-size="12" font-weight="700" fill="${VZ.ink}">${vzB(g.an)} · ${vzB(g.bn)} as an area</text>`;
+    o += `<text x="${x0 + 12}" y="${y0 + 37}" font-family="'Manrope', sans-serif" font-size="11" fill="${VZ.grey}">|${vzB(g.bn)}| × comp = ${vzNum(g.lb)} × ${vzNum(g.comp)}</text>`;
+    if (!zero) o += `<rect x="${q2(bx)}" y="${q2(neg ? base : base - rh)}" width="${q2(rw)}" height="${q2(Math.abs(rh))}" fill="${neg ? VZ.grey : VZ.red}" fill-opacity="${neg ? .16 : .14}" stroke="${neg ? VZ.grey : VZ.red}" stroke-opacity=".5" ${neg ? 'stroke-dasharray="4 3"' : ""}/>`;
+    o += `<line x1="${q2(bx)}" y1="${base}" x2="${q2(bx + rw)}" y2="${base}" stroke="${VZ.red}" stroke-width="3" stroke-linecap="round"/>`;
+    if (!zero) o += `<line x1="${q2(bx)}" y1="${base}" x2="${q2(bx)}" y2="${q2(base - rh)}" stroke="${VZ.gold}" stroke-width="3" stroke-linecap="round"/>`;
+    o += `<text x="${q2(bx + rw / 2)}" y="${neg ? base - 7 : base + 15}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="11" fill="${VZ.red}">|${vzB(g.bn)}|</text>`;
+    o += `<text x="${q2(bx - 5)}" y="${q2(base - rh / 2 + 4)}" text-anchor="end" font-family="'Manrope', sans-serif" font-size="11" fill="#7A5C0F">${zero ? "" : "comp"}</text>`;
+    o += `<text x="${x0 + W / 2}" y="${y0 + H - 10}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="12.5" font-weight="700" fill="${neg ? VZ.grey : zero ? VZ.ink : VZ.deep}">${vzB("v")} · ${vzB("w")} = ${vzShort(g.ab)}${neg ? " (negative)" : ""}</text></g>`;
     return o;
   },
   readout(s) {
-    const { k } = this.geo(s), th = Math.acos(vzClamp(k / s.lb, -1, 1)) * 180 / Math.PI;
-    return `<div class="vz-eq"><b>b</b> · <b>û</b> = |<b>b</b>| cos θ = ${vzNum(s.lb)} · cos ${vzNum(th, 0)}° = <b>${vzNum(k)}</b></div>
-      <div class="vz-eq">proj = (<b>b</b> · <b>û</b>) <b>û</b></div>
-      <div class="vz-status ${Math.abs(k) < .02 ? "warn" : "ok"}">${Math.abs(k) < .02 ? "b is perpendicular to the line: the shadow is zero."
-        : k < 0 ? "Angle over 90°: the dot product is negative, the shadow points against û." : "Angle under 90°: the shadow points along û."}</div>`;
+    const g = this.geo(s), { a, b, ab, bb, pr, perp, an, bn } = g, A = `<b>${an}</b>`, B = `<b>${bn}</b>`;
+    const lv = Math.hypot(...g.v), lw = Math.hypot(...g.w), cos = vzClamp(ab / (lv * lw), -1, 1), th = Math.acos(cos) * 180 / Math.PI;
+    const sub = (x, y) => `${x}<sub>${y}</sub>`;
+    return `<div class="vz-eq"><b>v</b> · <b>w</b> = ${vzDotX(g.v, g.w)} = <b>${vzShort(ab)}</b></div>
+      <div class="vz-eq">${sub("comp", B)}(${A}) = ${vzFrac(`${A} · ${B}`, `|${B}|`)} = ${vzFrac(vzShort(ab), vzRoot(bb).replace(/ <span.*$/, ""))} ${Math.abs(Math.sqrt(bb) - Math.round(Math.sqrt(bb))) > 1e-9 ? "≈ " : "= "}<b>${vzNum(ab / Math.sqrt(bb))}</b> <span class="vz-tag">a number</span></div>
+      <div class="vz-eq">${sub("proj", B)}(${A}) = ${vzFrac(`${A} · ${B}`, `${B} · ${B}`)} ${B} = ${vzFrac(vzShort(ab), vzShort(bb))} ${vzVec(b)} = <b>${vzVec(pr)}</b> <span class="vz-tag">a vector</span></div>
+      <div class="vz-eq">${A}<sub>⊥</sub> = ${A} − ${sub("proj", B)}(${A}) = <b>${vzVec(perp)}</b>, and ${A}<sub>⊥</sub> · ${B} = <b>${vzShort(Math.abs(vzDot(perp, b)) < 1e-9 ? 0 : vzDot(perp, b))}</b></div>
+      <div class="vz-status ${Math.abs(ab) < 1e-9 ? "warn" : "ok"}">${Math.abs(ab) < 1e-9 ? "v · w = 0: v and w are perpendicular, so the shadow is the zero vector."
+        : Math.hypot(...perp) < 1e-9 ? `${an} lies along ${bn}, so its shadow is ${an} itself: proj<sub>${bn}</sub>(${an}) = ${an} and nothing is left over.`
+        : `cos θ = ${vzFrac("<b>v</b> · <b>w</b>", "|<b>v</b>||<b>w</b>|")} = ${vzNum(cos, 3)}, so θ ≈ ${vzNum(th, 1)}°. ${ab > 0 ? "Under 90°: the dot product is positive and the shadow points along " + bn + "." : "Over 90°: the dot product is negative and the shadow points against " + bn + "."}`}</div>`;
+  },
+});
+
+/* ---------- 4b. Projection onto a plane in R³ (Lecture 16, Theorem 16.2) ----------
+   proj_W(v) = proj_w1(v) + proj_w2(v) when w1 ⊥ w2. Play builds it in order: the two shadows, their sum v∥
+   (the closest point of the plane), then v⊥ = v − v∥ straight out of the plane; |v⊥| is the distance.
+   The last plane uses a basis that is NOT orthogonal, to show the sum of shadows missing the right answer. */
+// planes through 0 that the default camera sees at a comfortable angle, each with an orthogonal basis
+const VZ_PLANES = [
+  { chip: "x + z = 0", eq: "x + z = 0", w1: [0, 1, 0], w2: [1, 0, -1], v: [3, 2, 1] },
+  { chip: "2x − y = 0", eq: "2x − y = 0", w1: [0, 0, 1], w2: [1, 2, 0], v: [3, 0, 2] },
+  { chip: "the xy-plane", eq: "z = 0", w1: [1, 0, 0], w2: [0, 1, 0], v: [1, 2, 2.5] },
+  { chip: "not orthogonal", eq: "z = 0", w1: [1, 0, 0], w2: [1, 1, 0], v: [1, 2, 2], bad: true },
+];
+vzAdd({
+  id: "projplane", group: "More linear algebra", title: "Projection onto a plane", card: "Projection onto a plane",
+  tagline: "Add the shadows on two orthogonal vectors; what's left is the distance.",
+  blurb: "With an orthogonal basis \\(\\{\\mathbf w_1,\\mathbf w_2\\}\\) of a plane \\(P\\), \\(\\mathbf v_\\parallel=\\operatorname{proj}_P(\\mathbf v)=\\operatorname{proj}_{\\mathbf w_1}(\\mathbf v)+\\operatorname{proj}_{\\mathbf w_2}(\\mathbf v)\\) is the closest point of \\(P\\), and \\(\\mathbf v_\\perp=\\mathbf v-\\mathbf v_\\parallel\\) is perpendicular to it. Its length is the distance from the point to \\(P\\).",
+  tryIt: "Press Play to build the projection piece by piece. Then type a new v, turn the view, or pick \"not orthogonal\": the shadows still add up, but to the wrong point.",
+  state: { pl: 0, vx: 3, vy: 2, vz: 1, build: 1, yaw: -35 },
+  thumb: { build: 1 },
+  controls: [
+    { k: "build", label: "build it", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .13, progress: true, aria: "the build",
+      rests: () => [.33, .53, .74], restMs: 900 },
+    { k: "v", type: "matrix", keys: ["vx", "vy", "vz"], cols: 3, label: "v =", names: ["v₁", "v₂", "v₃"], min: -3, max: 3, step: .5, hint: "type a vector" },
+    { k: "yaw", label: "turn the view", min: -120, max: 60, step: 1, unit: "°", digits: 0, noPlay: true },
+  ],
+  panelTop() { return `<div><div class="vz-ptop-k">The plane P</div><div class="vz-chips">${VZ_PLANES.map((p, i) => `<button type="button" class="vz-chip" data-pl="${i}">${escapeHtml(p.chip)}</button>`).join("")}</div></div>`; },
+  sync(s, panel) { panel && panel.querySelectorAll("[data-pl]").forEach(b => b.classList.toggle("on", +b.dataset.pl === s.pl)); },
+  onClick(el, s) { const b = el.closest("[data-pl]"); if (!b) return false; s.pl = +b.dataset.pl; s.build = 1; [s.vx, s.vy, s.vz] = VZ_PLANES[s.pl].v; return true; },   // each plane comes with its own example v
+  cam(s) { return vzCam(296, 236, 66, vzRad(s.yaw), .62); },
+  geo(s) {
+    const Pl = VZ_PLANES[Math.round(s.pl)] || VZ_PLANES[0], v = [s.vx, s.vy, s.vz], w1 = Pl.w1, w2 = Pl.w2;
+    const d1 = vzDot(v, w1), n1 = vzDot(w1, w1), d2 = vzDot(v, w2), n2 = vzDot(w2, w2);
+    const p1 = w1.map(c => c * d1 / n1), p2 = w2.map(c => c * d2 / n2), sum = p1.map((c, i) => c + p2[i]);
+    // the true projection (Gram-Schmidt), so the "not orthogonal" plane can show what the sum should have been
+    const u2r = w2.map((c, i) => c - w1[i] * vzDot(w2, w1) / n1), e2n = vzDot(u2r, u2r);
+    const tru = w1.map((c, i) => c * d1 / n1 + u2r[i] * vzDot(v, u2r) / e2n);
+    const perp = v.map((c, i) => c - sum[i]);
+    return { Pl, v, w1, w2, d1, n1, d2, n2, p1, p2, sum, tru, perp, bad: !!Pl.bad, u2r };
+  },
+  draw(s, t, thumb) {
+    const cam = this.cam(s), G = this.geo(s), u = s.build, E = (a, b) => vzEase(vzClamp((u - a) / (b - a), 0, 1));
+    const e1 = E(.1, .3), e2 = E(.36, .5), e3 = E(.56, .72), e4 = E(.77, .93), ePerp = E(.93, 1);
+    const pr = p => cam(p[0], p[1], p[2]), lerp = (a, b, k) => a.map((c, i) => c + (b[i] - c) * k), O = [0, 0, 0];
+    let o = vzAxes3(cam, 2.9, .26);
+    // the plane: a square patch on the plane through 0, spanned by the (made orthonormal) basis directions
+    const f1 = G.w1.map(c => c / Math.sqrt(G.n1)), f2 = G.u2r.map(c => c / Math.sqrt(vzDot(G.u2r, G.u2r))), R = 2.3;
+    const at = (i, j) => pr(f1.map((c, k) => c * i + f2[k] * j));
+    o += `<path d="M${[at(-R, -R), at(R, -R), at(R, R), at(-R, R)].map(q => q2(q[0]) + " " + q2(q[1])).join("L")}Z" fill="${VZ.gold}" fill-opacity=".13" stroke="${VZ.gold}" stroke-opacity=".6" stroke-width="1.4"/>`;
+    for (let g = -2; g <= 2; g++) if (g) o += `<path d="M${at(g, -R).map(q2).join(" ")}L${at(g, R).map(q2).join(" ")}M${at(-R, g).map(q2).join(" ")}L${at(R, g).map(q2).join(" ")}" stroke="${VZ.gold}" stroke-opacity=".22" fill="none"/>`;
+    const L0 = at(R * .78, -R * .9); o += vzLabel(L0[0], L0[1], "P", "#7A5C0F", 17);
+    // the basis
+    o += vzArrow3(cam, O, G.w1, "R", 2.4) + vzArrow3(cam, O, G.w2, "N", 2.4);
+    const tip3 = (p, html, col, gap = 18) => { const A = pr(O), B = pr(p), L = Math.hypot(B[0] - A[0], B[1] - A[1]) || 1; return vzLabel(B[0] + (B[0] - A[0]) / L * gap, B[1] + (B[1] - A[1]) / L * gap + 5, html, col, 15); };
+    const Os = pr(O), scr = { X: x => Os[0] + x, Y: y => Os[1] - y }, rel = p => { const q = pr(p); return [q[0] - Os[0], Os[1] - q[1]]; };
+    // the two shadows, each with a faint drop from v to its line while it is being made
+    const drop = (p, k) => k > 0 && k < 1 ? `<g opacity="${q2(Math.sin(Math.PI * k) * .8)}">${vzPath3(cam, [G.v, p], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="3 4"`)}</g>` : "";
+    o += drop(G.p1, e1) + drop(G.p2, e2);
+    if (e1 > 0 && Math.hypot(...G.p1) > .02) o += `<g opacity="${q2(1 - .55 * e3)}">${vzArrow3(cam, O, G.p1.map(c => c * e1), "R", 4)}</g>`;
+    if (e2 > 0 && Math.hypot(...G.p2) > .02) o += `<g opacity="${q2(1 - .55 * e3)}">${vzArrow3(cam, O, G.p2.map(c => c * e2), "N", 4)}</g>`;
+    // tip to tail: the second shadow slides to start where the first one ends, then their sum appears
+    if (e3 > 0) {
+      const st = lerp(O, G.p1, e3);
+      if (Math.hypot(...G.p2) > .02) o += vzPath3(cam, [st, st.map((c, i) => c + G.p2[i])], `stroke="${VZ.green}" stroke-width="2.4" stroke-dasharray="5 4" opacity=".85"`);
+      if (Math.hypot(...G.sum) > .02) o += `<g opacity="${q2(e3)}">${vzArrow3(cam, O, G.sum, "O", 4.4)}</g>`;
+    }
+    // v⊥: from v∥ straight out to v
+    if (e4 > 0 && Math.hypot(...G.perp) > .02) {
+      o += vzPath3(cam, [G.sum, lerp(G.sum, G.v, e4)], `stroke="${VZ.deep}" stroke-width="2.6" stroke-dasharray="6 4"`);
+      if (ePerp > .5 && !G.bad) {                           // the right angle where v⊥ meets the plane
+        const n = G.perp.map(c => c / Math.hypot(...G.perp)), m = f1, s1 = .32;
+        const a1 = G.sum.map((c, i) => c + n[i] * s1), a2 = a1.map((c, i) => c + m[i] * s1), a3 = G.sum.map((c, i) => c + m[i] * s1);
+        o += `<g opacity="${q2((ePerp - .5) * 2)}">${vzPath3(cam, [a1, a2, a3], `stroke="${VZ.deep}" stroke-width="1.3"`)}</g>`;
+      }
+    }
+    if (G.bad && e4 > .5) {                                 // where the projection really is
+      o += `<g opacity="${q2((e4 - .5) * 2)}">${vzPath3(cam, [G.v, G.tru], `stroke="${VZ.ink}" stroke-width="1.4" stroke-dasharray="2 4"`)}${vzDot3(cam, G.tru, 5, VZ.ink)}${tip3(G.tru, "true closest point", VZ.ink, 22)}</g>`;
+    }
+    // v on top, then every name at once, kept clear of each other
+    o += vzArrow3(cam, O, G.v, "I", 3) + vzDot3(cam, O, 3.5, VZ.ink);
+    o += vzTipLabels(scr, [{ v: rel(G.v), html: vzB("v"), col: VZ.ink }, { v: rel(G.w1), html: vzB("w", "1"), col: VZ.red }, { v: rel(G.w2), html: vzB("w", "2"), col: VZ.green }]
+      .concat(e3 > .9 && Math.hypot(...G.sum) > .3 ? [{ v: rel(G.sum), html: G.bad ? "sum of shadows" : vzB("v") + "<tspan>∥</tspan>", col: G.bad ? VZ.red : "#7A5C0F", gap: 22 }] : []));
+    if (u > .97 && Math.hypot(...G.perp) > .3) { const m = pr(G.sum.map((c, i) => (c + G.v[i]) / 2)); o += vzLabel(m[0] + 16, m[1] + 4, (G.bad ? "v − sum" : vzB("v") + "<tspan>⊥</tspan>"), VZ.deep, 15, "start"); }
+    o += vzKey([["line", VZ.red, "w₁, its shadow"], ["line", VZ.green, "w₂, its shadow"], ["line", VZ.gold, "v∥ in P"], ["dash", VZ.deep, "v⊥"]]);
+    return o;
+  },
+  readout(s) {
+    const G = this.geo(s), u = s.build, on = x => u >= x ? "" : " vz-dim", V = "<b>v</b>", W1 = "<b>w</b><sub>1</sub>", W2 = "<b>w</b><sub>2</sub>";
+    const pj = (W, w, d, n, p) => `${"proj"}<sub>${W}</sub>(${V}) = ${vzFrac(vzDotX(G.v, w), vzSqX(w))} ${vzVec(w)} = ${vzFrac(vzShort(d), vzShort(n))} ${vzVec(w)} = <b>${vzVec(p)}</b>`;
+    const ortho = vzDot(G.w1, G.w2), dist2 = vzDot(G.perp, G.perp);
+    return `<div class="vz-eq vz-small">${W1} = ${vzVec(G.w1)}, ${W2} = ${vzVec(G.w2)}: ${W1} · ${W2} = <b>${vzShort(ortho)}</b>${ortho ? " (not orthogonal!)" : ", orthogonal ✓"}</div>
+      <div class="vz-eq vz-small${on(.1)}">${pj("<b>w</b>₁", G.w1, G.d1, G.n1, G.p1)}</div>
+      <div class="vz-eq vz-small${on(.36)}">${pj("<b>w</b>₂", G.w2, G.d2, G.n2, G.p2)}</div>
+      ${G.bad ? `<div class="vz-eq${on(.56)}">sum of shadows = ${vzVec(G.p1)} + ${vzVec(G.p2)} = <b>${vzVec(G.sum)}</b> <span class="vz-tag">not proj<sub>P</sub>(v)</span></div>
+      <div class="vz-eq${on(.77)}">${V} − sum = <b>${vzVec(G.perp)}</b>, length ${vzRoot(dist2)}</div>
+      <div class="vz-eq${on(.93)}">true distance = |${V} − ${vzVec(G.tru)}| = <b>${vzRoot(vzDot(G.v.map((c, i) => c - G.tru[i]), G.v.map((c, i) => c - G.tru[i])))}</b></div>`
+      : `<div class="vz-eq${on(.56)}">${V}<sub>∥</sub> = proj<sub>P</sub>(${V}) = ${vzVec(G.p1)} + ${vzVec(G.p2)} = <b>${vzVec(G.sum)}</b></div>
+      <div class="vz-eq${on(.77)}">${V}<sub>⊥</sub> = ${V} − ${V}<sub>∥</sub> = ${vzVec(G.v)} − ${vzVec(G.sum)} = <b>${vzVec(G.perp)}</b></div>
+      <div class="vz-eq${on(.93)}">distance = |${V}<sub>⊥</sub>| = √(${vzSqX(G.perp)}) = <b>${vzRoot(dist2)}</b></div>`}
+      <div class="vz-status ${G.bad ? "warn" : "ok"}${on(.93)}">${G.bad
+        ? `${W1} · ${W2} = ${vzShort(ortho)} ≠ 0, so adding the shadows double-counts the overlap: v − sum is not perpendicular to P (it dots with ${W1} to ${vzShort(vzDot(G.perp, G.w1))}). The true closest point is ${vzVec(G.tru)}. Make the basis orthogonal first.`
+        : `Check: ${V}<sub>⊥</sub> · ${W1} = ${vzShort(vzDot(G.perp, G.w1))} and ${V}<sub>⊥</sub> · ${W2} = ${vzShort(vzDot(G.perp, G.w2))}, so ${V}<sub>⊥</sub> is perpendicular to the whole plane.`}</div>`;
   },
 });
 
@@ -15691,6 +15893,68 @@ stAdd({
 });
 
 /* ---------- Methods: vector calculus ---------- */
+stAdd({
+  id: "m-planedist", title: "Distance from a point to a plane, by projection", card: "Distance to a plane",
+  tagline: "Project onto the plane, subtract, take the length.",
+  blurb: "Split \\(\\mathbf v\\) into a part inside the plane and a part sticking straight out of it. The part inside is the sum of the shadows on two orthogonal vectors of the plane; the part outside is what's left, and its length is the distance.",
+  problem: "Find the distance from the point \\((2,1,3)\\) to the plane \\(x+y+z=0\\), and the point of the plane closest to it.",
+  picLive: true,
+  pic(k, b, u) {
+    const T = performance.now() / 1000, cam = vzCam(176, 246, 56, vzRad(-84 + 5 * Math.sin(T / 3.2)), .72);   // a slow sway, so it reads as 3-D
+    const pr = p => cam(p[0], p[1], p[2]), O = [0, 0, 0], v = [2, 1, 3], w1 = [1, -1, 0], w2 = [1, 1, -2];
+    const p1 = [.5, -.5, 0], p2 = [-.5, -.5, 1], par = [0, -1, 1], E = (a, d) => k > a ? 1 : k === a ? stEase(u, .3, d || 1.2) : 0;
+    let o = vzAxes3(cam, 2.6, .24);
+    // the plane x + y + z = 0, a square patch around 0
+    const f1 = w1.map(c => c / Math.SQRT2), f2 = w2.map(c => c / Math.sqrt(6)), R = 2.3, at = (i, j) => pr(f1.map((c, q) => c * i + f2[q] * j));
+    o += `<path d="M${[at(-R, -R), at(R, -R), at(R, R), at(-R, R)].map(q => q2(q[0]) + " " + q2(q[1])).join("L")}Z" fill="${VZ.gold}" fill-opacity=".13" stroke="${VZ.gold}" stroke-opacity=".6" stroke-width="1.3"/>`;
+    for (let g = -2; g <= 2; g++) if (g) o += `<path d="M${at(g, -R).map(q2).join(" ")}L${at(g, R).map(q2).join(" ")}M${at(-R, g).map(q2).join(" ")}L${at(R, g).map(q2).join(" ")}" stroke="${VZ.gold}" stroke-opacity=".2" fill="none"/>`;
+    const Lp = at(R * .8, R * .85); o += vzLabel(Lp[0], Lp[1], "x + y + z = 0", "#7A5C0F", 13);
+    const lab = (p, html, col, dx = 10, dy = -8) => { const q = pr(p); return vzLabel(q[0] + dx, q[1] + dy, html, col, 15, "start"); };
+    // the basis, then the two shadows (each with a faint drop from v while it is made), then their sum, then v⊥
+    const e1 = E(1), e2 = E(2), e3 = E(3), e4 = E(4), e5 = E(5);
+    if (e1) o += `<g opacity="${q2(e1)}">${vzArrow3(cam, O, w1, "R", 2.4)}${vzArrow3(cam, O, w2, "N", 2.4)}${lab(w1, vzB("w", "1"), VZ.red, 8, 16)}${lab(w2, vzB("w", "2"), VZ.green, 8, 14)}</g>`;
+    const drop = (p, e) => e > 0 && e < 1 ? `<g opacity="${q2(Math.sin(Math.PI * e) * .8)}">${vzPath3(cam, [v, p], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="3 4"`)}</g>` : "";
+    o += drop(p1, e2) + drop(p2, e3);
+    if (e2) o += `<g opacity="${q2(1 - .5 * e4)}">${vzArrow3(cam, O, p1.map(c => c * e2), "R", 4.2)}</g>`;
+    if (e3) o += `<g opacity="${q2(1 - .5 * e4)}">${vzArrow3(cam, O, p2.map(c => c * e3), "N", 4.2)}</g>`;
+    if (e4) {
+      const st = p1.map(c => c * e4);
+      o += vzPath3(cam, [st, st.map((c, i) => c + p2[i])], `stroke="${VZ.green}" stroke-width="2.2" stroke-dasharray="5 4" opacity=".8"`);
+      const Ps = pr(par), Vs = pr(v), aw = [Ps[0] - Vs[0], Ps[1] - Vs[1]], al = Math.hypot(...aw) || 1;   // its name goes on the side away from v
+      o += `<g opacity="${q2(e4)}">${vzArrow3(cam, O, par, "O", 4.4)}${vzDot3(cam, par, 4.5, VZ.gold)}${vzLabel(Ps[0] + aw[0] / al * 30, Ps[1] + aw[1] / al * 30 + 5, "(0, −1, 1)", "#7A5C0F", 14)}</g>`;
+    }
+    if (e5) {
+      const tip = par.map((c, i) => c + (v[i] - c) * e5);
+      o += vzPath3(cam, [par, tip], `stroke="${VZ.deep}" stroke-width="2.8" stroke-dasharray="6 4"`);
+      if (e5 > .8) { const n = [1, 1, 1].map(c => c / Math.sqrt(3)), s1 = .3, a1 = par.map((c, i) => c + n[i] * s1), a2 = a1.map((c, i) => c + f1[i] * s1), a3 = par.map((c, i) => c + f1[i] * s1);
+        o += vzPath3(cam, [a1, a2, a3], `stroke="${VZ.deep}" stroke-width="1.3"`); }
+      if (k >= 6) {                                        // beside v⊥, square to it on screen, on its upper side
+        const A = pr(par), B = pr(v), m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], d = [B[0] - A[0], B[1] - A[1]], L = Math.hypot(...d) || 1; let nx = d[1] / L, ny = -d[0] / L; if (ny > 0) { nx = -nx; ny = -ny; }
+        o += vzLabel(m[0] + nx * 22, m[1] + ny * 22 + 4, "|" + vzB("v") + "<tspan>⊥</tspan>| = 2√3", VZ.deep, 15);
+      }
+    }
+    o += vzArrow3(cam, O, v, "I", 3) + vzDot3(cam, O, 3.5, VZ.ink) + vzDot3(cam, v, 4.5, VZ.ink) + lab(v, "(2, 1, 3)", VZ.ink, 10, -6);
+    o += stNote(180, 446, ["v points from the plane's 0 to the point", "two orthogonal directions in the plane", "the shadow of v on w₁", "the shadow on w₂ points against it", "the shadows add up to the closest point", "v⊥ sticks straight out of the plane", "its length is the distance"][Math.max(0, k)], VZ.ink);
+    return o;
+  },
+  steps: [
+    { t: "Write the point as a vector", tex: ["\\mathbf v=[2,1,3]", "\\mathbf v=\\mathbf v_\\parallel+\\mathbf v_\\perp,\\qquad \\text{distance}=|\\mathbf v_\\perp|"],
+      why: "The plane goes through the origin, so the arrow from 0 to the point is \\(\\mathbf v\\). Its part inside the plane is \\(\\mathbf v_\\parallel\\); the part left over sticks straight out, and its length is the distance.", sum: "\\(\\mathbf v=[2,1,3]\\)" },
+    { t: "Two orthogonal vectors in the plane", tex: ["\\mathbf w_1=[1,-1,0]\\quad(1-1+0=0)", "\\mathbf w_2=[a,b,c]:\\quad a+b+c=0,\\ \\ a-b=0", "\\mathbf w_2=[1,1,-2],\\qquad \\mathbf w_1\\cdot\\mathbf w_2=1-1+0=0\\ \\checkmark"],
+      why: "Adding the shadows only works when the two vectors are orthogonal. Pick any \\(\\mathbf w_1\\) in the plane, then ask \\(\\mathbf w_2\\) to satisfy the plane's equation and \\(\\mathbf w_2\\cdot\\mathbf w_1=0\\).", sum: "\\(\\mathbf w_1=[1,-1,0],\\ \\mathbf w_2=[1,1,-2]\\)" },
+    { t: "The shadow on w₁", tex: ["\\operatorname{proj}_{\\mathbf w_1}(\\mathbf v)=\\frac{(2)(1)+(1)(-1)+(3)(0)}{(1)^2+(-1)^2+(0)^2}\\,\\mathbf w_1", "=\\tfrac12\\,[1,-1,0]=\\left[\\tfrac12,-\\tfrac12,0\\right]"],
+      why: "Dot \\(\\mathbf v\\) with \\(\\mathbf w_1\\), divide by \\(\\mathbf w_1\\cdot\\mathbf w_1\\) (not by \\(|\\mathbf w_1|\\)), then scale \\(\\mathbf w_1\\).", sum: "\\(\\left[\\tfrac12,-\\tfrac12,0\\right]\\)" },
+    { t: "The shadow on w₂", tex: ["\\operatorname{proj}_{\\mathbf w_2}(\\mathbf v)=\\frac{(2)(1)+(1)(1)+(3)(-2)}{(1)^2+(1)^2+(-2)^2}\\,\\mathbf w_2", "=-\\tfrac12\\,[1,1,-2]=\\left[-\\tfrac12,-\\tfrac12,1\\right]"],
+      why: "The dot product is negative: \\(\\mathbf v\\) leans away from \\(\\mathbf w_2\\), so this shadow points the other way.", sum: "\\(\\left[-\\tfrac12,-\\tfrac12,1\\right]\\)" },
+    { t: "Add the shadows: the closest point", tex: ["\\mathbf v_\\parallel=\\operatorname{proj}_P(\\mathbf v)=\\operatorname{proj}_{\\mathbf w_1}(\\mathbf v)+\\operatorname{proj}_{\\mathbf w_2}(\\mathbf v)", "=\\left[\\tfrac12,-\\tfrac12,0\\right]+\\left[-\\tfrac12,-\\tfrac12,1\\right]=[0,-1,1]"],
+      why: "Check it lies in the plane: \\(0+(-1)+1=0\\). So the closest point of the plane is \\((0,-1,1)\\).", sum: "\\(\\mathbf v_\\parallel=[0,-1,1]\\)" },
+    { t: "What's left sticks straight out", tex: ["\\mathbf v_\\perp=\\mathbf v-\\mathbf v_\\parallel=[2,1,3]-[0,-1,1]=[2,2,2]", "\\mathbf v_\\perp\\cdot\\mathbf w_1=0,\\qquad \\mathbf v_\\perp\\cdot\\mathbf w_2=2+2-4=0"],
+      why: "\\(\\mathbf v_\\perp\\) is perpendicular to both \\(\\mathbf w_1\\) and \\(\\mathbf w_2\\), so to the whole plane. It is a multiple of the normal \\([1,1,1]\\), as it should be.", sum: "\\(\\mathbf v_\\perp=[2,2,2]\\)" },
+    { t: "The distance, and a second check", tex: ["|\\mathbf v_\\perp|=\\sqrt{(2)^2+(2)^2+(2)^2}=\\sqrt{12}=2\\sqrt3\\approx3.46", "\\text{check with }\\mathbf n=[1,1,1]:\\quad \\frac{|\\mathbf v\\cdot\\mathbf n|}{|\\mathbf n|}=\\frac{6}{\\sqrt3}=2\\sqrt3"],
+      why: "The distance is the length of what sticks out. The same number comes from the normal: it is \\(|\\operatorname{comp}_{\\mathbf n}(\\mathbf v)|\\), the length of \\(\\mathbf v\\)'s shadow on the normal.", sum: "distance \\(2\\sqrt3\\)" },
+  ],
+});
+
 stAdd({
   id: "m-wire", title: "Mass of a wire: a scalar line integral", card: "Line integral: mass of a wire",
   tagline: "Density times length, added up along a helix.",
