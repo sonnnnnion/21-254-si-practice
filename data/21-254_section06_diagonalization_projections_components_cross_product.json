@@ -34,7 +34,7 @@
     "Find one eigenvector for each eigenvalue, then use those eigenvectors as the columns of \\(P\\).",
     "If \\(A=PDP^{-1}\\), then \\(A^5=PD^5P^{-1}\\)."
    ],
-   "setupLatex": "The eigenvalues are \\(3\\) and \\(1\\). Since they are distinct, the matrix should be diagonalizable over \\(\\mathbb{R}\\).",
+   "setupLatex": "The eigenvalues are \\(3\\) and \\(1\\). They are distinct, so \\(A\\) is diagonalizable.",
    "solutionSteps": [
     {
      "label": "Find the eigenvectors",
@@ -49,7 +49,7 @@
      "latex": "First,\n\\[D^5=\\begin{bmatrix}3^5&0\\\\0&1^5\\end{bmatrix}=\\begin{bmatrix}243&0\\\\0&1\\end{bmatrix}.\\]\nAlso,\n\\[P^{-1}=\\begin{bmatrix}1&1\\\\0&1\\end{bmatrix}.\\]\nSo\n\\[A^5=PD^5P^{-1}=\\begin{bmatrix}1&-1\\\\0&1\\end{bmatrix}\\begin{bmatrix}243&0\\\\0&1\\end{bmatrix}\\begin{bmatrix}1&1\\\\0&1\\end{bmatrix}\n=\\begin{bmatrix}243&242\\\\0&1\\end{bmatrix}.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[P=\\begin{bmatrix}1&-1\\\\0&1\\end{bmatrix},\\quad D=\\begin{bmatrix}3&0\\\\0&1\\end{bmatrix},\\quad A^5=\\begin{bmatrix}243&242\\\\0&1\\end{bmatrix}.\\]",
+   "finalAnswerLatex": "\\[P=\\begin{bmatrix}1&-1\\\\0&1\\end{bmatrix},\\quad D=\\begin{bmatrix}3&0\\\\0&1\\end{bmatrix},\\]\n\\[A^5=\\begin{bmatrix}243&242\\\\0&1\\end{bmatrix}.\\]",
    "commonMistakes": [
     "Putting the eigenvalues in a different order than the corresponding eigenvectors in \\(P\\).",
     "Computing \\(P^5D^5(P^{-1})^5\\) instead of \\(PD^5P^{-1}\\).",
@@ -76,7 +76,7 @@
     "For \\(\\lambda=2\\), solve \\((A-2I)x=0\\), not just one equation from the characteristic polynomial.",
     "A \\(3\\times3\\) matrix is diagonalizable if you can find three linearly independent eigenvectors."
    ],
-   "setupLatex": "Because \\(A\\) is block triangular, the characteristic polynomial can be read from the \\(1\\times1\\) block \\([2]\\) and the bottom-right block \\(\\begin{bmatrix}3&1\\\\1&3\\end{bmatrix}\\).",
+   "setupLatex": "The first row and column are zero except for the \\(2\\), so \\(p_A(\\lambda)\\) is \\((\\lambda-2)\\) times the characteristic polynomial of the block \\(\\begin{bmatrix}3&1\\\\1&3\\end{bmatrix}\\).",
    "solutionSteps": [
     {
      "label": "Find the characteristic polynomial",
@@ -95,7 +95,7 @@
      "latex": "The eigenspace for \\(\\lambda=2\\) has dimension \\(2\\), matching its algebraic multiplicity. Together with the eigenvector for \\(\\lambda=4\\), we have three independent eigenvectors.\n\nSo \\(A\\) is diagonalizable. One valid choice is\n\\[P=\\begin{bmatrix}1&0&0\\\\0&1&1\\\\0&-1&1\\end{bmatrix},\\qquad D=\\begin{bmatrix}2&0&0\\\\0&2&0\\\\0&0&4\\end{bmatrix}.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\-1\\end{bmatrix}\\right\\},\\quad E_4=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix}\\right\\}.\\] One diagonalization is \\(A=PDP^{-1}\\) with \\[P=\\begin{bmatrix}1&0&0\\\\0&1&1\\\\0&-1&1\\end{bmatrix},\\quad D=\\begin{bmatrix}2&0&0\\\\0&2&0\\\\0&0&4\\end{bmatrix}.\\]",
+   "finalAnswerLatex": "Eigenvalues: \\(2\\) (algebraic multiplicity \\(2\\)) and \\(4\\) (algebraic multiplicity \\(1\\)).\n\\[E_2=\\operatorname{span}\\left\\{\\begin{bmatrix}1\\\\0\\\\0\\end{bmatrix},\\begin{bmatrix}0\\\\1\\\\-1\\end{bmatrix}\\right\\},\\]\n\\[E_4=\\operatorname{span}\\left\\{\\begin{bmatrix}0\\\\1\\\\1\\end{bmatrix}\\right\\}.\\]\nSo \\(A\\) is diagonalizable: \\(A=PDP^{-1}\\) with\n\\[P=\\begin{bmatrix}1&0&0\\\\0&1&1\\\\0&-1&1\\end{bmatrix},\\]\n\\[D=\\begin{bmatrix}2&0&0\\\\0&2&0\\\\0&0&4\\end{bmatrix}.\\]",
    "commonMistakes": [
     "Assuming a repeated eigenvalue means the matrix is automatically not diagonalizable.",
     "Forgetting that the order of columns in \\(P\\) must match the order of diagonal entries in \\(D\\).",
@@ -141,7 +141,7 @@
      "latex": "The total number of independent eigenvectors is\n\\[\\dim(E_4)+\\dim(E_2)=1+1=2.\\]\nA \\(3\\times3\\) matrix needs \\(3\\) linearly independent eigenvectors to be diagonalizable, so \\(A\\) is not diagonalizable."
     }
    ],
-   "finalAnswerLatex": "\\(A\\) is not diagonalizable because \\(\\lambda=4\\) has algebraic multiplicity \\(2\\) but geometric multiplicity \\(1\\).",
+   "finalAnswerLatex": "Eigenvalues: \\(4\\) (algebraic multiplicity \\(2\\)) and \\(2\\) (algebraic multiplicity \\(1\\)), with \\(\\dim(E_4)=1\\) and \\(\\dim(E_2)=1\\).\n\n\\(A\\) is not diagonalizable because \\(\\lambda=4\\) has algebraic multiplicity \\(2\\) but geometric multiplicity \\(1\\).",
    "commonMistakes": [
     "Saying the matrix is diagonalizable just because all eigenvalues are visible on the diagonal.",
     "Confusing algebraic multiplicity with geometric multiplicity.",
@@ -183,7 +183,7 @@
      "latex": "When \\(n=3\\),\n\\[A^3x_0=2\\cdot5^3\\begin{bmatrix}1\\\\1\\end{bmatrix}+(-1)^3\\begin{bmatrix}1\\\\-1\\end{bmatrix}.\\]\nThus\n\\[A^3x_0=250\\begin{bmatrix}1\\\\1\\end{bmatrix}-\\begin{bmatrix}1\\\\-1\\end{bmatrix}=\\begin{bmatrix}249\\\\251\\end{bmatrix}.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[x_0=2u+v,\\qquad A^nx_0=2\\cdot5^nu+(-1)^nv,\\qquad A^3x_0=\\begin{bmatrix}249\\\\251\\end{bmatrix}.\\]",
+   "finalAnswerLatex": "\\[x_0=2u+v,\\]\n\\[A^nx_0=2\\cdot5^nu+(-1)^nv,\\]\n\\[A^3x_0=\\begin{bmatrix}249\\\\251\\end{bmatrix}.\\]",
    "commonMistakes": [
     "Trying to find the actual matrix \\(A\\) even though the eigenbasis information is enough.",
     "Forgetting that the negative eigenvalue becomes \\((-1)^n\\).",
@@ -229,7 +229,7 @@
      "latex": "Finally,\n\\[a\\cdot b_{\\perp}=\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix}\\cdot\\begin{bmatrix}3\\\\2\\\\-2\\end{bmatrix}=6-2-4=0.\\]\nSo \\(b_{\\perp}\\) is perpendicular to \\(a\\)."
     }
    ],
-   "finalAnswerLatex": "\\[b_{\\parallel}=\\operatorname{proj}_a(b)=\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix},\\qquad b_{\\perp}=\\begin{bmatrix}3\\\\2\\\\-2\\end{bmatrix}.\\]",
+   "finalAnswerLatex": "\\[b_{\\parallel}=\\operatorname{proj}_a(b)=\\begin{bmatrix}2\\\\-1\\\\2\\end{bmatrix},\\]\n\\[b_{\\perp}=\\begin{bmatrix}3\\\\2\\\\-2\\end{bmatrix}.\\]",
    "commonMistakes": [
     "Using \\(b\\cdot b\\) in the denominator instead of \\(a\\cdot a\\).",
     "Forgetting that the projection is a vector, not just a scalar.",
@@ -295,7 +295,7 @@
     "Find vector components parallel and perpendicular to a direction"
    ],
    "examFlavor": "Components and projection interpretation problem",
-   "problemLatex": "A force vector is\n\\[F=\\begin{bmatrix}10\\\\0\\end{bmatrix}.\\]\nA direction is given by\n\\[d=\\begin{bmatrix}3\\\\4\\end{bmatrix}.\\]\n\n(a) Find the scalar component of \\(F\\) in the direction of \\(d\\).\n\n(b) Find the vector component of \\(F\\) parallel to \\(d\\).\n\n(c) Find the vector component of \\(F\\) perpendicular to \\(d\\).",
+   "problemLatex": "A force vector is\n\\[F=\\begin{bmatrix}10\\\\0\\end{bmatrix}.\\]\nA direction is given by\n\\[d=\\begin{bmatrix}3\\\\4\\end{bmatrix}.\\]\n\n(a) Find the scalar component \\(\\operatorname{comp}_d(F)\\) of \\(F\\) in the direction of \\(d\\).\n\n(b) Find the vector component \\(F_{\\parallel}=\\operatorname{proj}_d(F)\\) of \\(F\\) parallel to \\(d\\).\n\n(c) Find the vector component \\(F_{\\perp}\\) of \\(F\\) perpendicular to \\(d\\).",
    "thinkFirst": "Scalar component uses a unit direction vector. Vector component is the projection vector.",
    "hints": [
     "First compute \\(\\|d\\|\\), then form \\(\\hat d=d/\\|d\\|\\).",
@@ -306,11 +306,11 @@
    "solutionSteps": [
     {
      "label": "Find the scalar component",
-     "latex": "The scalar component is\n\\[F\\cdot \\hat d=\\begin{bmatrix}10\\\\0\\end{bmatrix}\\cdot\\begin{bmatrix}3/5\\\\4/5\\end{bmatrix}=6.\\]"
+     "latex": "The scalar component is\n\\[\\operatorname{comp}_d(F)=F\\cdot \\hat d=\\begin{bmatrix}10\\\\0\\end{bmatrix}\\cdot\\begin{bmatrix}3/5\\\\4/5\\end{bmatrix}=6.\\]"
     },
     {
      "label": "Find the parallel vector component",
-     "latex": "The vector component parallel to \\(d\\) is\n\\[(F\\cdot \\hat d)\\hat d=6\\begin{bmatrix}3/5\\\\4/5\\end{bmatrix}=\\begin{bmatrix}18/5\\\\24/5\\end{bmatrix}.\\]"
+     "latex": "The vector component parallel to \\(d\\) is\n\\[F_{\\parallel}=(F\\cdot \\hat d)\\hat d=6\\begin{bmatrix}3/5\\\\4/5\\end{bmatrix}=\\begin{bmatrix}18/5\\\\24/5\\end{bmatrix}.\\]"
     },
     {
      "label": "Find the perpendicular vector component",
@@ -321,7 +321,7 @@
      "latex": "The perpendicular component should be perpendicular to \\(d\\):\n\\[\\begin{bmatrix}32/5\\\\-24/5\\end{bmatrix}\\cdot\\begin{bmatrix}3\\\\4\\end{bmatrix}=\\frac{96}{5}-\\frac{96}{5}=0.\\]"
     }
    ],
-   "finalAnswerLatex": "Scalar component: \\(6\\). Parallel component: \\(\\begin{bmatrix}18/5\\\\24/5\\end{bmatrix}\\). Perpendicular component: \\(\\begin{bmatrix}32/5\\\\-24/5\\end{bmatrix}\\).",
+   "finalAnswerLatex": "Scalar component: \\(\\operatorname{comp}_d(F)=6\\).\n\\[F_{\\parallel}=\\begin{bmatrix}18/5\\\\24/5\\end{bmatrix},\\]\n\\[F_{\\perp}=\\begin{bmatrix}32/5\\\\-24/5\\end{bmatrix}.\\]",
    "commonMistakes": [
     "Calling the scalar component a vector.",
     "Forgetting to normalize the direction vector before computing the scalar component.",
@@ -363,7 +363,7 @@
      "latex": "The parallelogram area is\n\\[\\|u\\times v\\|=\\sqrt{4^2+(-5)^2+(-6)^2}=\\sqrt{77}.\\]\nThe triangle area is half of that:\n\\[\\frac{\\sqrt{77}}{2}.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[u\\times v=\\begin{bmatrix}4\\\\-5\\\\-6\\end{bmatrix},\\qquad \\text{parallelogram area}=\\sqrt{77},\\qquad \\text{triangle area}=\\frac{\\sqrt{77}}2.\\]",
+   "finalAnswerLatex": "\\[u\\times v=\\begin{bmatrix}4\\\\-5\\\\-6\\end{bmatrix}.\\]\nParallelogram area \\(\\sqrt{77}\\), triangle area \\(\\sqrt{77}/2\\).",
    "commonMistakes": [
     "Swapping \\(u\\times v\\) and \\(v\\times u\\), which changes the sign.",
     "Using the dot product instead of the cross product for area.",
@@ -383,14 +383,14 @@
     "Write a plane equation"
    ],
    "examFlavor": "Geometry problem using cross product",
-   "problemLatex": "Find an equation of the plane through the points\n\\[A=(1,0,2),\\qquad B=(3,-1,1),\\qquad C=(0,2,4).\\]",
+   "problemLatex": "Find an equation of the plane through the points \\(A=(1,0,2)\\), \\(B=(3,-1,1)\\), and \\(C=(0,2,4)\\).",
    "thinkFirst": "A plane equation needs a point and a normal vector. The normal vector can be found by crossing two vectors that lie in the plane.",
    "hints": [
     "Form \\(\\overrightarrow{AB}\\) and \\(\\overrightarrow{AC}\\).",
     "Compute \\(\\overrightarrow{AB}\\times\\overrightarrow{AC}\\) to get a normal vector.",
     "Use \\(n\\cdot((x,y,z)-A)=0\\)."
    ],
-   "setupLatex": "Two vectors in the plane are\n\\[\\overrightarrow{AB}=B-A=\\begin{bmatrix}2\\\\-1\\\\-1\\end{bmatrix},\\qquad \\overrightarrow{AC}=C-A=\\begin{bmatrix}-1\\\\2\\\\2\\end{bmatrix}.\\]",
+   "setupLatex": "Two vectors in the plane are\n\\[\\overrightarrow{AB}=B-A=\\begin{bmatrix}2\\\\-1\\\\-1\\end{bmatrix},\\]\n\\[\\overrightarrow{AC}=C-A=\\begin{bmatrix}-1\\\\2\\\\2\\end{bmatrix}.\\]",
    "solutionSteps": [
     {
      "label": "Find a normal vector",
@@ -425,7 +425,7 @@
     "Find parallelepiped volume"
    ],
    "examFlavor": "Cross product and determinant volume problem",
-   "problemLatex": "Let\n\\[u=\\begin{bmatrix}1\\\\2\\\\0\\end{bmatrix},\\qquad v=\\begin{bmatrix}-1\\\\1\\\\3\\end{bmatrix},\\qquad w=\\begin{bmatrix}2\\\\0\\\\1\\end{bmatrix}.\\]\n\n(a) Compute the scalar triple product \\(u\\cdot(v\\times w)\\).\n\n(b) Find the volume of the parallelepiped spanned by \\(u\\), \\(v\\), and \\(w\\).\n\n(c) Are the three vectors coplanar? Explain.",
+   "problemLatex": "Let\n\\[u=\\begin{bmatrix}1\\\\2\\\\0\\end{bmatrix},\\quad v=\\begin{bmatrix}-1\\\\1\\\\3\\end{bmatrix},\\quad w=\\begin{bmatrix}2\\\\0\\\\1\\end{bmatrix}.\\]\n\n(a) Compute the scalar triple product \\(u\\cdot(v\\times w)\\).\n\n(b) Find the volume of the parallelepiped spanned by \\(u\\), \\(v\\), and \\(w\\).\n\n(c) Are the three vectors coplanar? Explain.",
    "thinkFirst": "The scalar triple product gives signed volume. The actual geometric volume is its absolute value.",
    "hints": [
     "Compute \\(v\\times w\\) first, then dot with \\(u\\).",
@@ -447,7 +447,7 @@
      "latex": "The signed volume is \\(15\\), so the geometric volume is\n\\[|15|=15.\\]\nBecause the scalar triple product is nonzero, the vectors are not coplanar."
     }
    ],
-   "finalAnswerLatex": "\\[u\\cdot(v\\times w)=15,\\qquad \\text{volume}=15,\\qquad \\text{the vectors are not coplanar.}\\]",
+   "finalAnswerLatex": "\\[u\\cdot(v\\times w)=15.\\]\nThe volume is \\(15\\), and the vectors are not coplanar.",
    "commonMistakes": [
     "Forgetting the absolute value when reporting volume.",
     "Confusing parallelogram area with parallelepiped volume.",

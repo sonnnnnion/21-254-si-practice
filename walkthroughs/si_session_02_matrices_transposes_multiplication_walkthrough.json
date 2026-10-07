@@ -530,7 +530,7 @@
    "title": "Order matters today",
    "say": [
     "Last time the dot product turned two vectors into one number. Today a matrix does that over and over: every entry of a product is one dot product.",
-    "The theme of the whole hour is order. With numbers, 3 · 5 = 5 · 3. With matrices, AB and BA usually aren't even the same size."
+    "The theme of the whole hour is order. With numbers, 3 · 5 = 5 · 3. With matrices, AB and BA often aren't even the same size."
    ],
    "ask": [
     {
@@ -732,7 +732,7 @@
       }
      },
      {
-      "say": "Add matching entries: A + I = [[2, 2], [0, 0]].",
+      "say": "Add matching entries. Only the diagonal changes: each diagonal entry goes up by 1.",
       "ask": {
        "q": "What size must I be here?",
        "a": "2 × 2, the same size as A."

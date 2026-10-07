@@ -30,31 +30,31 @@
    "problemLatex": "Let \\(S\\) be the part of the plane\n\\[\nz=6-2x-y\n\\]\nlying above the triangular region\n\\[\nD=\\{(x,y):x\\ge 0,\\ y\\ge 0,\\ x+y\\le 2\\}.\n\\]\n\n(a) Give a parametrization of \\(S\\).\n\n(b) Compute \\(\\|\\mathbf r_x\\times \\mathbf r_y\\|\\).\n\n(c) Find the surface area of \\(S\\).",
    "thinkFirst": "Since the surface is already written as a graph \\(z=g(x,y)\\), the easiest parameters are \\(x\\) and \\(y\\). The triangular region gives the parameter bounds.",
    "hints": [
-    "Use \\(\\mathbf r(x,y)=\\langle x,y,6-2x-y\\rangle\\).",
+    "Use \\(x\\) and \\(y\\) as the parameters; the plane equation gives the third entry of \\(\\mathbf r(x,y)\\).",
     "Compute \\(\\mathbf r_x\\) and \\(\\mathbf r_y\\), then cross them.",
     "The length \\(\\|\\mathbf r_x\\times\\mathbf r_y\\|\\) is constant here because the surface is a plane.",
     "The area of \\(D\\) is \\(2\\), since it is a right triangle with legs of length \\(2\\)."
    ],
-   "setupLatex": "Use\n\\[\n\\mathbf r(x,y)=\\langle x,y,6-2x-y\\rangle,\\qquad (x,y)\\in D.\n\\]\nThen the surface area is\n\\[\n\\iint_D \\|\\mathbf r_x\\times \\mathbf r_y\\|\\,dA.\n\\]",
+   "setupLatex": "Use\n\\[\n\\mathbf r(x,y)=[x,y,6-2x-y],\\qquad (x,y)\\in D.\n\\]\nThen the surface area is\n\\[\n\\iint_D \\|\\mathbf r_x\\times \\mathbf r_y\\|\\,dA.\n\\]",
    "solutionSteps": [
     {
      "label": "Parametrize the surface",
-     "latex": "Because \\(z=6-2x-y\\), a natural parametrization is\n\\[\n\\mathbf r(x,y)=\\langle x,y,6-2x-y\\rangle,\n\\]\nwhere\n\\[\n0\\le x\\le 2,\\qquad 0\\le y\\le 2-x.\n\\]"
+     "latex": "Because \\(z=6-2x-y\\), a natural parametrization is\n\\[\n\\mathbf r(x,y)=[x,y,6-2x-y],\n\\]\nwhere\n\\[\n0\\le x\\le 2,\\qquad 0\\le y\\le 2-x.\n\\]"
     },
     {
      "label": "Compute the cross product length",
-     "latex": "We have\n\\[\n\\mathbf r_x=\\langle 1,0,-2\\rangle,\\qquad \\mathbf r_y=\\langle 0,1,-1\\rangle.\n\\]\nThus\n\\[\n\\mathbf r_x\\times \\mathbf r_y=\\langle 2,1,1\\rangle,\n\\]\nso\n\\[\n\\|\\mathbf r_x\\times \\mathbf r_y\\|=\\sqrt{2^2+1^2+1^2}=\\sqrt6.\n\\]"
+     "latex": "We have\n\\[\n\\mathbf r_x=[1,0,-2],\\qquad \\mathbf r_y=[0,1,-1].\n\\]\nThus\n\\[\n\\mathbf r_x\\times \\mathbf r_y=[2,1,1],\n\\]\nso\n\\[\n\\|\\mathbf r_x\\times \\mathbf r_y\\|=\\sqrt{2^2+1^2+1^2}=\\sqrt6.\n\\]"
     },
     {
      "label": "Integrate over the parameter region",
      "latex": "Therefore\n\\[\n\\text{Area}(S)=\\iint_D \\sqrt6\\,dA.\n\\]\nThe region \\(D\\) is a right triangle with area \\(\\frac12(2)(2)=2\\), so\n\\[\n\\text{Area}(S)=2\\sqrt6.\n\\]"
     }
    ],
-   "finalAnswerLatex": "\\[\n\\mathbf r(x,y)=\\langle x,y,6-2x-y\\rangle,\\quad 0\\le x\\le 2,\\quad 0\\le y\\le 2-x,\n\\]\n\\[\n\\|\\mathbf r_x\\times\\mathbf r_y\\|=\\sqrt6,\n\\qquad \\text{Area}(S)=2\\sqrt6.\n\\]",
+   "finalAnswerLatex": "(a) \\(\\mathbf r(x,y)=[x,\\,y,\\,6-2x-y]\\) with \\(0\\le x\\le 2\\), \\(0\\le y\\le 2-x\\).\n\n(b) \\(\\|\\mathbf r_x\\times\\mathbf r_y\\|=\\sqrt6\\)\n\n(c) \\(\\text{Area}(S)=2\\sqrt6\\)",
    "commonMistakes": [
     "Using rectangular bounds instead of the triangular bounds.",
     "Forgetting that \\(dS=\\|\\mathbf r_x\\times\\mathbf r_y\\|dA\\), not just \\(dA\\).",
-    "Taking the cross product in the opposite order is fine for area, but not for oriented flux."
+    "Thinking the order of the cross product matters for area. Swapping the order only flips the sign, so the length is the same (the order does matter for flux)."
    ],
    "similarProblemPrompt": "Try the same process for \\(z=5+x-3y\\) over \\(0\\le x\\le 1\\), \\(0\\le y\\le 3\\)."
   },
@@ -90,7 +90,7 @@
     },
     {
      "label": "Finish the integral",
-     "latex": "Thus\n\\[\n\\sqrt3\\int_0^2\\left(4(2-x)+\\frac{(2-x)^2}{2}\\right)dx.\n\\]\nEquivalently, using the facts \\(\\text{area}(D)=2\\) and \\(\\iint_D y\\,dA=\\frac43\\),\n\\[\n\\sqrt3\\iint_D(4+y)dA\n=\\sqrt3\\left(4\\cdot 2+\\frac43\\right)\n=\\frac{28\\sqrt3}{3}.\n\\]"
+     "latex": "Now integrate in \\(x\\):\n\\[\n\\int_0^2 4(2-x)\\,dx=8,\\qquad \\int_0^2\\frac{(2-x)^2}{2}\\,dx=\\left[-\\frac{(2-x)^3}{6}\\right]_0^2=\\frac43.\n\\]\nSo\n\\[\n\\iint_S (x+2y+z)\\,dS=\\sqrt3\\left(8+\\frac43\\right)=\\frac{28\\sqrt3}{3}.\n\\]"
     }
    ],
    "finalAnswerLatex": "\\[\n\\iint_S (x+2y+z)\\,dS=\\frac{28\\sqrt3}{3}.\n\\]",
@@ -99,7 +99,7 @@
     "Using \\(\\sqrt2\\) instead of \\(\\sqrt3\\) for the surface-area factor.",
     "Integrating over the wrong triangular region."
    ],
-   "similarProblemPrompt": "Try \\(\\iint_S(x-y+2z)dS\\) over \\(z=3+x-y\\) above the same triangular region."
+   "similarProblemPrompt": "Try \\(\\iint_S(x-y+2z)\\,dS\\) over \\(z=3+x-y\\) above the same triangular region."
   },
   {
    "id": "surfstokes-003",
@@ -113,19 +113,19 @@
     "Evaluate a polar double integral"
    ],
    "examFlavor": "Vector surface integral through a graph with a circular projection",
-   "problemLatex": "Let \\(S\\) be the graph\n\\[\nz=4-x^2-y^2\n\\]\nabove the disk \\(x^2+y^2\\le 1\\), oriented upward. Let\n\\[\n\\mathbf F(x,y,z)=\\langle x,y,z\\rangle.\n\\]\nEvaluate the flux integral\n\\[\n\\iint_S \\mathbf F\\cdot d\\mathbf S.\n\\]",
-   "thinkFirst": "For an upward-oriented graph \\(z=g(x,y)\\), use \\(d\\mathbf S=\\langle -g_x,-g_y,1\\rangle dA\\).",
+   "problemLatex": "Let \\(S\\) be the graph\n\\[\nz=4-x^2-y^2\n\\]\nabove the disk \\(x^2+y^2\\le 1\\), oriented upward. Let\n\\[\n\\mathbf F(x,y,z)=[x,y,z].\n\\]\nEvaluate the flux integral\n\\[\n\\iint_S \\mathbf F\\cdot d\\mathbf S.\n\\]",
+   "thinkFirst": "For an upward-oriented graph \\(z=g(x,y)\\), use \\(d\\mathbf S=[-g_x,-g_y,1]\\,dA\\).",
    "hints": [
     "Here \\(g_x=-2x\\) and \\(g_y=-2y\\).",
-    "The upward normal vector with area factor is \\(\\langle 2x,2y,1\\rangle dA\\).",
+    "The upward normal vector with area factor is \\([2x,2y,1]\\,dA\\).",
     "On the surface, \\(z=4-x^2-y^2\\).",
     "Convert \\(x^2+y^2\\) to \\(r^2\\) in polar coordinates."
    ],
-   "setupLatex": "For \\(z=g(x,y)=4-x^2-y^2\\),\n\\[\nd\\mathbf S=\\langle -g_x,-g_y,1\\rangle dA=\\langle 2x,2y,1\\rangle dA.\n\\]\nSubstitute \\(\\mathbf F(x,y,g(x,y))=\\langle x,y,4-x^2-y^2\\rangle\\).",
+   "setupLatex": "For \\(z=g(x,y)=4-x^2-y^2\\),\n\\[\nd\\mathbf S=[-g_x,-g_y,1]\\,dA=[2x,2y,1]\\,dA.\n\\]\nSubstitute \\(\\mathbf F(x,y,g(x,y))=[x,y,4-x^2-y^2]\\).",
    "solutionSteps": [
     {
      "label": "Compute the dot product",
-     "latex": "We get\n\\[\n\\mathbf F(x,y,g(x,y))\\cdot \\langle 2x,2y,1\\rangle\n=2x^2+2y^2+4-x^2-y^2.\n\\]\nTherefore the integrand is\n\\[\n4+x^2+y^2.\n\\]"
+     "latex": "We get\n\\[\n\\mathbf F(x,y,g(x,y))\\cdot [2x,2y,1]\n=2x^2+2y^2+4-x^2-y^2.\n\\]\nTherefore the integrand is\n\\[\n4+x^2+y^2.\n\\]"
     },
     {
      "label": "Use polar coordinates",
@@ -156,23 +156,23 @@
     "Evaluate a vector surface integral"
    ],
    "examFlavor": "Direct flux computation through a parametrized cylinder side",
-   "problemLatex": "Let \\(S\\) be the side of the cylinder\n\\[\nx^2+y^2=4,\\qquad 0\\le z\\le 3,\n\\]\nwith outward orientation. Let\n\\[\n\\mathbf F(x,y,z)=\\langle x,y,z\\rangle.\n\\]\nEvaluate\n\\[\n\\iint_S \\mathbf F\\cdot d\\mathbf S.\n\\]",
+   "problemLatex": "Let \\(S\\) be the side of the cylinder\n\\[\nx^2+y^2=4,\\qquad 0\\le z\\le 3,\n\\]\nwith outward orientation. Let\n\\[\n\\mathbf F(x,y,z)=[x,y,z].\n\\]\nEvaluate\n\\[\n\\iint_S \\mathbf F\\cdot d\\mathbf S.\n\\]",
    "thinkFirst": "For the side of a cylinder, a natural parametrization uses angle \\(\\theta\\) and height \\(z\\). Check the cross product direction carefully.",
    "hints": [
-    "Use \\(\\mathbf r(\\theta,z)=\\langle 2\\cos\\theta,2\\sin\\theta,z\\rangle\\).",
-    "A good outward vector with area factor is \\(\\mathbf r_\\theta\\times\\mathbf r_z=\\langle 2\\cos\\theta,2\\sin\\theta,0\\rangle\\).",
-    "On the cylinder, \\(\\mathbf F=\\langle 2\\cos\\theta,2\\sin\\theta,z\\rangle\\).",
+    "Use \\(\\mathbf r(\\theta,z)=[2\\cos\\theta,2\\sin\\theta,z]\\).",
+    "A good outward vector with area factor is \\(\\mathbf r_\\theta\\times\\mathbf r_z=[2\\cos\\theta,2\\sin\\theta,0]\\).",
+    "On the cylinder, \\(\\mathbf F=[2\\cos\\theta,2\\sin\\theta,z]\\).",
     "The dot product becomes constant."
    ],
-   "setupLatex": "Use\n\\[\n\\mathbf r(\\theta,z)=\\langle 2\\cos\\theta,2\\sin\\theta,z\\rangle,\n\\qquad 0\\le \\theta\\le 2\\pi,\n\\quad 0\\le z\\le 3.\n\\]\nThen compute \\(\\mathbf F(\\mathbf r(\\theta,z))\\cdot(\\mathbf r_\\theta\\times\\mathbf r_z)\\).",
+   "setupLatex": "Use\n\\[\n\\mathbf r(\\theta,z)=[2\\cos\\theta,2\\sin\\theta,z],\n\\qquad 0\\le \\theta\\le 2\\pi,\n\\quad 0\\le z\\le 3.\n\\]\nThen compute \\(\\mathbf F(\\mathbf r(\\theta,z))\\cdot(\\mathbf r_\\theta\\times\\mathbf r_z)\\).",
    "solutionSteps": [
     {
      "label": "Find the oriented normal vector",
-     "latex": "We have\n\\[\n\\mathbf r_\\theta=\\langle -2\\sin\\theta,2\\cos\\theta,0\\rangle,\n\\qquad \\mathbf r_z=\\langle 0,0,1\\rangle.\n\\]\nThus\n\\[\n\\mathbf r_\\theta\\times\\mathbf r_z\n=\\langle 2\\cos\\theta,2\\sin\\theta,0\\rangle,\n\\]\nwhich points outward from the cylinder's axis."
+     "latex": "We have\n\\[\n\\mathbf r_\\theta=[-2\\sin\\theta,2\\cos\\theta,0],\n\\qquad \\mathbf r_z=[0,0,1].\n\\]\nThus\n\\[\n\\mathbf r_\\theta\\times\\mathbf r_z\n=[2\\cos\\theta,2\\sin\\theta,0],\n\\]\nwhich points outward from the cylinder's axis."
     },
     {
      "label": "Compute the integrand",
-     "latex": "On the surface,\n\\[\n\\mathbf F(\\mathbf r(\\theta,z))=\\langle 2\\cos\\theta,2\\sin\\theta,z\\rangle.\n\\]\nTherefore\n\\[\n\\mathbf F\\cdot(\\mathbf r_\\theta\\times\\mathbf r_z)\n=4\\cos^2\\theta+4\\sin^2\\theta=4.\n\\]"
+     "latex": "On the surface,\n\\[\n\\mathbf F(\\mathbf r(\\theta,z))=[2\\cos\\theta,2\\sin\\theta,z].\n\\]\nTherefore\n\\[\n\\mathbf F\\cdot(\\mathbf r_\\theta\\times\\mathbf r_z)\n=4\\cos^2\\theta+4\\sin^2\\theta=4.\n\\]"
     },
     {
      "label": "Integrate",
@@ -185,7 +185,7 @@
     "Using \\(\\|\\mathbf r_\\theta\\times\\mathbf r_z\\|\\) instead of the oriented cross product for flux.",
     "Forgetting that this is only the side of the cylinder, not the top and bottom disks."
    ],
-   "similarProblemPrompt": "Try the side of \\(x^2+y^2=9\\), \\(0\\le z\\le 2\\), with \\(\\mathbf F=\\langle x,y,0\\rangle\\)."
+   "similarProblemPrompt": "Try the side of \\(x^2+y^2=9\\), \\(0\\le z\\le 2\\), with \\(\\mathbf F=[x,y,0]\\)."
   },
   {
    "id": "surfstokes-005",
@@ -199,23 +199,23 @@
     "Replace a difficult boundary integral with a surface integral"
    ],
    "examFlavor": "Stokes problem where the curl makes the surface integral simple",
-   "problemLatex": "Let \\(C\\) be the boundary curve of the paraboloid cap\n\\[\nz=4-x^2-y^2,\\qquad z\\ge 0,\n\\]\noriented counterclockwise when viewed from above. Let\n\\[\n\\mathbf F(x,y,z)=\\left\\langle -\\frac y2,\\frac x2,z\\right\\rangle.\n\\]\nUse Stokes' Theorem to compute\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r.\n\\]",
+   "problemLatex": "Let \\(C\\) be the boundary curve of the paraboloid cap\n\\[\nz=4-x^2-y^2,\\qquad z\\ge 0,\n\\]\noriented counterclockwise when viewed from above. Let\n\\[\n\\mathbf F(x,y,z)=\\left[ -\\frac y2,\\frac x2,z\\right].\n\\]\nUse Stokes' Theorem to compute\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r.\n\\]",
    "thinkFirst": "The boundary is the circle \\(x^2+y^2=4\\) in the plane \\(z=0\\). Counterclockwise from above corresponds to an upward normal.",
    "hints": [
     "Stokes' Theorem says \\(\\oint_C \\mathbf F\\cdot d\\mathbf r=\\iint_S (\\nabla\\times\\mathbf F)\\cdot d\\mathbf S\\).",
     "Compute \\(\\nabla\\times \\mathbf F\\).",
-    "For this field, the curl is \\(\\langle 0,0,1\\rangle\\).",
+    "For this field, the curl is \\([0,0,1]\\).",
     "With upward orientation, only the projected area of the disk matters."
    ],
    "setupLatex": "The curve \\(C\\) bounds the paraboloid cap. Since \\(C\\) is counterclockwise viewed from above, we use upward orientation. By Stokes' Theorem,\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r=\\iint_S (\\nabla\\times\\mathbf F)\\cdot d\\mathbf S.\n\\]",
    "solutionSteps": [
     {
      "label": "Compute the curl",
-     "latex": "For\n\\[\n\\mathbf F=\\left\\langle -\\frac y2,\\frac x2,z\\right\\rangle,\n\\]\nwe get\n\\[\n\\nabla\\times\\mathbf F\n=\\left\\langle 0,0,\\frac{\\partial}{\\partial x}\\left(\\frac x2\\right)-\\frac{\\partial}{\\partial y}\\left(-\\frac y2\\right)\\right\\rangle\n=\\langle 0,0,1\\rangle.\n\\]"
+     "latex": "For\n\\[\n\\mathbf F=\\left[ -\\frac y2,\\frac x2,z\\right],\n\\]\nwe get\n\\[\n\\nabla\\times\\mathbf F\n=\\left[ 0,0,\\frac{\\partial}{\\partial x}\\left(\\frac x2\\right)-\\frac{\\partial}{\\partial y}\\left(-\\frac y2\\right)\\right]\n=[0,0,1].\n\\]"
     },
     {
      "label": "Use upward orientation",
-     "latex": "For an upward-oriented surface, the \\(z\\)-component of \\(d\\mathbf S\\) contributes \\(dA\\). Therefore\n\\[\n(\\nabla\\times\\mathbf F)\\cdot d\\mathbf S=dA.\n\\]\nThe projection is the disk \\(x^2+y^2\\le 4\\)."
+     "latex": "For the graph \\(z=4-x^2-y^2\\) oriented upward, \\(d\\mathbf S=[2x,2y,1]\\,dA\\). Therefore\n\\[\n(\\nabla\\times\\mathbf F)\\cdot d\\mathbf S=[0,0,1]\\cdot[2x,2y,1]\\,dA=dA.\n\\]\nThe projection is the disk \\(x^2+y^2\\le 4\\)."
     },
     {
      "label": "Integrate over the disk",
@@ -228,7 +228,7 @@
     "Trying to parameterize the paraboloid boundary unnecessarily.",
     "Forgetting that the boundary circle has radius \\(2\\), not radius \\(4\\)."
    ],
-   "similarProblemPrompt": "Try \\(\\mathbf F=\\langle -y,x,0\\rangle\\) around the same boundary curve."
+   "similarProblemPrompt": "Try \\(\\mathbf F=[-y,x,0]\\) around the same boundary curve."
   },
   {
    "id": "surfstokes-006",
@@ -242,23 +242,23 @@
     "Track orientation signs"
    ],
    "examFlavor": "Orientation-sensitive Stokes problem on a plane triangle",
-   "problemLatex": "Let \\(C\\) be the boundary of the triangular part of the plane\n\\[\nx+y+z=1\n\\]\nin the first octant, oriented counterclockwise when viewed from above. Let\n\\[\n\\mathbf F(x,y,z)=\\langle y,z,x\\rangle.\n\\]\nCompute\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r.\n\\]",
+   "problemLatex": "Let \\(C\\) be the boundary of the triangular part of the plane\n\\[\nx+y+z=1\n\\]\nin the first octant, oriented counterclockwise when viewed from above. Let\n\\[\n\\mathbf F(x,y,z)=[y,z,x].\n\\]\nCompute\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r.\n\\]",
    "thinkFirst": "Since the boundary is a triangle in a plane, Stokes' Theorem avoids parameterizing three separate line segments. Counterclockwise from above means use the upward normal.",
    "hints": [
     "Write the plane as \\(z=1-x-y\\).",
-    "For upward orientation, use \\(d\\mathbf S=\\langle -z_x,-z_y,1\\rangle dA=\\langle 1,1,1\\rangle dA\\).",
+    "For upward orientation, use \\(d\\mathbf S=[-z_x,-z_y,1]\\,dA=[1,1,1]\\,dA\\).",
     "Compute \\(\\nabla\\times\\mathbf F\\).",
     "The projection is the triangle \\(x\\ge0\\), \\(y\\ge0\\), \\(x+y\\le1\\)."
    ],
-   "setupLatex": "By Stokes' Theorem,\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r=\\iint_S(\\nabla\\times\\mathbf F)\\cdot d\\mathbf S.\n\\]\nThe upward-oriented graph is \\(z=1-x-y\\), so\n\\[\nd\\mathbf S=\\langle 1,1,1\\rangle dA.\n\\]",
+   "setupLatex": "By Stokes' Theorem,\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r=\\iint_S(\\nabla\\times\\mathbf F)\\cdot d\\mathbf S.\n\\]\nThe upward-oriented graph is \\(z=1-x-y\\), so\n\\[\nd\\mathbf S=[1,1,1]\\,dA.\n\\]",
    "solutionSteps": [
     {
      "label": "Compute the curl",
-     "latex": "For \\(\\mathbf F=\\langle y,z,x\\rangle\\),\n\\[\n\\nabla\\times\\mathbf F\n=\\left\\langle \\frac{\\partial x}{\\partial y}-\\frac{\\partial z}{\\partial z},\\frac{\\partial y}{\\partial z}-\\frac{\\partial x}{\\partial x},\\frac{\\partial z}{\\partial x}-\\frac{\\partial y}{\\partial y}\\right\\rangle\n=\\langle -1,-1,-1\\rangle.\n\\]"
+     "latex": "For \\(\\mathbf F=[y,z,x]\\),\n\\[\n\\nabla\\times\\mathbf F\n=\\left[ \\frac{\\partial x}{\\partial y}-\\frac{\\partial z}{\\partial z},\\frac{\\partial y}{\\partial z}-\\frac{\\partial x}{\\partial x},\\frac{\\partial z}{\\partial x}-\\frac{\\partial y}{\\partial y}\\right]\n=[-1,-1,-1].\n\\]"
     },
     {
      "label": "Dot with the upward surface vector",
-     "latex": "Thus\n\\[\n(\\nabla\\times\\mathbf F)\\cdot d\\mathbf S\n=\\langle -1,-1,-1\\rangle\\cdot\\langle 1,1,1\\rangle dA\n=-3\\,dA.\n\\]"
+     "latex": "Thus\n\\[\n(\\nabla\\times\\mathbf F)\\cdot d\\mathbf S\n=[-1,-1,-1]\\cdot[1,1,1]\\,dA\n=-3\\,dA.\n\\]"
     },
     {
      "label": "Integrate over the triangular projection",
@@ -271,7 +271,7 @@
     "Forgetting that counterclockwise viewed from above pairs with the upward normal.",
     "Using the 3D area of the triangle when the graph-normal formula already accounts for the surface geometry."
    ],
-   "similarProblemPrompt": "Try the same triangular surface with \\(\\mathbf F=\\langle z,x,y\\rangle\\)."
+   "similarProblemPrompt": "Try the same triangular surface with \\(\\mathbf F=[z,x,y]\\)."
   },
   {
    "id": "surfstokes-007",
@@ -371,11 +371,11 @@
     "Compute flux through a closed surface"
    ],
    "examFlavor": "Final-review theorem-selection problem with a very short computation",
-   "problemLatex": "This problem is for final review. Suppose \\(S\\) is the sphere\n\\[\nx^2+y^2+z^2=9\n\\]\noriented outward, and\n\\[\n\\mathbf F(x,y,z)=\\langle x,y,z\\rangle.\n\\]\nUsing the Divergence Theorem, compute\n\\[\n\\iint_S \\mathbf F\\cdot d\\mathbf S.\n\\]",
+   "problemLatex": "Let \\(S\\) be the sphere\n\\[\nx^2+y^2+z^2=9\n\\]\noriented outward, and let\n\\[\n\\mathbf F(x,y,z)=[x,y,z].\n\\]\nUse the Divergence Theorem to compute\n\\[\n\\iint_S \\mathbf F\\cdot d\\mathbf S.\n\\]",
    "thinkFirst": "Because \\(S\\) is closed and outward-oriented, the Divergence Theorem is the fastest method.",
    "hints": [
     "Compute \\(\\nabla\\cdot\\mathbf F\\).",
-    "The divergence of \\(\\langle x,y,z\\rangle\\) is \\(3\\).",
+    "The divergence of \\([x,y,z]\\) is \\(3\\).",
     "The ball has radius \\(3\\).",
     "Flux equals \\(\\iiint_E \\nabla\\cdot\\mathbf F\\,dV\\)."
    ],
@@ -383,7 +383,7 @@
    "solutionSteps": [
     {
      "label": "Compute the divergence",
-     "latex": "Since\n\\[\n\\mathbf F=\\langle x,y,z\\rangle,\n\\]\nwe have\n\\[\n\\nabla\\cdot\\mathbf F=\\frac{\\partial x}{\\partial x}+\\frac{\\partial y}{\\partial y}+\\frac{\\partial z}{\\partial z}=3.\n\\]"
+     "latex": "Since\n\\[\n\\mathbf F=[x,y,z],\n\\]\nwe have\n\\[\n\\nabla\\cdot\\mathbf F=\\frac{\\partial x}{\\partial x}+\\frac{\\partial y}{\\partial y}+\\frac{\\partial z}{\\partial z}=3.\n\\]"
     },
     {
      "label": "Multiply by the volume of the ball",
@@ -396,7 +396,7 @@
     "Forgetting that the surface must be closed for the Divergence Theorem.",
     "Using inward orientation without changing the sign."
    ],
-   "similarProblemPrompt": "Try \\(\\mathbf F=\\langle 2x,-y,3z\\rangle\\) over the same outward-oriented sphere."
+   "similarProblemPrompt": "Try \\(\\mathbf F=[2x,-y,3z]\\) over the same outward-oriented sphere."
   },
   {
    "id": "surfstokes-010",
@@ -410,12 +410,12 @@
     "Compute a curl integral in polar coordinates"
    ],
    "examFlavor": "Final-review problem emphasizing theorem selection and orientation",
-   "problemLatex": "Let \\(C\\) be the circle\n\\[\nx^2+y^2=1,\\qquad z=2,\n\\]\noriented counterclockwise when viewed from above. Let\n\\[\n\\mathbf F(x,y,z)=\\langle -y^3,x^3,xyz\\rangle.\n\\]\nCompute\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r.\n\\]\n\nBriefly explain why your chosen method is efficient.",
+   "problemLatex": "Let \\(C\\) be the circle\n\\[\nx^2+y^2=1,\\qquad z=2,\n\\]\noriented counterclockwise when viewed from above. Let\n\\[\n\\mathbf F(x,y,z)=[-y^3,x^3,xyz].\n\\]\nCompute\n\\[\n\\oint_C \\mathbf F\\cdot d\\mathbf r.\n\\]\n\nBriefly explain why your chosen method is efficient.",
    "thinkFirst": "The curve is a simple circle bounding a flat disk. Stokes' Theorem lets you avoid parameterizing the circle and expanding trig powers.",
    "hints": [
     "Use the disk \\(x^2+y^2\\le1\\), \\(z=2\\), with upward orientation.",
     "Only the \\(z\\)-component of \\(\\nabla\\times\\mathbf F\\) matters for the upward disk.",
-    "For \\(\\mathbf F=\\langle P,Q,R\\rangle\\), the \\(z\\)-component of curl is \\(Q_x-P_y\\).",
+    "For \\(\\mathbf F=[P,Q,R]\\), the \\(z\\)-component of curl is \\(Q_x-P_y\\).",
     "Here \\(Q_x=3x^2\\) and \\(P_y=-3y^2\\)."
    ],
    "setupLatex": "Use Stokes' Theorem on the flat disk \\(D:x^2+y^2\\le1\\), \\(z=2\\), with upward normal. The orientation matches because \\(C\\) is counterclockwise viewed from above.",
@@ -435,12 +435,12 @@
    ],
    "finalAnswerLatex": "\\[\n\\oint_C\\mathbf F\\cdot d\\mathbf r=\\frac{3\\pi}{2}.\n\\]\nStokes' Theorem is efficient because the circle bounds a simple disk and the relevant curl component becomes \\(3(x^2+y^2)\\).",
    "commonMistakes": [
-    "Using Green's Theorem without accounting for the curve living in the plane \\(z=2\\).",
+    "Using all three components of \\(\\nabla\\times\\mathbf F\\). For the flat, upward disk only the \\(z\\)-component counts.",
     "Using the downward normal, which would flip the sign.",
     "Forgetting the polar-coordinate factor \\(r\\).",
     "Trying to parameterize the circle and expand \\(\\sin^4 t\\) and \\(\\cos^4 t\\) unnecessarily."
    ],
-   "similarProblemPrompt": "Try \\(\\mathbf F=\\langle -y^2,x^2,0\\rangle\\) around \\(x^2+y^2=4\\), \\(z=1\\), counterclockwise viewed from above."
+   "similarProblemPrompt": "Try \\(\\mathbf F=[-y^2,x^2,0]\\) around \\(x^2+y^2=4\\), \\(z=1\\), counterclockwise viewed from above."
   }
  ]
 }

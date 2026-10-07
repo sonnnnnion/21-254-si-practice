@@ -416,13 +416,13 @@
      {
       "say": "x\u00b2 + y\u00b2 = r\u00b2, and dA = r dr d\u03b8, so the integrand becomes r\u00b3.",
       "ask": {
-       "q": "Where did the fourth power go? r\u00b2 times r is r\u00b3.",
-       "a": "Right: r\u00b2 from the integrand, one more r from dA."
+       "q": "Why r\u00b3 and not r\u00b2?",
+       "a": "r\u00b2 comes from the integrand and one more r from dA."
       },
       "why": "Forget the r and you'd get 8\u03c0/3 instead of 4\u03c0."
      },
      {
-      "say": "\\(\\displaystyle\\int_0^{\\pi}\\!\\int_0^2 r^3\\,dr\\,d\\theta=\\int_0^{\\pi}4\\,d\\theta=4\\pi\\).",
+      "say": "The r-integral gives 2\u2074/4 = 4. Nothing depends on \u03b8, so multiply by \u03c0: 4\u03c0.",
       "ask": {
        "q": "Why does \u03b8 just multiply by \u03c0?",
        "a": "Nothing in the integrand depends on \u03b8."
@@ -433,7 +433,7 @@
     "ifStuck": [
      {
       "if": "a student gets 8\u03c0/3",
-      "then": "ask them to find the area of the half-disk with their setup. Without the r it comes out wrong."
+      "then": "ask them to find the area of a half-disk of radius 1 with their setup. It should be \u03c0/2; without the r they get \u03c0."
      }
     ],
     "transition": "Last one: a line integral around a closed loop, turned into a double integral."
@@ -471,7 +471,7 @@
       "why": "Green says circulation around the edge = total spin inside."
      },
      {
-      "say": "\\(\\displaystyle\\iint_D 4y\\,dA=\\int_0^3\\!\\int_0^2 4y\\,dy\\,dx\\).",
+      "say": "It's a rectangle, so the bounds are just numbers: y from 0 to 2, x from 0 to 3.",
       "ask": {
        "q": "How many line integrals did we skip?",
        "a": "Four, one per edge."

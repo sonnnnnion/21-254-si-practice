@@ -108,7 +108,7 @@
     },
     {
      "label": "Check the boundary idea",
-     "latex": "On each edge, the function becomes a one-variable quadratic. The smallest boundary values are \\(-4\\) on \\(x=0\\), and \\(-1\\) on the other nontrivial edges. These are all larger than \\(-5\\), so the interior point is the absolute minimum."
+     "latex": "Each edge gives a one-variable quadratic. Its lowest value is \\(-4\\) on \\(x=0\\) and \\(-1\\) on each other edge. All are above \\(-5\\), so \\((1,2)\\) is the absolute minimum."
     },
     {
      "label": "Check the corners for the maximum",
@@ -323,7 +323,7 @@
    "say": [
     "On a closed, bounded region, a continuous function always has an absolute max and min. They can only hide in two places: at interior critical points or somewhere on the boundary.",
     "So the method is a checklist: find interior critical points, then turn each edge into a one-variable problem, then check the corners. Compare every candidate value, and the biggest and smallest win.",
-    "Nothing clever, just complete. Points are lost for skipping a place to look, not for hard math."
+    "Nothing clever, just complete. The only real slip is skipping a place to look."
    ],
    "draw": [
     "Draw the rectangle 0 \u2264 x \u2264 3, 0 \u2264 y \u2264 4 with its four corners circled.",
@@ -360,7 +360,7 @@
     ],
     "steps": [
      {
-      "say": "Inside: f_x = 2x \u2212 2 and f_y = 2y \u2212 4 vanish at (1, 2).",
+      "say": "Inside: f_x = 2x \u2212 2 and f_y = 2y \u2212 4 are both zero at (1, 2).",
       "ask": {
        "q": "Is (1, 2) inside the rectangle?",
        "a": "Yes: 0 < 1 < 3 and 0 < 2 < 4. A critical point outside the region would be thrown away."
@@ -511,7 +511,7 @@
      "a": "How much, and around which axis, the flow spins at a point."
     }
    ],
-   "next": "Next session: double integrals. Adding up f over a region by slicing it."
+   "next": "Next session: line integrals, adding up a field's push along a path."
   }
  }
 }

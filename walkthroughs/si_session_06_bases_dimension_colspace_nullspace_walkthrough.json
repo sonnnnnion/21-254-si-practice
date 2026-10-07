@@ -156,7 +156,7 @@
    "walkthrough": [
     {
      "label": "Find pivot columns",
-     "latex": "The pivots are in columns 1 and 2 of the RREF. So the pivot columns of the original matrix are the first two columns of \\(A\\)."
+     "latex": "Pivots are in columns 1 and 2, so use columns 1 and 2 of the original \\(A\\)."
     },
     {
      "label": "Write the column-space basis",
@@ -247,7 +247,7 @@
     },
     {
      "label": "Solve for coordinates",
-     "latex": "We solve \\(P[c]_B=v\\), or\n\\[c_1b_1+c_2b_2+c_3b_3=v.\\]\nThe solution is\n\\[[v]_B=\\begin{bmatrix}-1\\\\3\\\\0\\end{bmatrix}.\\]"
+     "latex": "We solve \\(P[v]_B=v\\), or\n\\[c_1b_1+c_2b_2+c_3b_3=v.\\]\nThe solution is\n\\[[v]_B=\\begin{bmatrix}-1\\\\3\\\\0\\end{bmatrix}.\\]"
     },
     {
      "label": "Quick check",
@@ -490,7 +490,7 @@
     "ifStuck": [
      {
       "if": "a student gives RREF columns for Col(A)",
-      "then": "check whether (1, 0, 0, 0) is even a combination of A's columns. Usually it isn't."
+      "then": "check whether (1, 0, 0, 0), the RREF's first column, is a combination of A's columns. Here it isn't."
      }
     ],
     "transition": "A basis gives every vector a unique recipe. Next problem: find the recipe, meaning the coordinates, in a nonstandard basis."

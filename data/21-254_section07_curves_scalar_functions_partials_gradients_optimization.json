@@ -27,7 +27,7 @@
     "Compute arc length from speed"
    ],
    "examFlavor": "Direct curve computation with a constant-speed parametrization",
-   "problemLatex": "Consider the curve\n\\[\\mathbf r(t)=\\langle 3\\cos t,\\,3\\sin t,\\,4t\\rangle,\\qquad 0\\le t\\le \\pi.\\]\n\n(a) Find the velocity vector \\(\\mathbf r'(t)\\).\n\n(b) Find the speed \\(\\|\\mathbf r'(t)\\|\\).\n\n(c) Find the unit tangent vector \\(\\mathbf T(t)\\).\n\n(d) Find the arc length of the curve on \\(0\\le t\\le \\pi\\).",
+   "problemLatex": "Consider the curve\n\\[\\mathbf r(t)=[3\\cos t,\\,3\\sin t,\\,4t],\\qquad 0\\le t\\le \\pi.\\]\n\n(a) Find the velocity vector \\(\\mathbf r'(t)\\).\n\n(b) Find the speed \\(\\|\\mathbf r'(t)\\|\\).\n\n(c) Find the unit tangent vector \\(\\mathbf T(t)\\).\n\n(d) Find the arc length of the curve on \\(0\\le t\\le \\pi\\).",
    "thinkFirst": "For arc length, the main object is the speed. If the speed turns out to be constant, the integral becomes very short.",
    "hints": [
     "Differentiate each component of \\(\\mathbf r(t)\\) separately.",
@@ -35,11 +35,11 @@
     "The unit tangent is velocity divided by speed.",
     "Arc length is \\(\\int_a^b \\|\\mathbf r'(t)\\|\\,dt\\)."
    ],
-   "setupLatex": "Start with\n\\[\\mathbf r'(t)=\\langle -3\\sin t,\\,3\\cos t,\\,4\\rangle.\\]\nThen compute its magnitude before setting up the arc length integral.",
+   "setupLatex": "Start with\n\\[\\mathbf r'(t)=[-3\\sin t,\\,3\\cos t,\\,4].\\]\nThen compute its magnitude before setting up the arc length integral.",
    "solutionSteps": [
     {
      "label": "Differentiate the curve",
-     "latex": "Differentiate component by component:\n\\[\\mathbf r'(t)=\\langle -3\\sin t,\\,3\\cos t,\\,4\\rangle.\\]"
+     "latex": "Differentiate component by component:\n\\[\\mathbf r'(t)=[-3\\sin t,\\,3\\cos t,\\,4].\\]"
     },
     {
      "label": "Compute speed",
@@ -47,20 +47,20 @@
     },
     {
      "label": "Find the unit tangent vector",
-     "latex": "Divide velocity by speed:\n\\[\\mathbf T(t)=\\frac{\\mathbf r'(t)}{\\|\\mathbf r'(t)\\|}=\\left\\langle -\\frac{3}{5}\\sin t,\\,\\frac{3}{5}\\cos t,\\,\\frac45\\right\\rangle.\\]"
+     "latex": "Divide velocity by speed:\n\\[\\mathbf T(t)=\\frac{\\mathbf r'(t)}{\\|\\mathbf r'(t)\\|}=\\left[ -\\frac{3}{5}\\sin t,\\,\\frac{3}{5}\\cos t,\\,\\frac45\\right].\\]"
     },
     {
      "label": "Compute arc length",
      "latex": "Arc length is\n\\[L=\\int_0^\\pi \\|\\mathbf r'(t)\\|\\,dt=\\int_0^\\pi 5\\,dt=5\\pi.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[\\mathbf r'(t)=\\langle -3\\sin t,3\\cos t,4\\rangle,\\quad \\|\\mathbf r'(t)\\|=5,\\quad \\mathbf T(t)=\\left\\langle -\\frac35\\sin t,\\frac35\\cos t,\\frac45\\right\\rangle,\\quad L=5\\pi.\\]",
+   "finalAnswerLatex": "(a) \\(\\mathbf r'(t)=[-3\\sin t,\\,3\\cos t,\\,4]\\)\n\n(b) \\(\\|\\mathbf r'(t)\\|=5\\)\n\n(c) \\(\\mathbf T(t)=\\left[-\\frac35\\sin t,\\,\\frac35\\cos t,\\,\\frac45\\right]\\)\n\n(d) \\(L=5\\pi\\)",
    "commonMistakes": [
     "Forgetting that speed is the magnitude of velocity, not the velocity vector itself.",
     "Dropping the square root when computing speed.",
     "Using position \\(\\mathbf r(t)\\) instead of velocity \\(\\mathbf r'(t)\\) in the arc length integral."
    ],
-   "similarProblemPrompt": "Try the same questions for \\(\\mathbf r(t)=\\langle 5\\cos t,5\\sin t,12t\\rangle\\) on \\(0\\le t\\le 2\\pi\\)."
+   "similarProblemPrompt": "Try the same questions for \\(\\mathbf r(t)=[5\\cos t,5\\sin t,12t]\\) on \\(0\\le t\\le 2\\pi\\)."
   },
   {
    "id": "curvgradopt-002",
@@ -93,10 +93,10 @@
     },
     {
      "label": "Write the vector parametrization",
-     "latex": "Therefore\n\\[\\mathbf r(t)=\\langle 2\\cos t,\\,2\\sin t,\\,2\\cos t+1\\rangle,\\qquad 0\\le t\\le 2\\pi.\\]"
+     "latex": "Therefore\n\\[\\mathbf r(t)=[2\\cos t,\\,2\\sin t,\\,2\\cos t+1],\\qquad 0\\le t\\le 2\\pi.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[\\boxed{\\mathbf r(t)=\\langle 2\\cos t,\\,2\\sin t,\\,2\\cos t+1\\rangle,\\quad 0\\le t\\le 2\\pi.}\\]",
+   "finalAnswerLatex": "\\[\\boxed{\\mathbf r(t)=[2\\cos t,\\,2\\sin t,\\,2\\cos t+1]}\\]\nwith \\(0\\le t\\le 2\\pi\\).",
    "commonMistakes": [
     "Using radius \\(4\\) instead of radius \\(2\\).",
     "Forgetting to plug \\(x(t)\\) into \\(z=x+1\\).",
@@ -169,7 +169,7 @@
    "solutionSteps": [
     {
      "label": "Compute \\(f_x\\)",
-     "latex": "For \\(f_x\\), treat \\(y\\) as constant:\n\\[f_x=2xe^{xy}+x^2\\cdot ye^{xy}+y\\cos x.\\]\nSo\n\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x.\\]"
+     "latex": "Treat \\(y\\) as a constant and use the product rule on \\(x^2e^{xy}\\):\n\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x.\\]"
     },
     {
      "label": "Compute \\(f_y\\)",
@@ -177,14 +177,14 @@
     },
     {
      "label": "Compute \\(f_{xy}\\)",
-     "latex": "Differentiate \\(f_x\\) with respect to \\(y\\):\n\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x.\\]\nThen\n\\[f_{xy}=2x\\cdot xe^{xy}+x^2\\left(e^{xy}+xy e^{xy}\\right)+\\cos x.\\]\nThus\n\\[f_{xy}=2x^2e^{xy}+x^2e^{xy}+x^3ye^{xy}+\\cos x=3x^2e^{xy}+x^3ye^{xy}+\\cos x.\\]"
+     "latex": "Differentiate \\(f_x\\) with respect to \\(y\\) (product rule again on \\(x^2ye^{xy}\\)):\n\\[f_{xy}=2x\\cdot xe^{xy}+x^2\\left(e^{xy}+xy e^{xy}\\right)+\\cos x.\\]\nThus\n\\[f_{xy}=2x^2e^{xy}+x^2e^{xy}+x^3ye^{xy}+\\cos x=3x^2e^{xy}+x^3ye^{xy}+\\cos x.\\]"
     },
     {
      "label": "Evaluate at (0,2)",
      "latex": "At \\((0,2)\\), all terms containing \\(x\\) vanish, and \\(\\cos 0=1\\). Therefore\n\\[f_{xy}(0,2)=1.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x,\\quad f_y=x^3e^{xy}+\\sin x,\\quad f_{xy}=3x^2e^{xy}+x^3ye^{xy}+\\cos x,\\quad f_{xy}(0,2)=1.\\]",
+   "finalAnswerLatex": "(a) \\(f_x=2xe^{xy}+x^2ye^{xy}+y\\cos x\\), \\(f_y=x^3e^{xy}+\\sin x\\)\n\n(b) \\(f_{xy}=3x^2e^{xy}+x^3ye^{xy}+\\cos x\\)\n\n(c) \\(f_{xy}(0,2)=1\\)",
    "commonMistakes": [
     "Treating \\(y\\) as a variable while computing \\(f_x\\) or treating \\(x\\) as a variable while computing \\(f_y\\).",
     "Forgetting the chain rule on \\(e^{xy}\\).",
@@ -204,7 +204,7 @@
     "Evaluate derivatives at a parameter point"
    ],
    "examFlavor": "Chain rule problem where the function depends on intermediate variables depending on two parameters",
-   "problemLatex": "Let\n\\[z=f(x,y),\\qquad x=s^2+t,\\qquad y=st^2.\\]\nSuppose that at the point corresponding to \\((s,t)=(1,2)\\),\n\\[f_x(x,y)=3,\\qquad f_y(x,y)=-2.\\]\nFind \\(\\dfrac{\\partial z}{\\partial s}\\) and \\(\\dfrac{\\partial z}{\\partial t}\\) at \\((s,t)=(1,2)\\).",
+   "problemLatex": "Let\n\\[z=f(x,y),\\qquad x=s^2+t,\\qquad y=st^2.\\]\nAt \\((s,t)=(1,2)\\) we have \\((x,y)=(3,4)\\). Suppose that\n\\[f_x(3,4)=3,\\qquad f_y(3,4)=-2.\\]\nFind \\(\\dfrac{\\partial z}{\\partial s}\\) and \\(\\dfrac{\\partial z}{\\partial t}\\) at \\((s,t)=(1,2)\\).",
    "thinkFirst": "This problem is about the chain rule structure, not about knowing the formula for \\(f\\) itself.",
    "hints": [
     "Use \\(z_s=f_xx_s+f_yy_s\\).",
@@ -254,35 +254,35 @@
    "problemLatex": "Let\n\\[f(x,y,z)=x^2y+yz^2.\\]\nAt the point \\(P=(1,2,-1)\\), find:\n\n(a) \\(\\nabla f(P)\\).\n\n(b) The directional derivative of \\(f\\) at \\(P\\) in the direction from \\(P\\) to \\(Q=(3,3,-1)\\).\n\n(c) The direction in which \\(f\\) increases fastest at \\(P\\).",
    "thinkFirst": "A directional derivative requires a unit vector. If the direction is given using two points, first form the vector from the starting point to the ending point.",
    "hints": [
-    "Compute \\(\\nabla f=\\langle f_x,f_y,f_z\\rangle\\).",
+    "Compute \\(\\nabla f=[f_x,f_y,f_z]\\).",
     "The direction from \\(P\\) to \\(Q\\) is \\(Q-P\\).",
     "Normalize the direction vector before taking the dot product with the gradient.",
     "The direction of fastest increase is the gradient direction."
    ],
-   "setupLatex": "First compute\n\\[\\nabla f=\\left\\langle 2xy,\\,x^2+z^2,\\,2yz\\right\\rangle.\\]",
+   "setupLatex": "First compute\n\\[\\nabla f=\\left[ 2xy,\\,x^2+z^2,\\,2yz\\right].\\]",
    "solutionSteps": [
     {
      "label": "Evaluate the gradient at P",
-     "latex": "At \\(P=(1,2,-1)\\),\n\\[\\nabla f(P)=\\langle 2(1)(2),\\,1^2+(-1)^2,\\,2(2)(-1)\\rangle=\\langle 4,2,-4\\rangle.\\]"
+     "latex": "At \\(P=(1,2,-1)\\),\n\\[\\nabla f(P)=[2(1)(2),\\,1^2+(-1)^2,\\,2(2)(-1)]=[4,2,-4].\\]"
     },
     {
      "label": "Find the unit direction vector",
-     "latex": "The direction from \\(P\\) to \\(Q\\) is\n\\[Q-P=\\langle 3-1,\\,3-2,\\,-1-(-1)\\rangle=\\langle 2,1,0\\rangle.\\]\nIts length is \\(\\sqrt{2^2+1^2}=\\sqrt5\\), so the unit direction is\n\\[\\mathbf u=\\left\\langle \\frac{2}{\\sqrt5},\\frac{1}{\\sqrt5},0\\right\\rangle.\\]"
+     "latex": "The direction from \\(P\\) to \\(Q\\) is\n\\[Q-P=[3-1,\\,3-2,\\,-1-(-1)]=[2,1,0].\\]\nIts length is \\(\\sqrt{2^2+1^2}=\\sqrt5\\), so the unit direction is\n\\[\\mathbf u=\\left[ \\frac{2}{\\sqrt5},\\frac{1}{\\sqrt5},0\\right].\\]"
     },
     {
      "label": "Compute the directional derivative",
-     "latex": "The directional derivative is\n\\[D_{\\mathbf u}f(P)=\\nabla f(P)\\cdot \\mathbf u.\\]\nThus\n\\[D_{\\mathbf u}f(P)=\\langle 4,2,-4\\rangle\\cdot \\left\\langle \\frac{2}{\\sqrt5},\\frac{1}{\\sqrt5},0\\right\\rangle=\\frac{8}{\\sqrt5}+\\frac{2}{\\sqrt5}=\\frac{10}{\\sqrt5}=2\\sqrt5.\\]"
+     "latex": "The directional derivative is\n\\[D_{\\mathbf u}f(P)=\\nabla f(P)\\cdot \\mathbf u.\\]\nThus\n\\[D_{\\mathbf u}f(P)=[4,2,-4]\\cdot \\left[ \\frac{2}{\\sqrt5},\\frac{1}{\\sqrt5},0\\right]=\\frac{8}{\\sqrt5}+\\frac{2}{\\sqrt5}=\\frac{10}{\\sqrt5}=2\\sqrt5.\\]"
     },
     {
      "label": "Find the fastest-increase direction",
-     "latex": "The direction of fastest increase is the direction of the gradient:\n\\[\\boxed{\\langle 4,2,-4\\rangle}\\]\nor, as a unit vector,\n\\[\\frac{1}{6}\\langle 4,2,-4\\rangle=\\left\\langle\\frac23,\\frac13,-\\frac23\\right\\rangle.\\]"
+     "latex": "The direction of fastest increase is the direction of the gradient:\n\\[\\boxed{[4,2,-4]}\\]\nor, as a unit vector,\n\\[\\frac{1}{6}[4,2,-4]=\\left[\\frac23,\\frac13,-\\frac23\\right].\\]"
     }
    ],
-   "finalAnswerLatex": "\\[\\nabla f(P)=\\langle4,2,-4\\rangle,\\qquad D_{\\mathbf u}f(P)=2\\sqrt5,\\qquad \\text{fastest increase direction }=\\left\\langle\\frac23,\\frac13,-\\frac23\\right\\rangle.\\]",
+   "finalAnswerLatex": "(a) \\(\\nabla f(P)=[4,2,-4]\\)\n\n(b) \\(D_{\\mathbf u}f(P)=2\\sqrt5\\)\n\n(c) The direction of \\(\\nabla f(P)=[4,2,-4]\\), or as a unit vector \\(\\left[\\frac23,\\frac13,-\\frac23\\right]\\).",
    "commonMistakes": [
     "Using \\(Q\\) itself as the direction instead of using \\(Q-P\\).",
     "Forgetting to normalize the direction vector before taking the dot product.",
-    "Saying the maximum directional derivative direction is any positive vector, without specifying the gradient direction."
+    "Naming some other direction for fastest increase. It is always the direction of \\(\\nabla f(P)\\)."
    ],
    "similarProblemPrompt": "Try \\(f(x,y,z)=xe^y+z^2x\\) at \\(P=(1,0,2)\\), in the direction toward \\(Q=(1,2,4)\\)."
   },
@@ -321,10 +321,10 @@
     },
     {
      "label": "Approximate f(0.9,2.1)",
-     "latex": "Using \\(x-1=-0.1\\) and \\(y-2=0.1\\),\n\\[f(0.9,2.1)\\approx \\sqrt5-\\frac{-0.1}{\\sqrt5}-\\frac{2(0.1)}{\\sqrt5}=\\sqrt5-\\frac{0.1}{\\sqrt5}.\\]"
+     "latex": "Using \\(x-1=-0.1\\) and \\(y-2=0.1\\),\n\\[f(0.9,2.1)\\approx \\sqrt5-\\frac{-0.1}{\\sqrt5}-\\frac{2(0.1)}{\\sqrt5}=\\sqrt5-\\frac{0.1}{\\sqrt5}\\approx 2.19.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[z-\\sqrt5=-\\frac1{\\sqrt5}(x-1)-\\frac2{\\sqrt5}(y-2),\\qquad f(0.9,2.1)\\approx \\sqrt5-\\frac{0.1}{\\sqrt5}.\\]",
+   "finalAnswerLatex": "\\[z-\\sqrt5=-\\frac1{\\sqrt5}(x-1)-\\frac2{\\sqrt5}(y-2)\\]\n\\[f(0.9,2.1)\\approx \\sqrt5-\\frac{0.1}{\\sqrt5}\\approx 2.19\\]",
    "commonMistakes": [
     "Forgetting to compute the actual height \\(f(1,2)=\\sqrt5\\).",
     "Dropping the negative signs in \\(f_x\\) and \\(f_y\\).",
@@ -355,11 +355,11 @@
    "solutionSteps": [
     {
      "label": "Compute the gradient",
-     "latex": "We have\n\\[\\nabla f(x,y)=\\langle 2x+y,\\,x+2y\\rangle.\\]\nAt \\((1,1)\\),\n\\[\\nabla f(1,1)=\\langle 3,3\\rangle.\\]"
+     "latex": "We have\n\\[\\nabla f(x,y)=[2x+y,\\,x+2y].\\]\nAt \\((1,1)\\),\n\\[\\nabla f(1,1)=[3,3].\\]"
     },
     {
      "label": "Use the gradient as a normal vector",
-     "latex": "The tangent line has normal vector \\(\\langle3,3\\rangle\\), so\n\\[3(x-1)+3(y-1)=0.\\]"
+     "latex": "The tangent line has normal vector \\([3,3]\\), so\n\\[3(x-1)+3(y-1)=0.\\]"
     },
     {
      "label": "Simplify",
@@ -412,7 +412,7 @@
      "latex": "At \\((-1,2)\\),\n\\[D=-12<0.\\]\nSo \\((-1,2)\\) is a saddle point."
     }
    ],
-   "finalAnswerLatex": "\\[(1,2)\\text{ is a local minimum, and }(-1,2)\\text{ is a saddle point.}\\]",
+   "finalAnswerLatex": "\\((1,2)\\) is a local minimum, and \\((-1,2)\\) is a saddle point.",
    "commonMistakes": [
     "Solving \\(f_x=0\\) but forgetting to also solve \\(f_y=0\\).",
     "Using the one-variable second derivative test directly instead of the two-variable test.",
@@ -437,7 +437,7 @@
    "hints": [
     "Start by solving \\(f_x=0\\) and \\(f_y=0\\).",
     "The critical point \\((1,-2)\\) lies inside the rectangle.",
-    "For the boundary, this quadratic is convex, so the maximum over the rectangle will occur at a corner.",
+    "Complete the square: \\(f=(x-1)^2+(y+2)^2-5\\). So \\(f\\) grows with distance from \\((1,-2)\\).",
     "Compare the interior value and the corner values."
    ],
    "setupLatex": "Compute\n\\[f_x=2x-2,\\qquad f_y=2y+4.\\]\nThe interior critical point is \\((1,-2)\\).",
@@ -448,14 +448,14 @@
     },
     {
      "label": "Check the corners for the maximum",
-     "latex": "The function is a sum of upward-opening quadratic terms, so the interior critical point is the minimum. The absolute maximum on the rectangle occurs on the boundary; for this rectangular quadratic, it is enough to compare the farthest corner values. Evaluate all corners:\n\\[f(0,-3)=0+0+9-12=-3,\\]\n\\[f(0,1)=0+0+1+4=5,\\]\n\\[f(3,-3)=9-6+9-12=0,\\]\n\\[f(3,1)=9-6+1+4=8.\\]"
+     "latex": "Completing the square, \\(f=(x-1)^2+(y+2)^2-5\\), so \\(f\\) grows with distance from \\((1,-2)\\). The maximum is at the corner farthest from \\((1,-2)\\). Evaluate all four corners:\n\\[f(0,-3)=0+0+9-12=-3,\\]\n\\[f(0,1)=0+0+1+4=5,\\]\n\\[f(3,-3)=9-6+9-12=0,\\]\n\\[f(3,1)=9-6+1+4=8.\\]"
     },
     {
      "label": "Choose absolute extrema",
      "latex": "The smallest value found is \\(-5\\), at \\((1,-2)\\). The largest value found is \\(8\\), at \\((3,1)\\)."
     }
    ],
-   "finalAnswerLatex": "\\[\\boxed{\\text{Absolute minimum }=-5\\text{ at }(1,-2),\\qquad \\text{absolute maximum }=8\\text{ at }(3,1).}\\]",
+   "finalAnswerLatex": "Absolute minimum \\(-5\\) at \\((1,-2)\\). Absolute maximum \\(8\\) at \\((3,1)\\).",
    "commonMistakes": [
     "Finding the interior critical point and stopping without checking the boundary.",
     "Assuming an interior critical point must be a maximum or minimum without checking the region.",

@@ -490,7 +490,7 @@
       }
      },
      {
-      "say": "\\(L=\\displaystyle\\int_0^{\\pi}\\sqrt5\\,dt=\\pi\\sqrt5\\).",
+      "say": "Constant speed \u221a5 for a time of \u03c0: L = \u03c0\u221a5.",
       "ask": {
        "q": "Unrolled, what triangle is this?",
        "a": "Base 2\u03c0 (half the circle), height \u03c0, hypotenuse \u221a(4\u03c0\u00b2 + \u03c0\u00b2) = \u03c0\u221a5. \u2713"

@@ -503,7 +503,7 @@
     },
     {
      "q": "What's the one factor that polar, cylindrical and dS all have in common?",
-     "a": "An area/volume stretch factor: \\(r\\), \\(r\\), or \\(\\sqrt{1+f_x^2+f_y^2}\\)."
+     "a": "An area or volume stretch factor: r for polar and cylindrical, the square root for dS."
     }
    ]
   },
@@ -656,7 +656,7 @@
       "say": "2 \u00d7 area 4\u03c0 = 8\u03c0.",
       "ask": {
        "q": "Check via the boundary.",
-       "a": "\\(r=(2\\cos t,2\\sin t,3)\\): \\(F\\cdot r'=4\\sin^2t+4\\cos^2t=4\\), and \\(\\int_0^{2\\pi}4\\,dt=8\\pi\\). \u2713"
+       "a": "Walk the circle r(t) = (2 cos t, 2 sin t, 3): F \u00b7 r\u2032 = 4 sin\u00b2t + 4 cos\u00b2t = 4, and 4 \u00b7 2\u03c0 = 8\u03c0. \u2713"
       },
       "why": "Stokes guarantees the two sides agree. Computing both is the ultimate check."
      }
@@ -691,11 +691,11 @@
       "say": "Bounds: 0 \u2264 \u03b8 \u2264 2\u03c0, 0 \u2264 r \u2264 2, 0 \u2264 z \u2264 r\u00b2.",
       "ask": {
        "q": "What does the solid look like?",
-       "a": "A bowl shape: the region between the floor and the paraboloid, cut off at radius 2."
+       "a": "A cylinder of radius 2 with a bowl scooped out of its top: height 0 at the center, 4 at the rim."
       }
      },
      {
-      "say": "\\(\\displaystyle\\int_0^{2\\pi}\\!\\int_0^2\\!\\int_0^{r^2} z\\,r\\,dz\\,dr\\,d\\theta\\).",
+      "say": "dV = r dz dr d\u03b8, so the integrand becomes z times r.",
       "ask": {
        "q": "Where does the r come from?",
        "a": "Cylindrical cells are polar cells stacked up: dV = r dz dr d\u03b8."
@@ -766,8 +766,8 @@
      {
       "say": "Clockwise flips the sign: \u22122.",
       "ask": {
-       "q": "How many points is that sign worth on an exam?",
-       "a": "All of them, if the final answer is graded."
+       "q": "What would the answer be counterclockwise?",
+       "a": "+2: same size, opposite sign."
       },
       "why": "The orientation is part of the question, not a detail."
      }

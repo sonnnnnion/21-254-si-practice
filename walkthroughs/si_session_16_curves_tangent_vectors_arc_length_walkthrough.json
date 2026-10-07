@@ -473,7 +473,7 @@
       "why": "sin\u00b2 + cos\u00b2 = 1 is the reason almost every circle and helix problem has a clean answer."
      },
      {
-      "say": "\\(L=\\displaystyle\\int_0^{2\\pi}5\\,dt=10\\pi\\).",
+      "say": "Constant speed 5 for a time of 2\u03c0: L = 5 \u00b7 2\u03c0 = 10\u03c0.",
       "ask": {
        "q": "Unroll one turn of the helix onto paper. What shape is it?",
        "a": "A right triangle: base 6\u03c0 (the circle), height 8\u03c0 (the climb), hypotenuse 10\u03c0. A 3-4-5 triangle!"

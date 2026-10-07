@@ -1,14 +1,19 @@
 // Minimal Chrome DevTools Protocol driver (Node 22+, no packages). Used for tests the Browser pane
 // can't do (service workers, offline). Usage: node tools/cdp.mjs <script.mjs>  (script exports default async ({send, evaluate, sleep}))
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 // Chrome: CHROME=… if set, else the Mac app, else a Linux chrome/chromium on the PATH (for cloud sessions)
 const CHROME = process.env.CHROME || ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser"].find(p => existsSync(p)) || "google-chrome";
-const port = 9300 + Math.floor(Math.random() * 400);
-const dir = "/tmp/cdp-profile-" + port;
-const chrome = spawn(CHROME, ["--headless=new", "--disable-gpu", "--no-sandbox", `--remote-debugging-port=${port}`, `--user-data-dir=${dir}`, "--window-size=1280,900", "about:blank"], { stdio: "ignore" });
+// a fresh profile folder per run, and port 0: Chrome picks a free port and writes it to DevToolsActivePort, so
+// many runs at once (several agents) can never attach to each other's browser
+const dir = mkdtempSync(join(tmpdir(), "cdp-profile-"));
+const chrome = spawn(CHROME, ["--headless=new", "--disable-gpu", "--no-sandbox", "--remote-debugging-port=0", `--user-data-dir=${dir}`, "--window-size=1280,900", "about:blank"], { stdio: "ignore" });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-let targets;
+let port = 0, targets;
+for (let i = 0; i < 100 && !port; i++) { try { port = +readFileSync(join(dir, "DevToolsActivePort"), "utf8").split("\n")[0]; } catch { await sleep(100); } }
+if (!port) throw new Error("Chrome did not start (no DevToolsActivePort in " + dir + ")");
 for (let i = 0; i < 50; i++) { try { targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json(); break; } catch { await sleep(200); } }
 const page = targets.find(t => t.type === "page");
 const ws = new WebSocket(page.webSocketDebuggerUrl);

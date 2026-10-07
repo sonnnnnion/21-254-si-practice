@@ -534,7 +534,7 @@
   "open": {
    "title": "Exam review is about recognition",
    "say": [
-    "Welcome to Exam 1 review. Most points on this exam aren't lost to hard math. They're lost in the first ten seconds, when you don't recognize what kind of problem it is.",
+    "Welcome to Exam 1 review. Most problems on this exam aren't hard once you know what kind they are. The tricky part is the first ten seconds: recognizing the type.",
     "So today, for every problem, we'll say out loud: what type is this, and what's the first move? Then we do it."
    ],
    "ask": [
@@ -798,7 +798,7 @@
     ],
     "steps": [
      {
-      "say": "Expand along row 1: 1 · det[[1, 1], [3, 2]] − k · det[[2, 1], [0, 2]] + 0.",
+      "say": "Expand along row 1. The 0 in the top-right corner kills the third term.",
       "ask": {
        "q": "Why expand along row 1?",
        "a": "It has a zero, and the k is in it."

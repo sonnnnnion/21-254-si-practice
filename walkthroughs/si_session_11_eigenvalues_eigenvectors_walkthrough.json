@@ -366,7 +366,7 @@
     ],
     "steps": [
      {
-      "say": "A − λI is still triangular, and the determinant of a triangular matrix is the product down the diagonal. So the eigenvalues are sitting right there: 3, 3 and 2.",
+      "say": "A − λI is still triangular, so its determinant is the product down the diagonal. The eigenvalues are right there: 3, 3 and 2.",
       "ask": {
        "q": "3 shows up twice. What does that tell us, and what does it not tell us?",
        "a": "λ = 3 has algebraic multiplicity 2. It does not yet tell us how many independent eigenvectors λ = 3 has."
@@ -444,7 +444,7 @@
       "why": "Sum of the eigenvalues is the trace; product is the determinant. That is the fastest check you have on an exam."
      },
      {
-      "say": "Now λ = 5. A − 5I has rows (−1, 2) and (1, −2). They are multiples of each other, which is exactly what should happen: this matrix is singular. One equation is left: x = 2y.",
+      "say": "Now λ = 5. The rows (−1, 2) and (1, −2) are multiples of each other, as they should be: A − 5I is singular. One equation is left: x = 2y.",
       "ask": {
        "q": "If the two rows gave two independent equations, what would that tell you?",
        "a": "That A − 5I is invertible, so 5 is not an eigenvalue. Go back and find the arithmetic slip."
@@ -514,7 +514,7 @@
     "ifStuck": [
      {
       "if": "a student only checks the first coordinate",
-      "then": "ask: is (8, 5) a multiple of (1, 1)? Both coordinates must scale by the same number."
+      "then": "ask them to write Av = λv one entry at a time: 2 + k = λ and 8 = λ. Both have to hold."
      }
     ]
    }

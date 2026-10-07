@@ -165,7 +165,7 @@
     },
     {
      "label": "Decide diagonalizability",
-     "latex": "The eigenspace is 1-dimensional, so there is only one independent eigenvector. A \\(2\\times2\\) matrix needs two independent eigenvectors to be diagonalizable."
+     "latex": "Only one independent eigenvector, but a \\(2\\times2\\) matrix needs two. So \\(A\\) is not diagonalizable."
     }
    ],
    "finalAnswerLatex": "\\[\\lambda=3,\\qquad E_3=\\operatorname{span}\\{(1,0)\\},\\qquad A\\text{ is not diagonalizable}.\\]",
@@ -524,7 +524,7 @@
       }
      },
      {
-      "say": "Swap the diagonal, negate the off-diagonal, divide by 1: [[1, \u22121], [\u22121, 2]].",
+      "say": "Swap the diagonal, negate the off-diagonal, divide by det A = 1.",
       "ask": {
        "q": "Fast check?",
        "a": "A times it: first row 2 \u2212 1 = 1 and \u22122 + 2 = 0. \u2713"
@@ -573,7 +573,7 @@
       }
      },
      {
-      "say": "A \u2212 3I = [[0, 1], [0, 0]] forces x\u2082 = 0. Only x\u2081 is free: E\u2083 = span{(1, 0)}.",
+      "say": "A \u2212 3I has one nonzero row, and it forces x\u2082 = 0. Only x\u2081 is free: E\u2083 = span{(1, 0)}.",
       "ask": {
        "q": "What's the geometric multiplicity?",
        "a": "1."

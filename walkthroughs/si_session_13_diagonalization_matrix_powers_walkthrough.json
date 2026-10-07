@@ -182,7 +182,7 @@
     },
     {
      "label": "Apply A^n to each eigenvector piece",
-     "latex": "\\[A^n x=A^n(3v_1+2v_2)=3A^n v_1+2A^n v_2.\\] Since \\(A^n v_1=3^n v_1\\) and \\(A^n v_2=(-1)^n v_2\\),"
+     "latex": "\\[A^n x=A^n(3v_1+2v_2)=3A^n v_1+2A^n v_2.\\] Each piece picks up its eigenvalue: \\(A^n v_1=3^n v_1\\) and \\(A^n v_2=(-1)^n v_2\\)."
     },
     {
      "label": "Write the formula",
@@ -344,12 +344,12 @@
    "title": "Change coordinates, and the matrix becomes easy",
    "say": [
     "Last time we asked: are there enough eigenvectors? Today's payoff: when there are, the matrix becomes a diagonal matrix in disguise.",
-    "Diagonal matrices are the easiest matrices in the world. Multiplying them, powering them, reading them: all trivial. Diagonalization lets us borrow that ease for any matrix with an eigenbasis."
+    "Diagonal matrices are the easiest matrices in the world. Multiplying them, powering them, reading them: all easy. Diagonalization lets us borrow that ease for any matrix with an eigenbasis."
    ],
    "ask": [
     {
      "q": "What is \\(\\begin{bmatrix}2&0\\\\0&3\\end{bmatrix}^{10}\\)?",
-     "a": "\\(\\begin{bmatrix}2^{10}&0\\\\0&3^{10}\\end{bmatrix}\\). Just power the diagonal."
+     "a": "The diagonal matrix with entries 2¹⁰ and 3¹⁰. Just power the diagonal."
     }
    ],
    "write": [
@@ -402,7 +402,7 @@
     ],
     "steps": [
      {
-      "say": "v₁ goes first, so 5 goes first. P = [[2, 1], [1, −1]], D = diag(5, 2).",
+      "say": "v₁ goes first in P, so its eigenvalue 5 goes first in D.",
       "ask": {
        "q": "Eigenvectors: rows or columns of P?",
        "a": "Columns."
@@ -410,7 +410,7 @@
       "why": "AP = PD says exactly 'A times each column of P equals that column times its eigenvalue'."
      },
      {
-      "say": "det P = −2 − 1 = −3. Swap, negate, divide: P⁻¹ = [[1/3, 1/3], [1/3, −2/3]].",
+      "say": "det P = −2 − 1 = −3. Swap the diagonal, negate the off-diagonal, divide by −3.",
       "ask": {
        "q": "Quick check on P⁻¹?",
        "a": "P times it should be I. First row: 2/3 + 1/3 = 1 and 2/3 − 2/3 = 0. ✓"
@@ -424,10 +424,10 @@
       }
      },
      {
-      "say": "Multiply left to right: PD³ = [[250, 8], [125, −8]], then times P⁻¹ gives [[86, 78], [39, 47]].",
+      "say": "Multiply left to right: first PD³, then multiply that by P⁻¹. One entry at a time.",
       "ask": {
        "q": "How can you check this without trusting the diagonalization?",
-       "a": "A² = [[18, 14], [7, 11]], then A²A = [[86, 78], [39, 47]]. ✓"
+       "a": "A² has rows (18, 14) and (7, 11), and A² · A gives the same matrix. ✓"
       }
      }
     ],
@@ -577,7 +577,7 @@
      "a": "Reordering D without reordering the columns of P (or vice versa)."
     }
    ],
-   "next": "Next session: complex eigenvalues, when a matrix rotates and no real direction stays put."
+   "next": "Next session: projections and the cross product, splitting a vector into 'along' and 'across' pieces."
   }
  }
 }

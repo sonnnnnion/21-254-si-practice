@@ -306,7 +306,7 @@
    ],
    "draw": [
     "Draw a unit square, then an arrow labeled B to a parallelogram (area det B), then an arrow labeled A to a bigger one (area det A \u00b7 det B).",
-    "Draw a 3 \u00d7 3 cube doubled in all three directions and write 'volume \u00d7 2\u00b3 = 8'."
+    "Draw a unit cube doubled in all three directions and write 'volume \u00d7 2\u00b3 = 8'."
    ],
    "visualize": "matrix",
    "ask": [
@@ -380,7 +380,7 @@
     },
     "askFirst": [
      {
-      "q": "Which three rules will you need?",
+      "q": "Which rules will you need?",
       "a": "det(cB) = c\u207f det B, det A\u1d40 = det A, and det(A\u207b\u00b9) = 1/det A, plus det(product) = product of dets."
      }
     ],
@@ -398,7 +398,7 @@
        "q": "Why cubed?",
        "a": "The 2 multiplies all three rows, and each row contributes one factor of 2."
       },
-      "why": "This is the most common determinant-rule mistake on exams."
+      "why": "This is the rule people slip on most, so say the cube out loud."
      },
      {
       "say": "det A\u1d40 = det A = \u22123, and det(A\u207b\u00b9) = 1/(\u22123) = \u22121/3.",

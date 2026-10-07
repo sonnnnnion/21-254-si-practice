@@ -652,7 +652,7 @@
       "why": "Always check the right-hand side too. That one check is the difference between 'infinitely many' and 'none'."
      }
     ],
-    "meaning": "As k moves, the third plane tilts. At k = 2 it slides into a position containing a whole line of solutions; at k = \u22121 it becomes parallel to where it needs to be and misses entirely.",
+    "meaning": "At k = 2 the third equation adds nothing new, so a whole line of solutions survives. At k = \u22121 it contradicts the other two, so no point works.",
     "ifStuck": [
      {
       "if": "a student says both k = 2 and k = \u22121 give no solution",

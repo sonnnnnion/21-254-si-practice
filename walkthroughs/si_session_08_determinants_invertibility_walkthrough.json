@@ -149,7 +149,7 @@
     "Use row operation determinant rules",
     "Track signs and scaling"
    ],
-   "studentPromptLatex": "Suppose \\(A\\) is a \\(3\\times 3\\) matrix with \\(\\det(A)=4\\). A matrix \\(B\\) is made from \\(A\\) by doing these row operations in order:\n1. Swap rows 1 and 2.\n2. Multiply row 3 by 5.\n3. Replace row 1 by row 1 plus 2 times row 2.\nFind \\(\\det(B)\\).",
+   "studentPromptLatex": "Suppose \\(A\\) is a \\(3\\times 3\\) matrix with \\(\\det(A)=4\\). A matrix \\(B\\) is made from \\(A\\) by doing these row operations in order: (1) swap rows 1 and 2; (2) multiply row 3 by 5; (3) replace row 1 by row 1 plus 2 times row 2. Find \\(\\det(B)\\).",
    "whatToSayBefore": "Tell students: do not try to invent A. Just track what each row operation does to the determinant.",
    "visualSpec": {
     "type": "determinant_row_operation_tracker",
@@ -255,7 +255,7 @@
     },
     {
      "label": "Compute the determinant",
-     "latex": "Expand along the second row or compute directly:\n\\[\\det(A(k))=13-2k.\\]"
+     "latex": "Expand along the first row:\n\\[\\det(A(k))=13-2k.\\]"
     },
     {
      "label": "Find the bad value",
@@ -520,7 +520,7 @@
        "q": "How should you phrase the final answer?",
        "a": "k \u2260 13/2. The question asks where A(k) IS invertible."
       },
-      "why": "Read the question: answering with the bad value instead of the good ones costs points."
+      "why": "The bad value is just a stepping stone. The answer is every other k."
      }
     ],
     "meaning": "As k changes, the third column swings around. At exactly k = 13/2 it lands in the plane of the other two columns, and the volume collapses to zero.",

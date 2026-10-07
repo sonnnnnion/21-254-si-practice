@@ -18,7 +18,7 @@
   {
    "id": "transdet-001",
    "unit": "Linear Transformations, Determinants, and Inverses",
-   "title": "Standard Matrix, Invertibility, and Solving \\(T(x)=b\\)",
+   "title": "Standard Matrix, Invertibility, and Solving \\(T(v)=b\\)",
    "difficulty": "Exam-style",
    "estimatedMinutes": 12,
    "skills": [
@@ -28,8 +28,8 @@
     "Solve a transformation equation"
    ],
    "examFlavor": "Multi-part linear transformation problem",
-   "problemLatex": "Define \\(T:\\mathbb{R}^3\\to\\mathbb{R}^3\\) by\n\\[T(x,y,z)=\\begin{bmatrix}x-2y+z\\\\3x+y\\\\y-4z\\end{bmatrix}.\\]\n\n(a) Find the standard matrix \\(A\\) for \\(T\\).\n\n(b) Determine whether \\(T\\) is one-to-one and onto.\n\n(c) Find the unique vector \\(v\\) such that \\(T(v)=\\begin{bmatrix}1\\\\2\\\\-3\\end{bmatrix}\\), if it exists.",
-   "thinkFirst": "A transformation written by coordinate formulas is already telling you the columns of its standard matrix. The determinant will decide invertibility for a square matrix.",
+   "problemLatex": "Define \\(T:\\mathbb{R}^3\\to\\mathbb{R}^3\\) by\n\\[T(x,y,z)=\\begin{bmatrix}x-2y+z\\\\3x+y\\\\y-4z\\end{bmatrix}.\\]\n\n(a) Find the standard matrix \\(A\\) for \\(T\\).\n\n(b) Determine whether \\(T\\) is one-to-one and onto.\n\n(c) Find the vector \\(v\\) with \\(T(v)=\\begin{bmatrix}1\\\\2\\\\-3\\end{bmatrix}\\), if there is one.",
+   "thinkFirst": "Each output formula gives one row of the standard matrix. For a square matrix, the determinant decides invertibility.",
    "hints": [
     "The first coordinate is \\(x-2y+z\\), so the first row of the standard matrix is \\([1,-2,1]\\).",
     "For a \\(3\\times 3\\) matrix, nonzero determinant means one-to-one and onto.",
@@ -54,9 +54,9 @@
      "latex": "Solving\n\\[\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix}\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}=\\begin{bmatrix}1\\\\2\\\\-3\\end{bmatrix}\\]\ngives\n\\[v=\\begin{bmatrix}3/5\\\\1/5\\\\4/5\\end{bmatrix}.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[A=\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix},\\qquad \\det(A)=-25.\\]\nThus \\(T\\) is one-to-one and onto, and\n\\[v=\\begin{bmatrix}3/5\\\\1/5\\\\4/5\\end{bmatrix}.\\]",
+   "finalAnswerLatex": "\\[A=\\begin{bmatrix}1&-2&1\\\\3&1&0\\\\0&1&-4\\end{bmatrix},\\]\n\\(\\det(A)=-25\\neq 0\\), so \\(T\\) is one-to-one and onto, and\n\\[v=\\begin{bmatrix}3/5\\\\1/5\\\\4/5\\end{bmatrix}.\\]",
    "commonMistakes": [
-    "Putting the coefficient rows in as columns incorrectly.",
+    "Writing the coefficients of each formula as a column instead of a row.",
     "Saying one-to-one but not onto even though the matrix is square and invertible.",
     "Solving \\(A^Tv=b\\) instead of \\(Av=b\\)."
    ],
@@ -75,7 +75,7 @@
     "Evaluate a transformation"
    ],
    "examFlavor": "Linear transformation from given images",
-   "problemLatex": "Let \\(T:\\mathbb{R}^2\\to\\mathbb{R}^2\\) be linear. Suppose\n\\[T\\!\\left(\\begin{bmatrix}1\\\\1\\end{bmatrix}\\right)=\\begin{bmatrix}4\\\\1\\end{bmatrix},\\qquad\nT\\!\\left(\\begin{bmatrix}2\\\\-1\\end{bmatrix}\\right)=\\begin{bmatrix}1\\\\5\\end{bmatrix}.\\]\n\n(a) Find the standard matrix \\(A\\) of \\(T\\).\n\n(b) Compute \\(T\\!\\left(\\begin{bmatrix}3\\\\2\\end{bmatrix}\\right)\\).",
+   "problemLatex": "Let \\(T:\\mathbb{R}^2\\to\\mathbb{R}^2\\) be linear. Suppose\n\\[T\\!\\left(\\begin{bmatrix}1\\\\1\\end{bmatrix}\\right)=\\begin{bmatrix}4\\\\1\\end{bmatrix},\\]\n\\[T\\!\\left(\\begin{bmatrix}2\\\\-1\\end{bmatrix}\\right)=\\begin{bmatrix}1\\\\5\\end{bmatrix}.\\]\n\n(a) Find the standard matrix \\(A\\) of \\(T\\).\n\n(b) Compute \\(T\\!\\left(\\begin{bmatrix}3\\\\2\\end{bmatrix}\\right)\\).",
    "thinkFirst": "The given input vectors are not \\(e_1\\) and \\(e_2\\), so the output vectors are not directly the columns of \\(A\\). Put the input vectors into a matrix \\(P\\) and use \\(AP=Y\\).",
    "hints": [
     "Let \\(P\\) have the given input vectors as columns.",
@@ -90,14 +90,14 @@
     },
     {
      "label": "Solve for \\(A\\)",
-     "latex": "\\[A=YP^{-1}=\\begin{bmatrix}4&1\\\\1&5\\end{bmatrix}\\begin{bmatrix}1&2\\\\1&-1\\end{bmatrix}^{-1}=\\begin{bmatrix}5/3&7/3\\\\2&-1\\end{bmatrix}.\\]"
+     "latex": "Since \\(\\det(P)=-3\\),\n\\[P^{-1}=\\frac13\\begin{bmatrix}1&2\\\\1&-1\\end{bmatrix}.\\]\nThen\n\\[A=YP^{-1}=\\frac13\\begin{bmatrix}4&1\\\\1&5\\end{bmatrix}\\begin{bmatrix}1&2\\\\1&-1\\end{bmatrix}=\\begin{bmatrix}5/3&7/3\\\\2&-1\\end{bmatrix}.\\]"
     },
     {
      "label": "Evaluate the new vector",
      "latex": "\\[T\\!\\left(\\begin{bmatrix}3\\\\2\\end{bmatrix}\\right)=A\\begin{bmatrix}3\\\\2\\end{bmatrix}=\\begin{bmatrix}5/3&7/3\\\\2&-1\\end{bmatrix}\\begin{bmatrix}3\\\\2\\end{bmatrix}=\\begin{bmatrix}29/3\\\\4\\end{bmatrix}.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[A=\\begin{bmatrix}5/3&7/3\\\\2&-1\\end{bmatrix},\\qquad T\\!\\left(\\begin{bmatrix}3\\\\2\\end{bmatrix}\\right)=\\begin{bmatrix}29/3\\\\4\\end{bmatrix}.\\]",
+   "finalAnswerLatex": "\\[A=\\begin{bmatrix}5/3&7/3\\\\2&-1\\end{bmatrix},\\]\n\\[T\\!\\left(\\begin{bmatrix}3\\\\2\\end{bmatrix}\\right)=\\begin{bmatrix}29/3\\\\4\\end{bmatrix}.\\]",
    "commonMistakes": [
     "Treating the given output vectors as the columns of \\(A\\).",
     "Forgetting to invert the input matrix \\(P\\).",
@@ -165,8 +165,8 @@
    "thinkFirst": "The determinant tells you whether the inverse exists. Once you have \\(A^{-1}\\), the solution is \\(x=A^{-1}b\\).",
    "hints": [
     "If row reducing \\([A\\mid I]\\), keep track of all three columns of the identity matrix.",
-    "You should get determinant \\(13\\), so fractions with denominator 13 are expected.",
-    "Multiply \\(A^{-1}b\\) carefully."
+    "Expect fractions: every entry of \\(A^{-1}\\) is divided by \\(\\det(A)\\).",
+    "Check your answer: \\(Ax\\) should give back \\(b\\)."
    ],
    "setupLatex": "The inverse exists because \\(\\det(A)=13\\). Row reducing \\([A\\mid I]\\) or using cofactors gives the same inverse.",
    "solutionSteps": [
@@ -187,7 +187,7 @@
      "latex": "\\[x=\\begin{bmatrix}15/13\\\\25/13\\\\22/13\\end{bmatrix}.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[\\det(A)=13,\\qquad A^{-1}=\\frac1{13}\\begin{bmatrix}1&-2&6\\\\6&1&-3\\\\-2&4&1\\end{bmatrix},\\qquad x=\\begin{bmatrix}15/13\\\\25/13\\\\22/13\\end{bmatrix}.\\]",
+   "finalAnswerLatex": "\\(\\det(A)=13\\),\n\\[A^{-1}=\\frac1{13}\\begin{bmatrix}1&-2&6\\\\6&1&-3\\\\-2&4&1\\end{bmatrix},\\]\n\\[x=\\begin{bmatrix}15/13\\\\25/13\\\\22/13\\end{bmatrix}.\\]",
    "commonMistakes": [
     "Trying to divide by \\(A\\) instead of multiplying by \\(A^{-1}\\).",
     "Forgetting that every entry of the inverse is divided by 13.",
@@ -303,7 +303,7 @@
    "hints": [
     "Write the matrix first.",
     "Solve \\(x+y=0\\) and \\(y+z=0\\).",
-    "A map from \\(\\mathbb{R}^3\\) to \\(\\mathbb{R}^2\\) cannot be one-to-one if its kernel is nontrivial."
+    "One-to-one means \\(\\ker(T)=\\{0\\}\\). Onto means the columns of \\(A\\) span \\(\\mathbb{R}^2\\)."
    ],
    "setupLatex": "The standard matrix is\n\\[A=\\begin{bmatrix}1&1&0\\\\0&1&1\\end{bmatrix}.\\]\nNow solve \\(A\\begin{bmatrix}x\\\\y\\\\z\\end{bmatrix}=0\\).",
    "solutionSteps": [
@@ -324,7 +324,7 @@
      "latex": "The columns \\(\\begin{bmatrix}1\\\\0\\end{bmatrix}\\) and \\(\\begin{bmatrix}1\\\\1\\end{bmatrix}\\) are linearly independent in \\(\\mathbb{R}^2\\), so the column space is all of \\(\\mathbb{R}^2\\). Thus \\(T\\) is onto \\(\\mathbb{R}^2\\)."
     }
    ],
-   "finalAnswerLatex": "\\[A=\\begin{bmatrix}1&1&0\\\\0&1&1\\end{bmatrix},\\qquad \\ker(T)=\\operatorname{span}\\left\\{\\begin{bmatrix}-1\\\\1\\\\-1\\end{bmatrix}\\right\\}.\\]\nThe transformation is not one-to-one, but it is onto \\(\\mathbb{R}^2\\).",
+   "finalAnswerLatex": "\\[A=\\begin{bmatrix}1&1&0\\\\0&1&1\\end{bmatrix},\\]\n\\[\\ker(T)=\\operatorname{span}\\left\\{\\begin{bmatrix}-1\\\\1\\\\-1\\end{bmatrix}\\right\\}.\\]\nThe transformation is not one-to-one, but it is onto \\(\\mathbb{R}^2\\).",
    "commonMistakes": [
     "Forgetting that the kernel lives in the domain \\(\\mathbb{R}^3\\).",
     "Saying not onto just because there are three input variables.",
@@ -372,7 +372,7 @@
      "latex": "\\[\\det(A^TB^{-1}A^2)=\\det(A^T)\\det(B^{-1})\\det(A^2).\\]\nThus\n\\[\\det(A^TB^{-1}A^2)=(-2)\\left(\\frac15\\right)(-2)^2=-\\frac85.\\]"
     }
    ],
-   "finalAnswerLatex": "\\[\\det(A^T)=-2,\\\\ \\det(B^{-1})=\\frac15,\\\\ \\det(3A)=-54,\n\\qquad \\det(A^TB^{-1}A^2)=-\\frac85.\\]",
+   "finalAnswerLatex": "\\(\\text{(a) }\\det(A^T)=-2,\\) \\(\\text{(b) }\\det(B^{-1})=1/5,\\) \\(\\text{(c) }\\det(3A)=-54,\\) \\(\\text{(d) }\\det(A^TB^{-1}A^2)=-8/5.\\)",
    "commonMistakes": [
     "Using \\(\\det(3A)=3\\det(A)\\) instead of \\(3^3\\det(A)\\).",
     "Forgetting that \\(\\det(A^2)=\\det(A)^2\\).",
@@ -393,7 +393,7 @@
     "Avoid common false converses"
    ],
    "examFlavor": "True/false conceptual problem",
-   "problemLatex": "Let \\(A\\) be a \\(4\\times 4\\) matrix. Decide whether each statement is true or false. Give a brief explanation.\n\n(a) If \\(A\\) has a pivot in every row, then \\(A\\) is invertible.\n\n(b) If \\(Ax=0\\) has only the trivial solution, then \\(\\det(A)\\neq 0\\).\n\n(c) If the columns of \\(A\\) span \\(\\mathbb{R}^4\\), then the columns of \\(A\\) are linearly independent.\n\n(d) If \\(A\\) is not invertible, then \\(Ax=b\\) has no solution for every \\(b\\in\\mathbb{R}^4\\).",
+   "problemLatex": "Let \\(A\\) be a \\(4\\times 4\\) matrix. Decide whether each statement is true or false. Give a brief explanation.\n\n(a) If \\(A\\) has a pivot in every row, then \\(A\\) is invertible.\n\n(b) If \\(Ax=0\\) has only the trivial solution, then \\(\\det(A)\\neq 0\\).\n\n(c) If the columns of \\(A\\) span \\(\\mathbb{R}^4\\), then the columns of \\(A\\) are linearly independent.\n\n(d) If \\(A\\) is not invertible, then for every \\(b\\in\\mathbb{R}^4\\), \\(Ax=b\\) has no solution.",
    "thinkFirst": "For square matrices, many conditions are equivalent: full pivots, independent columns, spanning columns, trivial null space, nonzero determinant, and invertibility. Part (d) is the tricky one.",
    "hints": [
     "In a square matrix, a pivot in every row also means a pivot in every column.",
@@ -417,7 +417,7 @@
     },
     {
      "label": "Part (d)",
-     "latex": "False. If \\(A\\) is not invertible, then \\(Ax=b\\) is not consistent for every \\(b\\), but some choices of \\(b\\) may still work. For example, \\(b=0\\) always gives at least the solution \\(x=0\\)."
+     "latex": "False. If \\(A\\) is not invertible, then \\(Ax=b\\) has no solution for some \\(b\\), but not for every \\(b\\). For example, \\(b=0\\) always has the solution \\(x=0\\)."
     }
    ],
    "finalAnswerLatex": "(a) True. (b) True. (c) True. (d) False.",
