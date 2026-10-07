@@ -1,0 +1,120 @@
+diff -ru base3/index.html a26/index.html
+--- base3/index.html	2026-10-06 23:20:20
++++ a26/index.html	2026-10-06 23:23:42
+@@ -12280,10 +12280,11 @@
+   if (!VzView.live) return vals;
+   const seen = VzView.labSeen, base = String(name).replace(/<[^>]+>/g, "").replace(/[−-]?\d[\d.,/]*/g, "#"), n = seen[base] = (seen[base] || 0) + 1, key = base + "|" + n;
+   const L = VzView.labs || (VzView.labs = {}), f = VzView.frameNo, p = L[key];
+-  if (!p || p.f < f - 1) { L[key] = { v: vals.slice(), f, g: false }; return vals; }
++  if (!p || p.f < f - 1) { L[key] = { v: vals.slice(), t: vals.slice(), f, g: false }; return vals; }
+   p.f = f;
+-  const d = Math.hypot(...vals.map((v, i) => v - p.v[i]));
+-  if (!p.g && d > jump) { p.g = true; p.s = p.v.slice(); p.f0 = f; }
++  const ref = p.g && p.t ? p.t : p.v, d = Math.hypot(...vals.map((v, i) => v - ref[i]));   // mid-glide: did the target itself jump again?
++  if (d > jump) { p.g = true; p.s = p.v.slice(); p.f0 = f; }                               // (re)start from where the label is now
++  p.t = vals.slice();
+   if (p.g) {
+     const u = Math.min(1, (f - p.f0) / 13), e = vzEase(u);
+     p.v = vals.map((v, i) => p.s[i] + (v - p.s[i]) * e);
+@@ -12383,7 +12384,8 @@
+   if (!root) return;
+   vzStop();
+   // moving from picture to picture stays inside one view, so the new page fades in on its own (no hard cut)
+-  root.classList.remove("vz-in"); void root.offsetWidth; root.classList.add("vz-in");
++  // (the fade restarts once the new content is in: forcing layout here laid out the old page, the 9,000-node index, for nothing)
++  const fadeIn = () => { root.classList.remove("vz-in"); void getComputedStyle(root).opacity; root.classList.add("vz-in"); };
+   VzView.labs = {}; VzView.tipSide = {};                    // label glides and sides belong to one picture
+   const def = id && VZ_BY_ID[id];
+   if (!def) {                                               // the index: every picture as a card
+@@ -12405,6 +12407,7 @@
+             <span class="vz-card-blurb">${escapeHtml(v.tagline || v.blurb)}</span>
+           </a>`).join("")}</div></div>`;
+       }).join("")}`;
++    fadeIn();
+     typesetMath(root);                                       // blurbs carry inline math
+     // thumbnails not drawn yet are filled in a few per frame, so the page never stalls on all 47 at once
+     const todo = [...root.querySelectorAll("svg[data-th]")].filter(el => !VZ_BY_ID[el.dataset.th]._th);
+@@ -12417,7 +12420,7 @@
+     return;
+   }
+   const i = VZ_LIST.indexOf(def), prev = VZ_LIST[(i - 1 + VZ_LIST.length) % VZ_LIST.length], next = VZ_LIST[(i + 1) % VZ_LIST.length];
+-  if (def.kind === "steps") { renderSteps(def, i, prev, next); VzView.def = def; return; }
++  if (def.kind === "steps") { renderSteps(def, i, prev, next); VzView.def = def; fadeIn(); return; }
+   VzView.def = def; VzView.st = Object.assign({}, def.state); VzView.tweens = null; VzView.playing = null; VzView.stale = true;
+   if (def.reset) def.reset();
+   root.innerHTML = `
+@@ -12447,6 +12450,7 @@
+       <a class="btn btn-ghost btn-sm" href="#/visualize/${prev.id}">&larr; ${escapeHtml(prev.title)}</a>
+       <a class="btn btn-ghost btn-sm" href="#/visualize/${next.id}">${escapeHtml(next.title)} &rarr;</a>
+     </div>`;
++  fadeIn();
+   const panel = root.querySelector(".vz-panel");
+   typesetMath(panel);                                        // blurb and tip carry inline math
+   panel.addEventListener("input", e => {
+@@ -12594,8 +12598,11 @@
+     gh.id = "vzGhost"; gh.setAttribute("clip-path", "url(#vz-clip)"); gh.setAttribute("pointer-events", "none"); gh.setAttribute("aria-hidden", "true");
+     gh.innerHTML = g.innerHTML; gh.querySelectorAll("[id]").forEach(e => e.removeAttribute("id"));
+     stage.appendChild(gh);
+-    const a = gh.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dur, easing: "cubic-bezier(.4, 0, .2, 1)" });
++    const a = gh.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dur, easing: "cubic-bezier(.55, 0, .75, .45)" });
+     a.onfinish = () => gh.remove();
++    // and the new drawing fades in under it (a true dissolve: shapes that weren't there before never pop in);
++    // the two curves are paired so what both drawings share stays at full strength throughout
++    if (g.animate) g.animate([{ opacity: 0 }, { opacity: 1 }], { duration: dur * .85, easing: "cubic-bezier(.25, .6, .4, 1)" });
+   }
+   const ro = document.getElementById("vzReadout"); if (ro) { ro.classList.remove("vz-swap"); void ro.getBoundingClientRect(); ro.classList.add("vz-swap"); }
+ }
+@@ -12689,15 +12696,19 @@
+ function vzPreset(target) {
+   const st = VzView.st, def = VzView.def, from = {}, to = {};
+   const isCtl = k => def.controls.some(c => c.k === k || (c.keys && c.keys.includes(k)));
+-  let swapped = false;
++  let swapped = false, flipped = false;
+   Object.keys(target).forEach(k => {
+     if (VZ_SELECTORS.includes(k) && !isCtl(k)) { if (st[k] !== target[k]) { st[k] = target[k]; swapped = true; } }
++    else if (typeof target[k] === "boolean") { if (!!st[k] !== target[k]) { st[k] = target[k]; flipped = true; } }   // a vector shown/hidden: dissolve
+     else if (typeof target[k] === "number" && typeof st[k] === "number") { from[k] = st[k]; to[k] = target[k]; }
+     else st[k] = target[k];
+   });
+-  if (swapped) { if (def.reset) def.reset(); vzSwap(); }
++  if (swapped && def.reset) def.reset();
++  if (swapped || flipped) vzSwap();
+   VzView.tweens = { from, to, t0: performance.now(), dur: 650 };
+-  vzSetPlay(null);
++  // Play goes on (a new example, still moving) unless the preset sets the slider that is playing, or hides it
++  const pc = VzView.playing && def.controls.find(c => c.k === VzView.playing);
++  if (pc && (VzView.playing in target || (pc.show && !pc.show(st)))) vzSetPlay(null);
+   vzChanged();
+ }
+ 
+@@ -16998,7 +17009,8 @@
+   let before = 0; for (const [k, b, ms] of ST.beats) { if (k === ST.k && b === ST.b) break; before += ms; }
+   const cur = ST.beats.find(x => x[0] === ST.k && x[1] === ST.b), ms = cur ? cur[2] : 0;
+   const f = ST.playing && ST.lineMs ? vzClamp((now - ST.lineT0) / ST.lineMs, 0, 1) : ST.k < 0 ? 0 : 1;
+-  const fill = bar.querySelector(".st-time-fill"); if (fill) fill.style.transform = `scaleX(${((before + f * ms) / total).toFixed(4)})`;
++  const fill = bar.querySelector(".st-time-fill"), tf = `scaleX(${((before + f * ms) / total).toFixed(4)})`;
++  if (fill && fill._tf !== tf) { fill._tf = tf; fill.style.transform = tf; }   // idle pages: no style write every frame
+ }
+ function stSync() {
+   const root = $("#vizRoot"), def = ST.def; if (!root || !def) return;
+@@ -17020,7 +17032,7 @@
+     const j = +el.dataset.j;
+     el.classList.toggle("on", j <= k); el.classList.toggle("past", j < k); el.classList.toggle("now", j === k);
+     el.querySelectorAll(".st-line").forEach(l => l.classList.toggle("on", j < k || (j === k && +l.dataset.b <= b)));
+-    if (j === k) stFit(el);
++    if (j <= k) stFit(el);                                  // jumping ahead from the outline: earlier steps' lines fit too
+   });
+   root.querySelectorAll(".st-outline li").forEach(li => { const j = +li.dataset.goto; li.classList.toggle("done", j < k); li.classList.toggle("now", j === k); });
+   const now = root.querySelector(".st-outline li.now"); if (now && now.scrollIntoView) { const ol = now.parentElement; if (now.offsetTop < ol.scrollTop || now.offsetTop + now.offsetHeight > ol.scrollTop + ol.clientHeight) ol.scrollTop = now.offsetTop - 20; }
+@@ -20744,8 +20756,9 @@
+     console.error("Failed loading sections:", e);
+   }
+ 
+-  // Re-render the active view now that data is loaded
+-  handleRoute();
++  // Re-render the active view now that data is loaded (a Visualize page doesn't use the data: drawing it
++  // again would restart the picture, reset what the student already moved, and re-typeset a method)
++  if (!/^\/visualize(\/|$)/.test(currentRoute())) handleRoute();
+   updateStats();
+   updateReviewNavBadge();
+ 

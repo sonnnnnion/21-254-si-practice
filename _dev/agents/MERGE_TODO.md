@@ -30,3 +30,45 @@
 - [ ] chaos.mjs line 25 can crash when the page isn't ready: skip the step if the read fails. (a03)
 - [ ] chaos.mjs: picks targets by offsetParent only, can click chips under the sticky nav → elementFromPoint check. (a14)
 - [ ] flicker/methflicker serialize the SVG and can't see vzSwap's ghost fade (it's a WAAPI animation), so dissolves look like pops: account for the ghost's current opacity. (a14, a07, a04)
+
+## Next-session list from the second-pass agents (not done yet)
+### methods (a25 did only m-subspace, m-span, m-reflect; added stLineT/stLines helpers so a picture can follow its board line)
+- Picture shows the answer before the board says it (use stLines): m-det3 (−16), m-markov (100v₁ lines), m-eigen, m-plane3, m-square, m-surfarea, m-wire, m-flux, m-extrema, m-dirderiv, m-dome.
+- Pops: m-plane3 "n = …" and PQ/PR labels; m-square walker dot jumps back every 2.2 s (fade at each lap).
+- Overlaps: m-plane3 P label on z-axis label; m-markov counts on dashed lines; m-gauss x label touches R₃; m-flux/m-dome axis labels clipped at right.
+- m-switch last step freezes at ~99% (sweep outlasts picDur 3.2 s): set picDur 4200.
+- m-cylinder lid path has two fill attributes (vzPath3 adds fill="none") → blank in SVG-as-image; draw the path directly.
+- m-eigen step 5 caption still "λ = 4 and λ = −1".
+- Runtime (a26): keep redrawing for picDur after each LINE change and hand pic() the line's time (then stLineT isn't needed); a sliver of board shows above the sticky "The problem" header.
+### matrices/vectors (a21 did gauss + vzGaussScene + vzGlyph only)
+- compose: Rotate 90° interpolates linearly (shrinks to 71% mid-way) → rotate by angle; chip click jumps without dissolve (vzSwap + delayed tween); picture could be bigger.
+- transpose: easing applied twice → e = (u + vzEase(u))/2.
+- inverse: top-left caption cross-fade overlaps (fade out then in).
+- det/matrix: drag rings pop at the end of the slide (fade in t .9→1).
+- vectors group (vzClearTips/vzStack) and nullcol: second pass not done.
+### dot/eigen/curves/tools (a22 fixed only vzProjScene w-line obstacles, vzNames key width, projplane sum colour)
+- projplane: at build ≈ .5 proj_w₂(v) name overlaps "w₂" (lower the side-memory bonus while fading in); "closest point" crosses v's arrow; P's name avoids a fixed 50 px top (use opt.top).
+- projection: "comp = …" overlaps proj_w(v) near 190° and 75°; θ overlaps proj at small angles; key always shows red area even when it's grey (v·w < 0). (re-check on final code)
+- eigen: λ tag digits tick as v arrives (2.18 → 2.2): show the exact eigenvalue.
+- diag: x's arrow close to v₁'s red; names v → e → 2e change in one frame.
+- powers: swing done in ~2 of 14 steps, then idle.
+- spacecurve: r(t)/r′(t) overlap axis letters at many angles; segment: key overlaps "x" at yaw −90, r′(t) overlaps "q (t = 1)".
+- Second pass not done: cross, tool-rref, tool-det, tool-vec, tool-eigen. a22's scripts: /private/tmp/claude-501/agents/a22/bin/
+### fields/surfaces (a24 fixed green cell numbers flying, divthm minus sign, gradfield pins off the key)
+- divthm: step 2 inner-wall fills read as a second cube (lower opacity); step 5 inner walls pile into a dark block (fade their tint t .66–.77).
+- gradfield: bottom field arrows reach the key; top-right pin crowds its label → vzPlane(300, 212, 78) and put the label beside the arrow when past-the-tip is off-picture.
+- fields: paddle wheel 0.9·b vs fluid 0.5·b: use one speed (~0.7).
+- curtain: y-axis name on the curtain (parabola) → longer axes (~3.3); "C" can land on the curtain when turned.
+- conservative: the two "W =" labels glide through each other when the bend crosses 0 → cross-fade.
+- surface: sphere→flat happens in ~1 s (double easing) → play .35 → ~.25.
+- vzGlide keys labels by on-screen order: labels fly when their count changes; let vzLabel take an explicit key (a26).
+- Not reviewed in pass 2: orient, flux, stokes, phone width of this group.
+
+## Round 19 wrap-up (2026-10-06, session ended at the usage limit)
+- Merged: a01–a18, a21–a25 + lead_fixes.py. Fixed by the lead: vzPath3 dropped every fill (duplicate fill attr: level plane,
+  partials tangent plane, flux square/shadow, m-cylinder lid now filled, checked by screenshot); m-switch picDur 4200.
+- NOT merged: a26 (runtime) was stopped mid-work. Its unfinished diff is `_dev/agents/a26.unmerged.patch` (against base3):
+  review it before applying. Everything a26 owned in its prompt (loop cross-dissolve, preset keeps Play, active preset chip,
+  stFit all steps, method picture clip, vzGlide restart, a11y runtime items) is still open, see the shared list above.
+- Checks on the merged copy: all 4 scripts parse, all JSON valid, fuzz 0/48 pictures with issues, no page errors.
+  steps.mjs / monkey.mjs were still running when the session ended: re-run them first next session.

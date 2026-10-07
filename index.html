@@ -429,6 +429,10 @@
     transition: transform 0.18s var(--ease), border-color 0.18s var(--ease);
   }
   .hero-chip:hover { transform: translateY(-1px); border-color: var(--border-strong, var(--border)); }
+  a.hero-chip { text-decoration: none; }
+  a.hero-chip .arrow { color: var(--ink-faint); transition: transform .18s var(--ease), color .18s var(--ease); }
+  a.hero-chip:hover, a.hero-chip:focus-visible { color: var(--red-deep); border-color: rgba(200, 16, 46, .35); text-decoration: none; }
+  a.hero-chip:hover .arrow { color: var(--red); transform: translateX(2px); }
 
   /* Live stat row */
   .hero-stats {
@@ -711,6 +715,7 @@
     color: var(--ink);
     font-family: inherit;
     overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-start;   /* a button centres its content: keep every tile top-aligned */
   }
   /* Bottom "got it" progress track */
   .cooked-cell::before {
@@ -749,6 +754,8 @@
     margin-bottom: 5px;
     font-variation-settings: "opsz" 144;
   }
+  @media (min-width: 721px) and (max-width: 1100px) { .cooked-cell .sec-min { display: none; } }   /* narrow tiles: just the level, on one line */
+  .cooked-cell .sec-got { margin-left: 7px; font: 700 10px var(--font-sans); letter-spacing: .04em; opacity: .75; vertical-align: 2px; }
   .cooked-cell .sec-title {
     font-size: 11px;
     font-weight: 500;
@@ -763,7 +770,7 @@
     min-height: 22px;
   }
   .cooked-cell .sec-foot {
-    margin-top: 6px;
+    margin-top: auto; padding-top: 6px;   /* the foot lines up along the bottom of a row */
     font-size: 10px;
     color: inherit;
     opacity: .65;
@@ -888,7 +895,7 @@
     border-top: 0;
   }
   body.is-home footer .foot-brand { display: none; }
-  body.is-home footer { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 14px; padding: 8px 0 10px; }
+  body.is-home footer { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 14px; padding: 8px 16px 10px; }
   body.is-home footer .foot-lead { font-size: 12.5px; }
   body.is-home footer .foot-links { margin-top: 0; font-size: 12.5px; order: 3; }
   body.is-home footer .foot-notes { order: 4; flex-basis: 100%; text-align: center; }
@@ -1077,6 +1084,11 @@
     max-width: 540px;
     text-wrap: balance;
   }
+  @media (max-width: 640px) {
+    .section-head { flex-direction: column; align-items: stretch; gap: 14px; margin-top: 28px; }
+    .section-head .section-head-actions { justify-content: flex-start; }
+    .section-head .section-head-actions .btn { order: -1; }   /* the button students use first; the SI box after it */
+  }
 
   /* ============================================================
      EXAM TABS
@@ -1152,6 +1164,7 @@
     flex-direction: column;
     min-height: 220px;
     overflow: hidden;
+    text-align: left;                               /* a button centres its text; the title, badges and blurb line up on the left */
   }
   .card::before {
     content: '';
@@ -1311,7 +1324,7 @@
   @media (max-width: 860px) {
     .filters { grid-template-columns: 1fr 1fr; }
     .filters .search { grid-column: 1 / -1; }
-    .filters .random-btn { grid-column: 1 / -1; }
+    .filters .random-btn { align-self: stretch; }
   }
   .field {
     position: relative;
@@ -1429,8 +1442,9 @@
     border-color: rgba(184,150,66,.35);
   }
   @media (max-width: 540px) {
-    .prob-row { flex-direction: column; align-items: flex-start; }
+    .prob-row { flex-direction: column; align-items: flex-start; gap: 10px; }
     .prob-row-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+    .prob-skill { display: none; }                  /* phones: title, lecture and time are enough to pick one */
   }
 
   /* ============================================================
@@ -1486,32 +1500,7 @@
     color: var(--red);
     margin-bottom: 4px;
   }
-  .skills-row {
-    margin: 18px 0 24px;
-    padding: 14px 16px;
-    background: var(--bg-subtle);
-    border-radius: var(--r);
-    font-size: 13.5px;
-  }
-  .skills-row strong {
-    display: block;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: var(--ink-mute);
-    margin-bottom: 6px;
-    font-weight: 700;
-  }
-  .skills-row .skill-chip {
-    display: inline-block;
-    margin: 2px 6px 2px 0;
-    padding: 3px 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    font-size: 12.5px;
-    color: var(--ink-soft);
-  }
+  @media (max-width: 640px) { .study-section-tag { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }
 
   /* Math content blocks */
   .math-block {
@@ -1618,6 +1607,8 @@
     overflow-y: hidden;
   }
   .concept-formula mjx-container { margin: 0.2em 0 !important; font-size: 1em !important; }
+  /* an equation too wide for a phone scrolls sideways; its right edge fades until it has been scrolled to the end */
+  .mx-more { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 30px), rgba(0, 0, 0, .12)); mask-image: linear-gradient(to right, #000 calc(100% - 30px), rgba(0, 0, 0, .12)); }
   @keyframes cv-fade {
     from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -1675,15 +1666,26 @@
   }
 
   /* Think-first prompt */
+  /* "Not sure where to start?": the think-first nudge waits closed under the statement, one tap away */
   .think-first {
     border-left: 3px solid var(--gold);
     background: #FFFAEB;
-    padding: 16px 18px;
+    padding: 10px 16px;
     border-radius: 0 var(--r) var(--r) 0;
-    margin: 20px 0;
+    margin: -8px 0 4px;
     font-size: 14.5px;
     color: var(--ink-soft);
   }
+  .think-first summary { cursor: pointer; list-style: none; font-size: 13.5px; font-weight: 700; color: var(--ink); padding: 2px 0; }
+  .think-first summary::-webkit-details-marker { display: none; }
+  .think-first summary::before { content: "+"; display: inline-block; width: 16px; font-weight: 800; color: var(--gold); }
+  .think-first[open] summary::before { content: "−"; }
+  .think-first summary:hover { color: var(--red-deep); }
+  .think-first > .math-block { margin: 6px 0 4px 16px; animation: cv-fade .35s var(--ease-out); }
+  /* skills: one quiet line under the title (two on a phone) */
+  .skills-line { margin: 10px 0 16px; font-size: 13px; line-height: 1.5; color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .skills-line strong { margin-right: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
+  @media (max-width: 640px) { .skills-line { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; } }
   .think-first strong {
     color: var(--ink);
     display: block;
@@ -1697,7 +1699,7 @@
   /* ---------- Guided solution ----------
      One path through a problem: hints, setup, worked steps, answer. Steps wait collapsed
      (in layout, so MathJax measures them) and open one at a time along a rail. */
-  .guide { margin: 30px 0 6px; }
+  .guide { margin: 20px 0 6px; }
   .guide-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
   .guide-kicker { font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--red); }
   .guide-sub { margin: 5px 0 0; font-size: 14px; color: var(--ink-mute); line-height: 1.45; }
@@ -1827,6 +1829,16 @@
     border-top: 1px solid var(--border);
   }
 
+  /* phones: the two status buttons full width, the small actions side by side */
+  /* the small actions (copy, report) keep together at the end of the row, or on a row of their own */
+  .study-actions-minor { display: flex; gap: 10px; margin-left: auto; align-items: center; }
+  @media (max-width: 540px) {
+    .study-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+    .study-actions > .btn { width: 100%; justify-content: center; }
+    .study-actions-minor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin: 0; }
+    .study-actions-minor .btn { width: 100%; justify-content: center; }
+  }
+
   /* Report issue panel */
   .study-actions .is-reported { color: #7A5B0F; border-color: rgba(184,150,66,.45); background: #FBF3DF; }
   .report-panel {
@@ -1879,14 +1891,6 @@
     letter-spacing: .1em;
     color: var(--ink-mute);
   }
-  .side-meta {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 8px 14px;
-    font-size: 13.5px;
-  }
-  .side-meta dt { color: var(--ink-mute); font-weight: 500; }
-  .side-meta dd { margin: 0; color: var(--ink); font-weight: 600; }
   .study-nav {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2027,7 +2031,7 @@
   .er-resume.clearing { opacity: 0; transform: translateY(-4px); }
   .er-confirm { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding-top: 10px; border-top: 1px dashed var(--border-strong); font-size: 13.5px; color: var(--ink); animation: stIn .3s ease; }
   .er-confirm span { flex: 1 1 220px; }
-  .er-done h2 { font-family: var(--font-display); font-size: 34px; font-weight: 500; margin: 6px 0 12px; letter-spacing: -.02em; }
+  .er-done h2 { font-family: var(--font-display); font-size: 34px; font-weight: 500; line-height: 1.12; margin: 6px 0 12px; letter-spacing: -.02em; }
   .er-time { display: flex; align-items: baseline; gap: 12px; }
   .er-time strong { font: 600 40px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink); }
   .er-time span { color: var(--ink-mute); font-size: 14px; }
@@ -2123,7 +2127,7 @@
   footer {
     border-top: 1px solid var(--border);
     margin-top: 80px;
-    padding: 28px 0 36px;
+    padding: 28px 16px 36px;
     color: var(--ink-mute);
     font-size: 13px;
     text-align: center;
@@ -2171,6 +2175,10 @@
   }
   footer .foot-links button:hover,
   footer .foot-links a:hover { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 640px) {                      /* phones: links wrap cleanly, no dot left hanging at a line end */
+    footer .foot-links { gap: 6px 18px; }
+    footer .foot-links > span[aria-hidden] { display: none; }
+  }
 
   /* About modal (reuses the shortcuts overlay shell) */
   .about-body {
@@ -2414,6 +2422,7 @@
     font-family: var(--font-sans);
   }
   .shortcuts-hint:hover { color: var(--red); }
+  @media (hover: none) { .shortcuts-hint, .kbd-tip { display: none; } }   /* keyboard tips mean nothing on a touch screen */
   .shortcuts-hint kbd {
     display: inline-block;
     padding: 1px 5px;
@@ -2444,11 +2453,9 @@
 
   /* ============================================================
      WALKTHROUGHS — SI leader mode
-     Hidden by default. Reveals after quick-access unlock.
+     Hidden by default. Opening #/walkthroughs once unlocks the nav link.
      ============================================================ */
 
-  /* Quick-access mini-input. Deliberately understated; sits inline next to the
-     Random from Review button in the Need Review section-head. */
   .section-head-actions {
     display: flex;
     align-items: center;
@@ -2456,44 +2463,6 @@
     flex-wrap: wrap;
     justify-content: flex-end;
   }
-  .quick-access {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--ink-faint);
-    margin: 0;
-  }
-  .quick-access label {
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    font-weight: 600;
-    font-size: 11px;
-  }
-  .quick-access input {
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--ink-soft);
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-family: var(--font-sans);
-    font-size: 12px;
-    width: 150px;
-    transition: border-color .15s var(--ease), background .15s var(--ease);
-  }
-  .quick-access input:focus {
-    outline: none;
-    border-color: var(--border-strong);
-    background: var(--surface);
-    color: var(--ink);
-  }
-  .quick-access input::placeholder { color: var(--ink-faint); }
-  @keyframes qa-shake {
-    0%, 100% { transform: translateX(0); }
-    25%      { transform: translateX(-3px); }
-    75%      { transform: translateX(3px); }
-  }
-  .quick-access input.qa-shake { animation: qa-shake .25s var(--ease); }
 
   /* Walkthroughs nav link — hidden unless body.walk-unlocked */
   .nav-link.nav-walk { display: none; }
@@ -3882,6 +3851,24 @@
     /* the picture stays in view while the sliders scroll underneath it */
     .vz-stage-wrap { position: sticky; top: var(--nav-h); z-index: 3; margin-top: -8px; padding: 8px 0 14px;
       background: linear-gradient(var(--bg) calc(100% - 14px), rgba(251, 248, 244, 0)); }
+    /* ...but never taller than half the screen, so the sliders under it stay in reach (tablets) */
+    .vz-stage { max-width: calc((100vh - var(--nav-h)) * .5 * 4 / 3); max-width: calc((100svh - var(--nav-h)) * .5 * 4 / 3); margin-inline: auto; }
+    /* a method's board grows as its steps arrive: it scrolls with the page, so the panel below it is never hidden */
+    .vz-stage-wrap.st-stage { position: relative; top: auto; z-index: auto; margin-top: 0; padding: 0 0 14px; background: none; }
+  }
+  /* phones on their side: the picture and its panel side by side, the picture small enough to stay whole on screen */
+  @media (max-width: 980px) and (max-height: 600px) and (min-width: 600px) {
+    .vz-main { grid-template-columns: minmax(0, 1fr) minmax(250px, 320px); gap: 14px; }
+    .vz-stage-wrap { top: calc(var(--nav-h) + 8px); margin-top: 0; padding: 0; background: none; }
+    .vz-stage { max-width: calc((100vh - var(--nav-h) - 24px) * 4 / 3); max-width: calc((100svh - var(--nav-h) - 24px) * 4 / 3); }
+    .st-panel .st-ctl { left: auto; right: 14px; transform: none; }   /* over the panel's column, never over the board being read */
+  }
+  @media (max-width: 640px) {
+    .vz-pager { flex-direction: column; }
+    .vz-pager .btn { justify-content: flex-start; text-align: left; }
+    .vz-pager .btn:last-child { justify-content: flex-end; text-align: right; }
+    .vz-top { flex-wrap: nowrap; }
+    .vz-crumb-g { display: none; }                  /* phones: "60 of 68" beside the arrows, on the back button's row */
   }
   .vz-nw { white-space: nowrap; }
   .vz-mat-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; margin: 0 0 10px; font-family: var(--font-display); }
@@ -3915,6 +3902,11 @@
   .vz-nav-btn:hover { border-color: var(--ink-faint); color: var(--ink); text-decoration: none; }
   .vz-report { display: block; margin: 12px 0 0; padding: 0; border: 0; background: none; font: 500 12px var(--font-sans); color: var(--ink-mute); cursor: pointer; }
   .vz-report:hover { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+  /* a panel that has to scroll (short laptop screens) fades out along its foot until the end is reached */
+  .vz-fade { position: sticky; bottom: 0; height: 0; margin: 0 -16px; pointer-events: none; }
+  .vz-fade::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44px; opacity: 0; transition: opacity .25s ease;
+    background: linear-gradient(rgba(255, 255, 255, 0), var(--surface) 80%); }
+  .vz-panel.vz-more-below .vz-fade::before { opacity: 1; }
   /* an editable 2 × 2 matrix */
   .vz-row-mats { display: flex; flex-wrap: wrap; gap: 4px 18px; }
   .vz-mx { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 4px 10px; margin: 0 0 12px; }
@@ -3946,6 +3938,16 @@
     body.vz-detail .vz-sub { font-size: 13.5px; margin-bottom: 10px; }
     body.vz-detail .vz-try { margin-bottom: 12px; padding: 7px 10px; font-size: 12.5px; }
     body.vz-detail .vz-report { margin-top: 8px; }
+  }
+  /* laptop screens (about 800 px of page): a little less air in the panel, so most fit without scrolling */
+  @media (min-width: 981px) and (max-height: 860px) {
+    body.vz-detail .vz-title { font-size: 20px; }
+    body.vz-detail .vz-sub { margin-bottom: 8px; }
+    body.vz-detail .vz-try { margin-bottom: 10px; padding: 6px 10px; }
+    body.vz-detail .vz-sl { margin-bottom: 4px; }
+    body.vz-detail .vz-presets { margin-bottom: 8px; }
+    body.vz-detail .vz-readout { padding-top: 8px; }
+    body.vz-detail .vz-more { margin-top: 10px; padding-top: 8px; }
   }
   @media (min-width: 981px) and (max-height: 780px) {
     body.vz-detail .vz-blurb { margin-bottom: 8px; }
@@ -4067,7 +4069,7 @@
   .st-outline li.now .st-o-n { background: var(--red); color: #fff; }
   @media (max-width: 980px) {
     /* phones: Back / Play / Next float at the bottom, so stepping never needs a scroll */
-    .st-ctl { position: fixed; left: 14px; right: 84px; bottom: 14px; z-index: 40; justify-content: center; margin: 0; padding: 8px; background: rgba(255,255,255,.96); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--sh-2); }
+    .st-ctl { position: fixed; left: 50%; right: auto; transform: translateX(-50%); width: max-content; max-width: calc(100% - 28px); bottom: 14px; z-index: 40; justify-content: center; margin: 0; padding: 8px; background: rgba(255,255,255,.96); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--sh-2); }
     body.vz-detail main { padding-bottom: 90px; }
     .st-board, .st-board.has-pic { aspect-ratio: auto; grid-template-columns: minmax(0, 1fr); }
     .st-pic { order: -1; height: 300px; border-left: 0; border-bottom: 1px solid var(--border); }
@@ -4154,7 +4156,7 @@
   .sg-qa + .sg-qa { margin-top: 12px; }
   .sg-q { font-weight: 600; }
   .sg-a { margin-top: 3px; font-size: 14px; color: var(--ink-soft); }
-  .sg-a span { margin-right: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #8A6A12; }
+  .sg-a > span:first-child { margin-right: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #8A6A12; }
   .sg-if { font-weight: 600; color: var(--ink); }
   .sg-idea-title { margin: 0 0 8px; font-family: var(--font-display); font-size: 19px; font-weight: 600; }
   .sg-prompt { margin: 0 0 14px; padding: 14px 18px; font-size: 16px; background: #FFFFFF; border: 1.5px solid var(--ink); border-radius: 12px; }
@@ -4225,7 +4227,7 @@
   .sgt-ask .sgt-k, .sgt-stuck .sgt-k, .sgt-try .sgt-k { color: #8A6A12; }
   .sgt-q { margin: 0 0 6px; font-size: 19px; font-weight: 600; line-height: 1.4; }
   .sgt-a { margin: 0 0 12px; font-size: 16px; line-height: 1.5; color: var(--ink-soft); }
-  .sgt-a span { margin-right: 6px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #8A6A12; }
+  .sgt-a > span:first-child { margin-right: 6px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #8A6A12; }
   .sgt-why p, .sgt-mean p, .sgt-stuck p, .sgt-try p, .sgt-draw li { font-size: 17px; line-height: 1.5; }
   .sgt-why .sgt-k, .sgt-mean .sgt-k { color: var(--red-deep); }
   .sgt-mean { padding: 12px 16px; background: var(--red-tint); border-radius: 12px; }
@@ -4249,7 +4251,7 @@
     body { background: #fff; color: #000; }
     /* hide all chrome */
     header.nav, footer, .walk-detail-bar, .walk-toolbar, .walk-outline,
-    .nav-toggle, .quick-access, .toast-container, .qr-fab {
+    .nav-toggle, .toast-container, .qr-fab {
       display: none !important;
     }
     /* hide other views */
@@ -4334,11 +4336,11 @@
           <h1 class="home-title">21-254 <span class="accent">Practice Lab</span></h1>
           <p class="hero-sub">Extra practice problems with guided hints and full worked solutions, for reviewing on your own time.</p>
 
-          <div class="hero-chips" aria-label="Features">
-            <span class="hero-chip">Guided hints</span>
-            <span class="hero-chip">Worked solutions</span>
-            <span class="hero-chip">Exam-mode review</span>
-          </div>
+          <nav class="hero-chips" aria-label="What's here">
+            <a class="hero-chip" href="#/topics">Hints &amp; worked solutions <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="hero-chip" href="#/visualize">Interactive pictures <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="hero-chip" href="#/exam">Timed exam practice <span class="arrow" aria-hidden="true">→</span></a>
+          </nav>
 
           <div class="hero-actions">
             <button class="btn btn-red" data-route="/topics">Start Practicing <span class="arrow">→</span></button>
@@ -5464,7 +5466,7 @@
         <div>
           <div class="kicker">Practice</div>
           <h2>Browse all topics</h2>
-          <p>Filter by exam to highlight the sections most relevant to that assessment.</p>
+          <p>Pick an exam to see which sections it covers.</p>
         </div>
       </div>
 
@@ -5550,17 +5552,17 @@
     <section class="view" id="view-exam">
       <div class="section-head">
         <div>
-          <div class="kicker">Review Mode</div>
+          <div class="kicker">Timed practice</div>
           <h2>Exam Mode</h2>
-          <p>Generate a guided review set from the sections most likely to appear on a given exam.</p>
+          <p>A short set of problems from one exam's lectures, with a clock running.</p>
         </div>
       </div>
 
       <div id="examSetContainer"></div>
 
       <div class="exam-setup" id="examSetup">
-        <h2>Build your review set</h2>
-        <p>Choose an exam and a set size. You'll go straight into the questions with a clock running, like the real thing.</p>
+        <h2>Build a practice exam</h2>
+        <p>Pick an exam and a size. The clock starts when you do.</p>
 
         <span class="group-label">Exam</span>
         <div class="choice-row" id="examChoiceRow">
@@ -5579,10 +5581,10 @@
         </div>
 
         <div style="margin-top: 24px; display:flex; gap:10px; flex-wrap: wrap;">
-          <button class="btn btn-red" id="examGenerate">Generate Review Set <span class="arrow">→</span></button>
+          <button class="btn btn-red" id="examGenerate">Start practice exam <span class="arrow">→</span></button>
         </div>
 
-        <div class="exam-disclaimer">This is a practice review set generated from the available problem library, not an official exam.</div>
+        <div class="exam-disclaimer">Practice problems from this site, not an official exam.</div>
       </div>
 
     </section>
@@ -5607,10 +5609,6 @@
           <p>Problems you've flagged to come back to. Clear them as you study.</p>
         </div>
         <div class="section-head-actions">
-          <form class="quick-access" id="quickAccessForm" autocomplete="off">
-            <label for="quickAccess">Quick access</label>
-            <input id="quickAccess" name="quickAccess" type="text" autocomplete="off" spellcheck="false"/>
-          </form>
           <button class="btn btn-ghost btn-sm" id="reviewRandomBtn">Random from Review</button>
         </div>
       </div>
@@ -5735,43 +5733,53 @@
 // naming inconsistency: most files use "21-254_section..." prefix,
 // section 10 uses "section10_..." in the current repo).
 const SECTIONS = [
-  { pos: 1,  title: "Vectors, Matrices, Transposes, and Basic Operations",
+  { pos: 1,  nick: "Vectors & matrices",
+              title: "Vectors, Matrices, Transposes, and Basic Operations",
               short: "Vector & matrix arithmetic, dot products, magnitudes, transposes, and special matrices.",
               files: ["data/21-254_section01_vectors_matrices_transposes.json",
                       "data/section01_vectors_matrices_transposes.json"] },
-  { pos: 2,  title: "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
+  { pos: 2,  nick: "Linear systems & RREF",
+              title: "Linear Systems, Gaussian Elimination, RREF, Rank, and Null Space",
               short: "Row reduction, solving Ax = b, rank, and null space.",
               files: ["data/21-254_section02_linear_systems_rref_rank_nullspace.json",
                       "data/section02_linear_systems_rref_rank_nullspace.json"] },
-  { pos: 3,  title: "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
+  { pos: 3,  nick: "Subspaces, span & bases",
+              title: "Subspaces, Span, Linear Independence, Bases, Column Space, and Null Space",
               short: "Subspace tests, span, independence, bases, and the fundamental spaces.",
               files: ["data/21-254_section03_subspaces_span_li_bases_spaces.json",
                       "data/section03_subspaces_span_li_bases_spaces.json"] },
-  { pos: 4,  title: "Linear Transformations, Determinants, and Inverses",
+  { pos: 4,  nick: "Linear maps & determinants",
+              title: "Linear Transformations, Determinants, and Inverses",
               short: "Matrix transformations, determinants, and matrix inverses.",
               files: ["data/21-254_section04_linear_transformations_determinants_inverses.json",
                       "data/section04_linear_transformations_determinants_inverses.json"] },
-  { pos: 5,  title: "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
+  { pos: 5,  nick: "Eigenvalues & eigenvectors",
+              title: "Eigenvalues, Eigenvectors, Multiplicity, Eigenbases, and Complex Eigenvalues",
               short: "Characteristic polynomials, eigenbases, and complex eigenvalue behavior.",
               files: ["data/21-254_section05_eigenvalues_eigenvectors_multiplicity_eigenbases_complex.json",
                       "data/section05_eigenvalues_eigenvectors_multiplicity_eigenbases_complex.json"] },
-  { pos: 6,  title: "Diagonalization, Projections, Components, and Cross Product",
+  { pos: 6,  nick: "Diagonalization & projections",
+              title: "Diagonalization, Projections, Components, and Cross Product",
               short: "PDP⁻¹, projections, vector components, and the cross product.",
               files: ["data/21-254_section06_diagonalization_projections_components_cross_product.json",
                       "data/section06_diagonalization_projections_components_cross_product.json"] },
-  { pos: 7,  title: "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
+  { pos: 7,  nick: "Curves, gradients & optimization",
+              title: "Curves, Scalar Functions, Partial Derivatives, Gradients, and Optimization",
               short: "Parametric curves, partial derivatives, gradients, and multivariable optimization.",
               files: ["data/21-254_section07_curves_scalar_functions_partials_gradients_optimization.json",
                       "data/section07_curves_scalar_functions_partials_gradients_optimization.json"] },
-  { pos: 8,  title: "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+  { pos: 8,  nick: "Vector fields & line integrals",
+              title: "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
               short: "Vector fields, divergence/curl, line integrals, and conservative fields.",
               files: ["data/21-254_section08_vector_fields_divergence_curl_line_integrals_path_independence.json",
                       "data/section08_vector_fields_divergence_curl_line_integrals_path_independence.json"] },
-  { pos: 9,  title: "Double Integrals, Change of Variables, and Green's Theorem",
+  { pos: 9,  nick: "Double integrals & Green's theorem",
+              title: "Double Integrals, Change of Variables, and Green's Theorem",
               short: "Double integrals in various coordinates, Jacobians, and Green's theorem.",
               files: ["data/21-254_section09_double_integrals_change_variables_greens_theorem.json",
                       "data/section09_double_integrals_change_variables_greens_theorem.json"] },
-  { pos: 10, title: "Surfaces, Surface Integrals, Stokes' Theorem, Triple Integrals, and Final Review",
+  { pos: 10, nick: "Surfaces, Stokes & triple integrals",
+              title: "Surfaces, Surface Integrals, Stokes' Theorem, Triple Integrals, and Final Review",
               short: "Parametric surfaces, scalar/vector surface integrals, Stokes' theorem, triple integrals.",
               files: ["data/section10_surfaces_stokes_triples.json",
                       "data/21-254_section10_surfaces_stokes_triples.json"] },
@@ -6078,6 +6086,7 @@ async function loadAllSections() {
         pos: meta.pos,
         title: d.sectionTitle || meta.title,
         short: d.studentFacingDescription || meta.short,
+        nick: meta.nick,                                  // a short name for tiles and lists
         sectionId: d.sectionId || `sec-${meta.pos}`,
         problems: (d.problems || []).map(p => normalizeProblem(p, meta)),
       };
@@ -6087,7 +6096,7 @@ async function loadAllSections() {
     } else {
       State.loadErrors.push({ pos: meta.pos, title: meta.title, error: String(res.reason) });
       // Add empty placeholder so user still sees the card.
-      const sec = { pos: meta.pos, title: meta.title, short: meta.short, sectionId: `sec-${meta.pos}`, problems: [], _error: String(res.reason) };
+      const sec = { pos: meta.pos, title: meta.title, short: meta.short, nick: meta.nick, sectionId: `sec-${meta.pos}`, problems: [], _error: String(res.reason) };
       State.sectionsData.push(sec);
       State.sectionsByPos.set(meta.pos, sec);
     }
@@ -6208,7 +6217,40 @@ function fitMath(root) {
     });
     host.classList.toggle("math-scroll", [...host.querySelectorAll("mjx-container")].some(m => m.getBoundingClientRect().width > avail + 1));
   });
+  fitWideMath(root);
 }
+// Phones: a displayed equation wider than its box (problem pages, exam questions, method boards) shrinks to fit,
+// down to 78% of its size; one that is still too wide scrolls sideways, and its right edge fades out until it has
+// been scrolled to the end, so a cut-off equation never looks finished.
+function fitWideMath(root) {
+  if (innerWidth > 700) return;
+  (root || document).querySelectorAll(".math-block mjx-container[display='true'], .concept-formula mjx-container, .st-tex mjx-container[display='true']").forEach(m => {
+    const box = m.closest(".concept-formula, .st-tex") || m;            // the element that scrolls
+    m.style.removeProperty("font-size");
+    const cs = getComputedStyle(box), avail = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const svg = m.querySelector(":scope > svg"), w = svg ? svg.getBoundingClientRect().width : m.scrollWidth;
+    if (avail <= 0 || !w) return;
+    if (w > avail + 1) m.style.setProperty("font-size", (Math.max(.78, (avail - 4) / w) * 100).toFixed(1) + "%", "important");
+    mathEdge(box);
+  });
+  // walkthrough boards and answers are already shrunk by fitMath above; one still too wide gets the same fade
+  (root || document).querySelectorAll(".sg-board mjx-container[display='true'], .sg-answer mjx-container[display='true']").forEach(mathEdge);
+}
+function mathEdge(box) {
+  const set = () => box.classList.toggle("mx-more", box.scrollWidth - box.clientWidth - box.scrollLeft > 2);
+  if (!box.dataset.mxEdge) { box.dataset.mxEdge = "1"; box.addEventListener("scroll", set, { passive: true }); }
+  set();
+}
+let fitWideW = innerWidth;
+addEventListener("resize", () => {                                    // a phone turned on its side: fit again
+  if (Math.abs(innerWidth - fitWideW) < 40) return;
+  fitWideW = innerWidth; clearTimeout(fitWideMath.t);
+  fitWideMath.t = setTimeout(() => {
+    document.querySelectorAll("mjx-container[style*='font-size']").forEach(m => { if (m.closest(".math-block, .concept-formula, .st-tex")) m.style.removeProperty("font-size"); });
+    document.querySelectorAll(".mx-more").forEach(b => b.classList.remove("mx-more"));
+    fitWideMath(document);
+  }, 250);
+});
 function typesetMath(root) {
   if (window.MathJax && MathJax.typesetPromise) {
     pruneDetachedMath();
@@ -6259,6 +6301,9 @@ function handleRoute() {
   const route = currentRoute();
   const scrollTarget = beginNavigation(route);
   const wt = document.querySelector(".wu-tip"); if (wt) wt.hidden = true;     // a chart tooltip never outlives its page
+  // nor does an open overlay (a phone's Back swipe used to carry About or the shortcuts card onto the next page)
+  ["#shortcutsHelp", "#aboutModal", "#qrModal"].forEach(q => { const m = $(q); if (m) m.hidden = true; });
+  const openReport = $("#pageReport"); if (openReport) openReport.remove();
   const parts = route.split("/").filter(Boolean);
   const head = parts[0] || "home";
   // full screen belongs to one Visualize picture: going anywhere else (back, the index, a nav link) leaves it
@@ -6473,16 +6518,16 @@ function renderCookedGrid() {
 
   grid.innerHTML = computed.map(({ section: s, score, avg }) => {
     const lvl = score ? bucketCooked(score, allScores) : 1;
-    const titleShort = s.title.length > 38 ? s.title.slice(0, 36).trim() + "…" : s.title;
+    const titleShort = s.nick || (s.title.length > 38 ? s.title.slice(0, 36).trim() + "…" : s.title);
     const prog = sectionProgress(s);
     const fromPct = HomeAnim.tilePct[s.pos] == null ? 0 : HomeAnim.tilePct[s.pos];
     return `
       <button class="cooked-cell heat-${lvl}" data-route="/section/${s.pos}" data-pos="${s.pos}" data-prog="${prog.pct}"
               style="--prog: ${fromPct}%"
               aria-label="Section ${s.pos}: ${escapeHtml(s.title)} — ${COOKED_FOOT[lvl]}, ${prog.got} of ${prog.total} complete">
-        <div class="sec-num">${String(s.pos).padStart(2,'0')}</div>
+        <div class="sec-num">${String(s.pos).padStart(2,'0')}${prog.got ? `<span class="sec-got">${prog.got}/${prog.total}</span>` : ""}</div>
         <div class="sec-title">${escapeHtml(titleShort)}</div>
-        <div class="sec-foot">${avg ? `~${Math.round(avg)} min · ${COOKED_FOOT[lvl]}` : COOKED_FOOT[lvl]}${prog.got ? ` · ${prog.got}/${prog.total}` : ""}</div>
+        <div class="sec-foot">${avg ? `<span class="sec-min">~${Math.round(avg)} min · </span>` : ""}${COOKED_FOOT[lvl]}</div>
         ${sectionGlyph(s.pos)}
       </button>`;
   }).join("");
@@ -6746,7 +6791,7 @@ function renderTopics() {
     explainBox.classList.add("visible");
     explainBox.innerHTML = `
       <strong>${escapeHtml(cfg.title)} coverage:</strong> ${escapeHtml(cfg.explain)}
-      <div><a class="review-cta" href="#/exam">Start ${escapeHtml(cfg.title)} review →</a></div>
+      <div><a class="review-cta" href="#/exam">Practice for ${escapeHtml(cfg.title)} →</a></div>
     `;
     // Wire that link manually because it needs to also preselect the exam
     explainBox.querySelector("a").addEventListener("click", (e) => {
@@ -6868,7 +6913,7 @@ function renderProblemList() {
         <div class="prob-row-sub">
           ${lectureOf(p.id) ? `<span class="lec-tag">${lectureOf(p.id).short}</span>` : ""}
           ${p.estimatedMinutes ? `<span>~${p.estimatedMinutes} min</span>` : ""}
-          ${(p.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join("")}
+          ${(p.skills || []).slice(0, 3).map(s => `<span class="prob-skill">${escapeHtml(s)}</span>`).join("")}
         </div>
       </div>
       <div class="prob-row-right">
@@ -11602,48 +11647,38 @@ function renderProblem(problemId) {
     </div>
 
     ${p.skills && p.skills.length ? `
-      <div class="skills-row">
-        <strong>Skills practiced</strong>
-        ${p.skills.map(s => `<span class="skill-chip">${escapeHtml(s)}</span>`).join("")}
-      </div>` : ""}
+      <p class="skills-line"><strong>Skills</strong>${p.skills.map(s => escapeHtml(s)).join(" &middot; ")}</p>` : ""}
 
     <div class="problem-statement">
       <div class="math-block tex2jax_process">${p.problemLatex || "<em style='color:var(--ink-mute)'>No problem statement.</em>"}</div>
     </div>
 
-    ${conceptPanelHtml(p)}
-
     ${p.thinkFirst ? `
-      <div class="think-first">
-        <strong>Think first</strong>
+      <details class="think-first">
+        <summary>Not sure where to start?</summary>
         <div class="math-block">${p.thinkFirst}</div>
-      </div>` : ""}
+      </details>` : ""}
 
     ${guideHtml(p)}
+
+    ${conceptPanelHtml(p)}
 
     <div class="study-actions">
       <button class="${statusButtons(status).got.cls}" id="markGot">${statusButtons(status).got.html}</button>
       <button class="${statusButtons(status).rev.cls}" id="markReview">${statusButtons(status).rev.html}</button>
+      ${next ? `<button class="btn btn-ghost" id="nextProblemBtn" type="button" data-route="/problem/${escapeHtml(next.id)}">Next problem <span class="arrow" aria-hidden="true">→</span></button>` : ""}
       <button class="btn btn-ghost btn-sm" id="clearStatus"${status ? "" : " hidden"}>Clear status</button>
-      <button class="btn btn-ghost btn-sm" id="copyLinkBtn" type="button">Copy link</button>
-      <button class="btn btn-ghost btn-sm${getReport(p.id) ? " is-reported" : ""}" id="reportBtn" type="button" aria-expanded="false" aria-controls="reportPanel">${getReport(p.id) ? "Reported &#10003;" : "Report a problem"}</button>
+      <span class="study-actions-minor">
+        <button class="btn btn-ghost btn-sm" id="copyLinkBtn" type="button">Copy link</button>
+        <button class="btn btn-ghost btn-sm${getReport(p.id) ? " is-reported" : ""}" id="reportBtn" type="button" aria-expanded="false" aria-controls="reportPanel">${getReport(p.id) ? "Reported &#10003;" : "Report a problem"}</button>
+      </span>
     </div>
     ${reportPanelHtml(p, mailto)}
   `;
 
-  // Sidebar
+  // Sidebar: moving through the section and finding something else (the section, lecture, level and time are in
+  // the chips under the title; the id travels with a report on its own)
   $("#studySide").innerHTML = `
-    <div class="side-card">
-      <h4>Problem Info</h4>
-      <dl class="side-meta">
-        <dt>ID</dt><dd style="font-family: var(--font-mono); font-size: 12.5px;">${escapeHtml(p.id)}</dd>
-        ${p.unit ? `<dt>Unit</dt><dd>${escapeHtml(p.unit)}</dd>` : ""}
-        ${lectureOf(p.id) ? `<dt>Lecture</dt><dd>${lectureOf(p.id).short.replace(/^Lectures? /, "")} · ${escapeHtml(lectureOf(p.id).topic)}</dd>` : ""}
-        ${p.difficulty ? `<dt>Level</dt><dd>${escapeHtml(p.difficulty)}</dd>` : ""}
-        ${p.estimatedMinutes ? `<dt>Est. time</dt><dd>${p.estimatedMinutes} min</dd>` : ""}
-        ${p.examFlavor ? `<dt>Style</dt><dd>${escapeHtml(p.examFlavor)}</dd>` : ""}
-      </dl>
-    </div>
     <div class="side-card">
       <h4>Move Through Section</h4>
       <div class="study-nav">
@@ -12127,7 +12162,7 @@ function renderExamSummary(r, ps) {
         }).join("")}
       </div>
       <div class="er-done-actions">
-        <button class="btn btn-red" id="erNew" type="button">New review set</button>
+        <button class="btn btn-red" id="erNew" type="button">New practice exam</button>
         <button class="btn btn-ghost" id="erRetake" type="button">Retake these questions</button>
       </div>
     </div>`;
@@ -12173,7 +12208,7 @@ function renderReview() {
         ${emptyArt("calm")}
         <h3 style="font-family: var(--font-display); font-weight: 500; margin: 0 0 8px;">No problems flagged for review</h3>
         <p style="color: var(--ink-mute); margin: 0 auto 18px; max-width: 440px; line-height: 1.55;">
-          On any problem, hit <kbd style="padding: 1px 6px; font-size: 12px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 4px;">R</kbd> or use the &ldquo;Mark as Need Review&rdquo; button to build your study list.
+          On any problem, tap &ldquo;Mark as Need Review&rdquo; to add it here<span class="kbd-tip"> (or press <kbd style="padding: 1px 6px; font-size: 12px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 4px;">R</kbd>)</span>.
         </p>
         <button class="btn btn-red" data-route="/topics">Browse problems <span class="arrow">→</span></button>
       </div>`;
@@ -12187,9 +12222,9 @@ function renderReview() {
             <div class="prob-row-title">${String(i+1).padStart(2,'0')}. ${escapeHtml(p.title)}</div>
             <div class="prob-row-sub">
               ${lectureOf(p.id) ? `<span class="lec-tag">${lectureOf(p.id).short}</span>` : ""}
-              <span>Section ${p.sectionPos} · ${escapeHtml(p.section)}</span>
+              <span>Section ${p.sectionPos} · ${escapeHtml((State.sectionsByPos.get(p.sectionPos) || {}).nick || p.section)}</span>
               ${p.estimatedMinutes ? `<span>~${p.estimatedMinutes} min</span>` : ""}
-              ${(p.skills || []).slice(0, 2).map(s => `<span>${escapeHtml(s)}</span>`).join("")}
+              ${(p.skills || []).slice(0, 2).map(s => `<span class="prob-skill">${escapeHtml(s)}</span>`).join("")}
             </div>
           </div>
           <div class="prob-row-right">
@@ -12216,7 +12251,7 @@ const VZ = { red: "#C8102E", deep: "#9A0B22", ink: "#1F2933", grey: "#6B7682", f
 // The index is organized by idea; each picture belongs to one group (VZ_GROUP_OF), in VZ_ORDER.
 const VZ_GROUP_OF = {
   "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-dirderiv", "m-extrema", "m-wire", "m-potential", "m-square", "m-switch", "m-green", "m-surfarea", "m-flux", "m-dome", "m-cylinder"],
-  "Check your own work": ["tool-rref", "tool-det", "tool-vec"],
+  "Check your own work": ["tool-rref", "tool-det", "tool-eigen", "tool-vec"],
   "Vectors, span, and subspaces": ["vectors", "span", "independence", "coords", "subspace"],
   "Matrices as maps": ["transpose", "matrix", "compose", "det", "inverse", "nullcol", "systems", "gauss"],
   "Dot and cross products": ["projection", "projplane", "cross"],
@@ -12378,6 +12413,17 @@ function vzEig2(a, b, c, d) {                            // eigen-data of [[a,b]
 /* ---------- the page ---------- */
 const VzView = { def: null, st: null, raf: 0, t0: 0, tweens: null, playing: null, lastStatic: "", stale: true };
 
+// A side panel taller than the screen scrolls inside itself; while there is more below, its foot fades out
+// (.vz-more-below), so the hidden part is never a surprise. Watches the panel's size and its content's.
+let vzPanelRO = null;
+function vzPanelEdge(panel) {
+  if (vzPanelRO) { vzPanelRO.disconnect(); vzPanelRO = null; }
+  if (!panel) return;
+  const set = () => panel.classList.toggle("vz-more-below", panel.scrollHeight - panel.clientHeight - panel.scrollTop > 3);
+  panel.addEventListener("scroll", set, { passive: true });
+  if (window.ResizeObserver) { vzPanelRO = new ResizeObserver(set); vzPanelRO.observe(panel); [...panel.children].forEach(c => vzPanelRO.observe(c)); }
+  set();
+}
 function renderVisualize(id) {
   const root = $("#vizRoot");
   if (!root) return;
@@ -12392,7 +12438,7 @@ function renderVisualize(id) {
         <div>
           <div class="kicker">Visualize</div>
           <h2>See the ideas move</h2>
-          <p>Interactive pictures of the core ideas. Drag the vectors, move the sliders, and watch what changes and what stays put.</p>
+          <p>Drag, slide, or press Play, and watch the core ideas move.</p>
         </div>
       </div>
       <nav class="vz-jump" aria-label="Jump to a group">${VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g)).map((g, gi) => `<button type="button" class="vz-chip" data-jump="vzg-${gi}">${escapeHtml(g)}</button>`).join("")}</nav>
@@ -12424,7 +12470,7 @@ function renderVisualize(id) {
     <div class="vz-top">
       <button class="btn btn-ghost btn-sm" data-route="/visualize">&larr; All visualizations</button>
       <span class="vz-top-right">
-        <span class="vz-crumb">${escapeHtml(def.group)} &middot; ${i + 1} of ${VZ_LIST.length}</span>
+        <span class="vz-crumb"><span class="vz-crumb-g">${escapeHtml(def.group)} &middot; </span>${i + 1} of ${VZ_LIST.length}</span>
         <span class="vz-steps-nav"><a class="vz-nav-btn" href="#/visualize/${prev.id}" title="Previous: ${escapeHtml(prev.title)}" aria-label="Previous: ${escapeHtml(prev.title)}">&lsaquo;</a><a class="vz-nav-btn" href="#/visualize/${next.id}" title="Next: ${escapeHtml(next.title)}" aria-label="Next: ${escapeHtml(next.title)}">&rsaquo;</a></span>
         ${document.fullscreenEnabled ? `<button class="btn btn-ghost btn-sm vz-full" id="vzFull" type="button" aria-pressed="false">Full screen</button>` : ""}
       </span>
@@ -12441,6 +12487,7 @@ function renderVisualize(id) {
         <div class="vz-readout" id="vzReadout" aria-live="polite"></div>
         <details class="vz-more"><summary>The idea</summary><p class="vz-blurb">${escapeHtml(def.blurb)}</p></details>
         <button class="vz-report" type="button" id="vzReport">Report a problem</button>
+        <div class="vz-fade" aria-hidden="true"></div>
       </aside>
     </div>
     <div class="vz-pager">
@@ -12448,6 +12495,7 @@ function renderVisualize(id) {
       <a class="btn btn-ghost btn-sm" href="#/visualize/${next.id}">${escapeHtml(next.title)} &rarr;</a>
     </div>`;
   const panel = root.querySelector(".vz-panel");
+  vzPanelEdge(panel);
   typesetMath(panel);                                        // blurb and tip carry inline math
   panel.addEventListener("input", e => {
     const k = e.target.dataset && e.target.dataset.k;
@@ -12968,7 +13016,8 @@ const VZ_GAUSS = [
 ];
 const VZ_GCOL = [VZ.red, "#B8892B", "#2F7A4A"], VZ_GTXT = [VZ.deep, "#7A5C0F", "#22603A"];
 const vzSubN = i => "₁₂₃"[i];
-const vzGlyph = v => ({ "1/2": "½", "−1/2": "−½", "1/3": "⅓", "−1/3": "−⅓" })[vzShort(v)] || vzShort(v);
+// a scale factor as you would write it: ½, −⅓, ⅕, ⅔ (vzShort writes 0.5 and 0.2 as decimals)
+const vzGlyph = v => { const a = Math.abs(v), g = [[1, 2, "½"], [1, 3, "⅓"], [2, 3, "⅔"], [1, 4, "¼"], [3, 4, "¾"], [1, 5, "⅕"], [1, 6, "⅙"], [1, 8, "⅛"]].find(([p, q]) => Math.abs(a * q - p) < 1e-9); return g ? (v < 0 ? "−" : "") + g[2] : vzShort(v); };
 function vzGaussOp(op) {
   if (op[0] === "scale") return `R${vzSubN(op[1])} → ${vzGlyph(op[2])}R${vzSubN(op[1])}`;
   const k = op[3]; return `R${vzSubN(op[1])} → R${vzSubN(op[1])} ${k < 0 ? "−" : "+"} ${Math.abs(k) === 1 ? "" : vzShort(Math.abs(k))}R${vzSubN(op[2])}`;
@@ -13004,9 +13053,12 @@ function vzGaussScene(cam, M, G, hi = -1, opt = {}) {
   }).filter(Boolean);
   // a small frame of axis directions through the solution, so x = a, y = b, z = c read as square to them
   let o = "";
+  const busy = [], lines = [];                          // spots and lines the planes' names keep away from
   [[1, 0, 0, "x"], [0, 1, 0, "y"], [0, 0, 1, "z"]].forEach(([a, b, c, nm]) => {
     const tip = [C0[0] + 1.25 * a, C0[1] + 1.25 * b, C0[2] + 1.25 * c], T = pr(tip), S = pr(C0), L = Math.hypot(T[0] - S[0], T[1] - S[1]) || 1;
-    o += `<g opacity=".5">${vzArrow3(cam, C0, tip, "G", 1.3)}</g>` + vzLabel(T[0] + (T[0] - S[0]) / L * 11, T[1] + (T[1] - S[1]) / L * 11 + 5, nm, VZ.grey, 14);
+    const at = [T[0] + (T[0] - S[0]) / L * 11, T[1] + (T[1] - S[1]) / L * 11];
+    o += `<g opacity=".5">${vzArrow3(cam, C0, tip, "G", 1.3)}</g>` + vzLabel(at[0], at[1] + 5, nm, VZ.grey, 14);
+    busy.push(at);
   });
   disks.slice().sort((a, b) => b.dep - a.dep).forEach(D => {
     const on = D.i === hi ? (opt.hiW == null ? 1 : opt.hiW) : 0;      // the row being changed: brighter, rising and falling with its operation
@@ -13028,30 +13080,60 @@ function vzGaussScene(cam, M, G, hi = -1, opt = {}) {
     o += `<g opacity="${q2(.55 * op)}">${vzPath3(cam, [p.map((x, q) => x - R * du[q]), p.map((x, q) => x + R * du[q])], `stroke="${VZ.ink}" stroke-width="1.3" stroke-dasharray="5 4"`)}</g>`;
   }
   // the solution set: a point, or (when a row has run out) the line every plane still shares
-  if (G.dir) { const du = unit(G.dir), last = Math.hypot(...nrm[2]); o += `<g opacity="${q2(1 - vzClamp(last / .35, 0, 1))}">${vzPath3(cam, [C0.map((x, q) => x - 2.2 * du[q]), C0.map((x, q) => x + 2.2 * du[q])], `stroke="${VZ.deep}" stroke-width="3.4" stroke-linecap="round"`)}</g>`; }
-  const busy = [];                                      // spots the planes' names keep away from
+  if (G.dir) {
+    const du = unit(G.dir), last = Math.hypot(...nrm[2]), ends = [C0.map((x, q) => x - 2.2 * du[q]), C0.map((x, q) => x + 2.2 * du[q])];
+    o += `<g opacity="${q2(1 - vzClamp(last / .35, 0, 1))}">${vzPath3(cam, ends, `stroke="${VZ.deep}" stroke-width="3.4" stroke-linecap="round"`)}</g>`;
+    lines.push(ends.map(pr));                            // (the gauss picture draws this line from the start)
+  }
   if (!G.dir) { const S = pr(C0); o += `<circle cx="${q2(S[0])}" cy="${q2(S[1])}" r="11" fill="${VZ.red}" opacity=".16"/>` + vzDot3(cam, C0, 5.5, VZ.deep); if (opt.label !== false && (opt.labelOp == null || opt.labelOp > .01)) { if (opt.labelOp != null) o += `<g opacity="${q2(opt.labelOp)}">`; o += vzLabel(S[0] + 14, S[1] - 12, `(${C0.map(vzShort).join(", ")})`, VZ.deep, 15, "start"); busy.push([S[0] + 50, S[1] - 16], [S[0] + 20, S[1] - 16], [S[0] + 80, S[1] - 16], [S[0], S[1]]); if (opt.labelOp != null) o += `</g>`; } }
-  // each plane's number at the point of its rim farthest from the other two rims (and from the solution's name)
-  const rims = disks.map(D => D.pts.map(p => pr(p))), placed = [];
+  // each plane's name, just outside its rim, at the spot clearest of the other rims (a plane lying on another one
+  // doesn't count: it has the same rim), the axis names, the solution and its name, and the other planes' names.
+  // With opt.mem (a memory kept by the caller) a name keeps its spot until another is clearly better, then slides
+  // along its own rim to it, or, when that is far round the rim, fades out where it was and in at the new spot.
+  // Names also keep off the equations (top left) and the operation (top right), where gauss and m-gauss write them.
+  const rims = disks.map(D => D.pts.map(p => pr(p))), mem = opt.mem, now = performance.now();
+  const W = opt.W || 2 * pr(C0)[0], H = opt.H || 450, avoid = opt.avoid || [[0, 0, 240, 86], [W - 210, 0, W, 46]];   // (the solution is at the middle)
+  const seg = (p, a, b) => { const ex = b[0] - a[0], ey = b[1] - a[1], t = vzClamp(((p[0] - a[0]) * ex + (p[1] - a[1]) * ey) / (ex * ex + ey * ey || 1), 0, 1); return [Math.hypot(a[0] + t * ex - p[0], a[1] + t * ey - p[1]), t]; };
+  const dist = (p, r, closed) => { let d = 1e9; for (let m = 0; m < r.length - (closed ? 0 : 1); m++) d = Math.min(d, seg(p, r[m], r[(m + 1) % r.length])[0]); return d; };
+  const inside = (p, r) => { let c = false; for (let m = 0, n = r.length - 1; m < r.length; n = m++) { const a = r[m], b = r[n]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+  const alike = (D, E) => Math.hypot(...D.ctr.map((x, q) => x - E.ctr[q])) < .08 && Math.abs(vzDot(nrm[D.i], nrm[E.i])) / (Math.hypot(...nrm[D.i]) * Math.hypot(...nrm[E.i])) > .995;
+  const at = (r, f) => { const n = r.length, m = ((Math.floor(f) % n) + n) % n, a = r[m], b = r[(m + 1) % n], t = f - Math.floor(f); return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; };
+  const onRim = (r, p) => { let bf = 0, bd = 1e9; r.forEach((a, m) => { const [d, t] = seg(p, a, r[(m + 1) % r.length]); if (d < bd) { bd = d; bf = m + t; } }); return bf; };
+  const names = {};                                      // where each plane's name is: this frame once placed, else last frame
+  if (mem) disks.forEach(D => { const m = mem["L" + who[D.i]]; if (m) names[D.i] = m.p; });
   disks.forEach((D, k) => {
-    let best = null, bs = -1, bi = -1;
-    const sc = [], lastI = opt.mem && opt.mem["i" + who[D.i]];
-    rims[k].forEach((q, m) => { if (m % 3) return; const dmin = Math.min(...rims.filter((_, kk) => kk !== k).flatMap(r => r.map(z => Math.hypot(z[0] - q[0], z[1] - q[1]))), ...busy.concat(placed).map(z => Math.hypot(z[0] - q[0], z[1] - q[1]) * .8), 999); sc[m] = dmin; if (dmin > bs) { bs = dmin; best = q; bi = m; } });
-    if (lastI != null && sc[lastI] != null && sc[lastI] > bs * .8) { best = rims[k][lastI]; bi = lastI; }   // keep last frame's spot unless another is much better
-    if (opt.mem) opt.mem["i" + who[D.i]] = bi;
-    if (best && opt.mem) {                                 // a name glides to its new spot instead of jumping (opt.mem: a memory kept by the caller)
-      const m = opt.mem, nowT = performance.now(), key = "R" + who[D.i], last = m[key];
-      if (last && nowT - last.t < 300) { const a = Math.min(1, (nowT - last.t) / 220); best = [last.p[0] + (best[0] - last.p[0]) * a, last.p[1] + (best[1] - last.p[1]) * a]; }
-      m[key] = { p: best, t: nowT };
+    const r = rims[k], n = r.length, c = pr(D.ctr), id = who[D.i];
+    const spot = q => { const dx = q[0] - c[0], dy = q[1] - c[1], L = Math.hypot(dx, dy) || 1; return [q[0] + dx / L * 15, q[1] + dy / L * 15]; };
+    const obst = disks.filter((E, kk) => kk !== k && E.op > .3 && !alike(D, E)).map(E => rims[disks.indexOf(E)]);
+    const near = disks.filter(E => E !== D && E.op > .3 && names[E.i]).map(E => names[E.i]);
+    const score = p => {                                 // about how many pixels the name has to itself (at most 46, +10 off the other discs)
+      let d = 46;
+      obst.forEach(q => { d = Math.min(d, dist(p, q, true) - 3); });
+      lines.forEach(q => { d = Math.min(d, dist(p, q, false) - 3); });
+      busy.forEach(z => { d = Math.min(d, Math.hypot(z[0] - p[0], z[1] - p[1]) * .7); });
+      near.forEach(z => { d = Math.min(d, Math.hypot(z[0] - p[0], z[1] - p[1]) * .6); });
+      if (!obst.some(q => inside(p, q))) d += 10;
+      if (p[0] < 24 || p[0] > W - 24 || p[1] < 28 || p[1] > H - 40 || avoid.some(([x0, y0, x1, y1]) => p[0] > x0 && p[0] < x1 && p[1] > y0 && p[1] < y1)) d -= 40;
+      return d;
+    };
+    let f = 0, bs = -1e9, fade = null;
+    for (let m = 0; m < n; m += 2) { const s = score(spot(r[m])); if (s > bs) { bs = s; f = m; } }
+    const st = mem && mem["L" + id];
+    if (st) {
+      const f0 = onRim(r, st.a), to = score(spot(at(r, f0))) > bs - 8 ? f0 : f, dI = ((to - f0) % n + n * 1.5) % n - n / 2;   // the short way round
+      fade = st.fade && now - st.fade.t0 < 320 ? st.fade : null;
+      if (Math.abs(dI) > n / 5 && !fade) { fade = { p: st.p, t0: now }; f = to; }
+      else { const step = Math.min(64, now - st.t) / 24; f = f0 + Math.sign(dI) * Math.min(Math.abs(dI), step); if (Math.abs(dI) > step) VzView.again = true; }
     }
-    if (best) placed.push(best);
-    if (best) {
-      const c = pr(D.ctr), dx = best[0] - c[0], dy = best[1] - c[1], L = Math.hypot(dx, dy) || 1, lx = best[0] + dx / L * 14, ly = best[1] + dy / L * 14 + 5, sw = opt.swap;
-      if (sw && (D.i === sw.i || D.i === sw.j)) {                // a row swap: the plane keeps its place and colour, its name changes
-        const to = D.i === sw.i ? sw.j : sw.i;
-        o += `<g opacity="${q2(D.op * (1 - sw.e))}">${vzLabel(lx, ly, "R" + vzSubN(D.i), GT(D.i), 15)}</g><g opacity="${q2(D.op * sw.e)}">${vzLabel(lx, ly, "R" + vzSubN(to), GT(D.i), 15)}</g>`;
-      } else o += `<g opacity="${q2(D.op)}">${vzLabel(lx, ly, "R" + vzSubN(D.i), GT(D.i), 15)}</g>`;
-    }
+    const p = spot(at(r, f)), u = fade ? vzEase(vzClamp((now - fade.t0) / 320, 0, 1)) : 1, sw = opt.swap;
+    if (fade && u < 1) VzView.again = true;                // still sliding or fading: draw again next frame, even at rest
+    if (mem) mem["L" + id] = { a: at(r, f), p, t: now, fade };
+    names[D.i] = p;
+    const txt = (q, s, op) => op < .01 ? "" : `<text x="${q2(vzClamp(q[0], 18, W - 18))}" y="${q2(vzClamp(q[1] + 5, 20, H - 8))}" font-family="'Fraunces', Georgia, serif" font-size="15" font-style="italic" fill="${GT(D.i)}" text-anchor="middle" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke" opacity="${q2(op)}">${s}</text>`;
+    // a row swap: the plane keeps its place and colour, its name changes
+    const both = (q, op) => sw && (D.i === sw.i || D.i === sw.j) ? txt(q, "R" + vzSubN(D.i), op * (1 - sw.e)) + txt(q, "R" + vzSubN(D.i === sw.i ? sw.j : sw.i), op * sw.e) : txt(q, "R" + vzSubN(D.i), op);
+    if (fade && u < 1) o += both(fade.p, D.op * (1 - u));
+    o += both(p, D.op * u);
   });
   return o;
 }
@@ -13064,17 +13146,19 @@ vzAdd({
   thumb: { x: .45 },
   controls: [
     { k: "x", label: "row operations done", min: 0, max: 1, step: .001, fmt: function (v) { const G = VZ_GAUSS[Math.round(VzView.st ? VzView.st.sys : 0)] || VZ_GAUSS[0]; return Math.round(v * G.ops.length) + " of " + G.ops.length; }, play: .06, progress: true, aria: "row operations",
-      rests: s => { const N = (VZ_GAUSS[Math.round(s.sys)] || VZ_GAUSS[0]).ops.length; return Array.from({ length: N - 1 }, (_, i) => (i + 1) / N); }, restMs: 900 },
+      // a rest after each operation, and one a hair before the end (drawn as the end): RREF stays up ~2 s, not 1
+      rests: s => { const N = (VZ_GAUSS[Math.round(s.sys)] || VZ_GAUSS[0]).ops.length; return Array.from({ length: N - 1 }, (_, i) => (i + 1) / N).concat([1 - 1e-4]); }, restMs: 900 },
     { k: "yaw", label: "turn the view", min: -180, max: 180, step: 1, unit: "°", digits: 0, noPlay: true },
   ],
   panelTop() { return `<div><div class="vz-ptop-k">The system</div><div class="vz-chips">${VZ_GAUSS.map((G, i) => `<button type="button" class="vz-chip" data-gs="${i}">${escapeHtml(G.chip)}</button>`).join("")}</div></div>`; },
   sync(s, panel) { panel && panel.querySelectorAll("[data-gs]").forEach(b => b.classList.toggle("on", +b.dataset.gs === Math.round(s.sys))); },
-  onClick(el, s) { const b = el.closest("[data-gs]"); if (!b) return false; s.sys = +b.dataset.gs; s.x = 0; s.yaw = this.G(s).yaw; return true; },   // each system comes with a view where no plane is edge-on
+  onClick(el, s) { const b = el.closest("[data-gs]"); if (!b) return false; s.sys = +b.dataset.gs; s.x = 0; s.yaw = this.G(s).yaw; this._mem = {}; return true; },   // each system comes with a view where no plane is edge-on
   G(s) { return VZ_GAUSS[Math.round(s.sys)] || VZ_GAUSS[0]; },
+  X(s) { const x = vzClamp(s.x, 0, 1) * this.G(s).ops.length, r = Math.round(x); return Math.abs(x - r) < 2e-3 ? r : x; },   // operations done (a hair from a whole number counts as it)
   cam(s) { const G = this.G(s), C0 = G.c0, c0 = vzCam(0, 0, 70, vzRad(s.yaw), G.el || .5); const f = (x, y, z) => { const q = c0(x - C0[0], y - C0[1], z - C0[2]); return [300 + q[0], 238 + q[1], q[2]]; }; f.view = c0.view; return f; },
   draw(s, t, thumb) {
-    const G = this.G(s), { M, op } = vzGaussRows(G, vzClamp(s.x, 0, 1) * G.ops.length);
-    const fr0 = op ? vzClamp(s.x, 0, 1) * G.ops.length - Math.floor(vzClamp(s.x, 0, 1) * G.ops.length + 1e-9) : 0;
+    const G = this.G(s), { M, op } = vzGaussRows(G, this.X(s));
+    const fr0 = op ? this.X(s) - Math.floor(this.X(s) + 1e-9) : 0;
     const cam = this.cam(s);
     let o = vzGaussScene(cam, M, G, op ? op[1] : -1, { hiW: Math.sin(Math.PI * fr0), mem: VzView.live ? (this._mem || (this._mem = {})) : null });
     // a line of solutions is there from the start (the scene alone shows it only once a row has run out), so it can
@@ -13082,7 +13166,7 @@ vzAdd({
     if (G.dir) { const L = Math.hypot(...G.dir), du = G.dir.map(v => v / L); o += vzPath3(cam, [G.c0.map((v, q) => v - 2.2 * du[q]), G.c0.map((v, q) => v + 2.2 * du[q])], `stroke="${VZ.deep}" stroke-width="3.4" stroke-linecap="round"`); }
     if (!thumb) {
       // the three equations, each in its plane's colour; the one being changed cross-fades from before to after
-      const x = vzClamp(s.x, 0, 1) * G.ops.length, K = Math.floor(x + 1e-9), A0 = vzGaussRows(G, K).M, A1 = vzGaussRows(G, Math.min(G.ops.length, K + 1)).M, e = op ? vzEase(x - K) : 0;
+      const x = this.X(s), K = Math.floor(x + 1e-9), A0 = vzGaussRows(G, K).M, A1 = vzGaussRows(G, Math.min(G.ops.length, K + 1)).M, e = op ? vzEase(x - K) : 0;
       A0.forEach((r, i) => {
         if (op && i === op[1]) {                           // the old equation fades out, then the new one fades in
           const a = vzClamp(1 - e * 2.2, 0, 1), b = vzClamp(e * 2.2 - 1.2, 0, 1);
@@ -13097,7 +13181,7 @@ vzAdd({
     return o;
   },
   readout(s) {
-    const G = this.G(s), x = vzClamp(s.x, 0, 1) * G.ops.length, { M, K, op } = vzGaussRows(G, x), done = Math.round(x), R = vzGaussRows(G, done).M;
+    const G = this.G(s), x = this.X(s), { M, K, op } = vzGaussRows(G, x), done = Math.round(x), R = vzGaussRows(G, done).M;
     const cell = v => Math.abs(v) < 1e-9 ? "0" : (v < 0 ? "−" : "") + vzShort(Math.abs(v));
     const hl = op ? op[1] : -1, rows = R.map((r, i) => `<tr${i === hl ? ' class="hl"' : ""}>${r.map((v, q) => `<td${q === 3 ? ' class="bar"' : ""}>${cell(v)}</td>`).join("")}</tr>`).join("");
     const N = G.ops.length, end = done >= N;
@@ -13498,7 +13582,7 @@ function vzNames(items, obst, box, mem) {
     [[0, 0], [14, 0], [-14, 0], [28, 0], [-28, 0], [0, 18], [44, 0], [-44, 0], [20, 18], [-20, 18], [0, 36], [62, 0], [-62, 0], [40, 30], [-40, 30]].forEach(([side, more], i) => {
       const x = it.at[0] + ux * (gap + more) - uy * side, y = it.at[1] + uy * (gap + more - 4) + ux * side;
       const d = Math.min(9, ...placed.map(p => Math.max(Math.abs(p[0] - x) / ((p[2] + w) / 2), Math.abs(p[1] - y) / (p[2] < 10 ? 16 : 28))));
-      const edge = x - w / 2 < 6 || x + w / 2 > W - 6 || y < top || y > H - 12 || (keyY < H && y > keyY && x - w / 2 < 500) ? 40 : 0;   // the edges, the caption, the key
+      const edge = x - w / 2 < 6 || x + w / 2 > W - 6 || y < top || y > H - 12 || (keyY < H && y > keyY && x - w / 2 < W * 5 / 6) ? 40 : 0;   // the edges, the caption, the key (it spans ~5/6 of the width)
       const sc = (d >= 1 ? 100 : d * 50) - i * 2 - edge + (mem && mem[key] === i ? 14 : 0);
       if (sc > bs) { bs = sc; best = [x, y]; bi = i; }
     });
@@ -13592,7 +13676,7 @@ function vzProjScene(cam, camR, G, ph, opt = {}) {
   ];
   if (len(G.p1) > .3) items.push(Object.assign(footOf(G.p1), { id: "p1", html: vzSub("proj", "w₁", "(v)"), col: VZ.red, op: labA, size: 14 }));
   if (len(G.p2) > .3) items.push(Object.assign(footOf(G.p2), { id: "p2", html: vzSub("proj", "w₂", "(v)"), col: "#22603A", op: labB, size: 14 }));
-  if (len(G.sum) > .3) items.push(Object.assign(tipOf(G.sum), { id: "sum", html: nm.sum || (G.bad ? "sum of shadows" : vzB("v") + "<tspan>∥</tspan>"), col: G.bad ? VZ.deep : "#7A5C0F", op: labSum, size: nm.sum ? 14 : 16 }));
+  if (len(G.sum) > .3) items.push(Object.assign(tipOf(G.sum), { id: "sum", html: nm.sum || (G.bad ? "sum of shadows" : vzB("v") + "<tspan>∥</tspan>"), col: "#7A5C0F", op: labSum, size: nm.sum ? 14 : 16 }));
   if (len(G.perp) > .3) items.push(Object.assign(midOf(G.sum, G.v), { id: "perp", html: nm.perp || (G.bad ? "v − sum" : vzB("v") + `<tspan>⊥</tspan><tspan font-style="normal" font-size="14">  length ${vzRootTxt(vzDot(G.perp, G.perp))}</tspan>`), col: VZ.deep, op: dist, gap: 10 }));
   if (G.bad && len(sub(G.v, G.tru)) > .3) {
     const T = pr(G.tru), Sm = pr(G.sum), dx = T[0] - Sm[0], dy = T[1] - Sm[1], L = Math.hypot(dx, dy) || 1;
@@ -13611,6 +13695,8 @@ function vzProjScene(cam, camR, G, ph, opt = {}) {
   const segs = [[O, G.v]].concat(basis > .5 ? [[O, G.w1], [O, G.w2]] : [], shA > .5 ? [[O, G.p1]] : [], shB > .5 ? [[O, G.p2]] : [], sumG > .5 ? [[O, G.sum], [G.p1, G.sum]] : [], dropD > .5 ? [[G.sum, G.v]] : []);
   const obst = AX ? [[AX * 1.08, 0, 0], [0, AX * 1.08, 0], [0, 0, AX * .86]].map(p => { const q = pr(p); return [q[0], q[1] + 2, 12]; }) : [];
   segs.forEach(([a, b]) => { const A = pr(a), B = pr(b), n = Math.ceil(Math.hypot(B[0] - A[0], B[1] - A[1]) / 12); for (let k = 1; k < n; k++) obst.push([A[0] + (B[0] - A[0]) * k / n, A[1] + (B[1] - A[1]) * k / n, 6]); });
+  // the dashed lines of w₁ and w₂ too: a name sitting on one past its tip reads as "−w₁"
+  if (basis > .01) [[G.w1, a0, a1], [G.w2, b0, b1]].forEach(([w, lo, hi]) => { const A = pr(mul(lo, w)), B = pr(mul(hi, w)), n = Math.ceil(Math.hypot(B[0] - A[0], B[1] - A[1]) / 12); for (let k = 1; k < n; k++) obst.push([A[0] + (B[0] - A[0]) * k / n, A[1] + (B[1] - A[1]) * k / n, 6]); });
   obst.push([PL[0], PL[1] - 1, Pw * 2 + 10]);
   o += vzNames(items, obst, { W, H, top: opt.top == null ? 48 : opt.top, keyY: opt.keyY == null ? 404 : opt.keyY }, opt.mem || (VzView.live ? (VzView.tipSide || (VzView.tipSide = {})) : null));
   return o;
@@ -14259,12 +14345,12 @@ vzAdd({
     return false;
   },
   onStageClick(s, x, y) {
-    const P = this.P, p = [vzClamp((x - P.cx) / P.u, -3.4, 3.4), vzClamp((P.cy - y) / P.u, -2.25, 2.45)];   // (clear of the key along the bottom)
+    const P = this.P, p = [vzClamp((x - P.cx) / P.u, -3.2, 3.2), vzClamp((P.cy - y) / P.u, -1.5, 2.05)];   // (arrow and ∇f label stay clear of the key and the edges)
     this._pins = (this._pins || []).concat([{ p, t: performance.now() }]).slice(-14);
     return true;
   },
   handles(s) { const q = (this._pins || []).slice(-1)[0]; return q ? [{ k: "pin", x: this.P.X(q.p[0]), y: this.P.Y(q.p[1]) }] : []; },
-  dragTo(s, k, x, y, fine) { const q = this._pins[this._pins.length - 1], P = this.P; q.p = [vzClamp((x - P.cx) / P.u, -3.4, 3.4), vzClamp((P.cy - y) / P.u, -2.25, 2.45)]; q.t = 0; },
+  dragTo(s, k, x, y, fine) { const q = this._pins[this._pins.length - 1], P = this.P; q.p = [vzClamp((x - P.cx) / P.u, -3.2, 3.2), vzClamp((P.cy - y) / P.u, -1.5, 2.05)]; q.t = 0; },
   staticKey: s => Math.round(s.fn) + ":" + !!s.levels,
   static(s) {
     const P = this.P, F = this.F(s);
@@ -14599,11 +14685,11 @@ vzAdd({
     o += `<circle cx="${ox}" cy="${oy}" r="3.6" fill="${VZ.ink}"/>`;
     // the axes are r and θ while the picture is a rectangle, x and y once it has curled (one name fades out before the
     // other fades in at the same spot, so the two never sit on top of each other)
-    const rt = 1 - vzClamp((m - .22) / .16, 0, 1), xy = vzClamp((m - .4) / .16, 0, 1);
+    const rt = 1 - vzClamp((m - .18) / .14, 0, 1), xy = vzClamp((m - .34) / .14, 0, 1);   // both settled by m = .5 (the Half way preset)
     if (rt > .01) o += `<g opacity="${q2(rt)}">${vzLabel(580, oy + 22, "r", VZ.ink, 17)}${vzLabel(ox - 16, 36, "θ", VZ.ink, 17)}</g>`;
     if (xy > .01) o += `<g opacity="${q2(xy)}">${vzLabel(580, oy + 22, "x", VZ.ink, 17)}${vzLabel(ox - 16, 36, "y", VZ.ink, 17)}</g>`;
     // the highlighted cell's area, beside it
-    const at = this.pos(rv(c + 1) + .12, (tv(2) + tv(3)) / 2, m), flat = 1 - vzClamp((m - .3) / .3, 0, 1), curled = vzClamp((m - .7) / .25, 0, 1);
+    const at = this.pos(rv(c + 1) + .12, (tv(2) + tv(3)) / 2, m), flat = 1 - vzClamp((m - .25) / .2, 0, 1), curled = vzClamp((m - .7) / .25, 0, 1);
     if (flat > .01) o += `<g opacity="${q2(flat)}">${vzLabel(at[0], at[1] + 5, "Δr Δθ", VZ.deep, 15, "start")}</g>`;
     if (curled > .01) o += `<g opacity="${q2(curled)}">${vzLabel(at[0], at[1] + 5, `<tspan font-weight="700" fill="${VZ.red}">${vzShort(r)}</tspan> Δr Δθ`, VZ.deep, 15, "start")}</g>`;
     o += vzNoteFade(22, 432, m, [.12, .88], ["the (r, θ) plane: every cell is Δr by Δθ", "curling the rectangle around the origin", "the (x, y) plane: each cell's area is r Δr Δθ"]);
@@ -15585,7 +15671,7 @@ function vzQuads(cam, grid, tint, opts = {}) {
   return out.sort((A, B) => B.dep - A.dep);
 }
 const vzQuadSvg = (qs, opts = {}) => qs.map(q => `<path d="${q.d}" fill="${q.fill}"${opts.op != null ? ` fill-opacity="${opts.op}"` : ""} stroke="#FFFFFF" stroke-opacity="${opts.mesh == null ? .5 : opts.mesh}" stroke-width=".7" stroke-linejoin="round"/>`).join("");
-const vzPath3 = (cam, pts, attrs) => `<path d="M${pts.map(p => { const q = cam(p[0], p[1], p[2]); return q2(q[0]) + " " + q2(q[1]); }).join("L")}" fill="none" ${attrs}/>`;
+const vzPath3 = (cam, pts, attrs) => `<path d="M${pts.map(p => { const q = cam(p[0], p[1], p[2]); return q2(q[0]) + " " + q2(q[1]); }).join("L")}" ${/(^|\s)fill="/.test(attrs || "") ? "" : 'fill="none" '}${attrs}/>`;
 const vzArrow3 = (cam, a, b, key, w) => { const A = cam(a[0], a[1], a[2]), B = cam(b[0], b[1], b[2]); return vzArrow(A[0], A[1], B[0], B[1], key, w); };
 const vzDot3 = (cam, p, r, col) => { const q = cam(p[0], p[1], p[2]); return `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="${r}" fill="${col}" stroke="#fff" stroke-width="1.5"/>`; };
 const vzLab3 = (cam, p, html, col, dx = 0, dy = 0, size) => { const q = cam(p[0], p[1], p[2]); return vzLabel(q[0] + dx, q[1] + dy, html, col, size); };
@@ -16204,7 +16290,7 @@ vzAdd({
       const e = r(lt), lx = P.X(e[0]) + off[0], ly = P.Y(e[1]) + off[1], b = box(lx, ly, name, 16, off[2] || "start");
       const gap = Math.min(...ends.map(q => Math.max(q[0] - b[2], b[0] - q[2], q[1] - b[3], b[1] - q[3])));
       const said = vert ? ["y = " + R.dydx[2], "y = " + R.dydx[3]] : ["x = " + R.dxdy[2], "x = " + R.dxdy[3]];
-      const op = said.includes(name) ? 0 : vzClamp((gap - 12) / 36, 0, 1);
+      const op = said.includes(name) ? 0 : vzClamp((gap - 6) / 14, 0, 1);   // a short ramp: at rest a name is on or off, never half-faded
       if (op > .02) o += `<g opacity="${q2(op)}">${vzLabel(lx, ly, name, VZ.red, 16, off[2] || "start")}</g>`;
     });
     // the strip and its two ends
@@ -16219,7 +16305,9 @@ vzAdd({
       const y = sv, lo = R.xlo(y), hi = R.xhi(y);
       o += P.poly([[lo, y - w / 2], [hi, y - w / 2], [hi, y + w / 2], [lo, y + w / 2]], `fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}" stroke-width="1.2"`);
       o += P.dot([lo, y], 4.6, VZ.ink) + P.dot([hi, y], 4.6, VZ.ink);
-      const x = P.X(0) - (R.brk || 30); o += `<path d="M${x + 6} ${P.Y(R.ys[0])}H${x}V${P.Y(R.ys[1])}H${x + 6}" fill="none" stroke="${VZ.gold}" stroke-width="2.2"/>` + vzLabel(x - 8, (P.Y(R.ys[0]) + P.Y(R.ys[1])) / 2, "y: " + R.dxdy[0] + " to " + R.dxdy[1], "#7A5C0F", 15, "end");
+      // the y-range bracket; where the strip's left label crosses its line (strip low down), the line breaks around the words
+      const x = P.X(0) - (R.brk || 30), lb = ends[0], cut = lb[0] - 4 < x && lb[2] + 4 > x && lb[3] + 3 < P.Y(R.ys[0]) && lb[1] - 3 > P.Y(R.ys[1]);
+      o += `<path d="M${x + 6} ${P.Y(R.ys[0])}H${x}${cut ? `V${q2(lb[3] + 3)}M${x} ${q2(lb[1] - 3)}` : ""}V${P.Y(R.ys[1])}H${x + 6}" fill="none" stroke="${VZ.gold}" stroke-width="2.2"/>` + vzLabel(x - 8, (P.Y(R.ys[0]) + P.Y(R.ys[1])) / 2, "y: " + R.dxdy[0] + " to " + R.dxdy[1], "#7A5C0F", 15, "end");
     }
     labs.forEach(([x, y, t, a]) => { o += vzLabel(x, y, t, VZ.ink, 15, a); });
     o += vzKey([["fill", VZ.red, "the region"], ["line", VZ.gold, vert ? "x sweeps across" : "y sweeps up"]]);
@@ -16567,7 +16655,8 @@ vzAdd({
     const showN = f ? (m <= 3 ? 1 - Math.min(1, e * 3) : 0) + (m + 1 <= 3 ? Math.max(0, e * 3 - 2) : 0) : m <= 3 ? 1 : 0;
     if (showN > .02 && !thumb) cells.forEach(({ a, a2, b, b2, op }) => {
       const v = this.cell(a, a2, b, b2), cx = (a + a2) / 2, cy = (b + b2) / 2;
-      o += `<g opacity="${q2(showN * op)}">${vzLabel(P.X(cx), P.Y(cy) + 6, (v < 0 ? "−" : "") + vzNum(Math.abs(v)), v < 0 ? VZ.ink : VZ.deep, 17)}</g>`;
+      // plain text, not vzLabel: its glide matches labels by order, so they slid across the grid whenever the cell count changed
+      o += `<text x="${q2(P.X(cx))}" y="${q2(P.Y(cy) + 6)}" opacity="${q2(showN * op)}" font-family="'Fraunces', Georgia, serif" font-size="17" font-style="italic" fill="${v < 0 ? VZ.ink : VZ.deep}" text-anchor="middle" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke" style="font-variant-numeric:tabular-nums">${(v < 0 ? "−" : "") + vzNum(Math.abs(v))}</text>`;
     });
     o += P.poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], `fill="none" stroke="${VZ.red}" stroke-width="2.4"`);
     o += vzLabel(P.X(x1) + 14, P.Y(y1) - 6, "C", VZ.red, 18) + vzLabel(P.X(x0) + 22, P.Y(y1) + 26, "D", VZ.deep, 17);
@@ -16843,7 +16932,7 @@ function renderSteps(def, i, prev, next) {
     <div class="vz-top">
       <button class="btn btn-ghost btn-sm" data-route="/visualize">&larr; All visualizations</button>
       <span class="vz-top-right">
-        <span class="vz-crumb">${escapeHtml(def.group)} &middot; ${i + 1} of ${VZ_LIST.length}</span>
+        <span class="vz-crumb"><span class="vz-crumb-g">${escapeHtml(def.group)} &middot; </span>${i + 1} of ${VZ_LIST.length}</span>
         <span class="vz-steps-nav"><a class="vz-nav-btn" href="#/visualize/${prev.id}" title="Previous: ${escapeHtml(prev.title)}" aria-label="Previous: ${escapeHtml(prev.title)}">&lsaquo;</a><a class="vz-nav-btn" href="#/visualize/${next.id}" title="Next: ${escapeHtml(next.title)}" aria-label="Next: ${escapeHtml(next.title)}">&rsaquo;</a></span>
         ${document.fullscreenEnabled ? `<button class="btn btn-ghost btn-sm vz-full" id="vzFull" type="button" aria-pressed="false">Full screen</button>` : ""}
       </span>
@@ -16869,7 +16958,6 @@ function renderSteps(def, i, prev, next) {
       <aside class="vz-panel st-panel">
         <h1 class="vz-title">${escapeHtml(def.title)}</h1>
         <p class="vz-sub">${escapeHtml(def.tagline || "")}</p>
-        <details class="vz-more"><summary>The idea</summary><p class="vz-blurb">${def.blurb}</p></details>
         <div class="st-ctl">
           <button class="btn btn-ghost btn-sm" type="button" data-st="back" aria-label="Back one step">&larr; Back</button>
           <button class="btn btn-red btn-sm st-play" type="button" data-st="play">Play</button>
@@ -16878,7 +16966,9 @@ function renderSteps(def, i, prev, next) {
         <div class="st-speed"><span>Speed</span><div class="vz-seg" role="group" aria-label="Speed">${[[1.7, "Slow"], [1, "Normal"], [.7, "Quick"]].map(([v, l]) => `<button type="button" data-speed="${v}">${l}</button>`).join("")}</div></div>
         <div class="vz-ptop-k st-outline-k">The method</div>
         <ol class="st-outline">${steps.map((s, j) => `<li data-goto="${j}"><span class="st-o-n">${j + 1}</span><span>${escapeHtml(s.t)}</span></li>`).join("")}</ol>
+        <details class="vz-more"><summary>The idea</summary><p class="vz-blurb">${def.blurb}</p></details>
         <button class="vz-report" type="button" id="vzReport">Report a problem</button>
+        <div class="vz-fade" aria-hidden="true"></div>
       </aside>
     </div>
     <div class="vz-pager">
@@ -16886,6 +16976,7 @@ function renderSteps(def, i, prev, next) {
       <a class="btn btn-ghost btn-sm" href="#/visualize/${next.id}">${escapeHtml(next.title)} &rarr;</a>
     </div>`;
   const panel = root.querySelector(".st-panel");
+  vzPanelEdge(panel);
   panel.addEventListener("click", e => {
     const b = e.target.closest("[data-st], [data-speed], [data-goto]");
     if (!b) return;
@@ -17121,12 +17212,29 @@ stAdd({
   ],
 });
 
+// How long line b of step k has been on the board, in s, so a picture can move with the line it belongs to (Play first
+// shows a step's title and reason, Next goes straight to the math: a line's own clock is right either way). The first
+// frame drawn for a line starts its clock; u ≥ 99 is the finished index card. A picture timed this way needs picLive.
+function stLineT(def, k, b, u) {
+  if (u >= 99) return 99;
+  const m = def._lt || (def._lt = {}), key = k + ":" + b;
+  if (m.key !== key || u < m.u0) { m.key = key; m.u0 = u; }
+  return u - m.u0;
+}
+// L(K, j, a, d): 0 until line j of step K is on the board, then eased in from a s after it arrives, over d s; 1 later on
+function stLines(def, k, b, u) {
+  const t = stLineT(def, k, b, u);
+  return (K, j, a = 0, d = .7) => k > K ? 1 : k < K ? 0 : b > j ? 1 : b < j ? 0 : stEase(t, a, d);
+}
+
 stAdd({
   id: "m-subspace", title: "Proving a set is (or isn't) a subspace", card: "Subspace proofs",
   tagline: "General elements for a proof; one example to disprove.",
   blurb: "Two sets, two outcomes. A subspace needs a reason that works for <i>every</i> vector; a non-subspace needs just one counterexample.",
   problem: "Decide whether each set is a subspace: \\(W_1=\\{[a+b,\\ a-b,\\ 2a]: a,b\\in\\mathbb R\\}\\subseteq\\mathbb R^3\\) and \\(W_2=\\{[x,y]: |y|\\le|x|\\}\\subseteq\\mathbb R^2\\).",
+  picLive: true,
   pic(k, b, u) {
+    const L = stLines(this, k, b, u);                      // each test's picture comes with the line of math it belongs to
     if (k <= 4) {                                          // W1: a plane through 0, spanned by [1, 1, 2] and [1, -1, 0], seen at an angle so it reads as a plane
       const cam = vzCam(180, 236, 50, vzRad(20), .42), A = [1, 1, 2], B = [1, -1, 0], O = [0, 0, 0];
       const at = (s, t) => [s * A[0] + t * B[0], s * A[1] + t * B[1], s * A[2] + t * B[2]];
@@ -17135,16 +17243,16 @@ stAdd({
       o += `<path d="M${c.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-opacity=".7" stroke-width="1.5"/>`;
       const dim = k === 2 || k === 3 ? 1 - .55 * stEase(u, .1, .6) : 1;          // the spanning pair steps back while a test runs
       o += `<g opacity="${q2(dim)}">${vzArrow3(cam, O, A, "I", 2.4)}${vzArrow3(cam, O, B, "I", 2.4)}${vzLab3(cam, A, "[1, 1, 2]", VZ.ink, 0, -12, 14)}${vzLab3(cam, B, "[1, −1, 0]", VZ.ink, 0, 22, 14)}</g>`;
-      if (k === 1) o += `<g opacity="${q2(stEase(u, .3, .6))}">${vzDot3(cam, O, 6, VZ.green)}${stNote(180, 420, "a = b = 0 gives 0", VZ.green)}</g>`;
+      if (k === 1) o += `<g opacity="${q2(L(1, 0, .2, .6))}">${vzDot3(cam, O, 6, VZ.green)}${stNote(180, 420, "a = b = 0 gives 0", VZ.green)}</g>`;
       if (k === 2) {                                       // two general elements, then their sum closes the parallelogram
-        const p = at(.75, .45), q = at(-.15, -.95), r = at(.6, -.5), e = stEase(u, .4, .8), f = stEase(u, 1.3, 1);
+        const p = at(.75, .45), q = at(-.15, -.95), r = at(.6, -.5), e = L(2, 0, .2, .8), f = L(2, 1, .2, 1);
         o += `<g opacity="${q2(e)}">${vzArrow3(cam, O, p, "D", 2.6)}${vzArrow3(cam, O, q, "D", 2.6)}</g>`;
         if (f > .01) o += `<g opacity="${q2(f)}">${vzPath3(cam, [p, r, q], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="4 4"`)}${vzArrow3(cam, O, r, "N", 3.2)}${stNote(180, 420, "the sum is still in the plane", VZ.green)}</g>`;
       }
       if (k === 3) {                                       // a vector and −2 times it: the multiple grows out through 0
-        const p = at(.45, .3), m = -2 * stEase(u, .9, 1.2), q = p.map(x => x * m), e = stEase(u, .3, .6);
+        const p = at(.45, .3), m = -2 * L(3, 1, .1, 1.2), q = p.map(x => x * m), e = L(3, 0, .2, .6);
         o += `<g opacity="${q2(e)}">${vzArrow3(cam, O, p, "D", 2.6)}</g>`;
-        if (m < -.05) o += vzArrow3(cam, O, q, "N", 3.2) + `<g opacity="${q2(stEase(u, 1.6, .6))}">${stNote(180, 420, "−2 times it: still in the plane", VZ.green)}</g>`;
+        if (m < -.05) o += vzArrow3(cam, O, q, "N", 3.2) + `<g opacity="${q2(L(3, 1, .8, .6))}">${stNote(180, 420, "−2 times it: still in the plane", VZ.green)}</g>`;
       }
       o += stNote(180, 30, k < 0 ? "W₁ = {[a + b, a − b, 2a]}" : "W₁: a plane through 0", VZ.ink);   // named only once step 1 shows it
       return o;
@@ -17154,11 +17262,14 @@ stAdd({
     let o = `<path d="M180 240L360 60V420ZM180 240L0 60V420Z" fill="${VZ.gold}" fill-opacity=".16"/>` + P.axes(.4);
     o += `<path d="M0 60L360 420M0 420L360 60" stroke="${VZ.gold}" stroke-width="1.5" stroke-dasharray="6 5" opacity=".8" fill="none"/>`;
     o += vzLabel(316, 156, "|y| ≤ |x|", "#7A5C0F", 16) + vzLabel(46, 332, "|y| ≤ |x|", "#7A5C0F", 16) + stNote(180, 30, "W₂: two wedges", VZ.ink);   // serif: in the sans font | reads as l
-    if (k === 5) { const e = stEase(u, .3, .8), f = stEase(u, 1.1, 1.2); o += `<g opacity="${q2(e)}">${P.arrow([0, 0], [2, 1.5], "I", 2.6)}</g>` + (f > .01 ? P.arrow([0, 0], [-1.6 * f, -1.2 * f], "N", 2.6) + `<g opacity="${q2(f)}">${stNote(180, 436, "multiples stay in the same two wedges", VZ.green)}</g>` : ""); }
-    if (k >= 6) {
-      const e = k > 6 ? 1 : stEase(u, 1.2, 1);
-      o += P.arrow([0, 0], [2, 1], "I", 2.6) + P.tip([0, 0], [2, 1], "[2, 1]", VZ.ink, 28) + P.arrow([0, 0], [-2, 1], "I", 2.6) + P.tip([0, 0], [-2, 1], "[−2, 1]", VZ.ink, 28);
-      if (e > .01) { o += `<g opacity="${q2(e)}">${P.path([[2, 1], [0, 2], [-2, 1]], `stroke="${VZ.grey}" stroke-dasharray="4 4"`)}${P.arrow([0, 0], [0, 2 * e], "R", 3.2)}${P.tip([0, 0], [0, 2], "[0, 2] ∉ W₂", VZ.red)}</g>`; }
+    if (k === 5) {                                         // 0 is in W₂ (line 1), then a vector and a multiple of it (line 2)
+      const z = L(5, 0, .1, .6), e = L(5, 1, .1, .6), f = L(5, 1, .7, 1.2);
+      o += `<g opacity="${q2(z)}">${P.dot([0, 0], 6, VZ.green)}</g><g opacity="${q2(e)}">${P.arrow([0, 0], [2, 1.5], "I", 2.6)}</g>` + (f > .01 ? P.arrow([0, 0], [-1.6 * f, -1.2 * f], "N", 2.6) + `<g opacity="${q2(f)}">${stNote(180, 436, "multiples stay in the same two wedges", VZ.green)}</g>` : "");
+    }
+    if (k >= 6) {                                          // the two vectors (line 1), their sum (line 2), and why it is not in W₂ (line 3)
+      const a = L(6, 0, .1, .7), e = L(6, 1, .1, 1), n = L(6, 2, .1, .6);
+      o += `<g opacity="${q2(a)}">${P.arrow([0, 0], [2, 1], "I", 2.6)}${P.tip([0, 0], [2, 1], "[2, 1]", VZ.ink, 28)}${P.arrow([0, 0], [-2, 1], "I", 2.6)}${P.tip([0, 0], [-2, 1], "[−2, 1]", VZ.ink, 28)}</g>`;
+      if (e > .01) o += `<g opacity="${q2(e)}">${P.path([[2, 1], [0, 2], [-2, 1]], `stroke="${VZ.grey}" stroke-dasharray="4 4"`)}${P.arrow([0, 0], [0, 2 * e], "R", 3.2)}${vzLabel(P.X(0) + 9, P.Y(2) - 9, `[0, 2]<tspan opacity="${q2(n)}"> ∉ W₂</tspan>`, VZ.red, 17, "start")}</g>`;
     }
     return o;
   },
@@ -17187,17 +17298,19 @@ stAdd({
   tagline: "One recipe, every recipe, and the smallest set that does the job.",
   blurb: "Three words that get mixed up. Watch the difference: one combination is one vector, the span is all of them, and a basis is a spanning set with nothing extra.",
   problem: "Take \\(\\mathbf v_1=[2,1]\\), \\(\\mathbf v_2=[1,2]\\) and \\(\\mathbf v_3=[3,3]\\) in \\(\\mathbb R^2\\). What is a linear combination of them, what is their span, and which of these sets is a basis?",
-  picDur: 6000,
+  picLive: true,
   pic(k, b, u) {
-    const P = stPlane(150, 290, 36), v1 = [2, 1], v2 = [1, 2], v3 = [3, 3];
+    const P = stPlane(150, 290, 36), v1 = [2, 1], v2 = [1, 2], v3 = [3, 3], L = stLines(this, k, b, u);
     let o = P.axes(.3);
-    const base = (op = 1) => `<g opacity="${op}">${P.arrow([0, 0], v1, "R", 2.8)}${P.tip([0, 0], v1, vzB("v", "1"), VZ.red)}${P.arrow([0, 0], v2, "I", 2.8)}${P.tip([0, 0], v2, vzB("v", "2"), VZ.ink)}</g>`;
+    // low: v₁'s name sits under its tip, out of the way of 2v₁ running on along the same line
+    const base = (op = 1, low) => `<g opacity="${op}">${P.arrow([0, 0], v1, "R", 2.8)}${low ? vzLabel(P.X(2) + 4, P.Y(1) + 22, vzB("v", "1"), VZ.red) : P.tip([0, 0], v1, vzB("v", "1"), VZ.red)}${P.arrow([0, 0], v2, "I", 2.8)}${P.tip([0, 0], v2, vzB("v", "2"), VZ.ink)}</g>`;
     const chain = (pts, keys, e) => { let s = ""; for (let i = 0; i < pts.length - 1; i++) { const f = vzClamp(e * (pts.length - 1) - i, 0, 1); if (f <= 0) break; const a = pts[i], c = pts[i + 1]; s += P.arrow(a, [a[0] + (c[0] - a[0]) * f, a[1] + (c[1] - a[1]) * f], keys[i], 2.6); } return s; };
     if (k < 0) return o + base();
     if (k === 0 || k === 1) {
       const e = stEase(u, .4, 2.2), pts = k === 0 ? [[0, 0], [4, 2], [3, 0]] : [[0, 0], [-2, -1], [-.5, 2]], end = pts[2];
-      o += base(.45) + chain(pts, ["R", "I"], e);
-      if (e >= 1) o += P.arrow([0, 0], end, "D", 3.4) + P.dot(end, 5, VZ.deep) + (k === 0 ? vzLabel(P.X(3), P.Y(0) + 26, "[3, 0]", VZ.deep) : P.tip([0, 0], end, "[−½, 2]", VZ.deep, 20));   // [3, 0]: under the point, clear of the arrow coming in
+      o += base(.45, true) + chain(pts, ["R", "I"], e);
+      const r = stEase(u, 2.6, .5);                         // the result fades in once the recipe has arrived
+      if (r > .01) o += `<g opacity="${q2(r)}">${P.arrow([0, 0], end, "D", 3.4)}${P.dot(end, 5, VZ.deep)}${k === 0 ? vzLabel(P.X(3), P.Y(0) + 26, "[3, 0]", VZ.deep) : P.tip([0, 0], end, "[−½, 2]", VZ.deep, 20)}</g>`;   // [3, 0]: under the point, clear of the arrow coming in
       o += stNote(180, 440, k === 0 ? "2v₁ then −v₂, tip to tail" : "−v₁ then 1.5v₂", VZ.ink);
       return o;
     }
@@ -17215,7 +17328,7 @@ stAdd({
     if (k === 3) return o + P.line([0, 0], v1, `stroke="${VZ.red}" stroke-width="8" stroke-opacity=".2" stroke-linecap="round"`) + P.arrow([0, 0], v1, "R", 2.8) + P.tip([0, 0], v1, vzB("v", "1"), VZ.red) + stNote(180, 440, "span{v₁}: a line through 0", VZ.ink);
     if (k === 4) { const e = stEase(u, .4, 1.4); return o + base() + `<g opacity="${q2(e)}">${P.path([v1, v3], `stroke="${VZ.ink}" stroke-dasharray="5 4"`)}${P.path([v2, v3], `stroke="${VZ.red}" stroke-dasharray="5 4"`)}${P.arrow([0, 0], v3, "O", 3)}${P.tip([0, 0], v3, vzB("v", "3") + " = " + vzB("v", "1") + " + " + vzB("v", "2"), "#8A6A12")}</g>` + stNote(180, 440, "v₃ is already reachable: redundant", VZ.ink); }
     if (k === 5) return o + base() + P.arrow([0, 0], v3, "G", 2.4) + P.tip([0, 0], v3, vzB("v", "3"), VZ.grey) + stNote(180, 440, "basis: {v₁, v₂}", VZ.deep);
-    const e1 = stEase(u, .3, 1.6), e2 = stEase(u, 2.6, 1.6);   // two recipes for (4, 5)
+    const e1 = L(6, 0, .1, 1.6), e2 = L(6, 2, .1, 1.6);   // two recipes for (4, 5): v₁ + 2v₂ with the first line, v₂ + v₃ with the last
     o += base(.5) + chain([[0, 0], [2, 1], [4, 5]], ["R", "I"], e1) + `<g opacity=".9">${chain([[0, 0], [1, 2], [4, 5]], ["I", "O"], e2)}</g>`;
     o += P.dot([4, 5], 5, VZ.deep) + P.tip([0, 0], [4, 5], "[4, 5]", VZ.deep, 16) + stNote(180, 440, "with v₃ there are many recipes; with a basis, one", VZ.ink);
     return o;
@@ -17592,32 +17705,34 @@ stAdd({
   tagline: "Pick vectors the reflection is easy on, then use linearity.",
   blurb: "It is hard to see where a reflection sends \\(\\mathbf i\\) and \\(\\mathbf j\\), but easy for a vector on the mirror line (it stays) and one square to it (it flips). Write \\(\\mathbf i\\) and \\(\\mathbf j\\) in terms of those two, and linearity does the rest.",
   problem: "Find the matrix \\(A\\) of the reflection \\(f\\) of \\(\\mathbb R^2\\) across the line \\(y=3x\\), and use it to reflect \\([2,1]\\).",
+  picLive: true,
   pic(k, b, u) {
-    const P = vzPlane(170, 250, 58), E = (j, a, d) => k > j ? 1 : k === j ? stEase(u, a, d || 1) : 0;
+    const P = vzPlane(170, 250, 58), L = stLines(this, k, b, u);   // each piece comes with the line of math that names it
     const v = [1, 3], w = [3, -1], fi = [-.8, .6], fj = [.6, .8];
     let o = P.axes(.18) + P.line([0, 0], v, `stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="8 6" opacity=".85"`);
     o += vzLabel(P.X(1.15), P.Y(3.45), "y = 3x", "#7A5C0F", 14, "start");
-    const e0 = E(0, .2, 1);
-    o += `<g opacity="${q2(e0)}">${P.arrow([0, 0], v, "R", 2.8)}${P.arrow([0, 0], w, "I", 2.8)}${vzLabel(P.X(1) + 14, P.Y(3) + 4, vzB("v") + " (stays)", VZ.red, 14, "start")}${vzLabel(P.X(3) - 4, P.Y(-1) + 24, vzB("w") + " (flips)", VZ.ink, 14, "end")}</g>`;
-    // i and j, then i as (1/10)v + (3/10)w: the two pieces laid tip to tail
-    const e1 = E(1, .2, 1.2), I = [1, 0], J = [0, 1];
+    const ev = L(0, 0, .2, .8), ew = L(0, 1, .2, .8);     // v with the first line, w with the second
+    o += `<g opacity="${q2(ev)}">${P.arrow([0, 0], v, "R", 2.8)}${vzLabel(P.X(1) + 14, P.Y(3) + 4, vzB("v") + " (stays)", VZ.red, 14, "start")}</g><g opacity="${q2(ew)}">${P.arrow([0, 0], w, "I", 2.8)}${vzLabel(P.X(3) - 4, P.Y(-1) + 24, vzB("w") + " (flips)", VZ.ink, 14, "end")}</g>`;
+    // i and j, then each as a v part (red) and a w part (dark) laid tip to tail: i with the first line, j with the second
+    const I = [1, 0], J = [0, 1];
     o += P.arrow([0, 0], I, "D", 3) + P.arrow([0, 0], J, "D", 3) + vzLabel(P.X(1) + 6, P.Y(0) - 8, vzB("i"), VZ.deep, 15, "start") + vzLabel(P.X(0) - 12, P.Y(1) + 2, vzB("j"), VZ.deep, 15, "end");
-    if (e1 > .01) { const a = [.1 * e1, .3 * e1], b = [a[0] + .9 * e1, a[1] - .3 * e1]; o += `<g opacity="${q2(e1)}">${P.path([[0, 0], a, b], `stroke="${VZ.grey}" stroke-width="1.6" stroke-dasharray="4 3"`)}</g>`; }
-    // the reflection: i and j swing over the mirror to f(i), f(j)
-    const e2 = E(2, .3, 1.6);
-    if (e2 > .01) {
-      const sw = (p, q) => { const a0 = Math.atan2(p[1], p[0]), a1 = Math.atan2(q[1], q[0]); let d = a1 - a0; d = ((d + 3 * Math.PI) % (2 * Math.PI)) - Math.PI; const a = a0 + d * vzEase(e2); return [Math.cos(a), Math.sin(a)]; };
-      const a = sw(I, fi), c = sw(J, fj);
-      o += P.arrow([0, 0], a, "O", 3.2) + P.arrow([0, 0], c, "O", 3.2);
-      if (e2 > .9) o += vzLabel(P.X(fi[0]) - 8, P.Y(fi[1]) - 10, "f(" + vzB("i") + ")", "#7A5C0F", 14, "end") + vzLabel(P.X(fj[0]) + 10, P.Y(fj[1]) - 8, "f(" + vzB("j") + ")", "#7A5C0F", 14, "start");
-    }
-    // use it on [2, 1]: the point and its mirror image, joined square to the line
-    const e4 = E(4, .3, 1.4);
+    [[L(1, 0, .2, 1.4), [.1, .3], I], [L(1, 1, .2, 1.4), [.3, .9], J]].forEach(([e, a, end]) => {
+      if (e < .01) return;
+      const f1 = vzClamp(e * 2, 0, 1), f2 = vzClamp(e * 2 - 1, 0, 1), m = [a[0] * f1, a[1] * f1], n = [a[0] + (end[0] - a[0]) * f2, a[1] + (end[1] - a[1]) * f2];
+      o += P.path([[0, 0], m], `stroke="${VZ.red}" stroke-width="2" stroke-dasharray="4 3"`) + (f2 > 0 ? P.path([a, n], `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray="4 3"`) : "");
+    });
+    // the reflection: i swings over the mirror to f(i) with the first line, j to f(j) with the second
+    const sw = (p, q, e) => { const a0 = Math.atan2(p[1], p[0]), a1 = Math.atan2(q[1], q[0]); let d = a1 - a0; d = ((d + 3 * Math.PI) % (2 * Math.PI)) - Math.PI; const a = a0 + d * e; return [Math.cos(a), Math.sin(a)]; };
+    const si = L(2, 0, .2, 1.4), sj = L(2, 1, .2, 1.4);
+    if (si > .01) o += P.arrow([0, 0], sw(I, fi, si), "O", 3.2) + `<g opacity="${q2(vzClamp((si - .75) / .25, 0, 1))}">${vzLabel(P.X(fi[0]) - 8, P.Y(fi[1]) - 10, "f(" + vzB("i") + ")", "#7A5C0F", 14, "end")}</g>`;
+    if (sj > .01) o += P.arrow([0, 0], sw(J, fj, sj), "O", 3.2) + `<g opacity="${q2(vzClamp((sj - .75) / .25, 0, 1))}">${vzLabel(P.X(fj[0]) + 10, P.Y(fj[1]) - 8, "f(" + vzB("j") + ")", "#7A5C0F", 14, "start")}</g>`;
+    // use it on [2, 1] (with the line that does it): the point and its mirror image, joined square to the line
+    const e4 = L(4, 0, .3, 1.4);
     if (e4 > .01) {
-      const p = [2, 1], q = [-1, 2], m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], cur = [p[0] + (q[0] - p[0]) * vzEase(e4), p[1] + (q[1] - p[1]) * vzEase(e4)];
+      const p = [2, 1], q = [-1, 2], m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], cur = [p[0] + (q[0] - p[0]) * e4, p[1] + (q[1] - p[1]) * e4], end = vzClamp((e4 - .8) / .2, 0, 1);
       o += `<g opacity="${q2(Math.min(1, e4 * 3))}">${P.path([p, q], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="3 4"`)}${P.dot(p, 5, VZ.ink)}${vzLabel(P.X(2) + 10, P.Y(1) + 5, "[2, 1]", VZ.ink, 14, "start")}</g>`;
       o += P.dot(cur, 6, VZ.red);
-      if (e4 > .9) o += vzLabel(P.X(-1) - 10, P.Y(2) + 5, "[−1, 2]", VZ.deep, 15, "end") + P.rightAngle(m, [-.948, .316].map(x => -x), [.316, .948], .22);
+      if (end > .01) o += `<g opacity="${q2(end)}">${vzLabel(P.X(-1) - 10, P.Y(2) + 5, "[−1, 2]", VZ.deep, 15, "end")}${P.rightAngle(m, [-.948, .316].map(x => -x), [.316, .948], .22)}</g>`;
     }
     o += stNote(180, 446, ["a vector on the line stays; one square to it flips", "write i and j with v and w", "f(i) and f(j): the columns of A", "A v = v and A w = −w: it checks", "reflect [2, 1] with A"][Math.max(0, Math.min(4, k))], VZ.ink);
     return o;
@@ -18061,6 +18176,7 @@ stAdd({
   tagline: "Stuck inside? Describe the same region the other way.",
   blurb: "Some double integrals can't be done in the order they're written. Redraw the region from its bounds and describe it with strips going the other way.",
   problem: "Evaluate \\(\\displaystyle\\int_0^{\\pi/2}\\!\\!\\int_{2x}^{\\pi}\\frac{\\sin y}{y}\\,dy\\,dx\\).",
+  picDur: 4200,
   pic(k, b, u) {
     // the triangle 0 ≤ x ≤ π/2, 2x ≤ y ≤ π: first in vertical strips (the order given), then in horizontal ones
     const PI = Math.PI, P = { X: x => 120 + 100 * x, Y: y => 395 - 100 * y }, E = (j, a, d) => k > j ? 1 : k === j ? stEase(u, a, d || 1) : 0;
@@ -19509,6 +19625,1170 @@ vzAdd({
     return bad + `<div class="vz-status ${!p && k === N - 1 && !W.inv ? "warn" : "ok"}">${say}</div>`;
   },
 });
+/* ---------- Check your own work: eigenvalues of your own matrix (2 × 2 or 3 × 3) ----------
+   TEIG_M does the algebra exactly, the way it is done by hand: BigInt fractions, numbers a + b√r for eigenvalues
+   that need a square root, det(A − λI) by cofactors, roots by factoring / the rational root test / the quadratic
+   formula, row reduction of A − λI with the row operations recorded, eigenvectors scaled to small whole numbers.
+   solve(A) returns the numbers (for the picture and the answer) and the working as TeX steps (for the board). */
+const TEIG_M = (() => {
+  // ---------- fractions ----------
+  const big = x => typeof x === "bigint" ? x : BigInt(x);
+  const gcd = (a, b) => { if (a < 0n) a = -a; if (b < 0n) b = -b; while (b) { const t = a % b; a = b; b = t; } return a; };
+  const lcm = (a, b) => { if (a < 0n) a = -a; if (b < 0n) b = -b; return a && b ? a / gcd(a, b) * b : a || b; };
+  const Q = (n, d = 1n) => { n = big(n); d = big(d); if (d < 0n) { n = -n; d = -d; } const g = gcd(n, d) || 1n; return { n: n / g, d: d / g }; };
+  const Q0 = Q(0), Q1 = Q(1);
+  const qadd = (x, y) => Q(x.n * y.d + y.n * x.d, x.d * y.d), qsub = (x, y) => Q(x.n * y.d - y.n * x.d, x.d * y.d);
+  const qmul = (x, y) => Q(x.n * y.n, x.d * y.d), qdiv = (x, y) => Q(x.n * y.d, x.d * y.n);
+  const qneg = x => ({ n: -x.n, d: x.d }), qz = x => x.n === 0n, qeq = (x, y) => x.n === y.n && x.d === y.d;
+  const qsgn = x => x.n > 0n ? 1 : x.n < 0n ? -1 : 0, qnum = x => Number(x.n) / Number(x.d), qabs = x => x.n < 0n ? qneg(x) : x, qint = x => x.d === 1n;
+
+  // ---------- numbers a + b√r (r = 1: plain fractions, b stays 0) ----------
+  const Fcache = {};
+  const F = r => Fcache[r] || (Fcache[r] = (() => {
+    const R = Q(r), mk = (a, b = Q0) => ({ a, b: r === 1n ? Q0 : b });
+    const f = {
+      r, mk, zero: mk(Q0), one: mk(Q1), of: q => mk(q),
+      add: (x, y) => mk(qadd(x.a, y.a), qadd(x.b, y.b)), sub: (x, y) => mk(qsub(x.a, y.a), qsub(x.b, y.b)),
+      neg: x => mk(qneg(x.a), qneg(x.b)),
+      mul: (x, y) => mk(qadd(qmul(x.a, y.a), qmul(qmul(x.b, y.b), R)), qadd(qmul(x.a, y.b), qmul(x.b, y.a))),
+      inv: x => { const n = qsub(qmul(x.a, x.a), qmul(qmul(x.b, x.b), R)); return mk(qdiv(x.a, n), qneg(qdiv(x.b, n))); },
+      z: x => qz(x.a) && qz(x.b), eq: (x, y) => qeq(x.a, y.a) && qeq(x.b, y.b),
+      num: x => qnum(x.a) + qnum(x.b) * Math.sqrt(Number(r)),
+    };
+    f.div = (x, y) => f.mul(x, f.inv(y));
+    f.sgn = x => { const v = f.num(x); return f.z(x) ? 0 : v > 0 ? 1 : -1; };
+    return f;
+  })());
+
+  // ---------- polynomials in λ (fraction coefficients, lowest power first) ----------
+  const ptrim = p => { p = p.slice(); while (p.length > 1 && qz(p[p.length - 1])) p.pop(); return p; };
+  const padd = (p, q) => ptrim(Array.from({ length: Math.max(p.length, q.length) }, (_, i) => qadd(p[i] || Q0, q[i] || Q0)));
+  const psub = (p, q) => padd(p, q.map(qneg));
+  const pmul = (p, q) => { const o = Array.from({ length: p.length + q.length - 1 }, () => Q0); p.forEach((a, i) => q.forEach((b, j) => { o[i + j] = qadd(o[i + j], qmul(a, b)); })); return ptrim(o); };
+  const pscale = (p, c) => ptrim(p.map(a => qmul(a, c)));
+  const pdeg = p => { p = ptrim(p); return p.length === 1 && qz(p[0]) ? -1 : p.length - 1; };
+  const peval = (p, x) => p.reduceRight((acc, c) => qadd(qmul(acc, x), c), Q0);
+  const pmonic = p => { p = ptrim(p); const l = p[p.length - 1]; return p.map(c => qdiv(c, l)); };
+  const pderiv = p => ptrim(p.length > 1 ? p.slice(1).map((c, i) => qmul(c, Q(i + 1))) : [Q0]);
+  const pdivmod = (p, q) => {
+    p = ptrim(p).slice(); q = ptrim(q);
+    const dq = q.length - 1, out = Array.from({ length: Math.max(1, p.length - dq) }, () => Q0);
+    for (let i = p.length - 1; i >= dq; i--) { const c = qdiv(p[i], q[dq]); out[i - dq] = c; for (let j = 0; j <= dq; j++) p[i - dq + j] = qsub(p[i - dq + j], qmul(c, q[j])); }
+    return [ptrim(out), ptrim(p.slice(0, Math.max(1, dq)))];
+  };
+  const pgcd = (p, q) => { p = ptrim(p); q = ptrim(q); while (pdeg(q) >= 0) { const r = pdivmod(p, q)[1]; p = q; q = r; } return pmonic(p); };
+
+  // N = s²·r with r squarefree
+  const sqrtSplit = N => {
+    if (N < 9007199254740991n) {
+      let m = Number(N), s = 1, r = 1;
+      for (let p = 2; p * p <= m; p += p === 2 ? 1 : 2) { while (m % (p * p) === 0) { m /= p * p; s *= p; } if (m % p === 0) { m /= p; r *= p; } }
+      return [BigInt(s), BigInt(r) * BigInt(m)];
+    }
+    let m = N, s = 1n, r = 1n;
+    for (let p = 2n; p * p <= m && p < 2000000n; p += p === 2n ? 1n : 2n) { while (m % (p * p) === 0n) { m /= p * p; s *= p; } if (m % p === 0n) { m /= p; r *= p; } }
+    return [s, r * m];
+  };
+
+  // ---------- reading what the student typed ----------
+  // whole numbers, decimals and fractions (−3, 0.25, 3/4, −1/2, 1.5/2); returns { q } or { err }
+  const parse = raw => {
+    const s = String(raw == null ? "" : raw).trim().replace(/[−–—]/g, "-").replace(/\s+/g, "");
+    if (!s) return { err: "empty" };
+    const m = s.match(/^([+-]?)(\d*\.?\d*)(?:\/([+-]?)(\d*\.?\d*))?$/);
+    if (!m || !/\d/.test(m[2]) || (m[3] !== undefined && m[4] !== undefined && s.includes("/") && !/\d/.test(m[4]))) return { err: "bad" };
+    const dec = t => { const [w, f = ""] = t.split("."); if (f.length > 4) return null; return Q(BigInt((w || "0") + f), 10n ** BigInt(f.length)); };
+    let q = dec(m[2]); if (!q) return { err: "bad" };
+    if (m[1] === "-") q = qneg(q);
+    if (s.includes("/")) {
+      const d = dec(m[4]); if (!d) return { err: "bad" }; if (qz(d)) return { err: "zero" };
+      q = qdiv(q, m[3] === "-" ? qneg(d) : d);
+    }
+    if (Math.abs(qnum(q)) > 99) return { err: "big" };
+    if (q.d > 99n) return { err: "den" };
+    return { q };
+  };
+
+  // ---------- TeX ----------
+  const tq = q => q.d === 1n ? String(q.n) : (q.n < 0n ? "-" : "") + `\\tfrac{${(q.n < 0n ? -q.n : q.n)}}{${q.d}}`;
+  const tqParen = q => qsgn(q) < 0 ? `(${tq(q)})` : tq(q);
+  // a + b√r as one fraction over a common denominator: 2+\sqrt3, \frac{5+\sqrt{33}}{2}, -\frac{\sqrt2}{2}
+  const sq = r => `\\sqrt{${r}}`;
+  const tf = (f, x) => {
+    if (qz(x.b)) return tq(x.a);
+    const D = lcm(x.a.d, x.b.d), A = x.a.n * (D / x.a.d), B = x.b.n * (D / x.b.d), Bab = B < 0n ? -B : B;
+    const rt = (Bab === 1n ? "" : String(Bab)) + sq(f.r);
+    if (A === 0n) return (B < 0n ? "-" : "") + (D === 1n ? rt : `\\frac{${rt}}{${D}}`);
+    const num = `${A}${B < 0n ? "-" : "+"}${rt}`;
+    return D === 1n ? num : `\\frac{${num}}{${D}}`;
+  };
+  const twoPart = x => !qz(x.a) && !qz(x.b);
+  const tfParen = (f, x) => twoPart(x) || f.sgn(x) < 0 ? `(${tf(f, x)})` : tf(f, x);
+  // a coefficient written against a symbol: R_1, -R_1, 2R_1, \tfrac12R_1, (1+\sqrt2)R_1, \sqrt2\,R_1
+  const tcoef = (f, x, sym) => {
+    if (f.eq(x, f.one)) return sym;
+    if (f.eq(x, f.neg(f.one))) return "-" + sym;
+    const t = tf(f, x);
+    if (twoPart(x) && !t.startsWith("\\frac")) return `(${t})${sym}`;
+    return t + (qz(x.b) ? "" : "\\,") + sym;
+  };
+  // c₁x + c₂y + c₃z with the signs folded in
+  const tlin = (f, cs, names) => {
+    let o = "";
+    cs.forEach((c, i) => {
+      if (f.z(c)) return;
+      const neg = !twoPart(c) && f.sgn(c) < 0, body = tcoef(f, neg ? f.neg(c) : c, names[i]);
+      o += o ? (neg ? "-" : "+") + body : (neg ? "-" : "") + body;
+    });
+    return o || "0";
+  };
+  const tpoly = (p, v = "\\lambda") => {
+    p = ptrim(p); let o = "";
+    if (p.length === 2 && !qz(p[0]) && qsgn(p[1]) < 0) return tq(p[0]) + "-" + (qeq(p[1], qneg(Q1)) ? "" : tq(qneg(p[1]))) + v;   // 3 − λ, as in A − λI
+    for (let k = p.length - 1; k >= 0; k--) {
+      const c = p[k]; if (qz(c)) continue;
+      const neg = qsgn(c) < 0, a = qabs(c), pw = k === 0 ? "" : k === 1 ? v : `${v}^${k}`;
+      const body = k === 0 ? tq(a) : qeq(a, Q1) ? pw : tq(a) + pw;
+      o += o ? (neg ? "-" : "+") + body : (neg ? "-" : "") + body;
+    }
+    return o || "0";
+  };
+  const tpolyP = p => pdeg(p) <= 0 ? (qsgn(p[0]) < 0 ? `(${tpoly(p)})` : tpoly(p)) : `(${tpoly(p)})`;
+  const tmat = (rows, cell = x => x) => `\\begin{bmatrix}${rows.map(r => r.map(cell).join("&")).join("\\\\")}\\end{bmatrix}`;
+  const tvm = rows => `\\begin{vmatrix}${rows.map(r => r.join("&")).join("\\\\")}\\end{vmatrix}`;
+  const tcol = (f, v) => tmat(v.map(x => [tf(f, x)]));
+  const tentry = (a, diag) => diag ? (qz(a) ? "-\\lambda" : `${tq(a)}-\\lambda`) : tq(a);
+  const tentryP = (a, diag) => diag ? `(${tentry(a, true)})` : tqParen(a);
+  const VARS = ["x", "y", "z"], SUBS = ["_1", "_2", "_3"];
+  const RED = "#C8102E";
+  // [A − λI | 0] with the rows a row operation just changed in red
+  const taug = (f, M, hl = []) => {
+    const n = M.length, spec = "c".repeat(n) + "|c";
+    return `\\left[\\begin{array}{${spec}}${M.map((row, i) => row.concat([f.zero]).map(x => hl.includes(i) ? `\\color{${RED}}{${tf(f, x)}}` : tf(f, x)).join("&")).join("\\\\")}\\end{array}\\right]`;
+  };
+  // "A − 3I", "A + 2I", "A − \tfrac12 I", "A − (2+√3)I", "A" (λ = 0)
+  const tAminus = (f, lam) => f.z(lam) ? "A-0I" : twoPart(lam) ? `A-\\left(${tf(f, lam)}\\right)I` : f.sgn(lam) < 0 ? `A+${tcoef(f, f.neg(lam), "I")}` : `A-${tcoef(f, lam, "I")}`;
+  const par = t => /\\frac/.test(t) ? `\\left(${t}\\right)` : `(${t})`;
+  const topLabel = (f, op) => {
+    const R = i => `R_${i + 1}`;
+    if (op.t === "swap") return `${R(op.i)}\\leftrightarrow ${R(op.j)}`;
+    if (op.t === "scale") return tcoef(f, op.m, R(op.i));
+    const neg = !twoPart(op.m) && f.sgn(op.m) < 0;
+    return `${R(op.i)}${neg ? "-" : "+"}${tcoef(f, neg ? f.neg(op.m) : op.m, R(op.j))}`;
+  };
+
+  // ---------- HTML (the short answer in the panel) ----------
+  const hq = q => (q.n < 0n ? "−" : "") + (q.n < 0n ? -q.n : q.n) + (q.d === 1n ? "" : "/" + q.d);
+  const hroot = r => "√" + r;
+  const hf = (f, x) => {
+    if (qz(x.b)) return hq(x.a);
+    const D = lcm(x.a.d, x.b.d), A = x.a.n * (D / x.a.d), B = x.b.n * (D / x.b.d), Bab = B < 0n ? -B : B;
+    const rt = (Bab === 1n ? "" : String(Bab)) + hroot(f.r);
+    const num = A === 0n ? (B < 0n ? "−" : "") + rt : `${A < 0n ? "−" + (-A) : A} ${B < 0n ? "−" : "+"} ${rt}`;
+    return D === 1n ? num : (A === 0n ? num + "/" + D : `(${num})/${D}`);
+  };
+  const hvec = (f, v) => `[${v.map(x => hf(f, x)).join(", ")}]`;
+
+  // ---------- numbers: real roots of a polynomial, for finding the exact ones ----------
+  const fnum = p => ptrim(p).map(qnum);
+  const fev = (c, x) => c.reduceRight((a, k) => a * x + k, 0);
+  const realRootsNum = p => {           // all real roots of a polynomial with float coefficients (degree ≤ 3), sorted
+    const c = fnum(p), d = c.length - 1;
+    if (d < 1) return [];
+    if (d === 1) return [-c[0] / c[1]];
+    const dc = c.slice(1).map((k, i) => k * (i + 1)), crit = realRootsNum(dc.map(x => Q(BigInt(Math.round(x * 1e6)), 1000000n))).filter(Number.isFinite);
+    const B = 1 + Math.max(...c.slice(0, d).map(k => Math.abs(k / c[d])));
+    const pts = [-B, ...crit.filter(x => x > -B && x < B), B], out = [];
+    for (let i = 0; i + 1 < pts.length; i++) {
+      let a = pts[i], b = pts[i + 1], fa = fev(c, a), fb = fev(c, b);
+      if (Math.abs(fa) < 1e-12 * (1 + Math.abs(a) ** d)) { out.push(a); continue; }
+      if (fa * fb > 0) continue;
+      for (let k = 0; k < 200 && b - a > 1e-14 * (1 + Math.abs(a)); k++) { const m = (a + b) / 2, fm = fev(c, m); if (fa * fm <= 0) { b = m; fb = fm; } else { a = m; fa = fm; } }
+      out.push((a + b) / 2);
+    }
+    if (Math.abs(fev(c, B)) < 1e-12) out.push(B);
+    return out.filter((x, i) => !out.slice(0, i).some(y => Math.abs(x - y) < 1e-9 * (1 + Math.abs(x))));
+  };
+  const divisors = N => {               // positive divisors of a positive BigInt (its prime factors are small here)
+    if (N < 0n) N = -N; let ds = [1n], m = N;
+    for (let p = 2n; p * p <= m && p < 100000n; p++) {
+      if (m % p) continue; let e = 0; while (m % p === 0n) { m /= p; e++; }
+      const nd = []; ds.forEach(d => { let x = d; for (let k = 0; k <= e; k++) { nd.push(x); x *= p; } }); ds = nd;
+    }
+    if (m > 1n) ds = ds.concat(ds.map(d => d * m));
+    return ds.sort((a, b) => (a < b ? -1 : 1));
+  };
+  // the distinct rational roots of a monic polynomial: a repeated root is always rational (it is a root of
+  // gcd(p, p′)), and the others are found near the numerical roots, with denominators that divide the lcm
+  const ratRoots = p => {
+    const out = [], add = c => { if (qz(peval(p, c)) && !out.some(o => qeq(o, c))) out.push(c); };
+    const g = pgcd(p, pderiv(p));
+    if (pdeg(g) === 1) add(qneg(g[0])); else if (pdeg(g) === 2) add(qdiv(qneg(g[1]), Q(2)));
+    add(Q0);
+    const L = ptrim(p).reduce((a, c) => lcm(a, c.d), 1n), ds = divisors(L);
+    realRootsNum(p).forEach(x => ds.forEach(q => { if (Math.abs(x * Number(q)) < 1e15) add(Q(BigInt(Math.round(x * Number(q))), q)); }));
+    return out.sort((a, b) => Math.abs(qnum(a)) - Math.abs(qnum(b)) || qnum(b) - qnum(a));   // the one a student finds first: small, positive
+  };
+
+  // ---------- the quadratic λ² + Bλ + C ----------
+  const quad = (B, C) => {
+    const D = qsub(qmul(B, B), qmul(Q(4), C)), mid = qdiv(qneg(B), Q(2));
+    if (qz(D)) return { kind: "double", D, root: mid };
+    const neg = qsgn(D) < 0, Da = qabs(D), [s, r] = sqrtSplit(Da.n * Da.d), half = Q(s, 2n * Da.d);   // √|D| / 2 = half·√r
+    if (neg) return { kind: "complex", D, a: mid, b: half, r };
+    if (r === 1n) return { kind: "rational", D, roots: [qadd(mid, half), qsub(mid, half)] };
+    return { kind: "surd", D, a: mid, b: half, r };
+  };
+  // how a student solves it: factor when the roots are whole numbers, else the quadratic formula with whole
+  // coefficients (multiply through first if there are fractions); returns TeX lines and a reason
+  const quadWork = (B, C, opt = {}) => {
+    const R = quad(B, C), poly = [C, B, Q1], lines = [], pre = opt.pre || "";
+    const intCoef = qint(B) && qint(C);
+    const pair = (a, b, r, i) => {           // a ± b√r (i: times i)
+      const f = F(r === 1n && !i ? 1n : r), x = f.mk(a, b);
+      const D = lcm(a.d, b.d), A = a.n * (D / a.d), Bn = b.n * (D / b.d), rt = (Bn === 1n ? "" : String(Bn)) + (r === 1n ? "" : sq(r) + (i ? "\\," : "")) + (i ? "i" : "");
+      const body = (A === 0n ? "" : String(A)) + "\\pm " + (rt || "1");
+      void x; return D === 1n ? (A === 0n ? "\\pm " + (rt || "1") : body) : `\\frac{${body}}{${D}}`;
+    };
+    if (R.kind === "double") {
+      lines.push(`${pre}${tpoly(poly)}=\\left(\\lambda${qsgn(R.root) < 0 ? "+" + tq(qneg(R.root)) : qz(R.root) ? "" : "-" + tq(R.root)}\\right)^2=0`);
+      return { R, lines, why: "A perfect square: one eigenvalue, repeated (a double root).", how: "square" };
+    }
+    if (R.kind === "rational" && intCoef && R.roots.every(qint)) {
+      const fac = r => qz(r) ? "\\lambda" : `(\\lambda${qsgn(r) < 0 ? "+" + tq(qneg(r)) : "-" + tq(r)})`;
+      lines.push(`${pre}${tpoly(poly)}=${fac(R.roots[0])}${fac(R.roots[1])}=0`);
+      const [r1, r2] = R.roots;
+      const why = qz(C) ? `No constant term, so \\(\\lambda\\) factors out.` : `Two numbers that multiply to \\(${tq(C)}\\) and add to \\(${tq(B)}\\): \\(${tq(qneg(r1))}\\) and \\(${tq(qneg(r2))}\\).`;
+      return { R, lines, why, how: "factor" };
+    }
+    // quadratic formula on a λ² + b λ + c with whole a, b, c
+    const L = lcm(B.d, C.d), a = L, b = B.n * (L / B.d), c = C.n * (L / C.d), g = gcd(gcd(a, b), c) || 1n;
+    const A2 = a / g, B2 = b / g, C2 = c / g;
+    if (L > 1n) lines.push(`\\text{clear fractions: }${tpoly([Q(C2), Q(B2), Q(A2)])}=0`);
+    const disc = B2 * B2 - 4n * A2 * C2, twoA = 2n * A2;
+    const bsq = B2 < 0n ? `(${B2})^2` : `${B2}^2`, fourac = `4${A2 === 1n ? "" : `(${A2})`}${C2 < 0n ? `(${C2})` : `(${C2})`}`;
+    lines.push(`\\lambda=\\dfrac{${-B2}\\pm\\sqrt{${bsq}-${fourac}}}{${twoA}}`, `=\\dfrac{${-B2}\\pm\\sqrt{${disc}}}{${twoA}}`);
+    const da = disc < 0n ? -disc : disc, [s, r] = sqrtSplit(da);
+    if (R.kind === "rational") {
+      lines.push(`=\\dfrac{${-B2}\\pm ${s}}{${twoA}}`, `\\lambda_1=${tq(R.roots[0])},\\qquad\\lambda_2=${tq(R.roots[1])}`);
+      return { R, lines, why: `It doesn't factor with whole numbers, so use the quadratic formula with \\(a=${A2},\\ b=${B2},\\ c=${C2}\\).`, how: "formula" };
+    }
+    const rt = (s === 1n ? "" : String(s)) + (r === 1n ? "" : sq(r)) + (disc < 0n ? (r === 1n ? "i" : "\\,i") : "");
+    const mid = `\\dfrac{${-B2}\\pm ${rt || "1"}}{${twoA}}`, fin = pair(R.a, R.b, R.r, disc < 0n);
+    if (s !== 1n || disc < 0n) lines.push(`=${mid}${mid.replace(/\\dfrac/g, "\\frac") === fin ? "" : "=" + fin}`);
+    else if (fin !== `\\frac{${-B2}\\pm ${rt}}{${twoA}}`) lines.push(`=${fin}`);
+    const why = disc < 0n ? `The number under the square root is negative, so the eigenvalues are complex: a conjugate pair.`
+      : `It doesn't factor with whole numbers, so use the quadratic formula with \\(a=${A2},\\ b=${B2},\\ c=${C2}\\).`;
+    return { R, lines, why, how: "formula", pm: fin };
+  };
+
+  // ---------- row reduction of A − λI (exact, with the operations a student would write) ----------
+  const reduce = (f, M0) => {
+    const n = M0.length, M = M0.map(r => r.slice()), stages = [], piv = [];
+    const isOne = x => f.eq(x, f.one) || f.eq(x, f.neg(f.one));
+    let r = 0;
+    for (let c = 0; c < n && r < n; c++) {
+      let p = -1;
+      if (!f.z(M[r][c])) p = r;
+      else { for (let i = r + 1; i < n; i++) if (!f.z(M[i][c]) && (p < 0 || (isOne(M[i][c]) && !isOne(M[p][c])))) p = i; }
+      if (p < 0) continue;
+      const ops = [], hl = [];
+      if (p !== r) { [M[r], M[p]] = [M[p], M[r]]; ops.push({ t: "swap", i: r, j: p }); hl.push(r, p); }
+      for (let i = r + 1; i < n; i++) if (!f.z(M[i][c])) {
+        const m = f.div(M[i][c], M[r][c]);
+        M[i] = M[i].map((v, k) => f.sub(v, f.mul(m, M[r][k]))); M[i][c] = f.zero;
+        ops.push({ t: "add", i, j: r, m: f.neg(m) }); if (!hl.includes(i)) hl.push(i);
+      }
+      if (ops.length) stages.push({ ops, M: M.map(x => x.slice()), hl });
+      piv.push([r, c]); r++;
+    }
+    if (piv.length >= 2) {                     // two or more equations left: finish to reduced form, then read off
+      const ops = [], hl = [];
+      piv.forEach(([i, c]) => { if (!f.eq(M[i][c], f.one)) { const s = f.inv(M[i][c]); M[i] = M[i].map(v => f.mul(v, s)); ops.push({ t: "scale", i, m: s }); hl.push(i); } });
+      if (ops.length) stages.push({ ops, M: M.map(x => x.slice()), hl });
+      const ops2 = [], hl2 = [];
+      for (let q = piv.length - 1; q >= 0; q--) {
+        const [i, c] = piv[q];
+        for (let k = 0; k < i; k++) if (!f.z(M[k][c])) { const m = M[k][c]; M[k] = M[k].map((v, t) => f.sub(v, f.mul(m, M[i][t]))); M[k][c] = f.zero; ops2.push({ t: "add", i: k, j: i, m: f.neg(m) }); if (!hl2.includes(k)) hl2.push(k); }
+      }
+      if (ops2.length) stages.push({ ops: ops2, M: M.map(x => x.slice()), hl: hl2 });
+    }
+    return { M, piv, stages, rank: piv.length };
+  };
+  // a vector of numbers a + b√r scaled to the smallest whole numbers (same direction)
+  const scaleVec = (f, v) => {
+    let L = 1n; v.forEach(x => { L = lcm(L, x.a.d); L = lcm(L, x.b.d); });
+    let w = v.map(x => f.mk(qmul(x.a, Q(L)), qmul(x.b, Q(L))));
+    let g = 0n; w.forEach(x => { g = gcd(g, x.a.n); g = gcd(g, x.b.n); });
+    if (g > 1n) w = w.map(x => f.mk(qdiv(x.a, Q(g)), qdiv(x.b, Q(g))));
+    return { v: w, k: Q(L, g || 1n) };
+  };
+
+  // ---------- the whole solution ----------
+  const solve = A => {
+    const n = A.length, f1 = F(1n);
+    const tr = A.reduce((s, r, i) => qadd(s, r[i]), Q0);
+    const Pm = A.map((row, i) => row.map((a, j) => i === j ? [a, qneg(Q1)] : [a]));   // A − λI, entries as polynomials
+    const det2 = m => psub(pmul(m[0][0], m[1][1]), pmul(m[0][1], m[1][0]));
+    const minor = (m, i, j) => m.filter((_, r) => r !== i).map(row => row.filter((_, c) => c !== j));
+    const isZ = p => pdeg(p) < 0;
+    const upper = A.every((row, i) => row.every((a, j) => j >= i || qz(a))), lower = A.every((row, i) => row.every((a, j) => j <= i || qz(a)));
+    const tri = upper || lower;
+    const AmL = tmat(A.map((row, i) => row.map((a, j) => tentry(a, i === j))));
+    const steps = [];
+    let charP, factors = null;                // factors: [[a, mult]] when det(A − λI) came out factored (triangular / one term)
+    // Step 1 and 2: det(A − λI)
+    if (n === 2) {
+      const [[a, b], [c, d]] = A;
+      charP = det2(Pm);
+      if (tri) {
+        factors = [[a, 1], [d, 1]];
+        steps.push({ t: "Set up det(A − λI) = 0", why: `\\(\\lambda\\) is an eigenvalue exactly when \\(A-\\lambda I\\) sends some nonzero vector to \\(\\mathbf 0\\), so its determinant is 0. Here \\(A-\\lambda I\\) is triangular: its determinant is the product down the diagonal.`,
+          lines: [`A-\\lambda I=${AmL}`, `\\det(A-\\lambda I)=(${tentry(a, true)})(${tentry(d, true)})`] });
+      } else {
+        steps.push({ t: "Set up det(A − λI) = 0", why: `\\(\\lambda\\) is an eigenvalue exactly when \\(A-\\lambda I\\) sends some nonzero vector to \\(\\mathbf 0\\), so its determinant is 0.`,
+          lines: [`A-\\lambda I=${AmL}`, `\\det(A-\\lambda I)=(${tentry(a, true)})(${tentry(d, true)})-(${tq(b)})(${tq(c)})`] });
+        const prod = pmul(Pm[0][0], Pm[1][1]), bc = qmul(b, c);
+        steps.push({ t: "Multiply out: the characteristic polynomial", why: `Multiply out slowly. Check: the \\(\\lambda\\) term is \\(-(\\text{trace})\\,\\lambda\\) and the constant is \\(\\det A\\).`,
+          lines: [`=(${tpoly(prod)})${qsgn(bc) < 0 ? "+" + tq(qneg(bc)) : "-" + tq(bc)}`, `=${tpoly(charP)}`] });
+      }
+    } else {
+      // expand along the row or column with the most zeros (fewest terms); triangular: the diagonal
+      let best = { zeros: -1 };
+      for (let k = 0; k < 3; k++) {
+        const zr = [0, 1, 2].filter(j => isZ(Pm[k][j])).length, zc = [0, 1, 2].filter(i => isZ(Pm[i][k])).length;
+        if (zr > best.zeros) best = { zeros: zr, row: true, k };
+        if (zc > best.zeros) best = { zeros: zc, row: false, k };
+      }
+      const cells = [0, 1, 2].map(t => best.row ? [best.k, t] : [t, best.k]).filter(([i, j]) => !isZ(Pm[i][j]));
+      const terms = cells.map(([i, j]) => ({ i, j, s: (i + j) % 2 ? -1 : 1, e: Pm[i][j], diag: i === j, a: A[i][j], M: minor(Pm, i, j) }));
+      terms.forEach(T => { T.m = det2(T.M); T.prod = pscale(pmul(T.e, T.m), Q(T.s)); });
+      charP = terms.reduce((s, T) => padd(s, T.prod), [Q0]);
+      const why1 = `\\(\\lambda\\) is an eigenvalue exactly when \\(A-\\lambda I\\) sends some nonzero vector to \\(\\mathbf 0\\), so its determinant is 0.`;
+      if (tri) {
+        factors = [[A[0][0], 1], [A[1][1], 1], [A[2][2], 1]];
+        steps.push({ t: "Set up det(A − λI) = 0", why: why1 + ` Here \\(A-\\lambda I\\) is triangular: its determinant is the product down the diagonal.`,
+          lines: [`A-\\lambda I=${AmL}`, `\\det(A-\\lambda I)=${[0, 1, 2].map(i => `(${tentry(A[i][i], true)})`).join("")}`] });
+      } else {
+        const line = best.row ? `row ${best.k + 1}` : `column ${best.k + 1}`;
+        const tminor = T => tvm(T.M.map(row => row.map(p => pdeg(p) >= 1 ? tpoly(p) : tq(p[0]))));
+        const head = T => T.diag ? `(${tentry(T.a, true)})` : (() => { const c = qmul(T.a, Q(T.s)); return qeq(qabs(c), Q1) ? (qsgn(c) < 0 ? "-" : "+") : (qsgn(c) < 0 ? "-" : "+") + tq(qabs(c)); })();
+        const joinT = parts => parts.map((p, k) => k === 0 ? p.replace(/^\+/, "") : /^[+-]/.test(p) ? p : "+" + p).join("");
+        steps.push({ t: "Set up det(A − λI) = 0", why: why1 + ` ${best.zeros ? `Expand along ${line}: it has the most zeros, so the fewest terms (the 0 entries drop out).` : `Expand along ${line}.`} The signs go \\(+\\,-\\,+\\).`,
+          lines: [`A-\\lambda I=${AmL}`, terms.length < 2 ? `\\det(A-\\lambda I)=${joinT(terms.map(T => head(T) + tminor(T)))}`
+            : `\\begin{aligned}\\det(A-\\lambda I)&=${head(terms[0]) + tminor(terms[0])}\\\\&\\quad${terms.slice(1).map(T => { const t = head(T) + tminor(T); return /^[+-]/.test(t) ? t : "+" + t; }).join("")}\\end{aligned}`] });
+        // evaluate each 2 × 2 determinant, then multiply out
+        const evalT = T => {
+          const mm = T.m;
+          if (T.diag) return `(${tentry(T.a, true)})${tpolyP(mm)}`;
+          const c = qmul(T.a, Q(T.s)), sgn = qsgn(c) < 0 ? "-" : "+", ab = qabs(c);
+          const lead = qeq(ab, Q1) && pdeg(mm) >= 1 ? sgn : sgn + tq(ab) + (pdeg(mm) >= 1 ? "" : "\\cdot");
+          return lead + tpolyP(mm);
+        };
+        const brk = parts => parts.length < 2 ? `=${joinT(parts)}` : `\\begin{aligned}&=${parts[0]}\\\\&\\quad${parts.slice(1).map(t => /^[+-]/.test(t) ? t : "+" + t).join("")}\\end{aligned}`;
+        const lines2 = [brk(terms.map(evalT))];
+        if (terms.length === 1) {
+          const T = terms[0];
+          factors = null;
+          steps.push({ t: "Work out the 2 × 2 determinant", why: `A \\(2\\times2\\) determinant is \\(ad-bc\\). Leave the factor \\((${tentry(T.a, true)})\\) alone: it already gives one eigenvalue.`, lines: lines2, single: T });
+        } else {
+          if (terms.length > 1) lines2.push(brk(terms.map(T => { const t = tpoly(T.prod); return pdeg(T.prod) >= 1 ? `(${t})` : (qsgn(T.prod[0]) < 0 ? t : "+" + t); })));
+          lines2.push(`=${tpoly(charP)}`);
+          steps.push({ t: "Multiply out: the characteristic polynomial", why: `Each \\(2\\times2\\) determinant is \\(ad-bc\\). Then multiply out and collect powers of \\(\\lambda\\). Check: the \\(\\lambda^2\\) coefficient is \\(\\operatorname{tr}A\\) and the constant is \\(\\det A\\).`, lines: lines2 });
+        }
+      }
+    }
+    const detA = peval(charP, Q0);
+
+    // Step 3: the roots
+    const mono = pmonic(charP);                 // λⁿ + … (same roots)
+    const eig = [];                            // { kind: "q" | "s" | "c" | "x" | "xc", ... , am }
+    const addQ = (q, k = 1) => { const e = eig.find(e => e.kind === "q" && qeq(e.q, q)); if (e) e.am += k; else eig.push({ kind: "q", q, am: k }); };
+    const addQuad = (W) => {
+      const R = W.R;
+      if (R.kind === "double") addQ(R.root, 2);
+      else if (R.kind === "rational") R.roots.forEach(q => addQ(q));
+      else if (R.kind === "surd") { eig.push({ kind: "s", a: R.a, b: R.b, r: R.r, sg: 1, am: 1 }); eig.push({ kind: "s", a: R.a, b: R.b, r: R.r, sg: -1, am: 1 }); }
+      else { eig.push({ kind: "c", a: R.a, b: R.b, r: R.r, sg: 1, am: 1 }); eig.push({ kind: "c", a: R.a, b: R.b, r: R.r, sg: -1, am: 1 }); }
+    };
+    const rootStep = { t: "Solve for λ", lines: [], why: "" };
+    if (factors) {
+      factors.forEach(([a]) => addQ(a));
+      const names = eigList();
+      rootStep.t = "Read off the eigenvalues";
+      rootStep.lines.push(`${factors.map(([a]) => `(${tentry(a, true)})`).join("")}=0\\quad\\Rightarrow\\quad${names}`);
+      rootStep.why = "Each factor gives one eigenvalue: the diagonal entries of a triangular matrix are its eigenvalues.";
+    } else if (n === 2) {
+      const W = quadWork(mono[1], mono[0]);
+      addQuad(W); rootStep.lines = W.lines; rootStep.why = W.why;
+      if (W.R.kind === "rational" || W.R.kind === "double") rootStep.lines.push(eigList());
+    } else if (steps[steps.length - 1].single) {
+      const T = steps[steps.length - 1].single, mq = pmonic(T.m);   // (a − λ)·(minor) with the minor quadratic
+      addQ(T.a);
+      const W = quadWork(mq[1], mq[0]);
+      rootStep.lines.push(`(${tentry(T.a, true)})${tpolyP(T.m)}=0`);
+      if (!qeq(mq[2], Q1) || !ptrim(T.m).every((c, i) => qeq(c, mq[i]))) rootStep.lines.push(`${tpoly(mq)}=0`);
+      W.lines.forEach(L => rootStep.lines.push(L));
+      addQuad(W);
+      rootStep.why = `The factor \\((${tentry(T.a, true)})\\) gives \\(\\lambda=${tq(T.a)}\\). ` + W.why;
+      rootStep.lines.push(eigList());
+    } else {
+      // a cubic: −(λ³ + …) = 0. Rational root test, divide, then the quadratic
+      rootStep.lines.push(`${tpoly(charP)}=0`, `\\text{times }-1:\\quad ${tpoly(mono)}=0`);
+      const rr = ratRoots(mono);
+      if (rr.length) {
+        const r = rr[0], [quo] = pdivmod(mono, [qneg(r), Q1]);
+        const L = mono.reduce((a, c) => lcm(a, c.d), 1n), intP = mono.map(c => qmul(c, Q(L)));
+        if (L === 1n && qint(r)) {
+          const parts = [3, 2, 1, 0].map(k => qmul(mono[k], Q(r.n ** BigInt(k)))).filter(x => !qz(x));
+          rootStep.lines.push(`\\lambda=${tq(r)}:\\quad ${parts.map((x, i) => (i && qsgn(x) >= 0 ? "+" : "") + tq(x)).join("")}=0\\ \\checkmark`);
+          rootStep.why = `Try whole numbers that divide the constterm ${tq(mono[0])}`.replace("constterm", "constant term") + `; \\(\\lambda=${tq(r)}\\) works. Divide by \\((${r.n === 0n ? "\\lambda" : "\\lambda" + (qsgn(r) < 0 ? "+" + tq(qneg(r)) : "-" + tq(r))})\\) to get a quadratic.`;
+          rootStep.why = rootStep.why.replace(/divide the constant term (.*?);/, (m0, c) => `divide the constant term \\(${c}\\);`);
+        } else {
+          if (L > 1n) rootStep.lines.push(`\\text{clear fractions: }${tpoly(intP)}=0`);
+          rootStep.lines.push(`\\lambda=${tq(r)}\\ \\text{makes it }0\\ \\checkmark`);
+          rootStep.why = `Rational root test: a root \\(\\tfrac pq\\) has \\(p\\) dividing the constant and \\(q\\) dividing the leading coefficient; \\(\\lambda=${tq(r)}\\) works. Divide to get a quadratic.`;
+        }
+        const lin = qz(r) ? "\\lambda" : `(\\lambda${qsgn(r) < 0 ? "+" + tq(qneg(r)) : "-" + tq(r)})`;
+        rootStep.lines.push(`\\begin{aligned}&${tpoly(mono)}\\\\&\\quad=${lin}(${tpoly(quo)})\\end{aligned}`);
+        addQ(r);
+        const W = quadWork(quo[1], quo[0]);
+        W.lines.forEach(Lx => rootStep.lines.push(Lx));
+        addQuad(W);
+        rootStep.why += " " + W.why;
+        rootStep.lines.push(eigList());
+      } else {
+        // no rational root: a cubic that can't be factored by hand. Give the roots as decimals.
+        const xs = realRootsNum(mono);
+        if (xs.length === 3) xs.sort((a, b) => b - a).forEach(x => eig.push({ kind: "x", x, am: 1 }));
+        else {
+          const x = xs[0], c = fnum(mono), B2 = c[2] + x, C2 = c[1] + x * B2, re = -B2 / 2, im = Math.sqrt(Math.max(0, C2 - B2 * B2 / 4));
+          eig.push({ kind: "x", x, am: 1 }, { kind: "xc", re, im, am: 1 }, { kind: "xc", re, im: -im, am: 1 });
+        }
+        const L = mono.reduce((a, c) => lcm(a, c.d), 1n), c0 = qmul(mono[0], Q(L));
+        rootStep.t = "Look for a root";
+        rootStep.lines.push({ html: `No rational number is a root (the rational root test${L === 1n ? `: none of the divisors of \\(${tq(c0)}\\) works` : ""}), so this cubic doesn't factor by hand. Its roots are irrational; to 3 decimal places:` });
+        eig.forEach((e, i) => rootStep.lines.push(`\\lambda_${i + 1}\\approx ${e.kind === "x" ? fx(e.x) : fx(e.re) + (e.im < 0 ? "-" : "+") + fx(Math.abs(e.im)) + "i"}`));
+        rootStep.why = "Exam problems are built so a root can be found; this matrix isn't. Change an entry to get a nicer one.";
+      }
+    }
+    steps.push(rootStep);
+    function fx(x) { const s = (Math.round(x * 1000) / 1000).toFixed(3).replace(/\.?0+$/, ""); return s === "-0" ? "0" : s; }
+
+    // order: real eigenvalues from largest to smallest, then the complex pair
+    const val = e => e.kind === "q" ? qnum(e.q) : e.kind === "s" ? qnum(e.a) + e.sg * qnum(e.b) * Math.sqrt(Number(e.r)) : e.kind === "x" ? e.x : -Infinity;
+    if (!eig.some(e => e.kind === "x" || e.kind === "xc")) eig.sort((u, v) => (u.kind === "c") - (v.kind === "c") || val(v) - val(u) || v.sg - u.sg);
+    eig.forEach(e => {
+      if (e.kind === "q") { e.f = f1; e.x = f1.of(e.q); }
+      if (e.kind === "s") { e.f = F(e.r); e.x = e.f.mk(e.a, e.sg > 0 ? e.b : qneg(e.b)); }
+      e.real = e.kind === "q" || e.kind === "s" || e.kind === "x";
+      e.num = e.kind === "x" ? e.x : e.real ? e.f.num(e.x) : null;
+    });
+    function eigList() {
+      // the eigenvalues found so far, as the student writes them (pairs as ±)
+      const parts = [];
+      eig.forEach(e => {
+        if (e.kind === "q") parts.push(e.am > 1 ? `\\lambda=${tq(e.q)}\\ (\\text{twice})`.replace("twice", e.am === 3 ? "three times" : "twice") : `\\lambda=${tq(e.q)}`);
+      });
+      const pr = eig.find(e => e.kind === "s" || e.kind === "c");
+      if (pr) parts.push(`\\lambda=${pmTex(pr)}`);
+      return parts.join(",\\qquad ");
+    }
+    function pmTex(e) {                         // a ± b√r or a ± b√r i
+      const D = lcm(e.a.d, e.b.d), A0 = e.a.n * (D / e.a.d), Bn = e.b.n * (D / e.b.d);
+      const rt = (Bn === 1n ? "" : String(Bn)) + (e.r === 1n ? "" : sq(e.r) + (e.kind === "c" ? "\\," : "")) + (e.kind === "c" ? "i" : "");
+      const body = (A0 === 0n ? "" : String(A0)) + "\\pm " + (rt || "1");
+      return D === 1n ? body : `\\frac{${body}}{${D}}`;
+    }
+    const lamTex = e => e.kind === "q" ? tq(e.q) : e.kind === "s" ? tf(e.f, e.x) : e.kind === "c" ? cTex(e.a, e.sg > 0 ? e.b : qneg(e.b), e.r) : e.kind === "x" ? fx(e.x) : fx(e.re) + (e.im < 0 ? "-" : "+") + fx(Math.abs(e.im)) + "i";
+    function cTex(a, b, r) {                    // a + b√r i over a common denominator
+      const D = lcm(a.d, b.d), A0 = a.n * (D / a.d), Bn = b.n * (D / b.d), Bab = Bn < 0n ? -Bn : Bn;
+      const im = (Bab === 1n ? "" : String(Bab)) + (r === 1n ? "" : sq(r) + "\\,") + "i";
+      const num = (A0 === 0n ? (Bn < 0n ? "-" : "") : `${A0}${Bn < 0n ? "-" : "+"}`) + im;
+      return D === 1n ? num : `\\frac{${num}}{${D}}`;
+    }
+
+    // Step 4: the free check
+    const exact = !eig.some(e => e.kind === "x" || e.kind === "xc");
+    const all = []; eig.forEach(e => { for (let k = 0; k < e.am; k++) all.push(e); });
+    {
+      const lines = [];
+      const sumT = all.map((e, i) => { const t = lamTex(e); return e.kind === "q" ? (qsgn(e.q) < 0 && i > 0 ? `(${t})` : t) : par(t); });
+      const prodT = all.map(e => { const t = lamTex(e); return e.kind === "q" && qsgn(e.q) >= 0 ? t : par(t); });
+      const pr = eig.filter(e => e.kind === "s" || e.kind === "c");
+      if (exact) {
+        const two = (a, b) => pr.length ? `\\begin{aligned}&${a}\\\\&\\quad${b}\\end{aligned}` : a + b;
+        lines.push(two(`${all.map((_, i) => "\\lambda_" + (i + 1)).join("+")}=${sumT.join("+")}`, `=${tq(tr)}=\\operatorname{tr}A\\ \\checkmark`));
+        let mid = "";
+        if (pr.length) {                         // (a + b√r)(a − b√r) = a² ∓ b²r
+          const p = pr[0], a2 = qmul(p.a, p.a), b2r = qmul(qmul(p.b, p.b), Q(p.r)), rest = all.filter(e => e.kind === "q");
+          const pairV = p.kind === "s" ? qsub(a2, b2r) : qadd(a2, b2r), pairT = `(${tq(a2)}${p.kind === "s" ? "-" : "+"}${tq(b2r)})`;
+          mid = "=" + rest.map(e => qsgn(e.q) < 0 ? `(${tq(e.q)})` : tq(e.q)).concat([pairT]).join("\\cdot ");
+          if (rest.length === 0) mid = "=" + pairT.slice(1, -1);
+          void pairV;
+        }
+        lines.push(two(`${all.map((_, i) => "\\lambda_" + (i + 1)).join("")}=${prodT.join("\\cdot ")}`, `${mid}=${tq(detA)}=\\det A\\ \\checkmark`));
+      } else {
+        const s = all.reduce((t, e) => t + (e.kind === "x" ? e.x : e.re), 0);
+        lines.push(`\\lambda_1+\\lambda_2+\\lambda_3\\approx ${fx(s)}=${tq(tr)}=\\operatorname{tr}A`);
+        lines.push(`\\lambda_1\\lambda_2\\lambda_3\\approx ${fx(xprod(all))}=${tq(detA)}=\\det A`);
+      }
+      steps.push({ t: "Check: trace and determinant", why: `The eigenvalues (with repeats) add up to the trace and multiply to the determinant.${exact ? " Both match." : ""}`, lines });
+    }
+    function xprod(es) { let re = 1, im = 0; es.forEach(e => { const a = e.kind === "x" ? e.x : e.re, b = e.kind === "x" ? 0 : e.im; [re, im] = [re * a - im * b, re * b + im * a]; }); return re; }
+
+    // Steps 5…: an eigenvector for each real eigenvalue
+    const vecs = [];                            // { e, f, v, num } in order: v₁, v₂, …
+    let first = true;
+    eig.filter(e => e.kind === "q" || e.kind === "s").forEach(e => {
+      const f = e.f, lam = e.x;
+      const M = A.map((row, i) => row.map((a, j) => i === j ? f.sub(f.of(a), lam) : f.of(a)));
+      const R = reduce(f, M), lines = [], Am = tAminus(f, lam);
+      const zeroM = M.every(row => row.every(x => f.z(x)));
+      lines.push(`\\left[${Am}\\mid\\mathbf 0\\right]=${taug(f, M)}`);
+      R.stages.forEach(S => lines.push(`\\xrightarrow{${S.ops.map(op => topLabel(f, op)).join(",\\ ")}}${taug(f, S.M, S.hl)}`));
+      const free = [...Array(n).keys()].filter(c => !R.piv.some(p => p[1] === c));
+      // the equations left, solved for the pivot variables
+      const eqs = R.piv.map(([i, c]) => {
+        const row = R.M[i], lhs = tlin(f, row, VARS), rhs = tlin(f, free.map(k => f.neg(f.div(row[k], row[c]))), free.map(k => VARS[k]));
+        return { lhs, sol: `${VARS[c]}=${rhs}`, c, row };
+      });
+      if (zeroM) lines.push({ html: `Every entry is 0, so every vector solves it: all the variables are free.` });
+      else if (eqs.length) {
+        const solved = eqs.filter(q => q.lhs !== VARS[q.c]);          // "x = 0" needs no solving
+        const eqT = eqs.map(q => q.lhs + "=0").join(",\\quad "), solT = solved.map(q => q.sol).join(",\\ ");
+        if (!solved.length) lines.push(eqT);
+        else if (f.r > 1n || eqs.length > 1) lines.push(eqT, `\\Rightarrow\\quad ${solT}`);
+        else lines.push(`${eqT}\\quad\\Rightarrow\\quad ${solT}`);
+      }
+      // one eigenvector per free variable, scaled to whole numbers
+      const basis = free.map(fv => {
+        const v = Array.from({ length: n }, () => f.zero); v[fv] = f.one;
+        eqs.forEach(q => { v[q.c] = f.neg(f.div(q.row[fv], q.row[q.c])); });
+        const S = scaleVec(f, v);
+        return { fv, v: S.v, k: S.k };
+      });
+      const picks = basis.map(B => {
+        const idx = vecs.length + 1;
+        vecs.push({ e, f, v: B.v, num: B.v.map(x => f.num(x)) });
+        const choice = free.map(k => `${VARS[k]}=${k === B.fv ? tq(B.k) : "0"}`).join(",\\ ");
+        return { idx, choice, v: B.v };
+      });
+      picks.forEach(p => lines.push(`${p.choice}:\\quad\\mathbf v${SUBS[p.idx - 1]}=${tcol(f, p.v)}`));
+      // check A v = λ v
+      picks.forEach(p => {
+        const Av = A.map(row => row.reduce((s, a, j) => f.add(s, f.mul(f.of(a), p.v[j])), f.zero));
+        const lv = f.z(lam) ? `\\mathbf 0=0\\,\\mathbf v${SUBS[p.idx - 1]}` : `${tcoef(f, lam, "\\mathbf v" + SUBS[p.idx - 1])}`;
+        lines.push(`A\\mathbf v${SUBS[p.idx - 1]}=${f.z(lam) ? "" : tcol(f, Av) + "="}${lv}\\ \\checkmark`);
+      });
+      e.gm = free.length;
+      e.vecIdx = picks.map(p => p.idx);
+      const fvNames = free.map(k => `\\(${VARS[k]}\\)`).join(" and "), k1 = basis.length === 1 ? basis[0].k : Q1;
+      const why = zeroM ? `\\(A=${tq(e.q)}I\\), so \\(A\\mathbf v=${tq(e.q)}\\mathbf v\\) for every vector: every nonzero vector is an eigenvector. The simplest independent ones will do.`
+        : (first ? `Row reduce \\(${Am}\\). Its determinant is 0, so a row always clears to zero: a built-in check. ` : `The same moves: row reduce, then choose the free variable${free.length > 1 ? "s" : ""}. `)
+          + (free.length === 1 ? (qeq(k1, Q1) ? `${fvNames} is free: take ${fvNames.replace(/\\\)$/, "=1\\)")}.` : `${fvNames} is free: ${fvNames.replace(/\\\)$/, "=" + tq(k1) + "\\)")} clears the fractions.`)
+            : `${fvNames} are free: one eigenvector for each.`);
+      steps.push({ t: `λ = ${htmlLam(e)}: solve (${hAminus(e)})v = 0`, why, lines });
+      first = false;
+    });
+    // approximate eigenvectors (a cubic with no rational root)
+    if (!exact) {
+      const lines = [];
+      eig.filter(e => e.kind === "x").forEach(e => {
+        const M = A.map((row, i) => row.map((a, j) => qnum(a) - (i === j ? e.x : 0)));
+        const cr = (u, w) => [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]];
+        const cands = [cr(M[0], M[1]), cr(M[0], M[2]), cr(M[1], M[2])], v0 = cands.sort((p, q) => Math.hypot(...q) - Math.hypot(...p))[0];
+        const big = v0.reduce((m, x) => Math.abs(x) > Math.abs(m) ? x : m, 0), v = v0.map(x => x / big);
+        e.gm = 1; vecs.push({ e, f: null, v: null, num: v }); e.vecIdx = [vecs.length];
+        lines.push(`\\lambda_${eig.indexOf(e) + 1}\\approx ${fx(e.x)}:\\quad\\mathbf v_${vecs.length}\\approx\\begin{bmatrix}${v.map(fx).join("\\\\")}\\end{bmatrix}`);
+      });
+      steps.push({ t: "Eigenvectors (to 3 decimal places)", why: "With rounded eigenvalues, \\(A-\\lambda I\\) is only nearly singular, so exact row reduction can't be done; these eigenvectors are computed numerically. Each one is scaled so its largest entry is 1.", lines });
+    }
+    // complex eigenvectors of a 2 × 2 (one row is enough: the rows are complex multiples of each other)
+    const cpair = eig.filter(e => e.kind === "c");
+    let cvec = null;
+    if (n === 2 && cpair.length) {
+      const e = cpair[0], [[a, b], [c, d]] = A, im = e.b, r = e.r;
+      // v = [λ − d, c] from row 2 (or [b, λ − a] from row 1 when c = 0); λ − d = (a − d) + b√r i
+      const useRow2 = !qz(c);
+      const re0 = useRow2 ? qsub(e.a, d) : qsub(e.a, a);
+      const other = useRow2 ? c : b;
+      let L = lcm(lcm(re0.d, im.d), other.d);
+      let comp = [qmul(re0, Q(L)), qmul(im, Q(L)), qmul(other, Q(L))];
+      const g = gcd(gcd(comp[0].n, comp[1].n), comp[2].n) || 1n; comp = comp.map(x => qdiv(x, Q(g)));
+      const cx = (re, imv, conj) => cTex(re, conj ? qneg(imv) : imv, r);
+      const vtex = conj => useRow2 ? `\\begin{bmatrix}${cx(comp[0], comp[1], conj)}\\\\${tq(comp[2])}\\end{bmatrix}` : `\\begin{bmatrix}${tq(comp[2])}\\\\${cx(comp[0], comp[1], conj)}\\end{bmatrix}`;
+      const lamT = cTex(e.a, e.b, r);
+      const ent = (q, isDiag) => isDiag ? cTex(qsub(q, e.a), qneg(e.b), r) : tq(q);
+      const AmT = `\\begin{bmatrix}${ent(a, true)}&${ent(b)}\\\\${ent(c)}&${ent(d, true)}\\end{bmatrix}`;
+      const rowEq = useRow2 ? `${tcoefQ(c, "x")}+\\left(${cTex(qsub(d, e.a), qneg(e.b), r)}\\right)y=0` : `\\left(${cTex(qsub(a, e.a), qneg(e.b), r)}\\right)x+${tcoefQ(b, "y")}=0`;
+      cvec = { re: comp[0], im: comp[1], other: comp[2], r, useRow2 };
+      steps.push({ t: `λ = ${htmlLam(e)}: a complex eigenvector`, why: `There is no real eigenvector (no line through \\(\\mathbf 0\\) stays put), but the same method works with complex numbers. The two rows are multiples of each other, so one row is enough. The other eigenvalue \\(\\bar\\lambda\\) gets the conjugate vector.`,
+        lines: [`A-(${lamT})I=${AmT}`, `\\text{row ${useRow2 ? 2 : 1}: }${rowEq.replace(/\+-/g, "-")}`, `\\Rightarrow\\quad ${useRow2 ? `x=${solC(qsub(e.a, d), e.b, c)}\\,y` : `y=${solC(qsub(e.a, a), e.b, b)}\\,x`}`,
+          `\\mathbf v=${vtex(false)}`, `\\bar{\\mathbf v}=${vtex(true)}\\ \\text{ for }\\ \\lambda=${cTex(e.a, qneg(e.b), r)}`] });
+    }
+    function solC(re, im, k) {               // (re + im√r i)/k, as a coefficient in parentheses
+      const t = cTex(qdiv(re, k), qdiv(im, k), cpair[0].r);
+      return `\\left(${t}\\right)`;
+    }
+    function tcoefQ(q, sym) { return qeq(q, Q1) ? sym : qeq(q, qneg(Q1)) ? "-" + sym : tq(q) + sym; }
+
+    // Last step: multiplicities, and diagonalize if possible
+    const real = eig.every(e => e.real), gmSum = eig.reduce((s, e) => s + (e.real ? e.gm : 0), 0);
+    const diag = real && gmSum === n;
+    {
+      const lines = [], rows = eig.filter(e => e.kind !== "c" || e.sg > 0 || true);
+      const head = `\\begin{array}{c|c|c}\\lambda&\\text{alg. mult.}&\\text{geom. mult.}\\\\\\hline ${rows.map(e => `${lamTex(e)}&${e.am}&${e.real ? e.gm : "\\text{—}"}`).join("\\\\")}\\end{array}`;
+      lines.push(head);
+      let why = "Algebraic multiplicity: how often \\(\\lambda\\) is a root. Geometric: how many independent eigenvectors it has (free variables). \\(A\\) is diagonalizable exactly when they match for every \\(\\lambda\\).";
+      let verdict;
+      if (diag) {
+        const order = vecs;
+        const P = exact ? tmat([...Array(n).keys()].map(i => order.map(V => tf(V.f, V.v[i])))) : `\\begin{bmatrix}${[...Array(n).keys()].map(i => order.map(V => fx(V.num[i])).join("&")).join("\\\\")}\\end{bmatrix}`;
+        const D = tmat([...Array(n).keys()].map(i => [...Array(n).keys()].map(j => i === j ? lamTex(order[i].e) : "0")));
+        if (n === 2 && order.every(V => V.f && V.f.r === 1n)) lines.push(`P=${P},\\qquad D=${D}`);
+        else lines.push(`P${exact ? "=" : "\\approx"}${P}`, `D=${D}`);
+        lines.push(`A=PDP^{-1}`);
+        verdict = { ok: true };
+        why += " \\(P\\)'s columns are the eigenvectors, in the order of \\(D\\).";
+      } else if (!real) {
+        lines.push({ html: `The eigenvalues aren't all real, so there aren't enough real eigenvectors: \\(A\\) can't be diagonalized with real matrices.${n === 2 ? " (With complex numbers it can: the two eigenvalues are different.)" : ""}` });
+        verdict = { ok: false, why: "complex" };
+      } else {
+        const bad = eig.filter(e => e.gm < e.am);
+        lines.push(bad.map(e => `\\lambda=${lamTex(e)}:\\quad \\text{geom. mult. } ${e.gm}<${e.am}=\\text{alg. mult.}`).join(",\\qquad "));
+        lines.push({ html: `There are not enough independent eigenvectors for a basis, so \\(A\\) is not diagonalizable.` });
+        verdict = { ok: false, why: "defective", bad };
+      }
+      steps.push({ t: diag ? "Multiplicities, then diagonalize" : "Multiplicities: diagonalizable?", why, lines, verdict });
+    }
+
+    // the short answer (HTML) and the numbers for the picture
+    function hAminus(e) {                       // A − 3I, A + 2I, A − (1/2)I, A − (2 + √3)I
+      const v = e.kind === "q" ? e.q : null;
+      if (v && qz(v)) return "A − 0I";
+      if (v) { const a = qabs(v), t = hq(a); return `A ${qsgn(v) < 0 ? "+" : "−"} ${a.d === 1n ? (a.n === 1n ? "" : t) : "(" + t + ")"}I`; }
+      return "A − λI";
+    }
+    function htmlLam(e) {
+      if (e.kind === "q") return hq(e.q);
+      if (e.kind === "s") return hf(e.f, e.x);
+      if (e.kind === "x") return "≈ " + fx(e.x).replace("-", "−");
+      if (e.kind === "xc") return "≈ " + fx(e.re).replace("-", "−") + (e.im < 0 ? " − " : " + ") + fx(Math.abs(e.im)) + "i";
+      const D = lcm(e.a.d, e.b.d), A0 = e.a.n * (D / e.a.d), Bn = e.b.n * (D / e.b.d), im = (Bn === 1n ? "" : String(Bn)) + (e.r === 1n ? "" : "√" + e.r) + "i";
+      const num = (A0 === 0n ? (e.sg < 0 ? "−" : "") : `${A0 < 0n ? "−" + (-A0) : A0} ${e.sg < 0 ? "−" : "+"} `) + im;
+      return D === 1n ? num : `(${num})/${D}`;
+    }
+    const hpm = e => {                           // a ± b√r (i)
+      const D = lcm(e.a.d, e.b.d), A0 = e.a.n * (D / e.a.d), Bn = e.b.n * (D / e.b.d);
+      const rt = (Bn === 1n ? "" : String(Bn)) + (e.r === 1n ? "" : "√" + e.r) + (e.kind === "c" ? "i" : "");
+      const num = (A0 === 0n ? "±" : `${A0 < 0n ? "−" + (-A0) : A0} ± `) + (rt || "1");
+      return D === 1n ? num : `(${num})/${D}`;
+    };
+    const lamHtml = (() => {
+      const parts = []; let pairDone = false;
+      eig.forEach(e => {
+        if (e.kind === "q") parts.push(hq(e.q) + (e.am === 2 ? " (twice)" : e.am === 3 ? " (three times)" : ""));
+        else if ((e.kind === "s" || e.kind === "c") && !pairDone) { parts.push(hpm(e)); pairDone = true; }
+        else if (e.kind === "x" || e.kind === "xc") parts.push(htmlLam(e));
+      });
+      const t = parts.join(", ");
+      return exact ? t : "≈ " + t.replace(/≈ /g, "");
+    })();
+    const vecHtml = vecs.map(V => V.f ? hvec(V.f, V.v) : "≈ [" + V.num.map(x => fx(x).replace("-", "−")).join(", ") + "]");
+    return {
+      n, A, tr, det: detA, charP, eig, vecs, steps, diag, real, exact, tri, cvec, lamHtml, vecHtml,
+      lamTex, htmlLam, given: tmat(A.map(row => row.map(tq))),
+    };
+  };
+  return { parse, solve, Q, qnum, tq, hq };
+})();
+// The working is written on a board like the method pages': on a wide screen it covers the left part of the
+// picture (the picture moves to the right part); on a phone it sits in the panel under the answer. Steps open
+// one at a time (Next step) or all at once; a new matrix is typeset off-screen first, then cross-fades in.
+const TEIG_EX = {
+  2: [["Two λ", "1|2|1|0"], ["One λ, twice", "4|-1|1|2"], ["Square roots", "3|1|2|1"], ["Complex λ", "1|-2|1|3"]],
+  3: [["A double λ", "2|0|0|1|3|1|1|1|3"], ["Three λ", "2|-1|-1|-2|3|-3|-1|1|1"], ["Not diagonalizable", "1|0|1|-2|2|2|2|-1|2"], ["Complex λ", "2|0|0|0|1|-1|0|1|1"]],
+};
+const TEIG_CACHE = new Map(), TEIG_SPLIT = .54;             // on a wide screen the board takes this much of the stage
+function TEIG_read(s, n) {                                  // the typed entries: the matrix, or which entries are not numbers yet
+  const raw = String(s["m" + n] || "").split("|"), bad = [], A = [];
+  for (let i = 0; i < n; i++) { A.push([]); for (let j = 0; j < n; j++) { const p = TEIG_M.parse(raw[i * n + j]); if (p.q) A[i].push(p.q); else { A[i].push(null); bad.push({ i, j, err: p.err }); } } }
+  return { A, bad };
+}
+function TEIG_sol(s) {                                      // the last matrix that was all numbers, solved (cached)
+  const n = s.n === 3 ? 3 : 2, key = n + ":" + (s["ok" + n] || "");
+  if (TEIG_CACHE.has(key)) return TEIG_CACHE.get(key);
+  let r = TEIG_read({ ["m" + n]: s["ok" + n] }, n);
+  if (r.bad.length) r = TEIG_read({ ["m" + n]: TEIG_EX[n][0][1] }, n);
+  const sol = TEIG_M.solve(r.A);
+  sol.key = key;
+  if (TEIG_CACHE.size > 40) TEIG_CACHE.delete(TEIG_CACHE.keys().next().value);
+  TEIG_CACHE.set(key, sol);
+  return sol;
+}
+const TEIG_CSS = `
+.teig-board { position: absolute; z-index: 2; display: flex; flex-direction: column; background: var(--surface); border-right: 1px solid var(--border);
+  border-radius: var(--r-lg) 0 0 var(--r-lg); overflow: hidden; container-type: inline-size; }
+.teig-board.teig-stack { position: relative; z-index: auto; margin: 14px 0 2px; border: 1px solid var(--border); border-radius: var(--r-md); overflow: visible; }
+.teig-scroll { position: relative; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 0 18px 14px; }
+.teig-stack .teig-scroll { overflow: visible; padding: 0 13px 10px; }
+.teig-math { font-size: clamp(14px, 3.2cqw, 17.5px); }
+.teig-layer { transition: opacity .3s ease; }
+.teig-layer.teig-pending { position: absolute; left: 18px; right: 18px; top: 0; visibility: hidden; pointer-events: none; }
+.teig-stack .teig-layer.teig-pending { left: 13px; right: 13px; }
+.teig-board.teig-stale .teig-layer { opacity: .4; }
+.teig-given { position: sticky; top: 0; z-index: 1; background: var(--surface); padding: 14px 0 10px; border-bottom: 1px dashed var(--border-strong); line-height: 1.5; color: var(--ink); }
+.teig-given::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 14px; background: linear-gradient(var(--surface), rgba(255, 255, 255, 0)); pointer-events: none; }
+.teig-stack .teig-given { position: static; padding-top: 12px; }
+.teig-stack .teig-given::after { display: none; }
+.teig-board .st-step.now .st-step-n { color: var(--red); }
+.teig-board .st-step:not(.now) .st-step-n { color: var(--ink-mute); }
+.teig-board .st-text { font-size: .95em; }
+.teig-board .st-tex { scrollbar-width: thin; }
+.teig-foot { flex: none; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 9px 18px 10px; border-top: 1px solid var(--border); background: var(--surface); }
+.teig-stack .teig-foot { position: sticky; bottom: 0; z-index: 2; padding: 9px 13px; border-radius: 0 0 var(--r-md) var(--r-md); box-shadow: 0 -6px 14px rgba(31, 41, 51, .06); }
+.teig-foot .btn { gap: 6px; }
+.teig-foot .btn:disabled { opacity: .45; cursor: default; }
+.teig-count { margin-left: auto; font: 700 11px var(--font-sans); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-mute); white-space: nowrap; }
+.teig-head { display: none; }
+.teig-stack .teig-head { display: block; padding: 11px 13px 0; font: 800 11px var(--font-sans); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-mute); }
+.teig-mx .vz-mx-grid input.teig-bad { border-color: var(--red); background: var(--red-tint); }
+.teig-mx .vz-mx-grid input { font-size: 13.5px; }
+.teig-mx.teig-n3 { grid-template-columns: auto auto; }
+.teig-mx.teig-n3 .vz-mx-hint { grid-column: 1 / -1; }
+.teig-top { display: grid; gap: 10px; }
+.teig-top .vz-mx { margin: 0; }
+`;
+const TEIG_UI = {
+  ver: 0, key: "", rv: 1, steps: 0, timer: 0, split: null,
+  reset() { this.ver++; this.key = ""; this.split = null; clearTimeout(this.timer); this.rv = 1; },
+  css() { if (!document.getElementById("teigCss")) { const st = document.createElement("style"); st.id = "teigCss"; st.textContent = TEIG_CSS; document.head.appendChild(st); } },
+  board() { return document.getElementById("teigBoard"); },
+  // where the board goes: over the left of the picture when the picture is wide, else in the panel
+  place(def) {
+    const wrap = document.querySelector(".vz-stage-wrap"), stage = document.getElementById("vzStage"), panel = document.querySelector(".vz-panel");
+    if (!wrap || !stage || !panel) return;
+    let b = this.board();
+    if (!b) {
+      b = document.createElement("div"); b.id = "teigBoard"; b.className = "teig-board";
+      b.innerHTML = `<div class="teig-head">The working</div><div class="teig-scroll teig-math"></div><div class="teig-foot"><button type="button" class="btn btn-red btn-sm" data-teig="next">Next step</button><button type="button" class="btn btn-ghost btn-sm" data-teig="all">Show all steps</button><span class="teig-count"></span></div>`;
+      b.addEventListener("click", e => { const t = e.target.closest("[data-teig]"); if (t) this.click(t.dataset.teig); });
+      if (window.ResizeObserver) {                         // the board got wider or narrower: refit the long lines
+        let w0 = 0;
+        new ResizeObserver(() => { const w = b.clientWidth, L = b.querySelector(".teig-layer:not(.teig-pending)"); if (Math.abs(w - w0) > 1 && L) { w0 = w; this.fit(L); } }).observe(b);
+      }
+    }
+    const split = stage.getBoundingClientRect().width >= 560;
+    if (split) {
+      if (getComputedStyle(wrap).position === "static") wrap.style.position = "relative";
+      if (b.parentElement !== wrap) wrap.appendChild(b);
+      b.classList.remove("teig-stack");
+      const r = stage.getBoundingClientRect(), w = wrap.getBoundingClientRect();   // (an svg has no offsetLeft)
+      Object.assign(b.style, { left: (r.left - w.left - wrap.clientLeft) + "px", top: (r.top - w.top - wrap.clientTop) + "px", height: r.height + "px", width: Math.round(r.width * TEIG_SPLIT) + "px" });
+    } else {
+      const ro = document.getElementById("vzReadout");
+      if (b.parentElement !== panel) panel.insertBefore(b, ro ? ro.nextSibling : null);
+      b.classList.add("teig-stack");
+      Object.assign(b.style, { left: "", top: "", height: "", width: "" });
+    }
+    const small = !split && stage.getBoundingClientRect().width < 480;      // a phone: the picture's words are drawn bigger
+    if (split !== this.split || small !== def._small) { this.split = split; def._split = split; def._small = small; VzView.stale = true; }
+  },
+  html(sol) {
+    const esc = t => escapeHtml(t);
+    return `<div class="teig-given"><span class="st-kicker">Your matrix</span>Find the eigenvalues and eigenvectors of \\(A=${sol.given}\\).</div>` +
+      sol.steps.map((st, j) => `<section class="st-step${j < this.rv ? " on" : ""}${j === this.rv - 1 ? " now" : j < this.rv - 1 ? " past" : ""}" data-j="${j}"><div class="st-in">
+        <div class="st-step-h"><span class="st-step-n">Step ${j + 1}</span>${esc(st.t)}</div>
+        ${st.why ? `<p class="st-why">${st.why}</p>` : ""}
+        ${st.lines.map(L => `<div class="st-line${j < this.rv ? " on" : ""}"><div class="st-in">${L.html ? `<div class="st-text">${L.html}</div>` : `<div class="st-tex">\\[${L}\\]</div>`}</div></div>`).join("")}
+      </div></section>`).join("");
+  },
+  // MathJax is loaded async: wait for it before typesetting, so raw TeX never shows
+  ready() {
+    return new Promise(res => {
+      const t0 = performance.now();
+      (function poll() {
+        if (window.MathJax && MathJax.typesetPromise) (MathJax.startup && MathJax.startup.promise || Promise.resolve()).then(res, res);
+        else if (performance.now() - t0 > 8000) res(); else setTimeout(poll, 80);
+      })();
+    });
+  },
+  fit(root) {                                              // a line too wide for the board shrinks to fit (never below 70%, 62% on a phone), else scrolls
+    const lo = root.clientWidth < 420 ? .62 : .7;
+    root.querySelectorAll(".st-tex").forEach(line => {
+      const avail = line.clientWidth - 4; if (avail <= 0) return;
+      line.querySelectorAll("mjx-container").forEach(m => {
+        const svg = m.querySelector("svg"); if (!svg) return;
+        m.style.fontSize = ""; const w = svg.getBoundingClientRect().width;
+        if (w > avail) m.style.fontSize = (Math.max(lo, avail / w) * 108).toFixed(1) + "%";
+      });
+    });
+  },
+  // show the working for this matrix: typeset off-screen, then cross-fade from the old one
+  async update(def, s) {
+    this.css(); this.place(def);
+    const b = this.board(); if (!b) return;
+    const sol = TEIG_sol(s), bad = TEIG_read(s, s.n === 3 ? 3 : 2).bad.length > 0;
+    b.classList.toggle("teig-stale", bad);
+    if (sol.key === this.key) return;
+    const wasAll = this.steps > 0 && this.rv >= this.steps;          // every step open stays every step open
+    this.key = sol.key; this.steps = sol.steps.length; this.rv = wasAll ? this.steps : vzClamp(this.rv, 1, this.steps);
+    const ver = ++this.ver, sc = b.querySelector(".teig-scroll");
+    const layer = document.createElement("div"); layer.className = "teig-layer teig-pending"; layer.innerHTML = this.html(sol);
+    sc.appendChild(layer);
+    this.foot();
+    await this.ready();
+    if (ver !== this.ver || !layer.isConnected) { layer.remove(); return; }
+    try { await typesetMath(layer); } catch (_) {}
+    if (ver !== this.ver || !layer.isConnected) { layer.remove(); return; }
+    this.fit(layer);
+    const old = [...sc.querySelectorAll(".teig-layer:not(.teig-pending)")], stack = b.classList.contains("teig-stack");
+    const h0 = sc.offsetHeight;
+    old.forEach(o => { Object.assign(o.style, { position: "absolute", left: o.offsetLeft + "px", top: o.offsetTop + "px", width: o.offsetWidth + "px", pointerEvents: "none" }); });
+    layer.classList.remove("teig-pending");
+    if (old.length) {
+      // the old working fades most of the way out before the new one comes in, so the two never sit on top of each other
+      old.forEach(o => { const a = o.animate([{ opacity: getComputedStyle(o).opacity }, { opacity: 0 }], { duration: 300, easing: "linear", fill: "forwards" }); a.onfinish = () => o.remove(); });
+      layer.animate([{ opacity: 0 }, { opacity: 0, offset: .22 }, { opacity: getComputedStyle(layer).opacity || 1 }], { duration: 460, easing: "linear" });
+      if (stack) { const h1 = sc.offsetHeight; if (Math.abs(h1 - h0) > 2) sc.animate([{ height: h0 + "px", overflow: "hidden" }, { height: h1 + "px", overflow: "hidden" }], { duration: 360, easing: "cubic-bezier(.4, 0, .2, 1)" }); }
+    } else layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: "ease-out" });
+    this.show(false);
+  },
+  foot() {
+    const b = this.board(); if (!b) return;
+    const all = this.rv >= this.steps, nx = b.querySelector('[data-teig="next"]'), al = b.querySelector('[data-teig="all"]');
+    nx.disabled = all; al.textContent = all ? "Start over" : "Show all steps";
+    b.querySelector(".teig-count").textContent = `Step ${this.rv} of ${this.steps}`;
+  },
+  // open the steps up to rv (each one opens its space, then its lines fade in one after another)
+  show(follow, stagger = 0) {
+    const b = this.board(); if (!b) return;
+    const layer = b.querySelector(".teig-layer:not(.teig-pending)"); if (!layer) return;
+    let k = 0;
+    layer.querySelectorAll(".st-step").forEach(el => {
+      const j = +el.dataset.j, on = j < this.rv, was = el.classList.contains("on");
+      if (on && !was) { el.style.transitionDelay = (k * stagger) + "ms"; el.querySelectorAll(".st-line").forEach((L, i) => { L.style.transitionDelay = (k * stagger + 160 + 110 * i) + "ms"; }); k++; }
+      if (!on) { el.style.transitionDelay = ""; el.querySelectorAll(".st-line").forEach(L => { L.style.transitionDelay = ""; }); }
+      el.classList.toggle("on", on); el.classList.toggle("now", j === this.rv - 1); el.classList.toggle("past", j < this.rv - 1);
+      el.querySelectorAll(".st-line").forEach(L => L.classList.toggle("on", on));
+    });
+    this.foot();
+    if (follow) this.follow(layer.querySelector(`.st-step[data-j="${this.rv - 1}"]`), follow === "top");
+  },
+  // glide the newest step into view (inside the board, or the page on a phone); never jumps
+  follow(el, toTop) {
+    const b = this.board(); if (!el || !b) return;
+    const sc = b.querySelector(".teig-scroll"), stack = b.classList.contains("teig-stack"), t0 = performance.now(), ver = this.ver;
+    const step = () => {
+      if (ver !== this.ver || !el.isConnected) return;
+      if (!stack) {
+        const head = (sc.querySelector(".teig-given") || {}).offsetHeight || 0, max = sc.scrollHeight - sc.clientHeight;
+        const want = toTop ? 0 : Math.min(el.offsetTop - head - 6, el.offsetTop + el.offsetHeight + 10 - sc.clientHeight);
+        const tgt = vzClamp(toTop ? 0 : Math.max(sc.scrollTop, want), 0, Math.max(0, max));
+        sc.scrollTop += (tgt - sc.scrollTop) * .16;
+      } else {
+        const r = el.getBoundingClientRect(), wrap = document.querySelector(".vz-stage-wrap"), top = wrap && getComputedStyle(wrap).position === "sticky" ? wrap.getBoundingClientRect().bottom : 70;
+        const foot = b.querySelector(".teig-foot").offsetHeight, room = innerHeight - foot - top;
+        let d = toTop ? Math.min(0, r.top - top - 8) : Math.min(r.top - top - 8, r.bottom + 10 - top - room);
+        if (!toTop) d = Math.max(0, d);
+        if (Math.abs(d) > 1) window.scrollBy(0, d * .16);
+      }
+      if (performance.now() - t0 < 1100) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  },
+  click(what) {
+    if (what === "next" && this.rv < this.steps) { this.rv++; this.show(true); }
+    else if (what === "all") {
+      if (this.rv >= this.steps) { this.rv = 1; this.show("top"); }
+      else { this.rv = this.steps; this.show(false, 120); }
+    }
+  },
+};
+function TEIG_ang(s, sol) {                                 // the direction (degrees) of v₁, the copy nearest v's direction now
+  const V = sol.vecs[0]; if (!V || sol.n !== 2) return null;
+  const a = Math.atan2(V.num[1], V.num[0]) * 180 / Math.PI;
+  let best = null;
+  [a, a + 180].forEach(g => { const t = g + 360 * Math.round((s.th - g) / 360); if (best == null || Math.abs(t - s.th) < Math.abs(best - s.th)) best = t; });
+  return best;
+}
+// a 3 × 3 view where no eigenvector line is end-on, no two lines overlap and an eigen-plane isn't edge-on
+// (near the current view when that is about as good, so the turn stays small)
+function TEIG_yaw(sol, cur) {
+  if (sol.n !== 3) return cur;
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], nrm = u => { const L = Math.hypot(...u) || 1; return u.map(x => x / L); };
+  const cr = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const items = [];
+  sol.eig.forEach(e => { if (!e.real || !e.vecIdx) return; const us = e.vecIdx.map(i => nrm(sol.vecs[i - 1].num)); if (us.length === 1) items.push({ u: us[0] }); else if (us.length === 2) items.push({ n: nrm(cr(us[0], us[1])), us }); });
+  if (!items.length) return cur;
+  let best = cur, bs = -Infinity;
+  for (let y = -180; y < 180; y += 3) {
+    const cam = vzCam(0, 0, 1, vzRad(y), .4), view = cam.view, dirs = [];
+    let sc = 1;
+    items.forEach(it => {
+      if (it.u) { sc = Math.min(sc, Math.sqrt(Math.max(0, 1 - dot(it.u, view) ** 2))); const p = cam(...it.u); dirs.push(Math.atan2(p[1], p[0])); }
+      else { sc = Math.min(sc, .15 + .85 * Math.abs(dot(it.n, view))); it.us.forEach(u => { const p = cam(...u); dirs.push(Math.atan2(p[1], p[0])); }); }
+    });
+    for (let i = 0; i < dirs.length; i++) for (let j = i + 1; j < dirs.length; j++) { let d = Math.abs(dirs[i] - dirs[j]) % Math.PI; d = Math.min(d, Math.PI - d); sc = Math.min(sc, d / (Math.PI / 5)); }
+    const score = sc - Math.abs(y - cur) / 4000;           // (inside the slider's range, so it glides there without wrapping)
+    if (score > bs) { bs = score; best = y; }
+  }
+  return best;
+}
+// a new valid matrix: the old picture dissolves into the new one, v glides onto the first eigenvector
+function TEIG_aim(s) {                                     // v onto an eigenvector (2 × 2), or a clear view (3 × 3)
+  const sol = TEIG_sol(s), to = {};
+  const g = TEIG_ang(s, sol); if (g != null && Math.abs(g - s.th) > .5) to.th = g;
+  if (sol.n === 3) { const y = TEIG_yaw(sol, s.yaw); if (Math.abs(y - s.yaw) > 1) to.yaw = y; }
+  if (Object.keys(to).length) vzTweenTo(to, 700);
+}
+function TEIG_take(def, s) {
+  const n = s.n === 3 ? 3 : 2;
+  s["ok" + n] = s["m" + n];
+  vzSetPlay(null); vzSwap();
+  TEIG_aim(s);
+  vzChanged();
+}
+function TEIG_canon(s, n) { const r = TEIG_read(s, n); return r.bad.length ? null : r.A.flat().map(q => q.n + "/" + q.d).join(","); }
+if (typeof window !== "undefined") window.addEventListener("resize", () => {
+  const def = VzView.def; if (!def || def.id !== "tool-eigen" || !document.getElementById("teigBoard")) return;
+  TEIG_UI.place(def); const b = TEIG_UI.board(), L = b && b.querySelector(".teig-layer:not(.teig-pending)"); if (L) TEIG_UI.fit(L);
+});
+vzAdd({
+  id: "tool-eigen", title: "Eigenvalues of your own matrix", card: "Eigenvalues of your matrix",
+  tagline: "Type a matrix: get each λ, its eigenvectors, and the working.",
+  tryIt: "Change any entry: every step updates.",
+  blurb: "Type any \\(2\\times2\\) or \\(3\\times3\\) matrix. The working follows the course: solve \\(\\det(A-\\lambda I)=0\\) (factor, or use the quadratic formula), check against the trace and determinant, row reduce \\(A-\\lambda I\\) for each real \\(\\lambda\\) to get its eigenvectors, then compare multiplicities to decide whether \\(A=PDP^{-1}\\). Everything is exact: fractions and square roots, no rounding. The picture shows \\(\\mathbf v\\) and \\(A\\mathbf v\\): on a dashed eigenvector line, \\(A\\mathbf v=\\lambda\\mathbf v\\).",
+  state: { n: 2, m2: "1|2|1|0", ok2: "1|2|1|0", m3: "2|0|0|1|3|1|1|1|3", ok3: "2|0|0|1|3|1|1|1|3", th: 26.565, yaw: TEIG_yaw(TEIG_sol({ n: 3, ok3: "2|0|0|1|3|1|1|1|3" }), -32) },
+  thumb: {},
+  // extra matrices for the fuzz checks
+  variants: [].concat(...[2, 3].map(n => TEIG_EX[n].map(([, m]) => ({ n, ["m" + n]: m, ["ok" + n]: m }))),
+    [["0|0|0|0", 2], ["3|0|0|3", 2], ["99|-99|99|99", 2], ["1/2|1/3|1/5|1/7", 2], ["0|1|0|0", 2], ["1|2|2|4", 2], ["0|1|-1|0", 2], ["1|2|3|4|5|6|7|8|9", 3], ["5|0|0|0|5|0|0|0|5", 3],
+     ["0|0|0|0|0|0|0|0|0", 3], ["2|1|0|0|2|1|0|0|2", 3], ["2|1|0|1|2|1|0|1|2", 3], ["99|98|-97|-96|95|94|93|-92|91", 3], ["1|1|0|-1|1|0|0|0|3", 3], ["1|2|0|3|4|5|6|7|8", 3]].map(([m, n]) => ({ n, ["m" + n]: m, ["ok" + n]: m }))),
+  controls: [{ k: "yaw", label: "turn the view", min: -180, max: 180, step: 1, unit: "°", digits: 0, play: 24, show: s => s.n === 3, aria: "the view" }],
+  reset() { TEIG_UI.reset(); this._split = false; },
+  panelTop() {
+    return `<div class="teig-top"><div class="vz-seg" role="group" aria-label="Size of the matrix"><button type="button" data-teig-n="2">2 × 2</button><button type="button" data-teig-n="3">3 × 3</button></div>
+      <div id="teigMx"></div><div><div class="vz-ptop-k">Or start from</div><div class="vz-chips" id="teigEx"></div></div></div>`;
+  },
+  mxHtml(s, n) {
+    const raw = String(s["m" + n] || "").split("|");
+    return `<div class="vz-mx teig-mx${n === 3 ? " teig-n3" : ""}"><span class="vz-mx-name"><i>A</i> =</span><span class="vz-brk vz-mx-grid" style="grid-template-columns:repeat(${n}, ${n === 3 ? 54 : 60}px)">${Array.from({ length: n * n }, (_, k) =>
+      `<input type="text" id="teig-e${k}" class="teig-in" data-teig-e="${k}" value="${escapeHtml(raw[k] || "")}" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" aria-label="row ${Math.floor(k / n) + 1}, column ${k % n + 1}">`).join("")}</span>
+      <span class="vz-mx-hint">whole numbers, decimals or fractions like −3/4</span></div>`;
+  },
+  sync(s, panel) {
+    if (!panel) return;
+    const n = s.n === 3 ? 3 : 2;
+    panel.querySelectorAll("[data-teig-n]").forEach(b => b.classList.toggle("on", +b.dataset.teigN === n));
+    const mx = panel.querySelector("#teigMx"), ex = panel.querySelector("#teigEx");
+    if (mx && mx.dataset.n !== String(n)) {
+      mx.dataset.n = String(n); mx.innerHTML = this.mxHtml(s, n);
+      if (ex) ex.innerHTML = TEIG_EX[n].map(([name], i) => `<button type="button" class="vz-chip" data-teig-ex="${i}">${escapeHtml(name)}</button>`).join("");
+    }
+    const rd = TEIG_read(s, n), raw = String(s["m" + n] || "").split("|"), canon = TEIG_canon({ ["m" + n]: s["ok" + n] }, n);
+    panel.querySelectorAll(".teig-in").forEach(inp => {
+      const k = +inp.dataset.teigE;
+      inp.classList.toggle("teig-bad", rd.bad.some(q => q.i * n + q.j === k));
+      if (inp !== document.activeElement && inp.value !== (raw[k] || "")) inp.value = raw[k] || "";
+    });
+    if (ex) ex.querySelectorAll("[data-teig-ex]").forEach(b => b.classList.toggle("on", TEIG_canon({ ["m" + n]: TEIG_EX[n][+b.dataset.teigEx][1] }, n) === canon));
+    if (!panel._teig) {                                 // typed entries (the matrix inputs are this picture's own)
+      panel._teig = true;
+      panel.addEventListener("input", e => {
+        const inp = e.target.closest && e.target.closest(".teig-in"); if (!inp || VzView.def !== this) return;
+        const st = VzView.st, m = st.n === 3 ? 3 : 2, r = String(st["m" + m]).split("|");
+        r[+inp.dataset.teigE] = String(inp.value).replace(/\|/g, "").slice(0, 12);
+        st["m" + m] = r.join("|");
+        clearTimeout(TEIG_UI.timer);
+        const now = TEIG_canon(st, m);
+        if (now && now !== TEIG_canon({ ["m" + m]: st["ok" + m] }, m)) TEIG_UI.timer = setTimeout(() => { if (VzView.def === this) TEIG_take(this, VzView.st); }, 280);
+        else if (now) st["ok" + m] = st["m" + m];
+        vzChanged();
+      });
+      panel.addEventListener("keydown", e => {
+        const inp = e.target.closest && e.target.closest(".teig-in"); if (!inp) return;
+        if (e.key === "Enter") { e.preventDefault(); const all = [...panel.querySelectorAll(".teig-in")], i = all.indexOf(inp); if (all[i + 1]) all[i + 1].focus(); else inp.blur(); return; }
+        if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+        const p = TEIG_M.parse(inp.value); if (!p.q) return;
+        e.preventDefault();
+        const q = TEIG_M.Q(p.q.n + (e.key === "ArrowUp" ? 1n : -1n) * p.q.d, p.q.d);
+        if (Math.abs(TEIG_M.qnum(q)) > 99) return;
+        inp.value = (q.n < 0n ? "-" : "") + (q.n < 0n ? -q.n : q.n) + (q.d === 1n ? "" : "/" + q.d);
+        inp.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+    }
+    TEIG_UI.update(this, s);
+  },
+  onClick(el, s) {
+    const nb = el.closest("[data-teig-n]");
+    if (nb) { const n = +nb.dataset.teigN; if (n === (s.n === 3 ? 3 : 2)) return false; clearTimeout(TEIG_UI.timer); s.n = n; if (n === 3) s.yaw = TEIG_yaw(TEIG_sol(s), s.yaw); return true; }
+    const ex = el.closest("[data-teig-ex]");
+    if (ex) {
+      const n = s.n === 3 ? 3 : 2, m = TEIG_EX[n][+ex.dataset.teigEx][1];
+      if (TEIG_canon({ ["m" + n]: m }, n) === TEIG_canon({ ["m" + n]: s["ok" + n] }, n) && s["m" + n] === m) return false;
+      clearTimeout(TEIG_UI.timer); s["m" + n] = s["ok" + n] = m;
+      document.querySelectorAll(".teig-in").forEach(i => { if (i === document.activeElement) i.blur(); });
+      vzSwap();                                          // the old picture dissolves while v glides onto the new eigenvector
+      TEIG_aim(s);
+      return true;
+    }
+    return false;
+  },
+  // the picture's geometry: the part of the stage it owns, and how long v is drawn (Av is shrunk if it won't fit)
+  geo(s, sol, split) {
+    const X0 = split ? Math.round(600 * TEIG_SPLIT) : 0, W = 600 - X0, cx = X0 + W / 2, cy = 236, R = Math.min(W / 2 - 24, 166);
+    const A = sol.A.map(r => r.map(TEIG_M.qnum));
+    let sig;
+    if (sol.n === 2) { const [[a, b], [c, d]] = A, T = a * a + b * b + c * c + d * d, D = a * d - b * c; sig = Math.sqrt(Math.max(0, (T + Math.sqrt(Math.max(0, T * T - 4 * D * D))) / 2)); }
+    else sig = Math.max(0, ...sol.eig.filter(e => e.real).map(e => Math.abs(e.num)));
+    const Lv = vzClamp(R / Math.max(sig, 1e-9), sol.n === 2 ? 36 : 26, sol.n === 2 ? 92 : 72);
+    const need = sig * Lv / R, k = need <= 1.06 ? 1 : [1.5, 2, 3, 4, 5, 10, 20, 50, 100, 200, 500].find(q => q >= need) || 1000;
+    const fs = !split && VzView.def === this && this._small ? 1.55 : 1;
+    return { X0, W, cx, cy, R, A, sig, Lv, k, fs, P: vzPlane(cx, cy, Lv) };
+  },
+  handles(s) {
+    const sol = TEIG_sol(s); if (sol.n !== 2) return [];
+    const G = this.geo(s, sol, !!this._split && VzView.def === this), th = vzRad(s.th);
+    return [{ k: "v", x: G.P.X(Math.cos(th)), y: G.P.Y(Math.sin(th)) }];
+  },
+  dragTo(s, k, x, y, fine) {
+    const sol = TEIG_sol(s); if (sol.n !== 2) return;
+    const G = this.geo(s, sol, !!this._split && VzView.def === this);
+    let g = Math.atan2(G.cy - y, x - G.cx) * 180 / Math.PI;
+    g += 360 * Math.round((s.th - g) / 360);               // stay continuous with where v is (no spin through 360°)
+    const dirs = []; sol.vecs.forEach(V => { const a = Math.atan2(V.num[1], V.num[0]) * 180 / Math.PI; [a, a + 180].forEach(b => dirs.push(b + 360 * Math.round((g - b) / 360))); });
+    const near = dirs.find(b => Math.abs(b - g) < (fine ? 3.5 : 5));   // the eigenvector lines pull v in
+    s.th = near != null ? near : fine ? g : Math.round(g);
+  },
+  draw(s, t, thumb) {
+    const sol = TEIG_sol(s), split = !thumb && VzView.def === this && !!this._split;
+    return sol.n === 2 ? this.pic2(s, sol, thumb, split) : this.pic3(s, sol, thumb, split);
+  },
+  // where a whole line through the origin leaves the picture's part of the stage (screen units from the centre)
+  reach(G, dx, dy) {
+    const lim = (d, lo, hi, c) => d > 1e-9 ? (hi - c) / d : d < -1e-9 ? (lo - c) / d : Infinity;
+    return Math.min(lim(dx, G.X0 + 8, 592, G.cx), lim(dy, 8, 444, G.cy));
+  },
+  tag(x, y, txt, hot, G) {                               // a small "λ = 5" tag, kept inside the picture's part
+    const fs = G.fs, w = (txt.length * 7.4 + 18) * fs, h = 24 * fs; x = vzClamp(x, G.X0 + w / 2 + 6, 594 - w / 2); y = vzClamp(y, 50 + h, 420 - h);
+    [x, y] = vzGlide("tag:" + txt, [x, y]);
+    return `<g><rect x="${q2(x - w / 2)}" y="${q2(y - h / 2)}" width="${q2(w)}" height="${q2(h)}" rx="${q2(h / 2)}" fill="#fff" stroke="${hot > .01 ? VZ.red : VZ.grey}" stroke-opacity="${q2(.45 + .4 * hot)}"/>` +
+      `<text x="${q2(x)}" y="${q2(y + 4.6 * fs)}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="${q2(13 * fs)}" font-weight="700" fill="${hot > .5 ? VZ.deep : VZ.ink}">${txt}</text></g>`;
+  },
+  cap(G, i, text, col) {                                 // the i-th line of words at the top of the picture (bigger on a phone)
+    return `<g transform="translate(${G.X0 + 18} ${q2(22 + 12 * G.fs + 20 * G.fs * i)}) scale(${G.fs})">${vzNote(0, 0, text, "start", col)}</g>`;
+  },
+  lamTag(sol, e) { const h = sol.htmlLam(e); return h.startsWith("≈") ? "λ " + h : "λ = " + h; },
+  pic2(s, sol, thumb, split) {
+    const G = this.geo(s, sol, split), { P, A, k, X0, cx, cy, Lv } = G, th = vzRad(s.th);
+    const v = [Math.cos(th), Math.sin(th)], Av = [A[0][0] * v[0] + A[0][1] * v[1], A[1][0] * v[0] + A[1][1] * v[1]], Ad = [Av[0] / k, Av[1] / k];
+    const every = sol.real && sol.eig.length === 1 && sol.eig[0].gm === 2;          // A = λI
+    const lines = every ? [] : sol.vecs.map(V => { const L = Math.hypot(...V.num) || 1; return { d: [V.num[0] / L, V.num[1] / L], e: V.e }; });
+    lines.forEach(Ln => { Ln.on = vzEase(vzClamp(1 - Math.abs(v[0] * Ln.d[1] - v[1] * Ln.d[0]) / .1, 0, 1)); });
+    const near = every ? 1 : lines.reduce((m, Ln) => Math.max(m, Ln.on), 0), cur = lines.reduce((b, Ln) => !b || Ln.on > b.on ? Ln : b, null);
+    let o = `<path d="M${X0} ${cy}H600M${cx} 0V450" stroke="${VZ.ink}" stroke-width="1.2" opacity=".2" fill="none"/>`;
+    o += `<circle cx="${q2(cx)}" cy="${cy}" r="${q2(Lv)}" fill="none" stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="2 5" opacity=".55"/>`;
+    // the eigenvector lines, and a tag with λ on each (on the end away from v)
+    const tags = [];
+    lines.forEach(Ln => {
+      const dx = Ln.d[0], dy = -Ln.d[1], a = this.reach(G, dx, dy), b = this.reach(G, -dx, -dy);
+      o += `<line x1="${q2(cx - dx * b)}" y1="${q2(cy - dy * b)}" x2="${q2(cx + dx * a)}" y2="${q2(cy + dy * a)}" stroke="${VZ.grey}" stroke-width="2" stroke-dasharray=".01 7" stroke-linecap="round" opacity="${q2(.55 * (1 - Ln.on) + .1)}"/>`;
+      if (Ln.on > .01) o += `<line x1="${q2(cx - dx * b)}" y1="${q2(cy - dy * b)}" x2="${q2(cx + dx * a)}" y2="${q2(cy + dy * a)}" stroke="${VZ.red}" stroke-width="3" stroke-linecap="round" opacity="${q2(.5 * Ln.on)}"/>`;
+      const side = dx * v[0] + dy * -v[1] > 0 ? -1 : 1, r = Math.min(side > 0 ? a : b, G.R + 6) * .92;
+      tags.push(this.tag(cx + side * dx * r, cy + side * dy * r, this.lamTag(sol, Ln.e), Ln.on, G));
+    });
+    o += tags.join("");
+    if (!thumb) o += vzGrip(P.X(v[0]), P.Y(v[1]), VZ.ink, VzView.hot === "v");
+    o += P.arrow([0, 0], Ad, "R", 3.2) + P.arrow([0, 0], v, "I", 2.6) + P.dot([0, 0], 3.6);
+    if (Math.hypot(...Ad) * Lv < 3) o += `<circle cx="${q2(cx)}" cy="${cy}" r="6" fill="none" stroke="${VZ.red}" stroke-width="2"/>`;   // Av = 0
+    // names past the tips; on a shared line v's goes on one side and Av's on the other
+    const L = Math.hypot(...Ad) || 1, nx = -(Ad[1] || -v[1] * 1e-6) / L, ny = (Ad[0] || v[0] * 1e-6) / L, up = ny > 1e-9 || (Math.abs(ny) <= 1e-9 && nx < 0) ? 1 : -1;
+    const tipAt = (p, gap, off) => { const l = Math.hypot(...p) || 1; return [P.X(p[0]) + p[0] / l * gap + nx * up * off, P.Y(p[1]) - p[1] / l * gap - ny * up * off]; };
+    const close = Math.abs(Math.hypot(...Ad) - 1) * Lv < 34, inX = x => vzClamp(x, X0 + 16, 584);
+    const lAv = Math.hypot(...Ad) * Lv < 3 ? [cx + 18, cy - 14] : tipAt(Ad, 20, (close ? -18 : 16) * near), lv = tipAt(v, 16, 16 * near);
+    o += vzLabel(inX(lAv[0]), lAv[1] + 5, "A" + vzB("v"), VZ.red, 18);
+    const vOp = Math.max(near, vzClamp((Math.hypot(lAv[0] - lv[0], lAv[1] - lv[1]) - 18) / 14, 0, 1));
+    if (vOp > .01) o += `<g opacity="${q2(vOp)}">${vzLabel(inX(lv[0]), lv[1] + 5, vzB("v"), VZ.ink, 16)}</g>`;
+    // what the picture says now: on a line Av = λv; off every line, Av leaves v's line
+    if (!thumb) {
+      const lam = cur && cur.e, lt = lam ? sol.htmlLam(lam) : "";
+      const said = every ? `Every v is an eigenvector: Av = ${coef(sol.htmlLam(sol.eig[0]))}v` : !sol.real && sol.n === 2 ? "Complex λ: Av is never along v" : lam ? (lt === "0" ? "Av = 0 = 0v: an eigenvector" : `Av = ${coef(lt)}v: v is an eigenvector`) : "";
+      const off = !sol.real ? "" : "Av is not along v";
+      const a1 = every || !sol.real ? 1 : vzClamp(near * 2 - 1, 0, 1), a2 = every || !sol.real ? 0 : vzClamp(1 - near * 2, 0, 1);
+      if (a1 > .01 && said) o += `<g opacity="${q2(a1)}">${this.cap(G, 0, said, VZ.ink)}</g>`;
+      if (a2 > .01) o += `<g opacity="${q2(a2)}">${this.cap(G, 0, off, VZ.ink)}${this.cap(G, 1, "drag v onto a dashed line")}</g>`;
+      if (k > 1) o += this.cap(G, a2 > .01 ? 2 : 1, `Av drawn at ${k === 1.5 ? "2/3" : "1/" + k} of its length`);
+    }
+    o += vzKey([["line", VZ.ink, "v"], ["line", VZ.red, "Av"]].concat(lines.length ? [["dash", VZ.grey, "eigenvectors"]] : []), X0 + 16, 432);
+    return o;
+    function coef(t) { return t === "1" ? "" : t === "−1" ? "−" : /[ /]/.test(t) ? "(" + t + ")" : t; }
+  },
+  pic3(s, sol, thumb, split) {
+    const G = this.geo(s, sol, split), { X0, cx, cy, Lv, k } = G, cam = vzCam(cx, cy + 12, Lv, vzRad(s.yaw), .4);
+    const reach = Math.min(G.W / 2 - 22, 176) / Lv, pt = p => { const q = cam(p[0], p[1], p[2]); return [q[0], q[1]]; };
+    const seg = (a, b, attrs) => { const p = pt(a), q = pt(b); return `<line x1="${q2(p[0])}" y1="${q2(p[1])}" x2="${q2(q[0])}" y2="${q2(q[1])}" ${attrs}/>`; };
+    const arrow = (p, key, w) => { const a = pt([0, 0, 0]), b = pt(p); return vzArrow(a[0], a[1], b[0], b[1], key, w); };
+    let o = "";
+    ["x", "y", "z"].forEach((nm, i) => {
+      const e = [0, 0, 0]; e[i] = reach * .9; const m = e.map(x => -x);
+      o += seg(m, e, `stroke="${VZ.ink}" stroke-width="1.1" opacity=".22"`);
+      const q = pt(e.map(x => x * 1.06)); o += `<text x="${q2(q[0])}" y="${q2(q[1] + 4)}" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="14" fill="${VZ.grey}" text-anchor="middle" opacity=".8">${nm}</text>`;
+    });
+    const nrm = u => { const L = Math.hypot(...u) || 1; return u.map(x => x / L); };
+    const every = sol.real && sol.eig.length === 1 && sol.eig[0].gm === 3;
+    const groups = every ? [] : sol.eig.filter(e => e.real && e.vecIdx && e.vecIdx.length).map(e => ({ e, us: e.vecIdx.map(i => nrm(sol.vecs[i - 1].num)) }));
+    const tags = [], placed = [];
+    groups.forEach(g => {
+      const lam = g.e.num, lt = this.lamTag(sol, g.e);
+      if (g.us.length === 2) {                         // a plane of eigenvectors
+        const u1 = g.us[0], w0 = g.us[1], d = u1.reduce((s2, x, i) => s2 + x * w0[i], 0), u2 = nrm(w0.map((x, i) => x - d * u1[i])), a = reach * .5;
+        const c = [[1, 1], [1, -1], [-1, -1], [-1, 1]].map(([p, q]) => pt(u1.map((x, i) => a * (p * x + q * u2[i]))));
+        o += `<path d="M${c.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="${VZ.red}" fill-opacity=".07" stroke="${VZ.red}" stroke-opacity=".3" stroke-width="1.2"/>`;
+        g.corners = c;
+      } else {
+        const u = g.us[0]; o += seg(u.map(x => -x * reach), u.map(x => x * reach), `stroke="${VZ.grey}" stroke-width="2" stroke-dasharray=".01 7" stroke-linecap="round" opacity=".6"`);
+      }
+      g.us.forEach(u => {
+        const Au = u.map(x => x * lam / k), longer = Math.abs(lam / k) >= 1;
+        if (longer) o += arrow(Au, "R", 3.2) + arrow(u, "I", 2.4); else o += arrow(u, "I", 2.4) + arrow(Au, "R", 3.2);
+      });
+      // the tag goes just past the longer arrow, at whichever end of the line is farther from tags already placed
+      const lt2 = lt + (g.us.length === 2 ? " (a plane)" : ""), w = lt2.length * 7.4 + 18, O = pt([0, 0, 0]);
+      const ends = (g.corners || [1, -1].map(sg => { const u = g.us[0], tip = pt(u.map(x => x * sg * Math.max(1, Math.abs(lam / k)))), dx = tip[0] - O[0], dy = tip[1] - O[1], L = Math.hypot(dx, dy) || 1;
+        return [tip[0] + dx / L * (14 + w / 2 * Math.abs(dx / L)), tip[1] + dy / L * (18 + 6 * Math.abs(dy / L))]; }));
+      const score = p => placed.reduce((m, q) => Math.min(m, Math.hypot(p[0] - q[0], (p[1] - q[1]) * 2.5)), 999) - (p[1] < 70 || p[1] > 400 || p[0] < X0 + w / 2 || p[0] > 600 - w / 2 ? 300 : 0);
+      const best = score(ends[0]) >= score(ends[1]) ? ends[0] : ends[1]; placed.push(best);
+      tags.push(this.tag(best[0], best[1], lt2, 0, G));
+    });
+    const O = pt([0, 0, 0]); o += `<circle cx="${q2(O[0])}" cy="${q2(O[1])}" r="3.4" fill="${VZ.ink}"/>`;
+    o += tags.join("");
+    if (!thumb) {
+      const cx2 = sol.eig.find(e => e.kind === "c" || e.kind === "xc");
+      o += this.cap(G, 0, every ? `A = ${sol.htmlLam(sol.eig[0])}I: every vector is an eigenvector` : "Along each eigenvector, Av = λv", VZ.ink);
+      let y = 1;
+      if (cx2) o += this.cap(G, y++, "the complex pair has no real eigenvector");
+      if (!sol.exact) o += this.cap(G, y++, "eigenvectors to 3 decimal places");
+      if (k > 1) o += this.cap(G, y++, `Av drawn at ${k === 1.5 ? "2/3" : "1/" + k} of its length`);
+    }
+    o += vzKey([["line", VZ.ink, "v"], ["line", VZ.red, "Av = λv"]].concat(groups.some(g => g.us.length === 1) ? [["dash", VZ.grey, "eigenvectors"]] : groups.length ? [["fill", VZ.red, "eigenvectors"]] : []), X0 + 16, 432);
+    return o;
+  },
+  readout(s) {
+    const n = s.n === 3 ? 3 : 2, sol = TEIG_sol(s), rd = TEIG_read(s, n), sub = i => "₁₂₃"[i];
+    let o = `<div class="vz-eq">λ ${sol.exact ? "= " : ""}<b>${sol.lamHtml}</b></div>`;
+    if (sol.vecs.length) o += `<div class="vz-eq vz-small">${sol.vecs.map((V, i) => `<span class="vz-nw">v${sub(i)} ${sol.exact ? "= " : ""}${sol.vecHtml[i]}</span>`).join(", ")}</div>`;
+    let st;
+    if (rd.bad.length) {
+      const q = rd.bad[0], why = { empty: "is empty", big: "is too big (keep entries between −99 and 99)", den: "has too big a denominator (99 at most)", zero: "divides by 0" }[q.err] || "isn't a number yet (try 3, −1/2 or 0.25)";
+      st = ["warn", `Row ${q.i + 1}, column ${q.j + 1} ${why}. Showing the last full matrix.`];
+    } else if (sol.diag) st = ["ok", `Diagonalizable: A = PDP⁻¹ with P = [${sol.vecs.map((_, i) => "v" + sub(i)).join(" ")}], D = diag(${sol.vecs.map(V => sol.htmlLam(V.e).replace("≈ ", "")).join(", ")}).`];
+    else if (!sol.real) st = ["warn", n === 2 ? "Complex λ: no real eigenvectors, so no real diagonalization." : "A complex pair of λ: A can't be diagonalized with real matrices."];
+    else { const b = sol.eig.find(e => e.gm < e.am); st = ["warn", `Not diagonalizable: λ = ${sol.htmlLam(b)} has ${b.gm === 1 ? "only one independent eigenvector" : `only ${b.gm} independent eigenvectors`}, and needs ${b.am}.`]; }
+    return o + `<div class="vz-status ${st[0]}">${st[1]}</div>`;
+  },
+});
 /* ---------- Check your own work: vectors with your own numbers (Lectures 16 and 17) ----------
    The student picks what to compute (dot product and angle, projection, cross product, the plane through three
    points, the distance from a point to a plane) and types the numbers from their own problem: whole numbers,
@@ -20361,7 +21641,7 @@ vzAdd({
     // each box's net outflow, written on it while the boxes are apart (the nearest on top), in plain figures (an italic 0 reads as o)
     if (nums > .01 && !thumb && n === 2) G.boxes.map(b => { const d = off(b); return { b, q: pr(b.c.map((x, i) => x + d[i])) }; }).sort((A, B) => B.q[2] - A.q[2]).forEach(({ b, q }) => {
       const v = Math.round(b.out * 100) / 100;
-      o += `<text x="${q2(q[0])}" y="${q2(q[1] + 5)}" opacity="${q2(nums)}" font-family="'Manrope', sans-serif" font-size="14" font-weight="700" fill="${col(b.out) === VZ.red ? VZ.deep : VZ.ink}" text-anchor="middle" stroke="${VZ.paper}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke">${(v > 0 ? "+" : "") + vzShort(v)}</text>`;
+      o += `<text x="${q2(q[0])}" y="${q2(q[1] + 5)}" opacity="${q2(nums)}" font-family="'Manrope', sans-serif" font-size="14" font-weight="700" fill="${col(b.out) === VZ.red ? VZ.deep : VZ.ink}" text-anchor="middle" stroke="${VZ.paper}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke">${(v > 0 ? "+" : v < 0 ? "−" : "") + vzShort(Math.abs(v))}</text>`;
     });
     if (!thumb) {
       const caps = ["1 · the flow through S, the surface of the solid T", "2 · cut T into small boxes", "3 · pull apart: what leaves one box enters the next", "4 · each box's net outflow ≈ div F × its volume",
@@ -20493,32 +21773,8 @@ function wireGlobal() {
   // Hash routing
   window.addEventListener("hashchange", handleRoute);
 
-  // Quick-access input (footer) — hidden shortcut to SI Walkthroughs.
-  // Typing "Walkthroughs" (case-insensitive) and pressing Enter opens
-  // #/walkthroughs in a new tab AND unlocks the nav in this tab.
-  // This is not authentication; the site is public.
-  const qa = $("#quickAccessForm");
-  if (qa) {
-    qa.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const input = $("#quickAccess");
-      const v = (input.value || "").trim().toLowerCase();
-      if (v === "walkthroughs" || v === "walkthrough" || v === "si") {
-        setWalkUnlocked(true);
-        // Open in new tab so the student-facing Practice Lab can remain open
-        try { window.open("#/walkthroughs", "_blank"); } catch (_) {}
-        // Also reveal the nav in this tab
-        document.body.classList.add("walk-unlocked");
-        input.value = "";
-        showToast("SI Walkthroughs unlocked", "got", 2400);
-      } else if (v.length > 0) {
-        // Quiet hint that doesn't reveal what mode names exist
-        input.classList.add("qa-shake");
-        setTimeout(() => input.classList.remove("qa-shake"), 250);
-        showToast("Mode not recognized", "neutral", 1400);
-      }
-    });
-  }
+  // SI leaders reach the walkthroughs by opening #/walkthroughs once (that unlocks the nav in this browser);
+  // the old "Quick access" box on the Need Review page confused students and is gone.
 }
 
 function handleGlobalKey(e) {
@@ -20739,7 +21995,6 @@ async function init() {
    ============================================================
    Adds a hidden teacher-facing mode that loads /walkthroughs/*.json
    and presents whiteboard-ready teaching guides. Accessed by
-   typing "Walkthroughs" into the footer quick-access box or by
    visiting #/walkthroughs directly. None of this changes any
    existing student-facing behavior.
 

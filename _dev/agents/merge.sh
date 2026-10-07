@@ -19,3 +19,4 @@ s=re.sub(r'^/\* @@AGENT-\d+ PLACEHOLDER .*@@ \*/\n', '', s, flags=re.M)
 for n,t in left: s=s.replace(f'"{t}", ','').replace(f', "{t}"','').replace(f'"{t}"','')
 open(p,'w').write(s); print('placeholders not filled:', left)
 PY
+python3 lead_fixes.py
