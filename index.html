@@ -142,7 +142,6 @@
     color: var(--ink);
     background-color: var(--bg);
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
     min-height: 100vh;
   }
 
@@ -158,10 +157,6 @@
     background-size: 26px 26px, 100% 100%, 100% 100%;
   }
   @media print { body::before { display: none; } }
-  /* phones: a solid top bar instead of a live blur, which is costly to redraw on every scroll frame */
-  @media (max-width: 760px), (hover: none) {
-    .nav, .walk-outline { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(251, 248, 244, .97); }
-  }
 
   ::selection { background: var(--red); color: #fff; }
 
@@ -197,9 +192,7 @@
     top: 0;
     z-index: 50;
     height: var(--nav-h);
-    backdrop-filter: saturate(180%) blur(14px);
-    -webkit-backdrop-filter: saturate(180%) blur(14px);
-    background: rgba(251, 248, 244, 0.78);
+    background: rgba(251, 248, 244, .97);   /* solid: a live blur here was recomputed on every scroll frame and made scrolling lag */
     border-bottom: 1px solid var(--border);
   }
   .nav-inner {
@@ -3335,9 +3328,7 @@
     flex-wrap: wrap;
     margin: 0 0 22px;
     padding: 9px 12px;
-    background: rgba(251, 248, 244, 0.92);
-    backdrop-filter: saturate(160%) blur(8px);
-    -webkit-backdrop-filter: saturate(160%) blur(8px);
+    background: rgba(251, 248, 244, .97);
     border: 1px solid var(--border);
     border-radius: var(--r-md);
     box-shadow: var(--sh-1);
@@ -3752,6 +3743,7 @@
     display: flex; flex-direction: column; gap: 5px; padding: 10px 10px 14px; text-decoration: none; color: var(--ink);
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); box-shadow: var(--sh-1);
     transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease);
+    content-visibility: auto; contain-intrinsic-size: auto 230px;
   }
   .vz-card:hover, .vz-card:focus-visible, .vz-card:hover *, .sg-project:hover, .sg-project:hover *, .sec-map-seg:hover { text-decoration: none; }
   .vz-card:hover, .vz-card:focus-visible { transform: translateY(-2px); box-shadow: var(--sh-2); border-color: var(--border-strong); }
@@ -4146,7 +4138,7 @@
   .sg-run {
     position: sticky; top: calc(var(--nav-h) + 6px); z-index: 5; display: flex; gap: 4px;
     margin: 4px 0 20px; padding: 10px 12px 8px; border: 1px solid var(--border); border-radius: var(--r-md);
-    background: rgba(251, 248, 244, .94); backdrop-filter: saturate(1.2);
+    background: rgba(251, 248, 244, .97);
   }
   .sg-run-seg { min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 0 2px; text-decoration: none; color: var(--ink-mute); }
   .sg-run-bar { height: 6px; border-radius: 99px; background: var(--border-strong); transition: background .25s var(--ease); }
