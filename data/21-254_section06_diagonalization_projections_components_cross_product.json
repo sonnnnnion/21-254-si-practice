@@ -4,7 +4,7 @@
  "sectionPosition": 6,
  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
- "studentFacingDescription": "Practice diagonalization, powers of diagonalizable matrices, eigenvector-based iteration, vector projections/components, cross products, planes, areas, and scalar triple products in the style of the Exam 2 material.",
+ "studentFacingDescription": "Diagonalize, project, and cross.",
  "siteBehavior": {
   "mode": "guided_solution_library",
   "recommendedFlow": [

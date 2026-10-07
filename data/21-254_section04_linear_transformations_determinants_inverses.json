@@ -4,7 +4,7 @@
  "sectionPosition": 4,
  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
- "studentFacingDescription": "Practice standard matrices for linear transformations, one-to-one and onto reasoning, determinant computations and properties, inverse matrices, and the invertibility connections that show up around the end of Exam 1 and start of Exam 2.",
+ "studentFacingDescription": "Linear maps, determinants, and inverses.",
  "siteBehavior": {
   "mode": "guided_solution_library",
   "recommendedFlow": [

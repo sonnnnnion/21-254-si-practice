@@ -4,7 +4,7 @@
  "sectionPosition": 9,
  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
- "studentFacingDescription": "Practice the Exam 4 transition from double integrals to Green's Theorem: sketching regions, switching integration order, using polar coordinates, applying change of variables with Jacobians, and converting difficult boundary line integrals into double integrals.",
+ "studentFacingDescription": "Double integrals and Green's theorem.",
  "siteBehavior": {
   "mode": "guided_solution_library",
   "recommendedFlow": [

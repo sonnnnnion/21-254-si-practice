@@ -4,7 +4,7 @@
  "sectionPosition": 3,
  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
- "studentFacingDescription": "Practice subspace tests, span membership, linear independence, bases, dimension, column spaces, row spaces, and null spaces using the language of the first exam.",
+ "studentFacingDescription": "Span, independence, and bases.",
  "siteBehavior": {
   "mode": "guided_solution_library",
   "recommendedFlow": [
