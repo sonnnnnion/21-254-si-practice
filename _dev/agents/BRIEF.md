@@ -136,3 +136,18 @@ wrong colours vs legend, unreadable text, math errors). No rebuilds, no new feat
 - Be economical: grep + offset reads, contact sheets (sheet.mjs) instead of many single images, one tool run at a time.
 - Before you finish: chaos.mjs + flicker.mjs on the ids you touched, fuzz.mjs once (`IDS=...` if it supports it), and
   for methods steps.mjs + methflicker.mjs. Report in under 300 words: changes, what you checked, what's still open.
+
+---
+# Fifth wave (agents c1–c3, 2026-10-07 midday): improvements after the class demo
+The site is live and stable (main = 4643d29). Your work ships only after the lead verifies it, so keep it SAFE:
+small, well-tested changes; nothing that can break existing pages. Students must not feel intimidated: short text,
+simple controls, things collapsed by default.
+- Starting copy and diff base: `~/Desktop/21-254/agents/base5/`. Your copy `~/Desktop/21-254/agents/cN/`, served at
+  `http://127.0.0.1:834N/`. Patch: `cd ~/Desktop/21-254/agents && diff -ru base5 cN > cN.patch`. Scratch `/private/tmp/claude-501/agents/cN/`.
+- **HARD STOP 13:05 EDT** (check `date`). Report by 13:10.
+- **Regenerate your patch after every verified change** so it is always a working state.
+- New CSS goes next to the existing CSS for your own area (never at the end of the stylesheet or just before </head>:
+  other agents add CSS too, and patches must merge cleanly).
+- Check light AND dark theme if the page has one, and phone width 390 px. Run monkey.mjs (all pages, page errors) before
+  you finish; methods: steps.mjs; pictures: chaos.mjs + flicker.mjs on ids you touched.
+- Be economical with usage: grep + offset reads, contact sheets, one tool run at a time.
