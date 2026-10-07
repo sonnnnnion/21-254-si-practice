@@ -1,0 +1,419 @@
+diff -ru base4/index.html b3/index.html
+--- base4/index.html	2026-10-06 23:29:03
++++ b3/index.html	2026-10-07 02:53:24
+@@ -14166,7 +14166,16 @@
+     const P = vzPlane(300, 225, 62), fi = Math.round(s.fn), Fn = VZ_FNS[fi], G = vzSample(fi, -5, 5, -3.8, 3.8, 90);
+     let o = "";
+     const f0 = Fn.f(s.x, s.y), g = this.grad(s), gl = Math.hypot(g[0], g[1]);
+-    o += `<path d="${vzContoursPath(G, P, f0)}" fill="none" stroke="${VZ.ink}" stroke-width="2.2" stroke-opacity=".75" stroke-linecap="round"/>`;
++    // this point's level curve, fading out where it would run under the note at the top or the key at the bottom
++    const keyItems = [["line", VZ.ink, "level curve here"], ["line", VZ.red, "ring: red where uphill"], ["line", VZ.gold, "Dᵤf (the shadow)"]], noteTxt = Fn.name.toLowerCase() + ": darker is higher";
++    const keyW = keyItems.reduce((w, it) => w + 22 + it[2].length * 7.3 + 18, -18), rects = [[10, 418, 22 + keyW, 446], [16, 18, 28 + noteTxt.length * 7.2, 46]], buckets = [];
++    vzContour(G.F, G.n, G.ny, G.x0, G.y0, G.dx, G.dy, f0).forEach(([a, b]) => {
++      const x = P.X((a[0] + b[0]) / 2), y = P.Y((a[1] + b[1]) / 2);
++      let d = Infinity; rects.forEach(([x0, y0, x1, y1]) => { d = Math.min(d, Math.hypot(Math.max(x0 - x, 0, x - x1), Math.max(y0 - y, 0, y - y1))); });
++      const k = vzClamp((d - 4) / 24, 0, 1), q = Math.round(k * k * (3 - 2 * k) * 6);
++      if (q > 0) buckets[q] = (buckets[q] || "") + `M${q2(P.X(a[0]))} ${q2(P.Y(a[1]))}L${q2(P.X(b[0]))} ${q2(P.Y(b[1]))}`;
++    });
++    buckets.forEach((d, q) => { o += `<path d="${d}" fill="none" stroke="${VZ.ink}" stroke-width="2.2" stroke-opacity="${q2(.75 * q / 6)}" stroke-linecap="round"/>`; });
+     const p = [s.x, s.y], u = [Math.cos(vzRad(s.phi)), Math.sin(vzRad(s.phi))], D = g[0] * u[0] + g[1] * u[1];
+     // ∇f and its shadow share one drawing scale (up to 1.6×, so they stay easy to see; the geometry is unchanged)
+     const gs = gl > 1e-6 ? Math.min(1.6, 2.4 / gl) : 1, gt = [p[0] + g[0] * gs, p[1] + g[1] * gs], ut = [p[0] + u[0] * 1.3, p[1] + u[1] * 1.3];
+@@ -14190,8 +14199,10 @@
+     o += `<circle cx="${q2(P.X(foot[0]))}" cy="${q2(P.Y(foot[1]))}" r="3.4" fill="${VZ.gold}" stroke="${VZ.paper}" stroke-width="1.2"/>`;
+     // Dᵤf beside the middle of its shadow, on the side away from ∇f, pushed out by its own half-width (so it stays off
+     // ∇f's shaft when u lines up with ∇f, where the shadow and ∇f coincide)
+-    const gd = 13 + 14 * Math.abs(nx) + 7 * Math.abs(ny), ld = [P.X((p[0] + foot[0]) / 2) + nx * gd, P.Y((p[1] + foot[1]) / 2) - ny * gd], showD = sl * 62 > 34;
+-    if (showD) o += `<g opacity="${q2(vzClamp((sl * 62 - 34) / 14, 0, 1))}">${vzLabel(ld[0], ld[1] + 5, `D<tspan baseline-shift="sub" font-size="10">u</tspan>f`, "#7A5C0F", 14)}</g>`;   // fades in as the shadow grows
++    const gd = 13 + 14 * Math.abs(nx) + 7 * Math.abs(ny), ld = [P.X((p[0] + foot[0]) / 2) + nx * gd, P.Y((p[1] + foot[1]) / 2) - ny * gd], M = gl * gs * 62, thr = Math.min(34, .55 * M), spn = Math.min(14, .25 * M);
++    // (fades in as the shadow grows; measured against the longest shadow this ∇f can cast, so it is whole whenever u lines up with ∇f)
++    const dVis = vzClamp((M - 20) / 12, 0, 1) * vzClamp((sl * 62 - thr) / (spn || 1), 0, 1), showD = dVis > .05;
++    if (dVis > .01) o += `<g opacity="${q2(dVis)}">${vzLabel(ld[0], ld[1] + 5, `D<tspan baseline-shift="sub" font-size="10">u</tspan>f`, "#7A5C0F", 14)}</g>`;
+     o += P.arrow(p, gt, "R", 3.2);
+     o += P.dot(p, 5, VZ.ink);
+     // the two tip labels; u's name moves to the other side of the line (away from Dᵤf) when it would sit on ∇f's
+@@ -14203,8 +14214,8 @@
+     else if (D * gs > 1.3 + 8 / 62) { lu[0] += nx * 16; lu[1] -= ny * 16; }   // the shadow runs on past u's tip: step off it
+     if (hasG) o += vzLabel(lg[0], lg[1] + 5, "∇f", VZ.red);
+     o += vzLabel(lu[0], lu[1] + 5, vzB("u"), VZ.ink);
+-    o += vzNote(22, 34, Fn.name.toLowerCase() + ": darker is higher", "start");
+-    o += vzKey([["line", VZ.ink, "level curve here"], ["line", VZ.red, "ring: red where uphill"], ["line", VZ.gold, "Dᵤf (the shadow)"]]);
++    o += vzNote(22, 34, noteTxt, "start");
++    o += vzKey(keyItems);
+     return o;
+   },
+   readout(s) {
+@@ -14327,7 +14338,7 @@
+     { k: "built", label: "grow the field", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .24, progress: true, aria: "the field" },
+     { k: "levels", label: "show level curves", type: "toggle" },
+   ],
+-  P: vzPlane(300, 222, 82),
++  P: vzPlane(300, 212, 78),                                // a little higher and smaller, so the bottom arrows stay clear of the key
+   reset() { this._pins = []; this._grown = false; },
+   F(s) { return VZ_GF[Math.round(s.fn)]; },
+   scale(s) {                                               // one shrink factor for every arrow of this f
+@@ -14345,21 +14356,21 @@
+     return false;
+   },
+   onStageClick(s, x, y) {
+-    const P = this.P, p = [vzClamp((x - P.cx) / P.u, -3.2, 3.2), vzClamp((P.cy - y) / P.u, -1.5, 2.05)];   // (arrow and ∇f label stay clear of the key and the edges)
++    const P = this.P, p = [vzClamp((x - P.cx) / P.u, -3.2, 3.2), vzClamp((P.cy - y) / P.u, -1.5, 1.85)];   // (arrow and ∇f label stay clear of the key and the edges)
+     this._pins = (this._pins || []).concat([{ p, t: performance.now() }]).slice(-14);
+     return true;
+   },
+   handles(s) { const q = (this._pins || []).slice(-1)[0]; return q ? [{ k: "pin", x: this.P.X(q.p[0]), y: this.P.Y(q.p[1]) }] : []; },
+-  dragTo(s, k, x, y, fine) { const q = this._pins[this._pins.length - 1], P = this.P; q.p = [vzClamp((x - P.cx) / P.u, -3.2, 3.2), vzClamp((P.cy - y) / P.u, -1.5, 2.05)]; q.t = 0; },
++  dragTo(s, k, x, y, fine) { const q = this._pins[this._pins.length - 1], P = this.P; q.p = [vzClamp((x - P.cx) / P.u, -3.2, 3.2), vzClamp((P.cy - y) / P.u, -1.5, 1.85)]; q.t = 0; },
+   staticKey: s => Math.round(s.fn) + ":" + !!s.levels,
+   static(s) {
+     const P = this.P, F = this.F(s);
+     let o = `<image href="${vzHeat(F.f, P, "gf" + Math.round(s.fn))}" x="0" y="0" width="600" height="450" preserveAspectRatio="none"/>` + P.axes(.2);
+     if (!s.levels) return o;
+     const N = 72, G = this.grid(s);
+-    let lo = Infinity, hi = -Infinity; G.forEach(r => r.forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v); }));
++    let lo = Infinity, hi = -Infinity; G.forEach((r, j) => r.forEach((v, k) => { if (Math.abs(-4 + 8 * k / N) <= 3.6 && Math.abs(-3.2 + 8 * j / N) <= 2.7) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }));   // the levels are spaced over the same region as before
+     for (let k = 1; k < 12; k++) {
+-      const L = lo + (hi - lo) * k / 12, d = vzContour(G, N, N * 3 / 4, -3.6, -2.7, 7.2 / N, 7.2 / N, L).map(([a, b]) => `M${q2(P.X(a[0]))} ${q2(P.Y(a[1]))}L${q2(P.X(b[0]))} ${q2(P.Y(b[1]))}`).join("");
++      const L = lo + (hi - lo) * k / 12, d = vzContour(G, N, N * 3 / 4, -4, -3.2, 8 / N, 8 / N, L).map(([a, b]) => `M${q2(P.X(a[0]))} ${q2(P.Y(a[1]))}L${q2(P.X(b[0]))} ${q2(P.Y(b[1]))}`).join("");
+       o += `<path d="${d}" fill="none" stroke="${VZ.gold}" stroke-width="1.2" stroke-opacity="${q2(.3 + .4 * k / 12)}"/>`;
+     }
+     return o;
+@@ -14367,7 +14378,7 @@
+   grid(s) {                                              // f sampled once per function, for the level curves
+     this._G = this._G || {};
+     const i = Math.round(s.fn), F = VZ_GF[i], N = 72;
+-    return this._G[i] || (this._G[i] = Array.from({ length: N * 3 / 4 + 1 }, (_, j) => Array.from({ length: N + 1 }, (_, k) => F.f(-3.6 + 7.2 * k / N, -2.7 + 7.2 * j / N))));
++    return this._G[i] || (this._G[i] = Array.from({ length: N * 3 / 4 + 1 }, (_, j) => Array.from({ length: N + 1 }, (_, k) => F.f(-4 + 8 * k / N, -3.2 + 8 * j / N))));
+   },
+   arrow(P, p, g, sc, key, w, grow = 1) {
+     const e = [p[0] + g[0] * sc * grow, p[1] + g[1] * sc * grow];
+@@ -14390,13 +14401,20 @@
+       if (last) {
+         // its level curve, and the right angle between the arrow and that curve
+         const f0 = F.f(...q.p), G = this.grid(s);
+-        o += `<path d="${vzContour(G, 72, 54, -3.6, -2.7, .1, .1, f0).map(([a, b]) => `M${q2(P.X(a[0]))} ${q2(P.Y(a[1]))}L${q2(P.X(b[0]))} ${q2(P.Y(b[1]))}`).join("")}" fill="none" stroke="${VZ.ink}" stroke-width="2.2" stroke-opacity=".7"/>`;
++        o += `<path d="${vzContour(G, 72, 54, -4, -3.2, 8 / 72, 8 / 72, f0).map(([a, b]) => `M${q2(P.X(a[0]))} ${q2(P.Y(a[1]))}L${q2(P.X(b[0]))} ${q2(P.Y(b[1]))}`).join("")}" fill="none" stroke="${VZ.ink}" stroke-width="2.2" stroke-opacity=".7"/>`;
+         const gl = Math.hypot(...g);
+         if (gl > 1e-6 && gl * sc * P.u > 20) o += P.rightAngle(q.p, [g[0] / gl, g[1] / gl], [-g[1] / gl, g[0] / gl], .16);
+         if (!thumb) o += vzGrip(P.X(q.p[0]), P.Y(q.p[1]), VZ.red, VzView.hot === "pin");
+       }
+       o += this.arrow(P, q.p, g, sc, last ? "R" : "D", last ? 3.2 : 2.4, grow) + P.dot(q.p, last ? 4.6 : 3.4, last ? VZ.red : VZ.deep);
+-      if (last && Math.hypot(...g) * sc * P.u > 12) o += P.tip(q.p, [q.p[0] + g[0] * sc, q.p[1] + g[1] * sc], "∇f", VZ.red, 18);
++      if (last && Math.hypot(...g) * sc * P.u > 12) {
++        // the name sits just past the tip; where that would be crowded against the edge of the picture it slides in beside the arrow
++        const A = [P.X(q.p[0]), P.Y(q.p[1])], B = [P.X(q.p[0] + g[0] * sc), P.Y(q.p[1] + g[1] * sc)], dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1;
++        const tx = B[0] + dx / L * 18, ty = B[1] + dy / L * 18 + 5, mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2;
++        let nx = -dy / L, ny = dx / L; if ((300 - mx) * nx + (225 - my) * ny < 0) { nx = -nx; ny = -ny; }
++        const out = Math.max(26 - tx, tx - 574, 26 - ty, ty - 405, 0), w = vzClamp(out / 22, 0, 1), bx = mx + nx * 19, by = my + ny * 19 + 5;
++        o += vzLabel(tx + (bx - tx) * w, ty + (by - ty) * w, "∇f", VZ.red);
++      }
+     });
+     if (n >= .08 && !thumb) this._grown = true;
+     const hint = pins.length || thumb || this._grown ? 0 : 1 - vzClamp(n / .08, 0, 1);   // the hint fades as the field first grows (and stays away when Play loops)
+@@ -14441,12 +14459,12 @@
+   draw() { return vzKey([["line", VZ.grey, "F"], ["dot", VZ.red, "fluid from the dashed circle"], ["fill", VZ.gold, "paddle wheel"]]); },
+   // a few dozen particles start inside the dashed circle and ride the flow, each with a short fading trail
+   frame(g, s, t) {
+-    const P = vzPlane(300, 225, 58), N = 36, R0 = .9, TR = 9, LIFE = 3.4;
++    const P = vzPlane(300, 225, 58), N = 36, R0 = .9, TR = 9, LIFE = 3.4, TS = .7;   // TS: one time scale for the fluid and the paddle wheel, so the wheel turns exactly as fast as the fluid around it
+     const seed = (p, k) => { const a = 2 * Math.PI * ((k * .618034 + Math.random() * .15) % 1), rr = R0 * Math.sqrt(.06 + .92 * Math.random()); p.x = rr * Math.cos(a); p.y = rr * Math.sin(a); p.age = 0; p.tr = [[p.x, p.y]]; p.tt = 0; };
+     const step = (p, k, dt) => {
+       p.age += dt;
+       if (p.age < 0) return;                                 // staggered start
+-      for (let sub = 0; sub < 3; sub++) { const v = this.F(s, p.x, p.y); p.x += v[0] * dt * .5 / 3; p.y += v[1] * dt * .5 / 3; }
++      for (let sub = 0; sub < 3; sub++) { const v = this.F(s, p.x, p.y); p.x += v[0] * dt * TS / 3; p.y += v[1] * dt * TS / 3; }
+       p.tt += dt; if (p.tt > .055) { p.tt = 0; p.tr.push([p.x, p.y]); if (p.tr.length > TR) p.tr.shift(); }
+       if (Math.abs(p.x) > 5.4 || Math.abs(p.y) > 4.1 || p.age > LIFE || (Math.hypot(p.x, p.y) < .03 && p.age > .6)) seed(p, k);
+     };
+@@ -14468,7 +14486,7 @@
+       g.innerHTML = this.parts.map(() => `<path fill="none" stroke="${VZ.red}" stroke-width="2" stroke-linecap="round"/><circle r="3.2" fill="${VZ.red}"/>`).join("") + wheel;
+       g._parts = Array.from(g.children).slice(0, 2 * this.parts.length); g._wheel = g.querySelector(".vz-wheel");
+     }
+-    this.wa = (this.wa || 0) + s.b * dt * .9;               // curl F = 2b, so the wheel turns at b (sped up a little to be seen)
++    this.wa = (this.wa || 0) + s.b * dt * TS;               // curl F = 2b, so the wheel turns at b, on the same time scale as the fluid
+     g._wheel.setAttribute("transform", `rotate(${q2(-this.wa * 180 / Math.PI)} ${q2(WX)} ${q2(WY)})`);
+     this.parts.forEach((p, k) => {
+       const tr = g._parts[2 * k], dot = g._parts[2 * k + 1], a = fade(p);
+@@ -15900,10 +15918,15 @@
+     const C = this.C(s), u = vzClamp(s.t, 0, 1), T = C.t1 * u, seg = !C.cyl, c0 = vzCam(0, 0, seg ? 105 : 80, vzRad(s.yaw), .4);
+     // sized so that, turned any way, the scene stays between the notes at the top and the key at the bottom
+     const cam = (x, y, z) => { const q = c0(x, y, z - (seg ? 1.1 : 1.5)); return [300 + q[0], 241 + q[1], q[2]]; }, P2 = q => q2(q[0]) + " " + q2(q[1]);
+-    let o = vzAxes3(cam, seg ? 1.5 : 1.7, .22);             // short enough that no axis name reaches the key, whichever way the view turns
++    // the axes (short enough that no name reaches the key, whichever way the view turns); their names are laid down last, once the
++    // other names are placed, and fade while one of those (or the key or the notes) comes close
++    const axL = seg ? 1.5 : 1.7, axes = [[axL, 0, 0, "x"], [0, axL, 0, "y"], [0, 0, axL * .8, "z"]].map(([x, y, z, nm]) => ({ nm, T: cam(x * 1.08, y * 1.08, z * 1.08), B: cam(x, y, z) }));
++    const A0 = cam(0, 0, 0);
++    let pre = axes.map(a => `<line x1="${q2(A0[0])}" y1="${q2(A0[1])}" x2="${q2(a.B[0])}" y2="${q2(a.B[1])}" stroke="${VZ.ink}" stroke-width="1.1" opacity=".22"/>`).join("");
+     // the floor grid
+     let g = ""; for (let k = -2; k <= 2; k++) { g += `M${P2(cam(k * .75, -1.5, 0))}L${P2(cam(k * .75, 1.5, 0))}M${P2(cam(-1.5, k * .75, 0))}L${P2(cam(1.5, k * .75, 0))}`; }
+-    o = `<path d="${g}" stroke="${VZ.ink}" stroke-opacity=".07" fill="none"/>` + o;
++    pre = `<path d="${g}" stroke="${VZ.ink}" stroke-opacity=".07" fill="none"/>` + pre;
++    let o = "";
+     // the cylinder, as a few rulings and its bottom and top rims
+     if (C.cyl) {
+       const zt = C.plane ? 3.2 : 3, V = c0.view;
+@@ -15933,14 +15956,26 @@
+     const dx = dl > 3 ? (Tq[0] - Q[0]) / dl : 1, dy = dl > 3 ? (Tq[1] - Q[1]) / dl : 0;
+     let nx = -dy, ny = dx; if (nx * (Q[0] - O[0]) + ny * (Q[1] - O[1]) < 0) { nx = -nx; ny = -ny; }
+     const ga = 9 + 20 * Math.abs(dx) + 7 * Math.abs(dy), gb = 11 + 16 * Math.abs(nx) + 8 * Math.abs(ny), gc = 11 + 20 * Math.abs(nx) + 8 * Math.abs(ny);
+-    o += seg ? vzLabel((Q[0] + Tq[0]) / 2 - nx * gc, (Q[1] + Tq[1]) / 2 - ny * gc + 5, "r′(t)", "#7A5C0F", 15) : vzLabel(Tq[0] + dx * ga, Tq[1] + dy * ga + 5, "r′(t)", "#7A5C0F", 15);
+-    o += vzLabel(Q[0] + nx * gb, Q[1] + ny * gb + 5, "r(t)", VZ.deep, 15);
++    const rp = seg ? [(Q[0] + Tq[0]) / 2 - nx * gc, (Q[1] + Tq[1]) / 2 - ny * gc] : [Tq[0] + dx * ga, Tq[1] + dy * ga], rr = [Q[0] + nx * gb, Q[1] + ny * gb];
++    const taken = [[rp[0], rp[1], 22, 10], [rr[0], rr[1], 20, 10], [240, 424, 240, 22]];   // where the other names sit (centre, half-width, half-height), and the key
++    o += vzLabel(rp[0], rp[1] + 5, "r′(t)", "#7A5C0F", 15);
++    o += vzLabel(rr[0], rr[1] + 5, "r(t)", VZ.deep, 15);
+     if (seg) {                                             // the two ends, named just beyond them along the line
+       const a = C.r(0), b = C.r(1), A = cam(...a), B = cam(...b), L = Math.hypot(B[0] - A[0], B[1] - A[1]) || 1, ux = (B[0] - A[0]) / L, uy = (B[1] - A[1]) / L, ge = 12 + 33 * Math.abs(ux) + 8 * Math.abs(uy);
+-      o += vzDot3(cam, a, 4.5, VZ.ink) + vzDot3(cam, b, 4.5, VZ.ink) + vzLabel(A[0] - ux * ge, A[1] - uy * ge + 5, "p (t = 0)", VZ.ink, 14) + vzLabel(B[0] + ux * ge, B[1] + uy * ge + 5, "q (t = 1)", VZ.ink, 14);
++      // q's name sits beyond whichever is further along the line: the end itself or the tip of r′(t) (which runs past q near t = 1)
++      const sq = Math.max(L, (Tq[0] - A[0]) * ux + (Tq[1] - A[1]) * uy + 3), qx = A[0] + ux * (sq + ge), qy = A[1] + uy * (sq + ge);
++      taken.push([A[0] - ux * ge, A[1] - uy * ge, 38, 9], [qx, qy, 38, 9]);
++      o += vzDot3(cam, a, 4.5, VZ.ink) + vzDot3(cam, b, 4.5, VZ.ink) + vzLabel(A[0] - ux * ge, A[1] - uy * ge + 5, "p (t = 0)", VZ.ink, 14) + vzLabel(qx, qy + 5, "q (t = 1)", VZ.ink, 14);
+     }
+     if (!thumb) C.how.split("; ").forEach((line, i) => { o += vzNote(22, 34 + 19 * i, line, "start", VZ.ink); });
+-    o += vzKey([["line", VZ.red, "r(t), traced so far"], ["line", VZ.ink, "its shadow on the floor"], C.plane ? ["fill", VZ.gold, "the plane x + z = 2"] : ["line", VZ.gold, "r′(t), tangent"]]);
++    if (!thumb) taken.push([22 + 165, 34 + 19 * (C.how.split("; ").length - 1) / 2 - 4, 200, 10 + 19 * (C.how.split("; ").length - 1) / 2]);   // the notes
++    const letters = axes.map(a => {
++      const [lx, ly] = a.T; let d = Infinity;
++      taken.forEach(([cx, cy, hw, hh]) => { d = Math.min(d, Math.hypot(Math.max(Math.abs(lx - cx) - hw - 7, 0), Math.max(Math.abs(ly - cy) - hh - 9, 0))); });
++      const vis = vzClamp(d / 14, 0, 1), lab = vzLabel(lx, ly + 5, a.nm, VZ.grey, 15);
++      return vis > .98 ? lab : vis > .02 ? `<g opacity="${q2(vis)}">${lab}</g>` : "";
++    }).join("");
++    o = pre + letters + o + vzKey([["line", VZ.red, "r(t), traced so far"], ["line", VZ.ink, "its shadow on the floor"], C.plane ? ["fill", VZ.gold, "the plane x + z = 2"] : ["line", VZ.gold, "r′(t), tangent"]]);
+     return o;
+   },
+   readout(s) {
+@@ -16064,15 +16099,27 @@
+     const Lc = lo + s.c * (hi - lo);
+     const ka = vzEase(vzClamp((sq - .05) / .35, 0, 1));             // the plane and the cut's shadow fade as the surface flattens
+     const below = qs.filter(q => q.z < hc), above = qs.filter(q => q.z >= hc);
+-    o += vzQuadSvg(below, { op: .96 });
++    // the level curves ride with the surface in far-to-near order (a piece of curve sits just in front of the patch it lies on), so a
++    // hill hides the part of a curve that runs behind it; the curves under the plane go with the patches under it, the rest with the others
++    const qd = {}; qs.forEach(q => { qd[q.i * n + q.j] = q.dep; });
++    const pieces = (L, z, attrs) => {
++      const g = {};
++      vzContour(F, N, N, -2, -2, 4 / N, 4 / N, L).forEach(([a, b]) => {
++        const ci = vzClamp(Math.floor((a[0] + b[0] + 4) / 8 * n), 0, n - 1), cj = vzClamp(Math.floor((a[1] + b[1] + 4) / 8 * n), 0, n - 1), A = cam(a[0], a[1], z), B = cam(b[0], b[1], z);
++        (g[ci * n + cj] = g[ci * n + cj] || []).push(`M${q2(A[0])} ${q2(A[1])}L${q2(B[0])} ${q2(B[1])}`);
++      });
++      return Object.keys(g).map(k => ({ dep: qd[k] - .25, svg: `<path d="${g[k].join("")}" fill="none" ${attrs}/>` }));
++    };
++    const lowC = [], highC = [];
++    for (let k = 1; k <= 7; k++) { const t = k / 8; if (Math.abs(t - s.c) < .04) continue; const zt = t * 1.7 * sq; (zt < hc - 1e-6 ? lowC : highC).push(...pieces(lo + t * (hi - lo), zt, `stroke="${VZ.ink}" stroke-width="1" opacity=".35"`)); }
++    highC.push(...pieces(Lc, hc, `stroke="${VZ.red}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"`));
++    const layer = (qq, extra) => qq.map(q => ({ dep: q.dep, svg: vzQuadSvg([q], { op: .96 }) })).concat(extra).sort((A, B) => B.dep - A.dep).map(x => x.svg).join("");
++    o += layer(below, lowC);
+     // the cut dropped to the floor as a dashed curve: the contour on the map. The surface covers the whole floor, so
+     // it is drawn as if seen through the part of the surface below the plane (otherwise it would never show)
+     if (ka > .01) o += curve(Lc, 0, `stroke="${VZ.red}" stroke-width="2" stroke-dasharray="5 5" opacity="${q2(.7 * ka)}"`);
+     if (ka > .01) o += vzPath3(cam, [[-2, -2, hc], [2, -2, hc], [2, 2, hc], [-2, 2, hc], [-2, -2, hc]], `stroke="${VZ.gold}" stroke-width="1.4" stroke-opacity="${q2(ka)}" fill="${VZ.gold}" fill-opacity="${q2(.2 * ka)}"`);
+-    o += vzQuadSvg(above, { op: .96 });
+-    // a few other levels, thin, then the chosen one on the surface
+-    for (let k = 1; k <= 7; k++) { const t = k / 8; if (Math.abs(t - s.c) < .04) continue; o += curve(lo + t * (hi - lo), t * 1.7 * sq, `stroke="${VZ.ink}" stroke-width="1" opacity=".35"`); }
+-    o += curve(Lc, hc, `stroke="${VZ.red}" stroke-width="3.2" stroke-linecap="round"`);
++    o += layer(above, highC);
+     const k3 = [["line", VZ.red, "where z = c cuts the surface"], ["dash", VZ.red, "the same curve on the map"]], k2 = [["line", VZ.red, "the level curve f = c"], ["line", VZ.grey, "other levels"]];
+     if (ka > .01 && ka < .99) o += `<g opacity="${q2(ka < .5 ? ka : 1 - ka)}">${vzKey(ka < .5 ? k3 : k2)}</g>`;   // the two keys cross-fade
+     o += `<g opacity="${q2(ka >= .5 ? ka : 1 - ka)}">${vzKey(ka >= .5 ? k3 : k2)}</g>`;
+@@ -16156,10 +16203,21 @@
+     const n = 18, grid = [];
+     for (let i = 0; i <= n; i++) { const row = []; for (let j = 0; j <= n; j++) { const x = -2 + 4 * i / n, y = -2 + 4 * j / n; row.push([x, y, f(x, y)]); } grid.push(row); }
+     let o = vzPath3(cam, [[-2, -2, 0], [2, -2, 0], [2, 2, 0], [-2, 2, 0], [-2, -2, 0]], `stroke="${VZ.grey}" stroke-width="1.2" opacity=".5"`);
+-    o += vzQuadSvg(vzQuads(cam, grid, (i, j, z) => vzMix([250, 244, 238], [214, 196, 186], .25 + .3 * z / 1.6)), { op: .9, mesh: .7 });
++    const qs = vzQuads(cam, grid, (i, j, z) => vzMix([250, 244, 238], [214, 196, 186], .25 + .3 * z / 1.6));
+     const xs = [], ys = [];
+     for (let i = 0; i <= 60; i++) { const u = -2 + 4 * i / 60; xs.push([u, b, f(u, b)]); ys.push([a, u, f(a, u)]); }
+-    o += vzPath3(cam, xs, `stroke="${VZ.red}" stroke-width="2.6"`) + vzPath3(cam, ys, `stroke="${VZ.gold}" stroke-width="2.6"`);
++    // the two slices ride with the surface in far-to-near order (a piece sits just in front of the patch it lies on), so the part of a
++    // slice that runs behind the hill is hidden by it
++    const qd = {}; qs.forEach(q => { qd[q.i * n + q.j] = q.dep; });
++    const slice = (pts, col) => {
++      const g = {};
++      for (let k = 0; k < pts.length - 1; k++) {
++        const A = pts[k], B = pts[k + 1], ci = vzClamp(Math.floor(((A[0] + B[0]) / 2 + 2) / 4 * n), 0, n - 1), cj = vzClamp(Math.floor(((A[1] + B[1]) / 2 + 2) / 4 * n), 0, n - 1), a2 = cam(...A), b2 = cam(...B);
++        (g[ci * n + cj] = g[ci * n + cj] || []).push(`M${q2(a2[0])} ${q2(a2[1])}L${q2(b2[0])} ${q2(b2[1])}`);
++      }
++      return Object.keys(g).map(k => ({ dep: qd[k] - .3, svg: `<path d="${g[k].join("")}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linecap="round"/>` }));
++    };
++    o += qs.map(q => ({ dep: q.dep, svg: vzQuadSvg([q], { op: .9, mesh: .7 }) })).concat(slice(xs, VZ.red), slice(ys, VZ.gold)).sort((A, B) => B.dep - A.dep).map(x => x.svg).join("");
+     // the tangent-plane patch and the two slope arrows reach .8 each way, but not past the edge of the surface's square
+     // (by more than .2), so near a corner they stay on the left half of the picture
+     const P = [a, b, z0], L = .8, E = 2.2, x0 = Math.max(-L, -E - a), x1 = Math.min(L, E - a), y0 = Math.max(-L, -E - b), y1 = Math.min(L, E - b);
+@@ -16282,7 +16340,12 @@
+     if (vert) {
+       const bl = "bottom: y = " + R.dydx[2], bw = bl.length * 15 * .55, edge = P.X(R.xs[1]) + 12 + bw > 590 ? P.X(R.xs[1]) - 8 - bw : Infinity;
+       labs.push([Math.min(P.X(sv) + 12, edge), P.Y(R.ylo(sv)) + 20, bl, "start"], [P.X(sv) - 12, P.Y(R.yhi(sv)) - 12, "top: y = " + R.dydx[3], "end"]);
+-    } else labs.push([P.X(R.xlo(sv)) - 10, P.Y(sv) - 12, "left: x = " + R.dxdy[2], "end"], [P.X(R.xhi(sv)) + 10, P.Y(sv) + 22, "right: x = " + R.dxdy[3], "start"]);
++    } else {
++      // a horizontal edge of the region above the strip (y = 2 on the triangle) would strike through the left name when the strip nears it:
++      // the name slips under the strip, only once the edge is within reach
++      let wl = 0; R.curves.forEach(([r, , name]) => { if (/^y = [\d.]+$/.test(name)) { const Yl = P.Y(r(0)[1]); if (Yl < P.Y(sv)) wl = Math.max(wl, vzClamp((16 - Math.abs(Yl - (P.Y(sv) - 17.5))) / 8, 0, 1)); } });
++      labs.push([P.X(R.xlo(sv)) - 10, P.Y(sv) - 12 + 34 * wl * wl * (3 - 2 * wl), "left: x = " + R.dxdy[2], "end"], [P.X(R.xhi(sv)) + 10, P.Y(sv) + 22, "right: x = " + R.dxdy[3], "start"]);
++    }
+     const ends = labs.map(([x, y, t, a]) => box(x, y, t, 15, a));
+     R.curves.forEach(([r, [t0, t1], name, lt, off]) => {
+       const pts = []; for (let i = 0; i <= 60; i++) pts.push(r(t0 + (t1 - t0) * i / 60));
+@@ -16381,7 +16444,19 @@
+     const e = 1e-5, uc = u + du / 2, vc = v + dv / 2, pc = m.T(uc, vc), Tu = m.T(uc + e, vc).map((c, i) => (c - pc[i]) / e * du / 2), Tv = m.T(uc, vc + e).map((c, i) => (c - pc[i]) / e * dv / 2);
+     R += Rp.poly([[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [pc[0] + a * Tu[0] + b * Tv[0], pc[1] + a * Tu[1] + b * Tv[1]]), `fill="none" stroke="${VZ.ink}" stroke-width="1.4" stroke-dasharray="4 4"`);
+     if (!thumb) L += vzGrip(Lp.X(u + du / 2), Lp.Y(v + dv / 2), VZ.deep, VzView.hot === "c");
+-    let o = card(10, 250) + card(280, 310) + `<g clip-path="url(#vz-jl)">${L}</g><g clip-path="url(#vz-jr)">${R}</g>`;
++    // a small cell's image is only a few pixels wide: the right plane zooms in around it (smoothly, as the cell shrinks) until it is about 34 px
++    let kz = 1; if (!thumb) {
++      const bx = img.map(q => Rp.X(q[0])), by = img.map(q => Rp.Y(q[1])), sz = Math.max(Math.max(...bx) - Math.min(...bx), Math.max(...by) - Math.min(...by), 1);
++      kz = vzClamp(34 / sz, 1, 6);
++    }
++    let Rz = R;
++    if (kz > 1.001) {
++      const px = Rp.X(pc[0]), py = Rp.Y(pc[1]), w = 1 - 1 / kz, tx = px + (435 - px) * w, ty = py + (232 - py) * w;   // the cell drifts toward the middle of its panel as the zoom grows
++      Rz = `<g transform="translate(${q2(tx)} ${q2(ty)}) scale(${q2(kz)}) translate(${q2(-px)} ${q2(-py)})">${R.replace(/<path /g, '<path vector-effect="non-scaling-stroke" ')}</g>`;
++    }
++    let o = card(10, 250) + card(280, 310) + `<g clip-path="url(#vz-jl)">${L}</g><g clip-path="url(#vz-jr)">${Rz}</g>`;
++    const zo = vzClamp((kz - 1.05) / .3, 0, 1);
++    if (zo > .01) o += `<g opacity="${q2(zo)}">${vzNote(580, 404, "zoomed ×" + vzNum(kz, 1), "end", VZ.grey)}</g>`;
+     const head = (x, t) => `<text x="${x}" y="34" font-family="'Manrope', sans-serif" font-size="16" font-weight="700" fill="${VZ.ink}" text-anchor="middle">${t}</text>`;
+     o += head(135, `(${m.u}, ${m.v}) plane`) + head(435, "(x, y) plane");
+     o += vzArrow(212, 28, 360, 28, "I", 2) + vzLabel(286, 20, "<tspan font-style=\"italic\">T</tspan>", VZ.ink, 15);
+@@ -16418,6 +16493,7 @@
+     { name: "F = [−y, x]/2: a swirl, curl = 1", F: (x, y) => [-y / 2, x / 2] },
+   ],
+   P: vzPlane(300, 228, 58),
++  reset() { this._w = null; this._tgt = null; this._wt = 0; },
+   handles(s) { const P = this.P; return [{ k: "a", x: P.X(s.ax), y: P.Y(s.ay) }, { k: "b", x: P.X(s.bx), y: P.Y(s.by) }]; },
+   dragTo(s, k, x, y, fine) {
+     const p = vzWorld(this.P, x, y, [4.6, 3.6], fine), o = k === "a" ? [s.bx, s.by] : [s.ax, s.ay], cl = q => [vzClamp(q[0], -4.6, 4.6), vzClamp(q[1], -2.2, 3.2)];   // (room for a bend below, clear of the key)
+@@ -16474,11 +16550,25 @@
+       let c = null;
+       for (const k of [0, 1, 2]) { for (const sd of [side, -side]) if (ok(at(sd, k))) { c = at(sd, k); break; } if (c) break; }
+       c = c || at(side, 0);
+-      return { b: box(c), html: vzLabel(c[0], c[1] + 5, txt, col, 15) };
++      return { b: box(c), c, txt, col };
+     };
+-    if (thumb) this._side = 1; else if (this._side == null || Math.abs(s.bend) > .15) this._side = s.bend >= 0 ? 1 : -1;   // no flip-flop near a straight red path
+-    const sd = this._side || 1, l2 = lab(r2, W2, VZ.red, sd, null), l1 = lab(r1, W1, VZ.ink, -sd, l2.b);
+-    o += l1.html + l2.html;
++    // which side each W sits on follows the sign of the bend (no flip-flop near a straight red path). When the bend crosses 0 the
++    // two names would glide through each other, so each side's pair is drawn on its own: one fades out, then the other fades in
++    // (all four are always laid out, so each keeps its own glide memory)
++    if (thumb) this._w = 1; else {
++      if (this._w == null) this._w = s.bend >= 0 ? 1 : 0;
++      if (Math.abs(s.bend) > .15 || this._tgt == null) this._tgt = s.bend >= 0 ? 1 : 0;
++      const nowT = performance.now(), dt = Math.min(100, nowT - (this._wt || nowT)), stp = dt / 420; this._wt = nowT;
++      this._w = vzClamp(this._tgt, this._w - stp, this._w + stp);
++      if (this._w !== this._tgt) VzView.again = true;
++    }
++    const ssm = (a, b, x) => { const q = vzClamp((x - a) / (b - a), 0, 1); return q * q * (3 - 2 * q); };
++    [[1, ssm(.5, 1, this._w)], [-1, thumb ? 0 : ssm(.5, 1, 1 - this._w)]].forEach(([sd, op]) => {
++      const l2 = lab(r2, W2, VZ.red, sd, null), l1 = lab(r1, W1, VZ.ink, -sd, l2.b);
++      if (thumb && sd < 0) return;
++      const h = vzLabel(l1.c[0], l1.c[1] + 5, l1.txt, l1.col, 15) + vzLabel(l2.c[0], l2.c[1] + 5, l2.txt, l2.col, 15);
++      if (op > .01) o += op > .99 ? h : `<g opacity="${q2(op)}">${h}</g>`;
++    });
+     if (!thumb) o += vzGrip(P.X(s.ax), P.Y(s.ay), VZ.ink, VzView.hot === "a") + vzGrip(P.X(s.bx), P.Y(s.by), VZ.ink, VzView.hot === "b");
+     o += P.dot([s.ax, s.ay], 5.5, VZ.ink) + P.dot([s.bx, s.by], 5.5, VZ.ink);
+     // A and B are named on their far sides, away from the paths between them
+@@ -16550,16 +16640,29 @@
+     let o = "";
+     // the floor: a light grid on z = 0, and the axes
+     let g = ""; for (let i = 0; i <= 5; i++) { const v = i * .5; g += `M${P2(pr(v, 0, 0))}L${P2(pr(v, 2.5, 0))}M${P2(pr(0, v, 0))}L${P2(pr(2.5, v, 0))}`; }
+-    o += `<path d="${g}" stroke="${VZ.ink}" stroke-opacity=".08" fill="none"/>` + vzAxes3(cam, 2.8, .26);
++    o += `<path d="${g}" stroke="${VZ.ink}" stroke-opacity=".08" fill="none"/>`;
+     // the true curtain, faint: from C up to the graph of f
+     const N = 80, top = [], bot = [];
+     for (let i = 0; i <= N; i++) { const tt = c.a + (c.b - c.a) * i / N, p = c.r(tt); bot.push(pr(p[0], p[1], 0)); top.push(pr(p[0], p[1], c.f(p[0], p[1]))); }
++    // how much of a label's box (half-width hw, half-height hh, round (cx, cy)) the curtain or a panel covers, 0..1
++    const polys = [top.concat(bot.slice().reverse())], inPoly = (x, y, Q) => { let k0 = false; for (let k = 0, l = Q.length - 1; k < Q.length; l = k++) if ((Q[k][1] > y) !== (Q[l][1] > y) && x < (Q[l][0] - Q[k][0]) * (y - Q[k][1]) / (Q[l][1] - Q[k][1]) + Q[k][0]) k0 = !k0; return k0; };
++    const cover = (cx, cy, hw, hh) => { let m = 0; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) { const x = cx + hw * i / 2, y = cy + hh * j / 2; if (polys.some(Q => inPoly(x, y, Q))) m++; } return m / 25; };
++    // the axes (long, so their names sit well out); a name fades while the curtain would cover it
++    [[3.2, 0, 0, "x"], [0, 3.2, 0, "y"], [0, 0, 2.5, "z"]].forEach(([x, y, z, nm]) => {
++      let kk = 1.08, T = cam(x * kk, y * kk, z * kk);
++      while (kk > .6 && (T[1] > 396 || T[1] < 28 || T[0] < 18 || T[0] > 582)) { kk -= .02; T = cam(x * kk, y * kk, z * kk); }   // the name stays on the picture and off the key
++      const A = cam(0, 0, 0), B = cam(x, y, z), vis = 1 - cover(T[0], T[1], 14, 14);
++      o += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${VZ.ink}" stroke-width="1.1" opacity=".26"/>`;
++      const lab = vzLabel(T[0], T[1] + 5, nm, VZ.grey, 15);
++      if (vis > .02) o += vis > .98 ? lab : `<g opacity="${q2(vis)}">${lab}</g>`;
++    });
+     o += `<path d="M${top.map(P2).join("L")}L${bot.slice().reverse().map(P2).join("L")}Z" fill="${VZ.gold}" fill-opacity=".1" stroke="none"/>`;
+     // the panels, far ones first: each is Δs wide and f tall
+     const ps = this.pieces(s).map(p => { const M = [(p.A[0] + p.B[0]) / 2, (p.A[1] + p.B[1]) / 2]; return Object.assign(p, { d: pr(M[0], M[1], p.h / 2)[2] }); }).sort((a, b) => b.d - a.d);
+     const tw = vzClamp((s.n - 8) / 8, 0, 1), avg = ps.reduce((a, p) => a + p.ds, 0) / (ps.length || 1);   // tw: outlines thin out gradually
+     ps.forEach(p => {
+       const q = [pr(p.A[0], p.A[1], 0), pr(p.B[0], p.B[1], 0), pr(p.B[0], p.B[1], p.h), pr(p.A[0], p.A[1], p.h)], g = vzClamp(p.ds / (avg * .6), 0, 1);
++      polys.push(q);
+       o += `<path d="M${q.map(P2).join("L")}Z" fill="${VZ.red}" fill-opacity=".26" stroke="${VZ.deep}" stroke-opacity="${q2((.7 - .35 * tw) * g)}" stroke-width="${q2(1.2 - .4 * tw)}" stroke-linejoin="round"/>`;
+     });
+     // C on the floor and the graph of f above it
+@@ -16568,7 +16671,17 @@
+     // the cut points on C
+     this.cuts(s).forEach(tt => { const p = c.r(tt), q = pr(p[0], p[1], 0); o += `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="${q2(3.2 - tw)}" fill="${VZ.red}" stroke="#fff" stroke-width="1"/>`; });
+     // names: C at its end on the floor, the graph at its middle
+-    const e = c.r(c.b), Ce = pr(e[0], e[1], 0); o += vzLabel(Ce[0] + 16, Ce[1] + 18, "C", VZ.red, 18);
++    // C sits just past the end of the curve on the floor (beyond it along the curve, and below it), so a panel never covers it however the view is turned
++    // (the first of 16 spots round the end that the curtain doesn't cover, preferring beyond the end and below it)
++    const e = c.r(c.b), e0 = c.r(c.b - (c.b - c.a) * .05), Ce = pr(e[0], e[1], 0), Cp = pr(e0[0], e0[1], 0), tl = Math.hypot(Ce[0] - Cp[0], Ce[1] - Cp[1]) || 1;
++    const pd = [(Ce[0] - Cp[0]) / tl + .15, (Ce[1] - Cp[1]) / tl + 1.1], pl = Math.hypot(pd[0], pd[1]) || 1;
++    let bc = null, bsc = Infinity;
++    for (let k = 0; k < 16; k++) {
++      const an = k * Math.PI / 8, dx = Math.cos(an), dy = Math.sin(an), x = Ce[0] + dx * 21, y = Ce[1] + dy * 21 + 5;
++      const sc = cover(x, y - 5, 10, 10) * 10 + (1 - (dx * pd[0] + dy * pd[1]) / pl) * 2 + (y > 396 || y < 30 || x < 20 || x > 580 ? 20 : 0);
++      if (sc < bsc) { bsc = sc; bc = [x, y]; }
++    }
++    o += vzLabel(bc[0], bc[1], "C", VZ.red, 18);
+     // the graph's name sits just off the gold curve, on the side away from the curtain, whichever way the curve runs on screen
+     const tg = u => { const p = c.r(c.a + (c.b - c.a) * u); return pr(p[0], p[1], c.f(p[0], p[1])); }, Gt = tg(.62), G1 = tg(.6), G2 = tg(.64);
+     let nx = G2[1] - G1[1], ny = G1[0] - G2[0]; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl; if (ny > 0) { nx = -nx; ny = -ny; }
+@@ -16684,7 +16797,7 @@
+   tryIt: "Move the patch: where it stretches, the area grows.",
+   state: { kind: 0, m: 1, u0: .3, v0: .02, yaw: -30 },
+   controls: [
+-    { k: "m", label: "flat → surface", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .35, aria: "the bend" },
++    { k: "m", label: "flat → surface", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .27, aria: "the bend" },
+     { k: "u0", label: "patch: u", min: 0, max: 1, step: .01, fmt: v => vzNum(v, 2), noPlay: true },
+     { k: "v0", label: "patch: v", min: 0, max: 1, step: .01, fmt: v => vzNum(v, 2), noPlay: true },
+     { k: "yaw", label: "turn the view", min: -80, max: 20, step: 1, unit: "°", digits: 0, noPlay: true },
+@@ -16702,7 +16815,7 @@
+   ],
+   K(s) { return this.kinds[Math.round(s.kind)] || this.kinds[0]; },
+   pos(K, u, v, m) {                                      // flat rectangle (in the plane z = −1.6) to the surface
+-    const a = (u - K.U[0]) / (K.U[1] - K.U[0]), b = (v - K.V[0]) / (K.V[1] - K.V[0]), p = K.r(u, v), e = vzEase(m);
++    const a = (u - K.U[0]) / (K.U[1] - K.U[0]), b = (v - K.V[0]) / (K.V[1] - K.V[0]), p = K.r(u, v), e = m;   // (Play already eases in and out of both ends: easing again here made the whole bend happen in about a second)
+     const flat = K.flip ? [-1.9 + 3.8 * b, 1.4 - 2.8 * a, -1.6] : [-1.9 + 3.8 * a, -1.4 + 2.8 * b, -1.6];
+     return [flat[0] + (p[0] - flat[0]) * e, flat[1] + (p[1] - flat[1]) * e, flat[2] + (p[2] - flat[2]) * e];
+   },
+@@ -18445,7 +18558,7 @@
+   tryIt: "Play: it pauses where the rate is 0.",
+   // "kind" picks the path: a picture-choosing key, so a preset dissolves from one path to the other (never tweens through)
+   state: { t: .7, kind: 0 },
+-  controls: [{ k: "t", label: "time t", min: 0, max: 1, step: .001, fmt: v => Math.round(v * 100) + "%", play: .07, wrap: s => VZ_BY_ID.chain.C(s).pi,
++  controls: [{ k: "t", label: "time t", min: 0, max: 1, step: .001, fmt: v => Math.round(v * 100) + "%", play: .12, wrap: s => VZ_BY_ID.chain.C(s).pi,
+     rests: s => VZ_BY_ID.chain.C(s).zeros }],
+   presets: [["Circle", { kind: 0, t: .7 }], ["Line", { kind: 1, t: .2 }]],
+   f: (x, y) => x * x + 2 * y * y, g: (x, y) => [2 * x, 4 * y],
+@@ -21591,6 +21704,9 @@
+     const pr = p => cam(p[0], p[1], p[2]), P2 = q => q2(q[0]) + " " + q2(q[1]), V = cam.view, n = G.n;
+     const off = b => b.c.map(x => x * gap * 1.2);                 // a box slides straight out from the centre
+     const sm = (a, b, x) => { const q = vzClamp((x - a) / (b - a), 0, 1); return q * q * (3 - 2 * q); };
++    // inner walls: both neighbours draw each one, so their fills stack up (a dark second cube in the middle): keep them light
++    // while the boxes touch, and let their tint go as the boxes come back together
++    const ia = sm(.06, .3, gap), innerK = .3 + .7 * ia, innerTint = 1 - E(.66, .77);
+     const col = v => v > 1e-9 ? VZ.red : v < -1e-9 ? VZ.ink : VZ.grey;
+     // everything solid goes in one list and is drawn far to near: each box's walls, every arrow, the solid's edges
+     const items = [], add = (p, svg) => { if (svg) items.push({ dep: pr(p)[2], svg }); };
+@@ -21604,7 +21720,7 @@
+         // the wall's corners, moved with its box
+         const o2 = [0, 1, 2].filter(i => i !== wl.a), crn = [[0, 0], [1, 0], [1, 1], [0, 1]].map(([p, q]) => { const x = [0, 0, 0]; x[wl.a] = wl.c; x[o2[0]] = p ? b.hi[o2[0]] : b.lo[o2[0]]; x[o2[1]] = q ? b.hi[o2[1]] : b.lo[o2[1]]; return pr(x.map((v, i) => v + d[i])); });
+         if (vis > .01) {
+-          const fo = (.05 + tint * deep * Math.abs(w)) * vis;
++          const fo = wl.outer ? (.05 + tint * deep * Math.abs(w)) * vis : (.05 + tint * deep * Math.abs(w) * innerTint) * innerK * vis;
+           walls += `<path d="M${crn.map(P2).join("L")}Z" fill="${fill}" fill-opacity="${q2(fo)}" stroke="${VZ.ink}" stroke-opacity="${q2((wl.outer ? .5 : .32) * vis * cut)}" stroke-width="${wl.outer ? 1.2 : .9}" stroke-linejoin="round"/>`;
+         }
+         // an arrow through each outer wall, outside the box: pointing out (red) or in (dark), as long as the flow through it
+@@ -21628,7 +21744,6 @@
+       add(p.map((v, i) => (v + q[i]) / 2), e);
+     }
+     // inner walls, once the boxes are apart: one arrow across the gap, out of one box and into the next
+-    const ia = sm(.06, .3, gap);
+     if (ia > .01 && n > 1) G.inner.forEach(({ b, w }) => {
+       if (Math.abs(w.phi) < 1e-6 * G.mxW) return;
+       const o2 = [0, 1, 2].filter(i => i !== w.a), ctr = [0, 0, 0]; ctr[w.a] = w.c; o2.forEach(i => { ctr[i] = (b.lo[i] + b.hi[i]) / 2; });

@@ -1,0 +1,165 @@
+diff -ru base4/index.html b2/index.html
+--- base4/index.html	2026-10-06 23:29:03
++++ b2/index.html	2026-10-07 02:59:41
+@@ -12861,7 +12861,7 @@
+     const flag = [[.2, .15], [.2, .85], [.62, .85], [.62, .68], [.36, .68], [.36, .15]].map(p => M(p[0], p[1]));
+     o += P.poly(flag, `fill="${VZ.ink}" fill-opacity=".55" stroke="none"`);
+     const e1 = M(1, 0), e2 = M(0, 1);
+-    if (!thumb && tt >= .999) o += vzGrip(P.X(e1[0]), P.Y(e1[1]), VZ.red, VzView.hot === "e1") + vzGrip(P.X(e2[0]), P.Y(e2[1]), VZ.ink, VzView.hot === "e2");
++    if (!thumb && tt > .9) o += `<g opacity="${q2(vzClamp((tt - .9) / .1, 0, 1))}">${vzGrip(P.X(e1[0]), P.Y(e1[1]), VZ.red, VzView.hot === "e1") + vzGrip(P.X(e2[0]), P.Y(e2[1]), VZ.ink, VzView.hot === "e2")}</g>`;   // the drag rings fade in over the last tenth of the slide
+     o += P.arrow([0, 0], e1, "R", 3) + P.arrow([0, 0], e2, "I", 3) + P.dot([0, 0], 3.6);
+     // before: e₁, e₂; after: Ae₁, Ae₂ (one set fades out, then the other fades in)
+     const nb = vzClamp((.45 - tt) / .2, 0, 1), na = vzClamp((tt - .55) / .2, 0, 1);
+@@ -13254,7 +13254,9 @@
+     const lab = (txt, op, col = VZ.deep, x = x1, dy = -12) => { if (op < .01) return ""; const p = ap(x); return `<g opacity="${q2(op)}">${vzLabel(P.X(p[0]) + 12, P.Y(p[1]) + dy, txt, col, 16, "start")}</g>`; };
+     o += sing ? lab("x₁", nmOp[0]) + lab("x₂", nmOp[0], VZ.ink, x2) + lab("Ax₁ = Ax₂", nmOp[1], VZ.deep, x1, 26)
+       : lab(vzB("x"), nmOp[0]) + lab("A" + vzB("x"), nmOp[1]) + lab("A⁻¹A" + vzB("x") + " = " + vzB("x"), nmOp[2]);
+-    o += vzNoteFade(22, 34, u, [1.03], ["applying A to every point", sing ? "back to x₁ or to x₂? No A⁻¹ can do both." : "applying A⁻¹: every point goes back"], "start", VZ.ink);
++    // the top-left caption: the first one fades out, and only then the second fades in (no two texts over each other)
++    o += [["applying A to every point", vzClamp((1.04 - u) / .04, 0, 1)], [sing ? "back to x₁ or to x₂? No A⁻¹ can do both." : "applying A⁻¹: every point goes back", vzClamp((u - 1.04) / .04, 0, 1)]]
++      .map(([txt, op]) => op > .01 ? `<g opacity="${q2(op)}">${vzNote(22, 34, txt, "start", VZ.ink)}</g>` : "").join("");
+     // (the item whose text can change goes after the flag, so nothing in the key shifts sideways mid-play)
+     o += vzKey([["fill", VZ.ink, "a flag, to show which way round"], ["fill", dM < 0 ? VZ.gold : VZ.red, dM < 0 ? "the unit square, flipped" : "the unit square"]].concat(sing ? [["dash", VZ.deep, "every x with Ax = Ax₁"]] : []));
+     return o;
+@@ -13317,7 +13319,7 @@
+     const sets = [[vzB("v", "1"), vzB("v", "2"), vzB("x")], [vzB("e", "1"), vzB("e", "2"), "P⁻¹" + vzB("x")],
+       ["2" + vzB("e", "1"), "½" + vzB("e", "2"), "DP⁻¹" + vzB("x")], ["2" + vzB("v", "1"), "½" + vzB("v", "2"), "A" + vzB("x")]], br = [-9, .5, 1.5, 2.5, 9];
+     sets.forEach((nm, i) => {
+-      const op = vzClamp(Math.min((u - br[i]) / .12 + .5, (br[i + 1] - u) / .12 + .5), 0, 1);
++      const op = vzClamp(Math.min((u - br[i]) / .22 + .5, (br[i + 1] - u) / .22 + .5), 0, 1);   // (a slow cross-fade: over ~0.7 s of Play)
+       if (op > .01) o += `<g opacity="${q2(op)}">${vzTipLabels(P, [{ v: ap(v1), html: nm[0], col: VZ.red }, { v: ap(v2), html: nm[1], col: VZ.ink }, { v: ap(x), html: nm[2], col: "#7A5C0F" }])}</g>`;
+     });
+     if (!thumb) o += vzNoteFade(22, 34, u, [.04, 1.05, 2.05, 2.96], ["eigenvectors v₁ = [1, 1] with λ = 2, v₂ = [−1, 2] with λ = ½", "1 · P⁻¹: the eigen-grid becomes the square grid", "2 · D: stretch by 2 along e₁, by ½ along e₂", "3 · P: back to ordinary coordinates", "PDP⁻¹x = Ax"], "start", VZ.ink, .035);
+@@ -13450,22 +13452,27 @@
+       const mE = [nrmR[0] * lb / 2 - ub[0] * sg * .34, nrmR[1] * lb / 2 - ub[1] * sg * .34];
+       o += `<g opacity="${q2(sideOp * (1 - zeroOp))}">` + vzLabel(P.X(mE[0]), P.Y(mE[1]) + 5, `|${vzB(g.bn)}|`, bCol, 15);
+       // the base is the shadow's signed length
+-      const cOp = ramp(pl, 1.1, 1.4);
+-      if (cOp > .01) o += `<g opacity="${q2(cOp)}">${vzAlong(P, [0, 0], pr, nrm, 15, `comp = ${vzNum(comp)}`, "#7A5C0F", 13.5)}</g>`;
++      const cOp = ramp(pl, 1.4, 1.7);                    // (the text is ~1.5 long: not on a shadow too short to hold it)
++      if (cOp > .01) o += `<g opacity="${q2(cOp)}">${vzAlong(P, [0, 0], pr, nrm, 19, `comp = ${vzNum(comp)}`, "#7A5C0F", 13.5)}</g>`;
+       const cen = [pr[0] / 2 + nrmR[0] * lb / 2, pr[1] / 2 + nrmR[1] * lb / 2], room = pl > 1.5 && lb > 1.1;
+       const at = room ? cen : [pr[0] + ub[0] * sg * .3 + nrmR[0] * lb / 2, pr[1] + ub[1] * sg * .3 + nrmR[1] * lb / 2];
+       const g2 = vzGlide("area@", [P.X(at[0]), P.Y(at[1])], 40);
+       o += vzLabel(g2[0] + (room ? 0 : 6 * sg * Math.sign(ub[0] || 1)), g2[1] + 6, `${vzB(g.an)} · ${vzB(g.bn)} = ${vzShort(g.ab)}`, neg ? VZ.ink : VZ.deep, 16, room ? "middle" : (sg * (ub[0] || 1) > 0 ? "start" : "end"));
+-      const nOp = room && neg ? ramp(pl, 1.5, 1.8) * ramp(lb, 1.6, 1.9) : 0;
++      const nOp = room && neg ? ramp(pl, 1.5, 1.8) * ramp(lb, 1.6, 1.9) * (1 - (this._kStack || 0)) : 0;   // (this note steps aside while the two names are stacked on this side)
+       if (nOp > .01) o += `<g opacity="${q2(nOp)}">${vzLabel(g2[0], g2[1] + 26, `<tspan font-style="normal" font-size="12.5">a negative area</tspan>`, VZ.grey, 12.5)}</g>`;
+       o += `</g>`;
+     }
+     // the angle between them (its name fades out as the angle closes up, where it would sit on the arrows)
+     const a0 = Math.atan2(b[1], b[0]), a1 = Math.atan2(a[1], a[0]); let da = ((a1 - a0) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+-    const thDeg = Math.abs(da) * 180 / Math.PI, right = Math.abs(thDeg - 90) < .6, thOp = ramp(thDeg, 4, 12), thAt = [.98 * Math.cos(a0 + da * .6), .98 * Math.sin(a0 + da * .6)];
++    const thDeg = Math.abs(da) * 180 / Math.PI, right = Math.abs(thDeg - 90) < .6, half = ramp(180 - thDeg, 0, 12), thOp = ramp(thDeg, 4, 12) * half, thNameOp = ramp(thDeg, 15, 27) * half;   // (the name needs room between the two arrows: it comes in later than the arc; both fade out towards 180°, where the short way round swaps sides)
++    const thPos = r => [r * Math.cos(a0 + da * .6), r * Math.sin(a0 + da * .6)];
++    // the name sits clear of v⊥ (the dashed drop square to the line at distance comp): further out when it would land on it
++    const thHitsPerp = r => { const q = thPos(r), xl = (q[0] * ub[0] + q[1] * ub[1]) * P.u, yl = Math.abs(ub[0] * q[1] - ub[1] * q[0]) * P.u; return ql > .06 && Math.abs(xl - comp * P.u) < 14 && yl < ql * P.u + 6; };
++    let thR = .98; if (thHitsPerp(thR)) { const alt = [1.3, 1.62, 1.95].find(r => !thHitsPerp(r)); if (alt) thR = alt; }
++    const thAt = thPos(thR);
+     if (right) o += P.rightAngle([0, 0], ub, [a[0] / Math.hypot(...a), a[1] / Math.hypot(...a)], .32);
+     else if (thOp > .01) { let arc = ""; for (let i = 0; i <= 28; i++) { const tt = a0 + da * i / 28; arc += (i ? "L" : "M") + q2(P.X(.6 * Math.cos(tt))) + " " + q2(P.Y(.6 * Math.sin(tt))); }
+-      o += `<g opacity="${q2(thOp)}"><path d="${arc}" fill="none" stroke="${VZ.grey}" stroke-width="1.3"/>` + vzLabel(P.X(thAt[0]), P.Y(thAt[1]) + 5, "θ", VZ.grey, 15) + `</g>`; }
++      o += `<g opacity="${q2(thOp)}"><path d="${arc}" fill="none" stroke="${VZ.grey}" stroke-width="1.3"/></g>` + (thNameOp > .01 ? `<g opacity="${q2(thNameOp)}">${vzLabel(P.X(thAt[0]), P.Y(thAt[1]) + 5, "θ", VZ.grey, 15)}</g>` : ""); }
+     // the part left over: from the foot of the drop up to a's tip, square to the line
+     if (ql > .06) {
+       o += `<line x1="${q2(P.X(pr[0]))}" y1="${q2(P.Y(pr[1]))}" x2="${q2(P.X(a[0]))}" y2="${q2(P.Y(a[1]))}" stroke="${VZ.deep}" stroke-width="2" stroke-dasharray="5 4"/>`;
+@@ -13485,12 +13492,19 @@
+       const thAlong = (thAt[0] * du[0] + thAt[1] * du[1]) * u, thAcross = Math.abs(ub[0] * thAt[1] - ub[1] * thAt[0]) * u;
+       const s0 = thOp > .01 && !right && thAlong > 0 && thAcross < 33 ? Math.max(34, thAlong + 10) : 34;   // where the name may start
+       const room = pl * u - 14 - s0 - LW, on = thumb ? room > 0 : (this._kOn = room > (this._kOn ? -6 : 6)), kA = this.fadeTo("along", on, thumb), c = Math.max(s0 + LW / 2, pl * u - 14 - LW / 2) / u, nm = vzSub("proj", g.bn, `(${g.an})`);
+-      o += `<g opacity="${q2(sideOp * kA)}">${vzAlong(P, [du[0] * (c - .1), du[1] * (c - .1)], [du[0] * (c + .1), du[1] * (c + .1)], [-nrm[0], -nrm[1]], 15, nm, "#7A5C0F", 15)}</g>`;
++      // v's own arrow runs through the usual spot (beside the shadow, on v's side) when v is close to the line:
++      // then the name sits on the other side, in a second row under comp
++      let clash = false;
++      if (ql > .02) { const tn = ql / pl, mg = this._clash ? 5 : 0, lo = Math.max(c * u - LW / 2, (3 - mg) / tn), hi = Math.min(c * u + LW / 2, pl * u + 4, (27 + mg) / tn); clash = lo < hi; }
++      if (!thumb) this._clash = clash;
++      const kS = this.fadeTo("stack", on && clash, thumb), cm = pl / 2; if (!thumb) this._kStack = kS;
++      o += `<g opacity="${q2(sideOp * kA * (1 - kS))}">${vzAlong(P, [du[0] * (c - .1), du[1] * (c - .1)], [du[0] * (c + .1), du[1] * (c + .1)], [-nrm[0], -nrm[1]], 15, nm, "#7A5C0F", 15)}</g>`;
++      if (kS > .01) o += `<g opacity="${q2(sideOp * kA * kS)}">${vzAlong(P, [du[0] * (cm - .1), du[1] * (cm - .1)], [du[0] * (cm + .1), du[1] * (cm + .1)], nrm, 42, nm, "#7A5C0F", 15)}</g>`;
+       const at = [pr[0] + du[0] * .75 - nrm[0] * .42, pr[1] + du[1] * .75 - nrm[1] * .42], gg = vzGlide("shadow@", [P.X(at[0]), P.Y(at[1])], 30), tOp = (1 - kA) * ramp(pl, .25, .45);
+       o += `<g opacity="${q2(tOp)}">${vzLabel(gg[0], gg[1] + 5, nm, "#7A5C0F", 14)}</g>`;
+     }
+     if (zeroOp > .01) o += `<g opacity="${q2(zeroOp)}">${vzLabel(P.X(-nrm[0] * .2 - ub[0] * .9), P.Y(-nrm[1] * .2 - ub[1] * .9) + 5, `${vzB(g.an)} · ${vzB(g.bn)} = 0`, VZ.deep, 16)}</g>`;
+-    o += vzKey([["line", VZ.ink, "v"], ["line", VZ.red, "w"], ["line", VZ.gold, `shadow of ${g.an} on ${g.bn}`], ["dash", VZ.deep, `${g.an}⊥`], ["fill", VZ.red, `${g.an} · ${g.bn} as an area`]]);
++    o += vzKey([["line", VZ.ink, "v"], ["line", VZ.red, "w"], ["line", VZ.gold, `shadow of ${g.an} on ${g.bn}`], ["dash", VZ.deep, `${g.an}⊥`], ["fill", neg ? VZ.grey : VZ.red, `${g.an} · ${g.bn} as an area`]]);
+     return o;
+   },
+   readout(s) {
+@@ -13680,7 +13694,7 @@
+   if (len(G.perp) > .3) items.push(Object.assign(midOf(G.sum, G.v), { id: "perp", html: nm.perp || (G.bad ? "v − sum" : vzB("v") + `<tspan>⊥</tspan><tspan font-style="normal" font-size="14">  length ${vzRootTxt(vzDot(G.perp, G.perp))}</tspan>`), col: VZ.deep, op: dist, gap: 10 }));
+   if (G.bad && len(sub(G.v, G.tru)) > .3) {
+     const T = pr(G.tru), Sm = pr(G.sum), dx = T[0] - Sm[0], dy = T[1] - Sm[1], L = Math.hypot(dx, dy) || 1;
+-    items.push({ id: "tru", at: [T[0], T[1]], dir: [dx / L, dy / L], html: "closest point", col: VZ.ink, op: truS, size: 14 });
++    items.push({ id: "tru", at: [T[0], T[1]], dir: [dx / L, dy / L], html: "closest", col: VZ.ink, op: truS, size: 14 });   // (short: a long name has no clear spot between v, its drop and the sum)
+   }
+   // P and its equation, at the corner or edge of the patch farthest from every arrow (judged in the view at rest)
+   const prR = p => camR(p[0], p[1], p[2]), busy = [];
+@@ -13692,7 +13706,7 @@
+     .sort((a, b) => b[0] - a[0])[0][1], PL = pr(lerp(pick, mid3, .22));
+   o += vzLabel(PL[0], PL[1] + 5, `P: <tspan font-style="normal">${G.Pl.eq}</tspan>`, "#7A5C0F", 15);
+   // the arrows on screen, sampled, so no name sits on one; the axis letters; P's name
+-  const segs = [[O, G.v]].concat(basis > .5 ? [[O, G.w1], [O, G.w2]] : [], shA > .5 ? [[O, G.p1]] : [], shB > .5 ? [[O, G.p2]] : [], sumG > .5 ? [[O, G.sum], [G.p1, G.sum]] : [], dropD > .5 ? [[G.sum, G.v]] : []);
++  const segs = [[O, G.v]].concat(basis > .5 ? [[O, G.w1], [O, G.w2]] : [], shA > .5 ? [[O, G.p1]] : [], shB > .5 ? [[O, G.p2]] : [], sumG > .5 ? [[O, G.sum], [G.p1, G.sum]] : [], dropD > .5 ? [[G.sum, G.v]] : [], G.bad && truD > .5 ? [[G.tru, G.v]] : []);
+   const obst = AX ? [[AX * 1.08, 0, 0], [0, AX * 1.08, 0], [0, 0, AX * .86]].map(p => { const q = pr(p); return [q[0], q[1] + 2, 12]; }) : [];
+   segs.forEach(([a, b]) => { const A = pr(a), B = pr(b), n = Math.ceil(Math.hypot(B[0] - A[0], B[1] - A[1]) / 12); for (let k = 1; k < n; k++) obst.push([A[0] + (B[0] - A[0]) * k / n, A[1] + (B[1] - A[1]) * k / n, 6]); });
+   // the dashed lines of w₁ and w₂ too: a name sitting on one past its tip reads as "−w₁"
+@@ -13792,7 +13806,7 @@
+   onClick(el, s) { const b = el.closest("[data-tm]"); if (!b) return false; s.m = +b.dataset.tm; s.t = 0; return true; },
+   draw(s, t, thumb) {
+     const A = (VZ_TMATS[Math.round(s.m)] || VZ_TMATS[0]).A, m = A.length, n = A[0].length, cs = 74, ox = 300 - 1.5 * cs, oy = 236 - 1.5 * cs;
+-    const u = vzClamp(s.t, 0, 1), e = vzEase(u), k = Math.abs(Math.cos(Math.PI * e));   // k: how flat an entry is as it passes the diagonal
++    const u = vzClamp(s.t, 0, 1), e = (u + vzEase(u)) / 2, k = Math.abs(Math.cos(Math.PI * e));   // e: Play already eases into the ends, so only half an ease here; k: how flat an entry is as it passes the diagonal
+     const rowCol = [VZ.red, "#B8892B", VZ.green, VZ.ink], cen = (i, j) => [ox + (j + .5) * cs, oy + (i + .5) * cs];
+     let o = "";
+     // the main diagonal, dashed, through the top-left corner
+@@ -14005,7 +14019,9 @@
+   thumb: { k: 5 },
+   mats: [[1.1, .45, .3, .75], [1.05, .15, .12, .95], [.2, 1.1, 1.1, .2]],
+   controls: [
+-    { k: "k", label: "number of times A is applied (k)", min: 0, max: 14, step: 1, digits: 0, play: 2.2, progress: true, aria: "k" },
++    { k: "k", label: "number of times A is applied (k)", min: 0, max: 14, step: 1, digits: 0, aria: "k", progress: true,
++      // slow while the arrow is still swinging (the first few steps), quicker once it has settled on the eigenvector line
++      play: v => { const n = [4, 11, 8][Math.round(VzView.st.m)] || 6, w = vzClamp((v - (n - 1)) / 2, 0, 1); return .9 + 2.3 * w * w * (3 - 2 * w); } },
+     { k: "phi", label: "starting direction of v", min: 0, max: 360, step: 1, unit: "°", digits: 0, noPlay: true },
+   ],
+   presets: [["Dominant eigenvalue", { m: 0 }], ["Close eigenvalues", { m: 1 }], ["Negative eigenvalue", { m: 2 }]],
+@@ -15438,7 +15454,7 @@
+       o += `<path d="M${pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" stroke="${VZ.ink}" stroke-width="1.8"/>`;
+       o += vzArrow(pts[n - 3][0], pts[n - 3][1], pts[n][0], pts[n][1], "I", 1.8);
+     }
+-    if (!thumb && s.t >= .999) o += vzTipGrip(P, e1, VZ.red, "e1") + vzTipGrip(P, e2, VZ.ink, "e2");
++    if (!thumb && s.t > .9) o += `<g opacity="${q2(vzClamp((s.t - .9) / .1, 0, 1))}">${vzTipGrip(P, e1, VZ.red, "e1") + vzTipGrip(P, e2, VZ.ink, "e2")}</g>`;   // the drag rings fade in over the last tenth of the slide
+     o += P.arrow([0, 0], e1, "R", 3.2) + P.arrow([0, 0], e2, "I", 3.2) + P.dot([0, 0], 3.8);
+     // before: e₁, e₂; after: Ae₁, Ae₂ (one set fades out, then the other fades in)
+     const nb = vzClamp((.45 - s.t) / .2, 0, 1), na = vzClamp((s.t - .55) / .2, 0, 1);
+@@ -18307,7 +18323,7 @@
+ const vzMatH = (name, m) => `<div class="vz-mat"><span class="vz-mat-name">${name} =</span><span class="vz-brk"><table><tr><td>${vzShort(m[0])}</td><td>${vzShort(m[1])}</td></tr><tr><td>${vzShort(m[2])}</td><td>${vzShort(m[3])}</td></tr></table></span></div>`;
+ const vzMul = (A, B) => [A[0] * B[0] + A[1] * B[2], A[0] * B[1] + A[1] * B[3], A[2] * B[0] + A[3] * B[2], A[2] * B[1] + A[3] * B[3]];
+ const VZ_MAPS = [
+-  { name: "Rotate 90°", m: [0, -1, 1, 0] }, { name: "Shear", m: [1, 1, 0, 1] }, { name: "Stretch x by 2", m: [2, 0, 0, 1] },
++  { name: "Rotate 90°", m: [0, -1, 1, 0], rot: Math.PI / 2 }, { name: "Shear", m: [1, 1, 0, 1] }, { name: "Stretch x by 2", m: [2, 0, 0, 1] },
+   { name: "Reflect in y = x", m: [0, 1, 1, 0] }, { name: "Squash y by ½", m: [1, 0, 0, .5] },
+ ];
+ vzAdd({
+@@ -18331,15 +18347,17 @@
+   onClick(el, s) {
+     const b = el.closest("[data-ma], [data-mb], [data-ord]"); if (!b) return false;
+     if (b.dataset.ma != null) s.A = +b.dataset.ma; else if (b.dataset.mb != null) s.B = +b.dataset.mb; else s.ord = +b.dataset.ord;
+-    s.t = 0; vzTweenTo({ t: 2 }, 2400); return true;     // show the two moves again with the new choice
++    s.t = 0; vzTweenTo({ t: 2 }, 2400); VzView.tweens.t0 -= 60; return true;     // show the two moves again with the new choice (t0 back-dated so the engine still dissolves the old picture)
+   },
+   M(s) {
+-    const A = VZ_MAPS[s.A].m, B = VZ_MAPS[s.B].m, first = s.ord ? A : B, second = s.ord ? B : A, lerp = (m, u) => [1 + (m[0] - 1) * u, m[1] * u, m[2] * u, 1 + (m[3] - 1) * u];
++    const MA = VZ_MAPS[s.A], MB = VZ_MAPS[s.B], F = s.ord ? MA : MB, S = s.ord ? MB : MA, first = F.m, second = S.m;
++    // a rotation turns by its angle (a straight blend would shrink it to 71% half way); the others blend straight
++    const lerp = (M, u) => { if (M.rot) { const a = M.rot * u, c = Math.cos(a), n = Math.sin(a); return [c, -n, n, c]; } const m = M.m; return [1 + (m[0] - 1) * u, m[1] * u, m[2] * u, 1 + (m[3] - 1) * u]; };
+     const e = vzEase(vzClamp(s.t, 0, 1)), f = vzEase(vzClamp(s.t - 1, 0, 1));
+-    return { now: vzMul(lerp(second, f), lerp(first, e)), first, second, mid: first };
++    return { now: vzMul(lerp(S, f), lerp(F, e)), first, second, mid: first };
+   },
+   draw(s) {
+-    const P = vzPlane(300, 232, 52), { now, mid } = this.M(s), ap = (m, p) => [m[0] * p[0] + m[1] * p[1], m[2] * p[0] + m[3] * p[1]];
++    const P = vzPlane(300, 232, 60), { now, mid } = this.M(s), ap = (m, p) => [m[0] * p[0] + m[1] * p[1], m[2] * p[0] + m[3] * p[1]];
+     let o = "";
+     for (let k = -8; k <= 8; k++) {                         // the moving grid
+       o += P.line(ap(now, [k, 0]), ap(now, [0, 1]), `stroke="${VZ.grey}" stroke-opacity="${k ? .22 : .5}"`) + P.line(ap(now, [0, k]), ap(now, [1, 0]), `stroke="${VZ.grey}" stroke-opacity="${k ? .22 : .5}"`);

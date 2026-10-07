@@ -64,11 +64,16 @@
 - vzGlide keys labels by on-screen order: labels fly when their count changes; let vzLabel take an explicit key (a26).
 - Not reviewed in pass 2: orient, flux, stokes, phone width of this group.
 
-## Round 19 wrap-up (2026-10-06, session ended at the usage limit)
-- Merged: a01–a18, a21–a25 + lead_fixes.py. Fixed by the lead: vzPath3 dropped every fill (duplicate fill attr: level plane,
-  partials tangent plane, flux square/shadow, m-cylinder lid now filled, checked by screenshot); m-switch picDur 4200.
-- NOT merged: a26 (runtime) was stopped mid-work. Its unfinished diff is `_dev/agents/a26.unmerged.patch` (against base3):
-  review it before applying. Everything a26 owned in its prompt (loop cross-dissolve, preset keeps Play, active preset chip,
-  stFit all steps, method picture clip, vzGlide restart, a11y runtime items) is still open, see the shared list above.
-- Checks on the merged copy: all 4 scripts parse, all JSON valid, fuzz 0/48 pictures with issues, no page errors.
-  steps.mjs / monkey.mjs were still running when the session ended: re-run them first next session.
+## Overnight wave 4 (2026-10-07, b1–b4 + lead_fixes2) — merged in checkpoint 2
+Done: engine loop-restart cross-dissolve (plain opacity, tools see it), presets keep Play + dissolve on toggles, active
+preset chip outline, method-picture soft edge fade, vzGlide restart, phone captions 15.5 px, vzShort near-integers,
+BarFix font (| ‖ ∥ ∣ from Georgia/STIX), vzAxes3 clamp; compose rotate-by-angle, transpose/inverse/det/matrix/projection/
+projplane/powers/diag fixes; divthm/gradfield/conservative/surface/fields/curtain/spacecurve/gradient/chain/order/
+jacobian zoom/level+partials occlusion; methods' pictures wait for their board line (stLines/stFirstL) in ~18 methods,
+plane3/square/markov/flux/dome fixes; Exam red mark = the set's estimate; duplicate 3-D tag; ‖ caption.
+Still open:
+- m-gauss: x label can touch R₃ at some angles (vzGaussScene label placement).
+- Method step changes still use the WAAPI fade (methflicker can't see it); Back inside a step removes pieces instantly.
+- projplane "closest" can sit tight against "w₂" when turned; order "y = 2" name half-faded at 96% (triangle).
+- orient: small spike at the loop restart; m-markov k5 / m-green k4 methflicker flags are counters ticking (fine).
+- REVIEW_FOLLOWUPS.md items other than exam timing are still open (check-answer, common mistakes, from=review, etc.).

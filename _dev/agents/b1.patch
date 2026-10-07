@@ -1,0 +1,302 @@
+diff -ru base4/index.html b1/index.html
+--- base4/index.html	2026-10-06 23:29:03
++++ b1/index.html	2026-10-07 02:39:48
+@@ -61,6 +61,11 @@
+   /* ============================================================
+      DESIGN TOKENS
+      ============================================================ */
++  /* Manrope's bar "|" (and "‖") reads as the letter l: |n| looked like "lnl". These few characters come from a
++     serif font on the device instead; every other character still uses the font named after it */
++  @font-face { font-family: "BarFix"; src: local("Georgia"), local("Times New Roman"), local("Noto Serif"), local("DejaVu Serif"); unicode-range: U+007C; }
++  @font-face { font-family: "BarFix"; src: local("STIX Two Math"), local("STIXTwoMath-Regular"), local("STIXGeneral-Regular"), local("STIXGeneral"), local("Cambria Math"), local("Noto Sans Math"), local("DejaVu Serif"); unicode-range: U+2016, U+2223, U+2225; }
++  svg text[font-family*="Manrope"] { font-family: "BarFix", "Manrope", sans-serif; }
+   :root {
+     /* Surfaces */
+     --bg:           #FBF8F4;   /* warm off-white */
+@@ -105,7 +110,7 @@
+ 
+     /* Typography */
+     --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+-    --font-sans:    'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
++    --font-sans:    'BarFix', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+     --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+ 
+     /* Motion */
+@@ -3744,6 +3749,7 @@
+   .vz-keyhtml { display: none; }
+   @media (max-width: 640px) {
+     .vz-stage .vz-key { display: none; }
++    .vz-stage text.vz-note { font-size: 15.5px; }           /* the picture is drawn at ~60%: captions would be 8 px tall */
+     .vz-keyhtml:not(:empty) { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 8px 4px 0; font-size: 12.5px; color: var(--ink-soft); }
+     .vz-kh { display: inline-flex; align-items: center; gap: 6px; }
+     .vz-kh i { display: inline-block; flex: none; width: 16px; height: 0; border-top: 3px solid var(--c); border-radius: 2px; }
+@@ -3819,6 +3825,7 @@
+     font: 600 12px var(--font-sans); color: var(--ink-soft); transition: background .15s var(--ease), color .15s var(--ease), border-color .15s var(--ease);
+   }
+   .vz-chip:hover, .vz-chip:focus-visible { border-color: var(--red); background: var(--red-tint); color: var(--red-deep); }
++  .vz-presets .vz-chip.cur { border-color: var(--red); background: var(--surface); color: var(--red-deep); box-shadow: inset 0 0 0 .5px var(--red); }
+   .vz-readout { border-top: 1px solid var(--border); padding-top: 12px; font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+   .vz-eq { font-family: var(--font-display); font-size: 15px; margin: 0 0 4px; }
+   .vz-mat { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-family: var(--font-display); }
+@@ -12315,10 +12322,17 @@
+   if (!VzView.live) return vals;
+   const seen = VzView.labSeen, base = String(name).replace(/<[^>]+>/g, "").replace(/[−-]?\d[\d.,/]*/g, "#"), n = seen[base] = (seen[base] || 0) + 1, key = base + "|" + n;
+   const L = VzView.labs || (VzView.labs = {}), f = VzView.frameNo, p = L[key];
+-  if (!p || p.f < f - 1) { L[key] = { v: vals.slice(), f, g: false }; return vals; }
++  if (!p || p.f < f - 1) { L[key] = { v: vals.slice(), t: vals.slice(), f, g: false }; return vals; }
+   p.f = f;
+-  const d = Math.hypot(...vals.map((v, i) => v - p.v[i]));
+-  if (!p.g && d > jump) { p.g = true; p.s = p.v.slice(); p.f0 = f; }
++  const ref = p.g && p.t ? p.t : p.v, d = Math.hypot(...vals.map((v, i) => v - ref[i]));   // mid-glide: did the target itself jump again?
++  if (d > jump && !p.g) { p.g = true; p.s = p.v.slice(); p.f0 = f; }
++  else if (d > jump) {                                     // it did: a fresh glide from where the label is now, no snap
++    const ep = vzEase(vzClamp((f - 1 - p.f0) / 13, 0, 1));   // (jumping every frame, i.e. fast motion: keep the clock, so it never stalls)
++    if (p.jf === f - 1 && ep < 1) p.s = p.v.map((c, i) => (c - ep * vals[i]) / (1 - ep));
++    else { p.s = p.v.slice(); p.f0 = f; }
++  }
++  if (d > jump) p.jf = f;
++  p.t = vals.slice();
+   if (p.g) {
+     const u = Math.min(1, (f - p.f0) / 13), e = vzEase(u);
+     p.v = vals.map((v, i) => p.s[i] + (v - p.s[i]) * e);
+@@ -12429,8 +12443,9 @@
+   if (!root) return;
+   vzStop();
+   // moving from picture to picture stays inside one view, so the new page fades in on its own (no hard cut)
+-  root.classList.remove("vz-in"); void root.offsetWidth; root.classList.add("vz-in");
+-  VzView.labs = {}; VzView.tipSide = {};                    // label glides and sides belong to one picture
++  // (the fade restarts once the new content is in: forcing layout here laid out the old page, the 9,000-node index, for nothing)
++  const fadeIn = () => { root.classList.remove("vz-in"); void getComputedStyle(root).opacity; root.classList.add("vz-in"); };
++  VzView.labs = {}; VzView.tipSide = {}; VzView.dis = null;  // label glides, sides and dissolves belong to one picture
+   const def = id && VZ_BY_ID[id];
+   if (!def) {                                               // the index: every picture as a card
+     root.innerHTML = `
+@@ -12451,6 +12466,7 @@
+             <span class="vz-card-blurb">${escapeHtml(v.tagline || v.blurb)}</span>
+           </a>`).join("")}</div></div>`;
+       }).join("")}`;
++    fadeIn();
+     typesetMath(root);                                       // blurbs carry inline math
+     // thumbnails not drawn yet are filled in a few per frame, so the page never stalls on all 47 at once
+     const todo = [...root.querySelectorAll("svg[data-th]")].filter(el => !VZ_BY_ID[el.dataset.th]._th);
+@@ -12463,7 +12479,7 @@
+     return;
+   }
+   const i = VZ_LIST.indexOf(def), prev = VZ_LIST[(i - 1 + VZ_LIST.length) % VZ_LIST.length], next = VZ_LIST[(i + 1) % VZ_LIST.length];
+-  if (def.kind === "steps") { renderSteps(def, i, prev, next); VzView.def = def; return; }
++  if (def.kind === "steps") { renderSteps(def, i, prev, next); VzView.def = def; fadeIn(); return; }
+   VzView.def = def; VzView.st = Object.assign({}, def.state); VzView.tweens = null; VzView.playing = null; VzView.stale = true;
+   if (def.reset) def.reset();
+   root.innerHTML = `
+@@ -12483,7 +12499,7 @@
+         ${def.tryIt ? `<p class="vz-try"><strong>Try</strong>${escapeHtml(def.tryIt)}</p>` : ""}
+         ${def.panelTop ? `<div class="vz-ptop" id="vzPTop">${def.panelTop()}</div>` : ""}
+         <div class="vz-controls" id="vzControls">${vzControlsHtml(def)}</div>
+-        ${def.presets ? `<div class="vz-presets">${def.presets.map((p, k) => `<button class="vz-chip" type="button" data-preset="${k}">${escapeHtml(p[0])}</button>`).join("")}</div>` : ""}
++        ${def.presets ? `<div class="vz-presets">${def.presets.map((p, k) => `<button class="vz-chip" type="button" data-preset="${k}" aria-pressed="false">${escapeHtml(p[0])}</button>`).join("")}</div>` : ""}
+         <div class="vz-readout" id="vzReadout" aria-live="polite"></div>
+         <details class="vz-more"><summary>The idea</summary><p class="vz-blurb">${escapeHtml(def.blurb)}</p></details>
+         <button class="vz-report" type="button" id="vzReport">Report a problem</button>
+@@ -12494,6 +12510,7 @@
+       <a class="btn btn-ghost btn-sm" href="#/visualize/${prev.id}">&larr; ${escapeHtml(prev.title)}</a>
+       <a class="btn btn-ghost btn-sm" href="#/visualize/${next.id}">${escapeHtml(next.title)} &rarr;</a>
+     </div>`;
++  fadeIn();
+   const panel = root.querySelector(".vz-panel");
+   vzPanelEdge(panel);
+   typesetMath(panel);                                        // blurb and tip carry inline math
+@@ -12634,19 +12651,36 @@
+ }
+ // when a picture switches what it shows, the old drawing dissolves into the new one, so nothing just jumps.
+ // (When the change is a glide of its own, the motion already carries the eye: ghost = false.)
+-function vzSwap(ghost = true, dur = 460) {
++// A true cross-fade: a copy of the old drawing (the ghost) fades out on top while the new drawing fades in under
++// it. The new one comes up first and the ghost lingers, so what both share never dims and there is no blank
++// moment. vzDraw runs it on the picture's own clock (now), as plain opacity attributes a snapshot can see.
++const vzDisIn = u => vzEase(vzClamp(u / .65, 0, 1)), vzDisOut = u => 1 - vzEase(vzClamp((u - .3) / .7, 0, 1));
++function vzSwap(ghost = true, dur = 460, now) {
+   const stage = document.getElementById("vzStage"), g = stage && stage.querySelector(":scope > g[clip-path]");
+-  if (stage && g && ghost && g.textContent !== undefined && g.innerHTML.length > 40) {
+-    const old = stage.querySelector("#vzGhost"); if (old) old.remove();
++  if (stage && g && ghost && g.innerHTML.length > 40) {
++    const t = now != null ? now : performance.now(), D = VzView.dis || (VzView.dis = { g: null, gh: [] });
++    const a0 = g.hasAttribute("opacity") ? +g.getAttribute("opacity") : 1;   // mid-dissolve: the copy starts as faint as the drawing is
+     const gh = document.createElementNS("http://www.w3.org/2000/svg", "g");
+-    gh.id = "vzGhost"; gh.setAttribute("clip-path", "url(#vz-clip)"); gh.setAttribute("pointer-events", "none"); gh.setAttribute("aria-hidden", "true");
++    gh.setAttribute("class", "vz-ghost"); gh.setAttribute("clip-path", "url(#vz-clip)"); gh.setAttribute("pointer-events", "none"); gh.setAttribute("aria-hidden", "true");
+     gh.innerHTML = g.innerHTML; gh.querySelectorAll("[id]").forEach(e => e.removeAttribute("id"));
+-    stage.appendChild(gh);
+-    const a = gh.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dur, easing: "cubic-bezier(.4, 0, .2, 1)" });
+-    a.onfinish = () => gh.remove();
++    gh.setAttribute("opacity", String(a0));
++    stage.appendChild(gh);                                  // an older ghost still fading keeps fading (no cut)
++    D.gh.push({ el: gh, t0: t, dur, a0 }); D.g = { t0: t, dur };
++    g.setAttribute("opacity", "0");
+   }
+   const ro = document.getElementById("vzReadout"); if (ro) { ro.classList.remove("vz-swap"); void ro.getBoundingClientRect(); ro.classList.add("vz-swap"); }
+ }
++function vzDissolve(now) {                                 // one frame of the running dissolves (from vzDraw)
++  const D = VzView.dis; if (!D) return;
++  const r3 = x => String(Math.round(x * 1000) / 1000), g = document.querySelector("#vzStage > g[clip-path]");
++  D.gh = D.gh.filter(o => {
++    const u = (now - o.t0) / o.dur;
++    if (u >= 1 || !o.el.isConnected) { o.el.remove(); return false; }
++    o.el.setAttribute("opacity", r3(o.a0 * vzDisOut(u))); return true;
++  });
++  if (D.g) { const u = (now - D.g.t0) / D.g.dur; if (u >= 1 || !g) { if (g) g.removeAttribute("opacity"); D.g = null; } else g.setAttribute("opacity", r3(vzDisIn(u))); }
++  if (!D.g && !D.gh.length) VzView.dis = null;
++}
+ 
+ function vzControlsHtml(def) {
+   const st = def.state;
+@@ -12699,7 +12733,8 @@
+   const cur = ph.v != null ? ph.v : st[c.k];
+   if (ph.name === "hold") { if (now - ph.t0 > ph.dur) { ph.next.t0 = now; VzView.phase = ph.next; } return; }
+   if (ph.name === "out") {                                // back to the start: the finished picture dissolves into the first one
+-    vzDraw(now); vzSwap(true, 900); put(c.min); VzView.stale = true;
++    vzDraw(now); vzSwap(true, 900, now); put(c.min); VzView.stale = true;
++    VzView.labs = {}; VzView.tipSide = {};               // the first frame's labels fade in where they belong (no glide from the last frame's spots)
+     VzView.phase = { name: "hold", t0: now, dur: 1000, c, next: { name: "run", c, dir: 1, v: c.min, s0: c.min } };
+     return;
+   }
+@@ -12737,23 +12772,46 @@
+ function vzPreset(target) {
+   const st = VzView.st, def = VzView.def, from = {}, to = {};
+   const isCtl = k => def.controls.some(c => c.k === k || (c.keys && c.keys.includes(k)));
+-  let swapped = false;
++  let swapped = false, flipped = false;
+   Object.keys(target).forEach(k => {
+     if (VZ_SELECTORS.includes(k) && !isCtl(k)) { if (st[k] !== target[k]) { st[k] = target[k]; swapped = true; } }
++    else if (typeof target[k] === "boolean") { if (!!st[k] !== target[k]) { st[k] = target[k]; flipped = true; } }   // a vector shown/hidden: dissolve
+     else if (typeof target[k] === "number" && typeof st[k] === "number") { from[k] = st[k]; to[k] = target[k]; }
+     else st[k] = target[k];
+   });
+-  if (swapped) { if (def.reset) def.reset(); vzSwap(); }
++  const pk = VzView.playing, pv = pk ? st[pk] : null;
++  if (swapped && def.reset) def.reset();
++  if (swapped) VzView.labs = {};                          // a new example: its labels fade in at their places (no glide from the old ones)
++  if (swapped || flipped) vzSwap();
+   VzView.tweens = { from, to, t0: performance.now(), dur: 650 };
+-  vzSetPlay(null);
++  // Play goes on (a new example, still moving) unless the preset sets the slider that is playing, hides it, or resets it
++  const pc = pk && def.controls.find(c => c.k === pk);
++  if (pc && (pk in target || st[pk] !== pv || (pc.show && !pc.show(st)))) vzSetPlay(null);
+   vzChanged();
+ }
++// the preset chip whose values are the picture's current state is marked (the one that says the most, if several)
++function vzPresetOn(P, st) {
++  return Object.keys(P).every(k => {
++    const a = st[k], b = P[k];
++    if (typeof b === "number") return typeof a === "number" && Math.abs(a - b) <= 1e-3 * Math.max(1, Math.abs(b));
++    if (typeof b === "boolean") return !!a === b;
++    return a === b || JSON.stringify(a) === JSON.stringify(b);
++  });
++}
++function vzSyncPresets(def, st) {
++  if (!def.presets) return;
++  const chips = document.querySelectorAll(".vz-presets [data-preset]"); if (!chips.length) return;
++  let best = -1, most = 0;
++  def.presets.forEach(([, P], i) => { const n = Object.keys(P).length; if (n > most && vzPresetOn(P, st)) { best = i; most = n; } });
++  chips.forEach(b => { const on = +b.dataset.preset === best; if (b.classList.contains("cur") !== on) { b.classList.toggle("cur", on); b.setAttribute("aria-pressed", String(on)); } });
++}
+ 
+ function vzChanged() { VzView.stale = true; vzSyncControls(); vzDraw(performance.now()); }
+ 
+ function vzSyncControls() {
+   const def = VzView.def, st = VzView.st;
+   if (def.sync) def.sync(st, document.querySelector(".vz-panel"));
++  vzSyncPresets(def, st);
+   def.controls.forEach(c => {
+     const el = document.getElementById("vz-" + c.k), out = document.getElementById("vzo-" + c.k);
+     if (c.show) { const w = document.querySelector('[data-ctl="' + c.k + '"]'); if (w) w.hidden = !c.show(st); }
+@@ -12800,6 +12858,7 @@
+     if (ro && def.readout) { const html = def.readout(st); if (ro._html !== html) { ro._html = html; ro.innerHTML = html; } }
+   }
+   if (def.frame) def.frame(gd, st, t);
++  vzDissolve(now);
+   VzView.stale = !!VzView.again; VzView.again = false;       // a picture mid-way through its own little animation asks again
+ }
+ 
+@@ -12816,7 +12875,7 @@
+   }
+   if (VzView.playing && VzView.phase) { vzPlayStep(now); VzView.stale = true; vzSyncControls(); }
+   VzView.lastNow = now;
+-  if (!document.hidden && (VzView.stale || def.frame)) vzDraw(now);
++  if (!document.hidden && (VzView.stale || def.frame || VzView.dis)) vzDraw(now);
+   VzView.raf = requestAnimationFrame(vzTick);
+ }
+ function vzStart() {
+@@ -14712,8 +14771,9 @@
+ // 1.5, −2, 0.25, 3.125 as they are; a repeating decimal as its fraction (2/3, −6/7); anything else (mid-drag) to 2 places
+ const vzShort = v => {
+   const a = Math.abs(v), k = Math.round(a * 10000);
+-  if (Math.abs(a * 10000 - k) < 1e-6) return k ? (v < 0 ? "−" : "") + k / 10000 : "0";
+-  for (let q = 3; q <= 64; q++) { const p = Math.round(a * q); if (Math.abs(a * q - p) < 1e-7 * q) return (v < 0 ? "−" : "") + p + "/" + q; }
++  if (Math.abs(a * 10000 - k) < 1e-3) return k ? (v < 0 ? "−" : "") + k / 10000 : "0";   // same tolerance as the fractions: 4.99999995 is 5, not 15/3
++  const gcd = (x, y) => y ? gcd(y, x % y) : x;
++  for (let q = 3; q <= 64; q++) { const p = Math.round(a * q); if (Math.abs(a * q - p) < 1e-7 * q) { const g = gcd(p, q) || 1; return (v < 0 ? "−" : "") + p / g + "/" + q / g; } }
+   const r = Math.round(a * 100) / 100;
+   return r ? (v < 0 ? "−" : "") + r : "0";
+ };
+@@ -15688,7 +15748,7 @@
+   [[L, 0, 0, "x"], [0, L, 0, "y"], [0, 0, L * .8, "z"]].forEach(([x, y, z, n]) => {
+     const A = cam(0, 0, 0), B = cam(x, y, z);
+     o += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${VZ.ink}" stroke-width="1.1" opacity="${op}"/>`;
+-    const T = cam(x * 1.08, y * 1.08, z * 1.08); o += vzLabel(T[0], T[1] + 5, n, VZ.grey, 15);
++    const T = cam(x * 1.08, y * 1.08, z * 1.08); o += vzLabel(T[0], VzView.live ? Math.min(T[1] + 5, 410) : T[1] + 5, n, VZ.grey, 15);   // never down on the key
+   });
+   return o;
+ }
+@@ -16949,7 +17009,7 @@
+                 ${s.tex.map((L, b) => `<div class="st-line" data-b="${b}"><div class="st-in">${stLineHtml(L)}</div></div>`).join("")}</div></section>`).join("")}
+             </div>
+           </div>
+-          ${def.pic ? `<svg class="st-pic" id="stPic" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${vzDefs()}<g id="stPicOld" pointer-events="none"></g><g id="stPicG"></g></svg>` : ""}
++          ${def.pic ? `<svg class="st-pic" id="stPic" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${vzDefs(stEdgeDefs)}<g mask="url(#st-fy)"><g mask="url(#st-fx)"><g id="stPicOld" pointer-events="none"></g><g id="stPicG"></g></g></g></svg>` : ""}
+           <div class="st-time" id="stTime" role="slider" aria-label="Progress through the method" aria-valuemin="0" aria-valuemax="${def.steps.length}" aria-valuenow="0" tabindex="-1">
+             <div class="st-time-track">${(() => { const bs = stBeats(def), tot = bs.reduce((a, x) => a + x[2], 0); let acc = 0; return bs.map(([k, b, ms]) => { const x = acc / tot; acc += ms; return b === 0 && k > 0 ? `<i class="st-tick" style="left:${(x * 100).toFixed(2)}%"></i>` : ""; }).join(""); })()}<div class="st-time-fill"></div></div>
+           </div>
+@@ -17089,7 +17149,8 @@
+   let before = 0; for (const [k, b, ms] of ST.beats) { if (k === ST.k && b === ST.b) break; before += ms; }
+   const cur = ST.beats.find(x => x[0] === ST.k && x[1] === ST.b), ms = cur ? cur[2] : 0;
+   const f = ST.playing && ST.lineMs ? vzClamp((now - ST.lineT0) / ST.lineMs, 0, 1) : ST.k < 0 ? 0 : 1;
+-  const fill = bar.querySelector(".st-time-fill"); if (fill) fill.style.transform = `scaleX(${((before + f * ms) / total).toFixed(4)})`;
++  const fill = bar.querySelector(".st-time-fill"), tf = `scaleX(${((before + f * ms) / total).toFixed(4)})`;
++  if (fill && fill._tf !== tf) { fill._tf = tf; fill.style.transform = tf; }   // idle pages: no style write every frame
+ }
+ function stSync() {
+   const root = $("#vizRoot"), def = ST.def; if (!root || !def) return;
+@@ -17100,6 +17161,12 @@
+   const back = root.querySelector("[data-st='back']"), nx = root.querySelector("[data-st='next']");
+   if (back) back.disabled = ST.k < 0; if (nx) nx.disabled = done;
+ }
++// the picture is drawn for a 360 × 460 frame; whatever reaches past it (a whole line, a wide grid) fades out just
++// beyond the frame instead of running on into the empty space around it on a wide or tall screen
++const stEdgeDefs = [["x", "x1", "x2", -26, 360], ["y", "y1", "y2", -26, 460]].map(([n, a, b, lo, len]) =>
++  `<linearGradient id="st-g${n}" gradientUnits="userSpaceOnUse" ${a}="${lo}" ${b}="${len - lo}" ${n === "x" ? 'y1="0" y2="0"' : 'x1="0" x2="0"'}>` +
++  `<stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="${(-lo - 4) / (len - 2 * lo)}" stop-color="#fff"/><stop offset="${1 - (-lo - 4) / (len - 2 * lo)}" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>` +
++  `<mask id="st-f${n}" maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4400" height="4400"><rect x="-2000" y="-2000" width="4400" height="4400" fill="url(#st-g${n})"/></mask>`).join("");
+ function stShow() {
+   const def = ST.def, root = $("#vizRoot"); if (!def || !root) return;
+   const k = ST.k, b = ST.b, key = k + ":" + b;
+@@ -17111,7 +17178,7 @@
+     const j = +el.dataset.j;
+     el.classList.toggle("on", j <= k); el.classList.toggle("past", j < k); el.classList.toggle("now", j === k);
+     el.querySelectorAll(".st-line").forEach(l => l.classList.toggle("on", j < k || (j === k && +l.dataset.b <= b)));
+-    if (j === k) stFit(el);
++    if (j <= k) stFit(el);                                  // jumping ahead from the outline: earlier steps' lines fit too
+   });
+   root.querySelectorAll(".st-outline li").forEach(li => { const j = +li.dataset.goto; li.classList.toggle("done", j < k); li.classList.toggle("now", j === k); });
+   const now = root.querySelector(".st-outline li.now"); if (now && now.scrollIntoView) { const ol = now.parentElement; if (now.offsetTop < ol.scrollTop || now.offsetTop + now.offsetHeight > ol.scrollTop + ol.clientHeight) ol.scrollTop = now.offsetTop - 20; }
+@@ -21971,8 +22038,9 @@
+     console.error("Failed loading sections:", e);
+   }
+ 
+-  // Re-render the active view now that data is loaded
+-  handleRoute();
++  // Re-render the active view now that data is loaded (a Visualize page doesn't use the data: drawing it
++  // again would restart the picture, reset what the student already moved, and re-typeset a method)
++  if (!/^\/visualize(\/|$)/.test(currentRoute())) handleRoute();
+   updateStats();
+   updateReviewNavBadge();
+ 
