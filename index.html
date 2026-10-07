@@ -1763,18 +1763,6 @@
   .g-answer .final-answer-box { margin-top: 0; }
   .g-answer .g-content { padding-bottom: 8px; }
 
-  /* Common mistakes: a quiet fold under the final answer, closed until the student asks */
-  .cm-fold { margin: 10px 0 2px; color: var(--ink-soft); }
-  .cm-fold summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; padding: 4px 0; font: 600 13px var(--font-sans); color: var(--ink-mute); }
-  .cm-fold summary::-webkit-details-marker { display: none; }
-  .cm-fold summary::before { content: "+"; display: inline-block; width: 16px; font-weight: 800; color: var(--gold); }
-  .cm-fold[open] summary::before { content: "\2212"; }
-  .cm-fold summary:hover, .cm-fold summary:focus-visible { color: var(--red-deep); }
-  .cm-list { margin: 4px 0 2px; padding-left: 36px; }
-  .cm-list li { margin: 5px 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-soft); }
-  .cm-list li::marker { color: var(--ink-faint); }
-  .cm-list .math-block { font-size: inherit; line-height: inherit; color: inherit; }
-  .cm-fold[open] .cm-list { animation: gRise .35s var(--ease-out) both; }
 
   /* "Check final answer": the answer alone, under the next-step row, without opening any step */
   .g-peek { display: grid; grid-template-rows: 0fr; visibility: hidden; padding-left: 46px; transition: grid-template-rows .5s var(--ease-out), visibility 0s linear .5s; }
@@ -1826,7 +1814,6 @@
     .guide-head { flex-direction: column; align-items: flex-start; gap: 8px; }
     .gt-seg span { font-size: 10.5px; }
     .g-inner, .g-next-row, .g-peek { padding-left: 40px; }
-    .cm-list { padding-left: 30px; }
     .g-end { padding-left: 56px; }
   }
 
@@ -11824,13 +11811,6 @@ function guideSteps(p) {
   return steps;
 }
 
-// "Common mistakes (n)": a closed fold that sits right after the final answer
-function mistakesHtml(p) {
-  const ms = (p.commonMistakes || []).filter(m => m && String(m).trim());
-  if (!ms.length) return "";
-  return `<details class="cm-fold"><summary>Common mistakes (${ms.length})</summary><ul class="cm-list">${ms.map(m => `<li><div class="math-block">${m}</div></li>`).join("")}</ul></details>`;
-}
-
 function guideHtml(p) {
   const steps = guideSteps(p);
   if (!steps.length) return "";
@@ -11842,7 +11822,7 @@ function guideHtml(p) {
           <span class="g-node" aria-hidden="true">${s.n}</span>
           <div class="g-title"><div class="g-kick">${escapeHtml(s.kick)}</div>${s.name ? `<div class="g-name">${escapeHtml(s.name)}</div>` : ""}</div>
           <div class="g-content">${s.kind === "answer"
-            ? `<div class="final-answer-box"><div class="math-block">${s.html}</div></div>${mistakesHtml(p)}`
+            ? `<div class="final-answer-box"><div class="math-block">${s.html}</div></div>`
             : `<div class="math-block">${s.html}</div>`}</div>
         </div>
       </li>`).join("");
@@ -11869,7 +11849,7 @@ function guideHtml(p) {
         ${p.finalAnswerLatex ? `<button class="g-link" id="guideCheck" type="button" aria-expanded="false" aria-controls="guidePeek">Check final answer</button>` : ""}
       </div>
       ${p.finalAnswerLatex ? `<div class="g-peek" id="guidePeek" aria-hidden="true"><div class="g-peek-in">
-        <div class="final-answer-box"><div class="final-answer-label">Final answer</div><div class="math-block">${p.finalAnswerLatex}</div></div>${mistakesHtml(p)}
+        <div class="final-answer-box"><div class="final-answer-label">Final answer</div><div class="math-block">${p.finalAnswerLatex}</div></div>
       </div></div>` : ""}
       <div class="g-end" id="guideEnd" hidden>
         <span class="g-node" aria-hidden="true">${G_AGAIN}</span>
@@ -11999,8 +11979,6 @@ function wireGuide(p) {
   });
   all.addEventListener("click", showAll);
   reset.addEventListener("click", startOver);
-  // Common mistakes open closed: make sure their math is typeset (a no-op when it already is)
-  guide.addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("cm-fold") && e.target.open) typesetMath(e.target); }, true);
 
   // first paint (restored steps appear without animating in)
   guide.classList.add("no-anim"); paint();
