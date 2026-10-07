@@ -359,6 +359,7 @@ then `PYTHONPATH=<scratch>/pylibs /usr/bin/python3 ...` (the default `python3` o
 - Scratchpad tests worth keeping in mind: r16/chaos.mjs (careless user), r16/neardeg.mjs (vectors close together), r15/jumps.mjs (Play discontinuities), r14/hero_pix.mjs (hero pops).
 
 ## Done (commits, newest first)
+- **Overnight 2026-10-07 (round 20): checkpoints published to main.** Checkpoint 1 = c7b7ca7 (rounds 17–19 merge), checkpoint 2 = 4643d29 (wave 4: engine cross-dissolve, presets keep Play, active chip, BarFix font, 22 pictures + 18 methods polished, exam red mark = set's estimate). Both LIVE-IDENTICAL, all QA clean. Log: _dev/agents/OVERNIGHT.md; open items: _dev/agents/MERGE_TODO.md (end) + REVIEW_FOLLOWUPS.md. Next merge base = base4 + b1..b4 (merge4.sh).
 
 | Commit | What |
 |---|---|

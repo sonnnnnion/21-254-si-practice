@@ -7,3 +7,4 @@ Rule: live (main) only ever gets a checkpoint that passed every check AND a visu
 | 02:27 | Usage 20% of 5-h window at 02:26 → agents' hard stop moved 04:40 → 04:10. Lead fixes 2 (exam red mark = set's estimate, tested; duplicate 3-D tag; ‖ caption) in lead_fixes2.py, applied by merge4.sh. Plan: merge+verify 04:15–05:00, publish checkpoint 2 ~05:00; freeze 06:30; 07:20 cron safety net. |
 | 03:00 | Usage 54% at 02:59 (≈1%/min) → b2–b4 told to stop now; b1 done (all 7 items). Interim merge of b1–b4 parses. |
 | 03:28 | Wave 4 merged (b1–b4 + lead_fixes2). fuzz 0/48, steps 24/24 + phone 0, monkey 72/0, chaos 0, flicker 0 spikes on all 45 runs, methflicker 2 counter flags. Visual sweep of 22 changed pictures OK. Publishing checkpoint 2. |
+| 03:30 | CHECKPOINT 2 published + verified: main = 4643d29, LIVE-IDENTICAL, live smoke no errors. Usage 88% → stopped work. FINAL unless the 07:20 check finds a problem. |
