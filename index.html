@@ -1443,7 +1443,6 @@
     color: var(--red-deep);
     border-color: rgba(200,16,46,.2);
   }
-  .pill.start-here { background: var(--ink); color: #fff; }
   .pill.status-report {
     background: #FBF3DF;
     color: #7A5B0F;
@@ -6798,7 +6797,6 @@ function topicCardHtml(section, options = {}) {
       <div class="progress" aria-hidden="true"><div class="progress-bar" style="width:${prog.pct}%"></div></div>
       <div class="card-foot">
         <span class="card-progress-text">${prog.got} / ${prog.total} got it · ${prog.pct}%</span>
-        <span class="btn btn-sm btn-ghost" style="pointer-events:none;">Study Section <span class="arrow">→</span></span>
       </div>`}
     </button>
   `;
@@ -6949,8 +6947,6 @@ function renderProblemList() {
     return;
   }
 
-  // "Start here": the section's first warm-up or core problem (where it sits in the list never changes)
-  const startP = section.problems.find(q => /warm|core/i.test(q.difficulty || ""));
   list.innerHTML = problems.map((p, idx) => {
     const st = getStatus(p.id);
     return `
@@ -6964,7 +6960,6 @@ function renderProblemList() {
         </div>
       </div>
       <div class="prob-row-right">
-        ${startP && p.id === startP.id && !st ? `<span class="pill start-here">Start here</span>` : ""}
         ${p.difficulty ? `<span class="pill ${classForDifficulty(p.difficulty)}">${escapeHtml(p.difficulty)}</span>` : ""}
         ${st === "got" ? `<span class="pill status-got">Got it</span>` : ""}
         ${st === "review" ? `<span class="pill status-review">Review</span>` : ""}
@@ -12565,7 +12560,7 @@ function vzPanelEdge(panel) {
 /* The index: the topic pictures first, then the tools, then the methods, a long list that shows a few until "Show all".
    A small box filters the cards as you type. The box and the unfolded list are remembered while a student visits a
    picture and comes back. */
-const VZ_FOLD = { "Methods, step by step": { show: 4, what: "methods" } };
+const VZ_FOLD = {};   // no folded groups: every card shows
 const VZ_IDX = { q: "", open: {} };
 // lower-case words without punctuation or maths, so "Green's" and "greens" find the same cards
 const vzNorm = s => String(s == null ? "" : s).toLowerCase().replace(/\\\(.*?\\\)/g, " ").replace(/[’'`]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
@@ -19417,7 +19412,7 @@ vzAdd({
     const ag = panel.querySelector('[data-rr="aug"]'); if (ag && ag.checked !== !!s.aug) ag.checked = !!s.aug;
   },
   // a new matrix (or the same one read differently): back to the start, the old picture dissolving into the new one
-  restart(s, ghost) { s.x = 0; this._auto = false; VzView.tweens = null; this._saved = { A: s.A, aug: s.aug }; if (ghost) { vzSwap(); vzChanged(); } },
+  restart(s, ghost) { s.x = 0; this._auto = false; this._q = 0; VzView.tweens = null; this._saved = { A: s.A, aug: s.aug }; if (ghost) { vzSwap(); vzChanged(); } },
   typed(el, left) {
     const s = VzView.st; if (VzView.def !== this || !el || !el.dataset) return;
     if (el.dataset.rr === "aug") { if (left) return; s.aug = el.checked; s.bad = null; this.rebuild(el); this.restart(s, true); return; }
@@ -19440,7 +19435,9 @@ vzAdd({
     const sm = el.closest("summary[data-rr-list]"); if (sm) { this._open = !sm.parentElement.open; return false; }
     const b = el.closest("[data-rr]"); if (!b || b.disabled || b.dataset.rr === "aug" || el.closest("input")) return false;
     const act = b.dataset.rr, D = this.data(s), end = D.ops.length + 1;
-    if (act === "next") { this._auto = false; const k = Math.min(end, Math.floor(this.target(s) + 1e-6) + 1); vzTweenTo({ x: k }, k === end ? 900 : 700); return true; }
+    // a click while a step is still moving waits its turn (starting a new glide mid-way skipped half the step)
+    if (act === "next") { this._auto = false; if (VzView.tweens) { this._q = Math.min(3, (this._q || 0) + 1); return false; } const k = Math.min(end, Math.floor(this.target(s) + 1e-6) + 1); vzTweenTo({ x: k }, k === end ? 900 : 700); return true; }
+    this._q = 0;
     if (act === "all") {
       if (this._auto) { this._auto = false; VzView.tweens = null; s.x = end; return true; }   // pressed again: straight to the end
       this._auto = true; this._rest = 0; this.advance(s); return true;
@@ -19458,6 +19455,7 @@ vzAdd({
   advance(s) { const end = this.data(s).ops.length + 1, k = Math.min(end, Math.floor(this.target(s) + 1e-6) + 1); vzTweenTo({ x: k }, k === end ? 900 : 620); },
   // "Show all": one step after another, with a short rest between them
   frame(gd, s) {
+    if (gd && this._q && !VzView.tweens && VzView.def === this) { this._q--; this.advance(s); vzSyncControls(); return ""; }   // a queued Next step
     if (!gd || !this._auto || VzView.def !== this) return "";
     if (VzView.tweens) { this._rest = 0; return ""; }
     const now = performance.now(), end = this.data(s).ops.length + 1;

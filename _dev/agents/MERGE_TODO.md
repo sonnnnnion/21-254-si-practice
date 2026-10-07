@@ -92,3 +92,18 @@ Still open:
 - Walkthrough spec renderer shows ⟨ ⟩ for vectors (index.html ~23883, 10864, 7612, 7671): needs a vector-vs-point check.
 - c2's picture→section mapping (VZ_SECTION_OF) is a judgement call: owner may want to glance at it.
 - "Start here" = first warm-up/core in order (section 7: problem 1 is Core though a Warm-up comes later).
+
+## Final pass 2026-10-07 evening (lead only, no agents) — published
+Removed (owner): "Start here" badge, "Study Section" button on section cards (whole card opens it), methods fold /
+"Show all methods" (VZ_FOLD = {}), Common mistakes box. Fixed: tool-rref Next step clicked during a step's glide skipped
+half the step and garbled the heading → clicks now queue (this._q, run from frame()).
+
+## Next week (ideas, not started) — keep each small; ~1 agent per line at most
+- Perf on weak phones: level / surface / stokes / orient drop frames at 4× CPU (smooth at 1–2×). Option: coarser mesh.
+- tool-det: after "Step 6 of 6", Next goes on to the inverse (page 2) — label it ("Next: the inverse →") so it isn't a surprise.
+- tool-rref: during a row swap the two rows' digits overlap for ~0.2 s (drift + cross-fade); try a shorter drift.
+- "Practice this →" mapping (VZ_SECTION_OF) was a judgement call: owner to skim.
+- projplane "closest" tight to w₂ at yaw −70…−60 on "Not orthogonal".
+- Walkthrough spec renderer shows ⟨ ⟩ for vectors (index.html ~23883 etc.): needs a vector-vs-point check.
+- Method step changes still use the WAAPI fade; Back inside a method step removes pieces instantly.
+- Phone Visualize index is long (two cards per row); student feedback first.
