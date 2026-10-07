@@ -118,3 +118,21 @@ Keep the report under ~400 words. Do not paste the patch into the report.
   ids to READY. Re-read READY.md every so often. Start with what is ready; take notes on the rest and fix them once ready.
   Never edit a NOT READY block (the lead's refresh would then fail to apply to your copy).
 - Agent 26 owns the shared runtime (see its prompt). Agents 21–25 must not edit it; report runtime problems instead.
+
+---
+# Fourth wave (agents b1–b4, overnight 2026-10-07): BUG-FIX pass before a class demo
+The site goes live by 8:00 am and the professor may click ANY picture or method in front of the whole class at 9 am.
+**Stability beats ambition.** Fix clear, visible problems (pops, overlaps, things off the edge, frozen/broken animation,
+wrong colours vs legend, unreadable text, math errors). No rebuilds, no new features, no risky refactors.
+- Starting copy and diff base: `~/Desktop/21-254/agents/base4/` (= the current final copy, dev eedaa9c). Your copy:
+  `~/Desktop/21-254/agents/bN/`, served at `http://127.0.0.1:833N/`. Scratch: `/private/tmp/claude-501/agents/bN/`.
+- **HARD STOP 04:40 EDT** (check with `date`). Your report must be sent by 04:45.
+- **After every fix you have verified, regenerate your patch** (`cd ~/Desktop/21-254/agents && diff -ru base4 bN > bN.patch`),
+  so the patch on disk is ALWAYS a working state. If you get stopped early, that patch is what ships. Never leave a
+  half-done edit in your copy when you regenerate it: revert anything you can't finish.
+- Your to-do list is in `~/Desktop/21-254/agents/MERGE_TODO.md` (the "Next-session list" + the shared list). Also look at
+  every picture you own yourself (default state, Play filmstrip, presets, turning the view, phone 390 px) and fix what
+  looks broken. Order: what a student/professor sees first (default state, pressing Play, presets) before rare cases.
+- Be economical: grep + offset reads, contact sheets (sheet.mjs) instead of many single images, one tool run at a time.
+- Before you finish: chaos.mjs + flicker.mjs on the ids you touched, fuzz.mjs once (`IDS=...` if it supports it), and
+  for methods steps.mjs + methflicker.mjs. Report in under 300 words: changes, what you checked, what's still open.
