@@ -1,0 +1,234 @@
+diff -ru base5/index.html c2/index.html
+--- base5/index.html	2026-10-07 03:05:39
++++ c2/index.html	2026-10-07 12:06:08
+@@ -3909,6 +3909,12 @@
+   .vz-nav-btn:hover { border-color: var(--ink-faint); color: var(--ink); text-decoration: none; }
+   .vz-report { display: block; margin: 12px 0 0; padding: 0; border: 0; background: none; font: 500 12px var(--font-sans); color: var(--ink-mute); cursor: pointer; }
+   .vz-report:hover { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
++  .vz-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 12px 0 0; }
++  .vz-foot .vz-report, body.vz-detail .vz-foot .vz-report { margin: 0; }
++  .vz-practice { font: 600 12.5px var(--font-sans); color: var(--red-deep); text-decoration: none; }
++  .vz-practice:hover, .vz-practice:focus-visible { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
++  body.vz-detail .vz-foot { margin-top: 8px; }
++  @media (max-width: 640px) { .vz-foot .vz-practice, .vz-foot .vz-report { padding: 6px 0; } }          /* a bigger thumb target on phones */
+   /* a panel that has to scroll (short laptop screens) fades out along its foot until the end is reached */
+   .vz-fade { position: sticky; bottom: 0; height: 0; margin: 0 -16px; pointer-events: none; }
+   .vz-fade::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44px; opacity: 0; transition: opacity .25s ease;
+@@ -3970,8 +3976,20 @@
+   .vz-eq.vz-on, .vz-eq.vz-off { font-size: 17px; margin: 2px 0 8px; }
+   .vz-lim sup, .vz-lim sub { position: static; font-size: 1em; }
+   .vz-eq.vz-on { color: var(--ink); font-weight: 600; } .vz-eq.vz-off { color: var(--ink-faint); }
+-  /* index: the six concept pictures lead */
++  /* index: the topic pictures lead, then the tools, then the methods (a few until "Show all"); a small box filters the cards */
+   .vz-jump { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
++  .vz-find { display: flex; align-items: center; gap: 12px; margin: 12px 0 10px; }
++  .vz-find-in { -webkit-appearance: none; appearance: none; flex: 1 1 auto; width: auto; max-width: 340px; padding: 9px 12px 9px 38px; border-radius: 999px; font-size: 14px;
++    background: var(--surface) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2356606C' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5 20 20'/%3E%3C/svg%3E") no-repeat 14px center; }
++  .vz-find-note { flex: none; min-width: 72px; font-size: 12px; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
++  .vz-chip.vz-chip-dim { opacity: .4; }
++  .vz-group[hidden], .vz-card[hidden], .vz-none[hidden] { display: none; }
++  .vz-group.vz-folded:not(.vz-searching) .vz-card.vz-extra { display: none; }          /* a long list shows a few until "Show all" ... */
++  .vz-group.vz-searching .vz-showall { display: none; }                                  /* ... but a search shows every match */
++  .vz-showall { margin: 12px 0 0; }
++  .vz-reveal { animation: vzRootIn .3s ease; }                                            /* a card that comes back fades in (opacity only: the hover lift stays) */
++  .vz-none { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 26px 0 8px; font-size: 14.5px; color: var(--ink-soft); }
++  @media (max-width: 640px) { .vz-find-in { max-width: none; font-size: 16px; } .vz-find-note { min-width: 64px; } }
+   .vz-top-right { display: flex; align-items: center; gap: 12px; }
+   /* draggable pictures: the page doesn't scroll under a finger that is dragging a vector */
+   /* a finger on a handle drags it; a finger anywhere else on the picture scrolls the page as usual (the touchstart
+@@ -12258,8 +12276,6 @@
+              tint: "#FCEFF1", soft: "#F7DEE2", paper: "#FBF8F4" };
+ // The index is organized by idea; each picture belongs to one group (VZ_GROUP_OF), in VZ_ORDER.
+ const VZ_GROUP_OF = {
+-  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-dirderiv", "m-extrema", "m-wire", "m-potential", "m-square", "m-switch", "m-green", "m-surfarea", "m-flux", "m-dome", "m-cylinder"],
+-  "Check your own work": ["tool-rref", "tool-det", "tool-eigen", "tool-vec"],
+   "Vectors, span, and subspaces": ["vectors", "span", "independence", "coords", "subspace"],
+   "Matrices as maps": ["transpose", "matrix", "compose", "det", "inverse", "nullcol", "systems", "gauss"],
+   "Dot and cross products": ["projection", "projplane", "cross"],
+@@ -12269,9 +12285,39 @@
+   "Double integrals": ["riemann", "fubini", "order", "polar", "jacobian"],
+   "Vector fields and line integrals": ["gradfield", "fields", "curtain", "work", "conservative", "green", "greenarea"],
+   "Surfaces and flux": ["surface", "orient", "flux", "stokes", "divthm"],
++  // the topic pictures lead; the tools and the (long) list of methods come after them
++  "Check your own work": ["tool-rref", "tool-det", "tool-eigen", "tool-vec"],
++  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-dirderiv", "m-extrema", "m-wire", "m-potential", "m-square", "m-switch", "m-green", "m-surfarea", "m-flux", "m-dome", "m-cylinder"],
+ };
+ const VZ_GROUPS = Object.keys(VZ_GROUP_OF);
+ const VZ_ORDER = VZ_GROUPS.flatMap(g => VZ_GROUP_OF[g]);
++// "Practice this": the Practice Lab section that matches each picture (a few pictures sit in a different section from the
++// rest of their group). A picture with no entry here and no group entry below simply shows no link.
++const VZ_SECTION_OF = {
++  compose: 1, transpose: 1, "m-matmul": 1,
++  systems: 2, gauss: 2, "m-gauss": 2, "tool-rref": 2,
++  span: 3, independence: 3, coords: 3, subspace: 3, vectors: 1, nullcol: 3, "m-nullcol": 3, "m-subspace": 3, "m-span": 3,
++  matrix: 4, det: 4, inverse: 4, "m-reflect": 4, "m-det3": 4, "m-inverse": 4, "tool-det": 4,
++  eigen: 5, "m-eigen": 5, "m-complex": 5, "tool-eigen": 5,
++  projection: 6, projplane: 6, cross: 6, diag: 6, powers: 6, "m-markov": 6, "m-planedist": 6, "m-plane3": 6, "tool-vec": 6,
++  curves: 7, spacecurve: 7, arclength: 7, level: 7, partials: 7, chain: 7, gradient: 7, critical: 7, "m-dirderiv": 7, "m-extrema": 7,
++  gradfield: 8, fields: 8, curtain: 8, work: 8, conservative: 8, "m-wire": 8, "m-potential": 8, "m-square": 8,
++  riemann: 9, fubini: 9, order: 9, polar: 9, jacobian: 9, green: 9, greenarea: 9, "m-switch": 9, "m-green": 9,
++  surface: 10, orient: 10, flux: 10, stokes: 10, divthm: 10, "m-surfarea": 10, "m-flux": 10, "m-dome": 10, "m-cylinder": 10,
++};
++const VZ_SECTION_OF_GROUP = {
++  "Vectors, span, and subspaces": 3, "Matrices as maps": 4, "Dot and cross products": 6, "Eigenvalues and eigenvectors": 5, "Curves": 7,
++  "Functions of two variables": 7, "Double integrals": 9, "Vector fields and line integrals": 8, "Surfaces and flux": 10,
++};
++function vzSectionFor(def) {
++  const n = VZ_SECTION_OF[def.id] || VZ_SECTION_OF_GROUP[def.group] || 0;
++  return n >= 1 && n <= 10 ? n : 0;
++}
++// the foot of a picture's or method's side panel: a small "Practice this" link (when a section matches) beside "Report a problem"
++function vzFootHtml(def) {
++  const n = vzSectionFor(def);
++  return `<div class="vz-foot">${n ? `<a class="vz-practice" href="#/section/${n}" data-route="/section/${n}" title="Open Practice Lab Section ${n}">Practice this &rarr;</a>` : ""}<button class="vz-report" type="button" id="vzReport">Report a problem</button></div>`;
++}
+ function vzAdd(def) { VZ_LIST.push(def); VZ_BY_ID[def.id] = def; }
+ const q2 = v => Math.round(v * 100) / 100;
+ function vzNum(v, d = 2) {
+@@ -12439,17 +12485,16 @@
+   if (window.ResizeObserver) { vzPanelRO = new ResizeObserver(set); vzPanelRO.observe(panel); [...panel.children].forEach(c => vzPanelRO.observe(c)); }
+   set();
+ }
+-function renderVisualize(id) {
+-  const root = $("#vizRoot");
+-  if (!root) return;
+-  vzStop();
+-  // moving from picture to picture stays inside one view, so the new page fades in on its own (no hard cut)
+-  // (the fade restarts once the new content is in: forcing layout here laid out the old page, the 9,000-node index, for nothing)
+-  const fadeIn = () => { root.classList.remove("vz-in"); void getComputedStyle(root).opacity; root.classList.add("vz-in"); };
+-  VzView.labs = {}; VzView.tipSide = {}; VzView.dis = null;  // label glides, sides and dissolves belong to one picture
+-  const def = id && VZ_BY_ID[id];
+-  if (!def) {                                               // the index: every picture as a card
+-    root.innerHTML = `
++/* The index: the topic pictures first, then the tools, then the methods, a long list that shows a few until "Show all".
++   A small box filters the cards as you type. The box and the unfolded list are remembered while a student visits a
++   picture and comes back. */
++const VZ_FOLD = { "Methods, step by step": { show: 4, what: "methods" } };
++const VZ_IDX = { q: "", open: {} };
++// lower-case words without punctuation or maths, so "Green's" and "greens" find the same cards
++const vzNorm = s => String(s == null ? "" : s).toLowerCase().replace(/\\\(.*?\\\)/g, " ").replace(/[’'`]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
++function vzIndexHtml() {
++  const groups = VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g));
++  return `
+       <div class="section-head">
+         <div>
+           <div class="kicker">Visualize</div>
+@@ -12457,26 +12502,89 @@
+           <p>Drag, slide, or press Play, and watch the core ideas move.</p>
+         </div>
+       </div>
+-      <nav class="vz-jump" aria-label="Jump to a group">${VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g)).map((g, gi) => `<button type="button" class="vz-chip" data-jump="vzg-${gi}">${escapeHtml(g)}</button>`).join("")}</nav>
+-      ${VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g)).map((g, gi) => {
++      <div class="vz-find">
++        <input class="input vz-find-in" id="vzFind" type="search" placeholder="Find a picture…" aria-label="Find a picture" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" value="${escapeHtml(VZ_IDX.q)}" />
++        <span class="vz-find-note" id="vzFindNote" role="status"></span>
++      </div>
++      <nav class="vz-jump" aria-label="Jump to a group">${groups.map((g, gi) => `<button type="button" class="vz-chip" data-jump="vzg-${gi}">${escapeHtml(g)}</button>`).join("")}</nav>
++      ${groups.map((g, gi) => {
+         const items = VZ_LIST.filter(v => v.group === g);
+-        return `<div class="vz-group" id="vzg-${gi}"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map(v => `
+-          <a class="vz-card" href="#/visualize/${v.id}">
++        const fold = VZ_FOLD[g] && VZ_FOLD[g].show < items.length ? VZ_FOLD[g] : null, folded = !!fold && !VZ_IDX.open[g];
++        return `<div class="vz-group${folded ? " vz-folded" : ""}" id="vzg-${gi}"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map((v, k) => `
++          <a class="vz-card${fold && k >= fold.show ? " vz-extra" : ""}" href="#/visualize/${v.id}" data-q="${vzNorm([v.card, v.title, v.tagline || v.blurb, v.group].filter(Boolean).join(" "))}">
+             <svg class="vz-thumb" viewBox="0 0 ${VZ_W} ${VZ_H}" aria-hidden="true" data-th="${v.id}">${vzDefs(v.defs)}<g clip-path="url(#vz-clip)">${v._th || ""}</g></svg>
+             <span class="vz-card-title">${escapeHtml(v.card || v.title)}</span>
+             <span class="vz-card-blurb">${escapeHtml(v.tagline || v.blurb)}</span>
+-          </a>`).join("")}</div></div>`;
+-      }).join("")}`;
++          </a>`).join("")}</div>${fold ? `<button type="button" class="vz-chip vz-showall" data-all="Show all ${fold.what} (${items.length})" data-few="Show fewer ${fold.what}" data-g="${escapeHtml(g)}" aria-expanded="${!folded}">${folded ? `Show all ${fold.what} (${items.length})` : `Show fewer ${fold.what}`}</button>` : ""}</div>`;
++      }).join("")}
++      <p class="vz-none" id="vzNone" hidden><span></span> <button type="button" class="vz-chip" id="vzNoneClear">Show everything</button></p>`;
++}
++// show the cards that match the box (every word must appear in the card's title or text); an empty box shows all
++function vzFindApply(root) {
++  const words = vzNorm(VZ_IDX.q).split(" ").filter(Boolean), on = words.length > 0, total = root.querySelectorAll(".vz-card").length;
++  let shown = 0, only = null;
++  root.querySelectorAll(".vz-group").forEach((g, gi) => {
++    let n = 0;
++    g.querySelectorAll(".vz-card").forEach(c => {
++      const ok = !on || words.every(w => c.dataset.q.includes(w));
++      if (ok && c.hidden) c.classList.add("vz-reveal");          // a card coming back fades in rather than snapping
++      c.hidden = !ok;
++      if (ok) { n++; only = c; }
++    });
++    g.hidden = on && !n;
++    g.classList.toggle("vz-searching", on);                      // while searching, a folded list shows every match
++    const chip = root.querySelector(`[data-jump="vzg-${gi}"]`);
++    if (chip) chip.classList.toggle("vz-chip-dim", on && !n);
++    shown += n;
++  });
++  const note = root.querySelector("#vzFindNote"), none = root.querySelector("#vzNone");
++  if (note) note.textContent = on ? `${shown} of ${total}` : `${total} in all`;
++  if (none) { none.hidden = !(on && !shown); if (on && !shown) none.firstElementChild.textContent = `Nothing matches “${VZ_IDX.q.trim().slice(0, 40)}”. Try a shorter word.`; }
++  root._only = shown === 1 ? only : null;
++}
++function vzIndexWire(root) {
++  const find = root.querySelector("#vzFind");
++  if (!find) return;
++  const clear = () => { find.value = ""; VZ_IDX.q = ""; vzFindApply(root); };
++  vzFindApply(root);
++  find.addEventListener("input", () => { VZ_IDX.q = find.value; vzFindApply(root); });
++  find.addEventListener("keydown", e => {
++    if (e.key === "Escape" && find.value) { e.preventDefault(); clear(); }
++    else if (e.key === "Enter" && root._only) location.hash = root._only.getAttribute("href");   // one match: open it
++  });
++  root.querySelector("#vzNoneClear").addEventListener("click", () => { clear(); find.focus(); });
++  root.querySelectorAll(".vz-showall").forEach(btn => btn.addEventListener("click", () => {
++    const g = btn.closest(".vz-group"), open = g.classList.contains("vz-folded");
++    VZ_IDX.open[btn.dataset.g] = open;
++    g.classList.toggle("vz-folded", !open);
++    if (open) g.querySelectorAll(".vz-extra").forEach(c => c.classList.add("vz-reveal"));
++    btn.textContent = open ? btn.dataset.few : btn.dataset.all; btn.setAttribute("aria-expanded", String(open));
++  }));
++  root.querySelector(".vz-jump").addEventListener("click", e => {
++    const b = e.target.closest("[data-jump]"); if (!b) return;
++    let g = document.getElementById(b.dataset.jump);
++    if (g && g.hidden) { clear(); g = document.getElementById(b.dataset.jump); }   // a group with no match: show everything again
++    if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 80, behavior: "smooth" });
++  });
++}
++function renderVisualize(id) {
++  const root = $("#vizRoot");
++  if (!root) return;
++  vzStop();
++  // moving from picture to picture stays inside one view, so the new page fades in on its own (no hard cut)
++  // (the fade restarts once the new content is in: forcing layout here laid out the old page, the 9,000-node index, for nothing)
++  const fadeIn = () => { root.classList.remove("vz-in"); void getComputedStyle(root).opacity; root.classList.add("vz-in"); };
++  VzView.labs = {}; VzView.tipSide = {}; VzView.dis = null;  // label glides, sides and dissolves belong to one picture
++  const def = id && VZ_BY_ID[id];
++  if (!def) {                                               // the index: every picture as a card
++    root.innerHTML = vzIndexHtml();
+     fadeIn();
+     typesetMath(root);                                       // blurbs carry inline math
+-    // thumbnails not drawn yet are filled in a few per frame, so the page never stalls on all 47 at once
++    // thumbnails not drawn yet are filled in a few per frame, so the page never stalls on all of them at once
+     const todo = [...root.querySelectorAll("svg[data-th]")].filter(el => !VZ_BY_ID[el.dataset.th]._th);
+     const fill = () => { if (!root.isConnected) return; todo.splice(0, 6).forEach(el => { const g = el.querySelector("g[clip-path]"); if (g) g.innerHTML = vzThumb(VZ_BY_ID[el.dataset.th]); el.classList.add("vz-th-in"); }); if (todo.length) requestAnimationFrame(fill); };
+     if (todo.length) requestAnimationFrame(fill);
+-    root.querySelector(".vz-jump").addEventListener("click", e => {
+-      const b = e.target.closest("[data-jump]"); if (!b) return;
+-      const g = document.getElementById(b.dataset.jump); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 80, behavior: "smooth" });
+-    });
++    vzIndexWire(root);
+     return;
+   }
+   const i = VZ_LIST.indexOf(def), prev = VZ_LIST[(i - 1 + VZ_LIST.length) % VZ_LIST.length], next = VZ_LIST[(i + 1) % VZ_LIST.length];
+@@ -12503,7 +12611,7 @@
+         ${def.presets ? `<div class="vz-presets">${def.presets.map((p, k) => `<button class="vz-chip" type="button" data-preset="${k}" aria-pressed="false">${escapeHtml(p[0])}</button>`).join("")}</div>` : ""}
+         <div class="vz-readout" id="vzReadout" aria-live="polite"></div>
+         <details class="vz-more"><summary>The idea</summary><p class="vz-blurb">${escapeHtml(def.blurb)}</p></details>
+-        <button class="vz-report" type="button" id="vzReport">Report a problem</button>
++        ${vzFootHtml(def)}
+         <div class="vz-fade" aria-hidden="true"></div>
+       </aside>
+     </div>
+@@ -17157,7 +17265,7 @@
+         <div class="vz-ptop-k st-outline-k">The method</div>
+         <ol class="st-outline">${steps.map((s, j) => `<li data-goto="${j}"><span class="st-o-n">${j + 1}</span><span>${escapeHtml(s.t)}</span></li>`).join("")}</ol>
+         <details class="vz-more"><summary>The idea</summary><p class="vz-blurb">${def.blurb}</p></details>
+-        <button class="vz-report" type="button" id="vzReport">Report a problem</button>
++        ${vzFootHtml(def)}
+         <div class="vz-fade" aria-hidden="true"></div>
+       </aside>
+     </div>

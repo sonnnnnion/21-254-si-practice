@@ -27,7 +27,7 @@
  "sayThisFirst": [
   "For surfaces, the picture and orientation matter first.",
   "A scalar surface integral uses \\(dS\\). A flux integral uses a normal vector.",
-  "For graphs \\(z=f(x,y)\\), upward normal area vector is \\(\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
+  "For graphs \\(z=f(x,y)\\), upward normal area vector is \\([-f_x,-f_y,1]\\,dA\\).",
   "Stokes' Theorem changes a surface integral of curl into a line integral around the boundary.",
   "Green's Theorem is the 2D version: boundary circulation equals interior curl."
  ],
@@ -41,8 +41,8 @@
  ],
  "keyFormulas": [
   "Graph surface area element: \\(dS=\\sqrt{1+f_x^2+f_y^2}\\,dA\\).",
-  "Upward graph normal vector: \\(\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
-  "Flux: \\(\\iint_S F\\cdot n\\,dS\\), or \\(\\iint_D F(x,y,f(x,y))\\cdot\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
+  "Upward graph normal vector: \\([-f_x,-f_y,1]\\,dA\\).",
+  "Flux: \\(\\iint_S F\\cdot n\\,dS\\), or \\(\\iint_D F(x,y,f(x,y))\\cdot[-f_x,-f_y,1]\\,dA\\).",
   "Stokes: \\(\\iint_S (\\nabla\\times F)\\cdot n\\,dS=\\oint_{\\partial S}F\\cdot dr\\).",
   "Cylindrical coordinates: \\(x=r\\cos\\theta\\), \\(y=r\\sin\\theta\\), \\(dV=r\\,dz\\,dr\\,d\\theta\\).",
   "Green: \\(\\oint_C P\\,dx+Q\\,dy=\\iint_D(Q_x-P_y)\\,dA\\)."
@@ -129,15 +129,15 @@
     "Graph normal",
     "Polar coordinates"
    ],
-   "studentPromptLatex": "Let \\(S\\) be the paraboloid \\(z=4-x^2-y^2\\) above the disk \\(x^2+y^2\\le1\\), oriented upward. Let \\(F(x,y,z)=\\langle x,y,z\\rangle\\). Compute the flux \\(\\iint_S F\\cdot n\\,dS\\).",
-   "whatToSayBefore": "Say: for a graph with upward orientation, use the vector area element \\(\\langle -f_x,-f_y,1\\rangle dA\\).",
+   "studentPromptLatex": "Let \\(S\\) be the paraboloid \\(z=4-x^2-y^2\\) above the disk \\(x^2+y^2\\le1\\), oriented upward. Let \\(F(x,y,z)=[x,y,z]\\). Compute the flux \\(\\iint_S F\\cdot n\\,dS\\).",
+   "whatToSayBefore": "Say: for a graph with upward orientation, use the vector area element \\([-f_x,-f_y,1] dA\\).",
    "visualSpec": {
     "type": "flux_graph_upward_paraboloid",
     "surface": "z=4-x^2-y^2",
     "baseRegion": "unit disk",
     "orientation": "upward",
     "field": "F=<x,y,z>",
-    "normalAreaVector": "<2x,2y,1>",
+    "normalAreaVector": "[2x,2y,1]",
     "integrandOnDisk": "4+x^2+y^2",
     "polarBounds": {
      "r": [
@@ -154,22 +154,22 @@
      "Draw a downward-opening paraboloid above the unit disk.",
      "Draw upward normal arrows on the surface.",
      "Write f_x=-2x and f_y=-2y.",
-     "Write upward vector area element <2x,2y,1>dA.",
+     "Write upward vector area element [2x,2y,1]dA.",
      "Switch to polar for the unit disk."
     ]
    },
    "walkthrough": [
     {
      "label": "Find the upward vector area element",
-     "latex": "Let \\(f(x,y)=4-x^2-y^2\\). Then \\(f_x=-2x\\) and \\(f_y=-2y\\). For upward orientation, \\[\\langle -f_x,-f_y,1\\rangle\\,dA=\\langle 2x,2y,1\\rangle\\,dA.\\]"
+     "latex": "Let \\(f(x,y)=4-x^2-y^2\\). Then \\(f_x=-2x\\) and \\(f_y=-2y\\). For upward orientation, \\[[-f_x,-f_y,1]\\,dA=[2x,2y,1]\\,dA.\\]"
     },
     {
      "label": "Plug the surface into the vector field",
-     "latex": "On the surface, \\[F(x,y,f(x,y))=\\langle x,y,4-x^2-y^2\\rangle.\\]"
+     "latex": "On the surface, \\[F(x,y,f(x,y))=[x,y,4-x^2-y^2].\\]"
     },
     {
      "label": "Dot with the vector area element",
-     "latex": "\\[F\\cdot\\langle 2x,2y,1\\rangle=2x^2+2y^2+4-x^2-y^2=4+x^2+y^2.\\]"
+     "latex": "\\[F\\cdot[2x,2y,1]=2x^2+2y^2+4-x^2-y^2=4+x^2+y^2.\\]"
     },
     {
      "label": "Integrate over the unit disk",
@@ -182,7 +182,7 @@
    ],
    "finalAnswerLatex": "\\[\\boxed{\\frac{9\\pi}{2}}\\]",
    "commonMistakes": [
-    "Using \\(\\langle f_x,f_y,-1\\rangle\\) for upward orientation. That is downward.",
+    "Using \\([f_x,f_y,-1]\\) for upward orientation. That is downward.",
     "Forgetting to plug \\(z=4-x^2-y^2\\) into \\(F\\).",
     "Forgetting the polar Jacobian \\(r\\)."
    ],
@@ -202,7 +202,7 @@
     "Curl",
     "Boundary orientation"
    ],
-   "studentPromptLatex": "Let \\(F(x,y,z)=\\langle -y,x,z\\rangle\\). Let \\(S\\) be the disk \\(x^2+y^2\\le4\\) in the plane \\(z=3\\), oriented upward. Compute \\(\\iint_S(\\nabla\\times F)\\cdot n\\,dS\\).",
+   "studentPromptLatex": "Let \\(F(x,y,z)=[-y,x,z]\\). Let \\(S\\) be the disk \\(x^2+y^2\\le4\\) in the plane \\(z=3\\), oriented upward. Compute \\(\\iint_S(\\nabla\\times F)\\cdot n\\,dS\\).",
    "whatToSayBefore": "Say: Stokes lets us use the boundary, but here the curl is so simple that the surface integral is also fast.",
    "visualSpec": {
     "type": "stokes_disk_upward",
@@ -210,25 +210,25 @@
     "orientation": "upward normal",
     "boundaryOrientation": "counterclockwise when viewed from above",
     "field": "F=<-y,x,z>",
-    "curl": "<0,0,2>",
+    "curl": "[0,0,2]",
     "area": "4pi",
     "integralValue": "8pi",
     "drawInstructions": [
      "Draw the disk in the horizontal plane z=3.",
      "Draw upward normal arrows.",
      "Draw counterclockwise arrows on the circular boundary when viewed from above.",
-     "Write curl F=<0,0,2>.",
+     "Write curl F=[0,0,2].",
      "Write: dot with the upward normal gives 2, then multiply by the disk area \\(4\\pi\\)."
     ]
    },
    "walkthrough": [
     {
      "label": "Compute the curl",
-     "latex": "For \\(F=\\langle P,Q,R\\rangle=\\langle -y,x,z\\rangle\\), \\[\\nabla\\times F=\\langle R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y\\rangle=\\langle 0-0,\\;0-0,\\;1-(-1)\\rangle=\\langle0,0,2\\rangle.\\]"
+     "latex": "For \\(F=[P,Q,R]=[-y,x,z]\\), \\[\\nabla\\times F=[R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y]=[0-0,\\;0-0,\\;1-(-1)]=[0,0,2].\\]"
     },
     {
      "label": "Use the upward normal",
-     "latex": "The disk is horizontal and oriented upward, so \\(n=\\langle0,0,1\\rangle\\). Thus \\[(\\nabla\\times F)\\cdot n=\\langle0,0,2\\rangle\\cdot\\langle0,0,1\\rangle=2.\\]"
+     "latex": "The disk is horizontal and oriented upward, so \\(n=[0,0,1]\\). Thus \\[(\\nabla\\times F)\\cdot n=[0,0,2]\\cdot[0,0,1]=2.\\]"
     },
     {
      "label": "Integrate over the disk",
@@ -422,7 +422,7 @@
  "qualityControlNotes": [
   "Checked scalar surface integral: dS=sqrt(6)dA and value 5sqrt(6).",
   "Checked flux through paraboloid: integrand 4+r^2 and value 9pi/2.",
-  "Checked Stokes/curl problem: curl=<0,0,2>, disk area 4pi, value 8pi.",
+  "Checked Stokes/curl problem: curl=[0,0,2], disk area 4pi, value 8pi.",
   "Checked cylindrical triple integral: bounds z from 0 to r^2, value 32pi/3.",
   "Checked Green's Theorem clockwise triangle: CCW value 2, clockwise value -2.",
   "Visual specs include exact regions, orientations, normal directions, and theorem-specific labels."
@@ -477,7 +477,7 @@
    ],
    "write": [
     "\\(dS=\\sqrt{1+f_x^2+f_y^2}\\,dA\\)",
-    "upward flux: \\(F\\cdot\\langle -f_x,-f_y,1\\rangle\\,dA\\)",
+    "upward flux: \\(F\\cdot[-f_x,-f_y,1]\\,dA\\)",
     "Stokes: \\(\\displaystyle\\iint_S(\\nabla\\times F)\\cdot n\\,dS=\\oint_{\\partial S}F\\cdot dr\\)",
     "\\(dV=r\\,dz\\,dr\\,d\\theta\\)"
    ]
@@ -558,10 +558,10 @@
    },
    "si22-p2": {
     "launch": {
-     "say": "Find the upward flux of F = \u27e8x, y, z\u27e9 through the paraboloid cap.",
+     "say": "Find the upward flux of F = [x, y, z] through the paraboloid cap.",
      "tryMinutes": 6,
      "circulate": [
-      "Upward: \\(\\langle -f_x,-f_y,1\\rangle=\\langle 2x,2y,1\\rangle\\).",
+      "Upward: \\([-f_x,-f_y,1]=[2x,2y,1]\\).",
       "Check z was replaced by 4 \u2212 x\u00b2 \u2212 y\u00b2.",
       "Polar at the end, with the extra r."
      ]
@@ -575,14 +575,14 @@
     "visualize": "polar",
     "steps": [
      {
-      "say": "f_x = \u22122x, f_y = \u22122y. Upward: \u27e82x, 2y, 1\u27e9 dA.",
+      "say": "f_x = \u22122x, f_y = \u22122y. Upward: [2x, 2y, 1] dA.",
       "ask": {
        "q": "How do you know it's upward?",
        "a": "The z-component is +1."
       }
      },
      {
-      "say": "On the surface, F = \u27e8x, y, 4 \u2212 x\u00b2 \u2212 y\u00b2\u27e9.",
+      "say": "On the surface, F = [x, y, 4 \u2212 x\u00b2 \u2212 y\u00b2].",
       "ask": {
        "q": "What does F look like?",
        "a": "Arrows pointing straight out from the origin."
@@ -614,7 +614,7 @@
     "meaning": "The field points away from the origin, so it pushes out through the dome. Adding up that push over the whole cap gives 9\u03c0/2.",
     "ifStuck": [
      {
-      "if": "a student uses \\(\\langle f_x,f_y,-1\\rangle\\)",
+      "if": "a student uses \\([f_x,f_y,-1]\\)",
       "then": "check its z-component: it points down."
      }
     ],
@@ -639,14 +639,14 @@
     "visualize": "fields",
     "steps": [
      {
-      "say": "\u2207 \u00d7 \u27e8\u2212y, x, z\u27e9 = \u27e80, 0, 1 \u2212 (\u22121)\u27e9 = \u27e80, 0, 2\u27e9.",
+      "say": "\u2207 \u00d7 [\u2212y, x, z] = [0, 0, 1 \u2212 (\u22121)] = [0, 0, 2].",
       "ask": {
-       "q": "What does \u27e80, 0, 2\u27e9 say?",
+       "q": "What does [0, 0, 2] say?",
        "a": "The field spins counterclockwise around the vertical axis, the same amount everywhere."
       }
      },
      {
-      "say": "Flat disk, upward: n = \u27e80, 0, 1\u27e9, so (\u2207 \u00d7 F) \u00b7 n = 2.",
+      "say": "Flat disk, upward: n = [0, 0, 1], so (\u2207 \u00d7 F) \u00b7 n = 2.",
       "ask": {
        "q": "Why is n so simple?",
        "a": "The disk is horizontal."

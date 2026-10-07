@@ -36,7 +36,7 @@
  "keyFormulas": [
   "Scalar line integral: \\(\\int_C g\\,ds=\\int_a^b g(r(t))\\|r'(t)\\|\\,dt\\).",
   "Vector line integral: \\(\\int_C F\\cdot dr=\\int_a^b F(r(t))\\cdot r'(t)\\,dt\\).",
-  "For \\(F=\\langle P,Q\\rangle\\), conservative usually means \\(P_y=Q_x\\) on a nice region.",
+  "For \\(F=[P,Q]\\), conservative usually means \\(P_y=Q_x\\) on a nice region.",
   "If \\(F=\\nabla f\\), then \\(\\int_C F\\cdot dr=f(\\text{end})-f(\\text{start})\\)."
  ],
  "commonMistakes": [
@@ -123,7 +123,7 @@
     "Parametrized curve",
     "Dot product"
    ],
-   "studentPromptLatex": "Let \\(F(x,y)=\\langle y,x\\rangle\\) and let \\(C\\) be \\(r(t)=(t,t^2)\\), \\(0\\le t\\le1\\). Compute \\(\\int_C F\\cdot dr\\) directly.",
+   "studentPromptLatex": "Let \\(F(x,y)=[y,x]\\) and let \\(C\\) be \\(r(t)=(t,t^2)\\), \\(0\\le t\\le1\\). Compute \\(\\int_C F\\cdot dr\\) directly.",
    "whatToSayBefore": "Say: for \\(F\\cdot dr\\), the recipe is field along the curve dotted with velocity.",
    "visualSpec": {
     "type": "vector_line_integral_curve",
@@ -140,7 +140,7 @@
     "drawInstructions": [
      "Draw the parabola y=x^2 from (0,0) to (1,1).",
      "Put arrows on the curve from left to right.",
-     "Draw a few field arrows F=<y,x> near the curve.",
+     "Draw a few field arrows F=[y,x] near the curve.",
      "Write F(r(t)) dot r'(t) beside the picture."
     ]
    },
@@ -151,11 +151,11 @@
     },
     {
      "label": "Plug the curve into the field",
-     "latex": "Along the curve, \\(x=t\\) and \\(y=t^2\\), so \\[F(r(t))=\\langle t^2,t\\rangle.\\]"
+     "latex": "Along the curve, \\(x=t\\) and \\(y=t^2\\), so \\[F(r(t))=[t^2,t].\\]"
     },
     {
      "label": "Dot with velocity",
-     "latex": "\\[F(r(t))\\cdot r'(t)=\\langle t^2,t\\rangle\\cdot\\langle1,2t\\rangle=t^2+2t^2=3t^2.\\]"
+     "latex": "\\[F(r(t))\\cdot r'(t)=[t^2,t]\\cdot[1,2t]=t^2+2t^2=3t^2.\\]"
     },
     {
      "label": "Integrate",
@@ -184,7 +184,7 @@
     "Potential functions",
     "Path independence"
    ],
-   "studentPromptLatex": "Let \\(F(x,y)=\\langle 2xy+3,x^2+4y\\rangle\\). Show that \\(F\\) is conservative, find a potential function \\(\\phi\\), and compute \\(\\int_C F\\cdot dr\\) from \\((0,1)\\) to \\((2,-1)\\).",
+   "studentPromptLatex": "Let \\(F(x,y)=[2xy+3,x^2+4y]\\). Show that \\(F\\) is conservative, find a potential function \\(\\phi\\), and compute \\(\\int_C F\\cdot dr\\) from \\((0,1)\\) to \\((2,-1)\\).",
    "whatToSayBefore": "Say: if the field is conservative, the path itself does not matter. Only the start and end points matter.",
    "visualSpec": {
     "type": "conservative_field_endpoints",
@@ -410,7 +410,7 @@
       }
      },
      {
-      "say": "On the curve, F = \u27e8y, x\u27e9 becomes \u27e8t\u00b2, t\u27e9.",
+      "say": "On the curve, F = [y, x] becomes [t\u00b2, t].",
       "ask": {
        "q": "Why do we have to substitute?",
        "a": "We only care about F at points on the curve."

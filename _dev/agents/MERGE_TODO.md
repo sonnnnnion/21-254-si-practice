@@ -77,3 +77,18 @@ Still open:
 - projplane "closest" can sit tight against "w₂" when turned; order "y = 2" name half-faded at 96% (triangle).
 - orient: small spike at the loop restart; m-markov k5 / m-green k4 methflicker flags are counters ticking (fine).
 - REVIEW_FOLLOWUPS.md items other than exam timing are still open (check-answer, common mistakes, from=review, etc.).
+
+## Wave 5 (2026-10-07 midday, c1–c3 + d1 + lead_fixes3) — published
+Done: problem page "Check final answer", collapsed "Common mistakes (n)", from=review/exam Back/Next, "Start here" badge,
+exam set-size estimates, pop-ups don't block clicks, sidebar scrolls on short windows (c1); Visualize index topics-first,
+methods folded (4 + Show all), "Find a picture…" filter, "Practice this →" on every picture/method (c2); vzGaussScene
+label clearance, projplane "closest" air, order "y = 2", orient opaque strip at restart, walkthrough vectors → [a, b] (c3);
+no computed numbers on area pictures: green, curtain, greenarea, fubini, polar, det, independence, projection, jacobian,
+divthm (d1, owner request); section descriptions rewritten (not the title, no exams); MathJax late-typeset bug fixed.
+Still open:
+- Perf: level/surface/stokes/orient drop frames only at 4× CPU slowdown (weak phones), same as before; smooth at 1–2×.
+  Option: coarser mesh for those four (visible quality trade-off; ask the owner).
+- projplane "closest" still tight to w₂ at yaw −70…−60 on "Not orthogonal".
+- Walkthrough spec renderer shows ⟨ ⟩ for vectors (index.html ~23883, 10864, 7612, 7671): needs a vector-vs-point check.
+- c2's picture→section mapping (VZ_SECTION_OF) is a judgement call: owner may want to glance at it.
+- "Start here" = first warm-up/core in order (section 7: problem 1 is Core though a Warm-up comes later).

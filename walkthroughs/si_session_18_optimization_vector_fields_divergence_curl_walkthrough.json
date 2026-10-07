@@ -39,9 +39,9 @@
  "keyFormulas": [
   "Interior critical points: solve \\(f_x=0\\) and \\(f_y=0\\).",
   "For closed bounded regions: check interior points, edges, and corners.",
-  "For \\(F=\\langle P,Q\\rangle\\), \\(\\operatorname{div}F=P_x+Q_y\\).",
-  "For \\(F=\\langle P,Q\\rangle\\), scalar curl is \\(Q_x-P_y\\).",
-  "For \\(F=\\langle P,Q,R\\rangle\\), \\(\\nabla\\times F=\\langle R_y-Q_z,\\,P_z-R_x,\\,Q_x-P_y\\rangle\\)."
+  "For \\(F=[P,Q]\\), \\(\\operatorname{div}F=P_x+Q_y\\).",
+  "For \\(F=[P,Q]\\), scalar curl is \\(Q_x-P_y\\).",
+  "For \\(F=[P,Q,R]\\), \\(\\nabla\\times F=[R_y-Q_z,\\,P_z-R_x,\\,Q_x-P_y]\\)."
  ],
  "commonMistakes": [
   "Only checking the interior critical point and forgetting the boundary.",
@@ -51,8 +51,8 @@
   "Forgetting that 3D curl is a vector."
  ],
  "notationWarnings": [
-  "For 2D fields, write \\(F=\\langle P,Q\\rangle\\) before computing divergence or curl.",
-  "For 3D fields, write \\(F=\\langle P,Q,R\\rangle\\).",
+  "For 2D fields, write \\(F=[P,Q]\\) before computing divergence or curl.",
+  "For 3D fields, write \\(F=[P,Q,R]\\).",
   "When checking absolute extrema, label interior, boundary, and corners separately."
  ],
  "problems": [
@@ -137,7 +137,7 @@
     "Divergence",
     "Curl"
    ],
-   "studentPromptLatex": "Let \\(F(x,y)=\\langle x^2y,xy^2\\rangle\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\). Then evaluate both at \\((1,2)\\).",
+   "studentPromptLatex": "Let \\(F(x,y)=[x^2y,xy^2]\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\). Then evaluate both at \\((1,2)\\).",
    "whatToSayBefore": "Say: name the components first. P is the first component and Q is the second component.",
    "visualSpec": {
     "type": "vector_field_div_curl_2d",
@@ -191,7 +191,7 @@
     "Divergence",
     "Curl"
    ],
-   "studentPromptLatex": "Let \\(F(x,y,z)=\\langle xy,yz,zx\\rangle\\). Find \\(\\operatorname{div}F\\) and \\(\\nabla\\times F\\). Then evaluate both at \\((1,-2,3)\\).",
+   "studentPromptLatex": "Let \\(F(x,y,z)=[xy,yz,zx]\\). Find \\(\\operatorname{div}F\\) and \\(\\nabla\\times F\\). Then evaluate both at \\((1,-2,3)\\).",
    "whatToSayBefore": "Say: in 3D, divergence is still one number, but curl becomes a vector.",
    "visualSpec": {
     "type": "vector_field_div_curl_3d",
@@ -222,14 +222,14 @@
     },
     {
      "label": "Compute curl",
-     "latex": "\\[\\nabla\\times F=\\langle R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y\\rangle.\\] Here \\(P=xy\\), \\(Q=yz\\), and \\(R=zx\\), so \\[\\nabla\\times F=\\langle 0-y,\\;0-z,\\;0-x\\rangle=\\langle -y,-z,-x\\rangle.\\]"
+     "latex": "\\[\\nabla\\times F=[R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y].\\] Here \\(P=xy\\), \\(Q=yz\\), and \\(R=zx\\), so \\[\\nabla\\times F=[0-y,\\;0-z,\\;0-x]=[-y,-z,-x].\\]"
     },
     {
      "label": "Evaluate curl at the point",
-     "latex": "\\[(\\nabla\\times F)(1,-2,3)=\\langle 2,-3,-1\\rangle.\\]"
+     "latex": "\\[(\\nabla\\times F)(1,-2,3)=[2,-3,-1].\\]"
     }
    ],
-   "finalAnswerLatex": "\\[\\operatorname{div}F=x+y+z,\\quad \\operatorname{div}F(1,-2,3)=2,\\qquad \\nabla\\times F=\\langle -y,-z,-x\\rangle,\\quad (\\nabla\\times F)(1,-2,3)=\\langle 2,-3,-1\\rangle.\\]",
+   "finalAnswerLatex": "\\[\\operatorname{div}F=x+y+z,\\quad \\operatorname{div}F(1,-2,3)=2,\\qquad \\nabla\\times F=[-y,-z,-x],\\quad (\\nabla\\times F)(1,-2,3)=[2,-3,-1].\\]",
    "commonMistakes": [
     "Returning a vector for divergence.",
     "Returning a scalar for 3D curl.",
@@ -268,7 +268,7 @@
  "qualityControlNotes": [
   "Checked optimization values: interior minimum -5 at (1,2); corner maximum 3 at (3,0) and (3,4).",
   "Checked 2D divergence/curl: div=4xy, curl=y^2-x^2, values 8 and 3.",
-  "Checked 3D divergence/curl: div=x+y+z, curl=<-y,-z,-x>, values 2 and <2,-3,-1>.",
+  "Checked 3D divergence/curl: div=x+y+z, curl=[-y,-z,-x], values 2 and [2,-3,-1].",
   "Visual specs include exact points/values when possible."
  ],
  "reviewSummary": "Session 18 is ready with checked optimization and vector field examples.",
@@ -315,7 +315,7 @@
     "Absolute extrema: inside + edges + corners",
     "\\(\\operatorname{div}F=P_x+Q_y\\)",
     "2D curl \\(=Q_x-P_y\\)",
-    "\\(\\nabla\\times F=\\langle R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y\\rangle\\)"
+    "\\(\\nabla\\times F=[R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y]\\)"
    ]
   },
   "idea": {
@@ -471,7 +471,7 @@
       }
      },
      {
-      "say": "Curl: R_y \u2212 Q_z = 0 \u2212 y, P_z \u2212 R_x = 0 \u2212 z, Q_x \u2212 P_y = 0 \u2212 x. So \u2207 \u00d7 F = \u27e8\u2212y, \u2212z, \u2212x\u27e9.",
+      "say": "Curl: R_y \u2212 Q_z = 0 \u2212 y, P_z \u2212 R_x = 0 \u2212 z, Q_x \u2212 P_y = 0 \u2212 x. So \u2207 \u00d7 F = [\u2212y, \u2212z, \u2212x].",
       "ask": {
        "q": "Memory trick for the curl?",
        "a": "It's a cross product of \u2207 = (\u2202x, \u2202y, \u2202z) with F: a 3 \u00d7 3 determinant with i, j, k on top."
@@ -479,14 +479,14 @@
       "why": "The third component, Q_x \u2212 P_y, is exactly the 2D curl from the last problem."
      },
      {
-      "say": "At (1, \u22122, 3): \u27e82, \u22123, \u22121\u27e9.",
+      "say": "At (1, \u22122, 3): [2, \u22123, \u22121].",
       "ask": {
        "q": "What does this vector tell you?",
        "a": "The axis the flow spins around near that point, with its length measuring how fast."
       }
      }
     ],
-    "meaning": "Near (1, \u22122, 3) the flow spreads out a little and spins around the axis \u27e82, \u22123, \u22121\u27e9.",
+    "meaning": "Near (1, \u22122, 3) the flow spreads out a little and spins around the axis [2, \u22123, \u22121].",
     "ifStuck": [
      {
       "if": "a student mixes up the order of curl components",

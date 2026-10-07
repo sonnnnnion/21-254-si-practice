@@ -4,7 +4,7 @@
  "sectionPosition": 7,
  "course": "21-254 Vector Calculus and Linear Algebra for Engineers",
  "contentPolicyNote": "Original SI-style problems inspired by the uploaded course calendar, notes, and practice exams. Do not copy official homework or exam wording. Solutions are independently worked out and should be reviewed before publishing.",
- "studentFacingDescription": "Curves, partial derivatives, and gradients.",
+ "studentFacingDescription": "Motion along a path, slopes on a surface, and where the peaks and valleys are.",
  "siteBehavior": {
   "mode": "guided_solution_library",
   "recommendedFlow": [

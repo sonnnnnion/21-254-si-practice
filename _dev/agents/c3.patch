@@ -1,0 +1,628 @@
+diff -ru base5/index.html c3/index.html
+--- base5/index.html	2026-10-07 03:05:39
++++ c3/index.html	2026-10-07 12:31:46
+@@ -13113,12 +13113,12 @@
+   }).filter(Boolean);
+   // a small frame of axis directions through the solution, so x = a, y = b, z = c read as square to them
+   let o = "";
+-  const busy = [], lines = [];                          // spots and lines the planes' names keep away from
++  const busy = [], lines = [], axl = [];                // spots and lines the planes' names keep away from (axl: the axis letters)
+   [[1, 0, 0, "x"], [0, 1, 0, "y"], [0, 0, 1, "z"]].forEach(([a, b, c, nm]) => {
+     const tip = [C0[0] + 1.25 * a, C0[1] + 1.25 * b, C0[2] + 1.25 * c], T = pr(tip), S = pr(C0), L = Math.hypot(T[0] - S[0], T[1] - S[1]) || 1;
+     const at = [T[0] + (T[0] - S[0]) / L * 11, T[1] + (T[1] - S[1]) / L * 11];
+     o += `<g opacity=".5">${vzArrow3(cam, C0, tip, "G", 1.3)}</g>` + vzLabel(at[0], at[1] + 5, nm, VZ.grey, 14);
+-    busy.push(at);
++    busy.push(at); axl.push(at);
+   });
+   disks.slice().sort((a, b) => b.dep - a.dep).forEach(D => {
+     const on = D.i === hi ? (opt.hiW == null ? 1 : opt.hiW) : 0;      // the row being changed: brighter, rising and falling with its operation
+@@ -13171,6 +13171,7 @@
+       obst.forEach(q => { d = Math.min(d, dist(p, q, true) - 3); });
+       lines.forEach(q => { d = Math.min(d, dist(p, q, false) - 3); });
+       busy.forEach(z => { d = Math.min(d, Math.hypot(z[0] - p[0], z[1] - p[1]) * .7); });
++      axl.forEach(z => { d = Math.min(d, 2 * Math.max(Math.abs(z[0] - p[0]) - 15, Math.abs(z[1] - p[1]) - 16) + 6); });   // an axis letter: the two boxes must not touch
+       near.forEach(z => { d = Math.min(d, Math.hypot(z[0] - p[0], z[1] - p[1]) * .6); });
+       if (!obst.some(q => inside(p, q))) d += 10;
+       if (p[0] < 24 || p[0] > W - 24 || p[1] < 28 || p[1] > H - 40 || avoid.some(([x0, y0, x1, y1]) => p[0] > x0 && p[0] < x1 && p[1] > y0 && p[1] < y1)) d -= 40;
+@@ -13657,7 +13658,7 @@
+       const x = it.at[0] + ux * (gap + more) - uy * side, y = it.at[1] + uy * (gap + more - 4) + ux * side;
+       const d = Math.min(9, ...placed.map(p => Math.max(Math.abs(p[0] - x) / ((p[2] + w) / 2), Math.abs(p[1] - y) / (p[2] < 10 ? 16 : 28))));
+       const edge = x - w / 2 < 6 || x + w / 2 > W - 6 || y < top || y > H - 12 || (keyY < H && y > keyY && x - w / 2 < W * 5 / 6) ? 40 : 0;   // the edges, the caption, the key (it spans ~5/6 of the width)
+-      const sc = (d >= 1 ? 100 : d * 50) - i * 2 - edge + (mem && mem[key] === i ? 14 : 0);
++      const sc = (d >= (it.air || 1) ? 100 : d * 50) - i * 2 - edge + (mem && mem[key] === i ? 14 : 0);
+       if (sc > bs) { bs = sc; best = [x, y]; bi = i; }
+     });
+     if (it.op > .01) { if (mem) mem[key] = bi; placed.push([best[0], best[1], w]); o += `<g opacity="${q2(Math.min(1, it.op))}">${vzLabel(best[0], best[1] + 5, it.html, it.col, sz)}</g>`; }
+@@ -13754,7 +13755,7 @@
+   if (len(G.perp) > .3) items.push(Object.assign(midOf(G.sum, G.v), { id: "perp", html: nm.perp || (G.bad ? "v − sum" : vzB("v") + `<tspan>⊥</tspan><tspan font-style="normal" font-size="14">  length ${vzRootTxt(vzDot(G.perp, G.perp))}</tspan>`), col: VZ.deep, op: dist, gap: 10 }));
+   if (G.bad && len(sub(G.v, G.tru)) > .3) {
+     const T = pr(G.tru), Sm = pr(G.sum), dx = T[0] - Sm[0], dy = T[1] - Sm[1], L = Math.hypot(dx, dy) || 1;
+-    items.push({ id: "tru", at: [T[0], T[1]], dir: [dx / L, dy / L], html: "closest", col: VZ.ink, op: truS, size: 14 });   // (short: a long name has no clear spot between v, its drop and the sum)
++    items.push({ id: "tru", at: [T[0], T[1]], dir: [dx / L, dy / L], html: "closest", col: VZ.ink, op: truS, size: 14, air: 1.4 });   // (short: a long name has no clear spot between v, its drop and the sum)
+   }
+   // P and its equation, at the corner or edge of the patch farthest from every arrow (judged in the view at rest)
+   const prR = p => camR(p[0], p[1], p[2]), busy = [];
+@@ -16102,8 +16103,10 @@
+     let o = "";
+     quads.sort((A, B) => B.d - A.d).forEach(q => {
+       // shaded by which side faces you (the side the parameterization's normal points out of is red), softly near edge-on
+-      const k = vzClamp(q.face * 4, -1, 1), red = k > 0;
+-      o += `<path d="M${q.Q.map(p => P2(cam(...p))).join("L")}Z" fill="${red ? VZ.red : VZ.ink}" fill-opacity="${q2(.12 + .2 * Math.abs(k))}" stroke="#fff" stroke-opacity=".55" stroke-width=".6" stroke-linejoin="round"/>`;
++      // (an opaque tint, not a see-through fill: when Play starts over, the old drawing dissolves on top of the new one, and
++      // two see-through copies of the same strip stacked would flash darker)
++      const k = vzClamp(q.face * 4, -1, 1), red = k > 0, a = .12 + .2 * Math.abs(k), tint = [1, 3, 5].map((i2, j) => Math.round([0xFB, 0xF8, 0xF4][j] + (parseInt((red ? VZ.red : VZ.ink).slice(i2, i2 + 2), 16) - [0xFB, 0xF8, 0xF4][j]) * a).toString(16).padStart(2, "0")).join("");
++      o += `<path d="M${q.Q.map(p => P2(cam(...p))).join("L")}Z" fill="#${tint}" stroke="#fff" stroke-opacity=".55" stroke-width=".6" stroke-linejoin="round"/>`;
+     });
+     // the middle line and the walk along it
+     const T = 2 * Math.PI * vzClamp(s.t, 0, 1), mid = [], walked = [];
+@@ -16388,7 +16391,7 @@
+   presets: [["Triangle", { reg: 0 }], ["Between y = x² and y = 2x", { reg: 1 }], ["Under y = √x", { reg: 2 }]],
+   regions: [
+     { xs: [0, 2], ylo: x => x, yhi: () => 2, ys: [0, 2], xlo: () => 0, xhi: y => y, brk: 112,
+-      dydx: ["0", "2", "x", "2"], dxdy: ["0", "2", "0", "y"], curves: [[t => [t, t], [-.3, 2.3], "y = x", 2.3, [8, 4]], [t => [t, 2], [-.3, 2.4], "y = 2", 2.4, [8, 4]], [t => [0, t], [-.3, 2.4], "x = 0", 2.4, [-8, -6, "end"]]] },
++      dydx: ["0", "2", "x", "2"], dxdy: ["0", "2", "0", "y"], curves: [[t => [t, t], [-.3, 2.3], "y = x", 2.3, [8, 4]], [t => [t, 2], [-.3, 2.4], "y = 2", 2.4, [8, -9]], [t => [0, t], [-.3, 2.4], "x = 0", 2.4, [-8, -6, "end"]]] },
+     { xs: [0, 2], ylo: x => x * x, yhi: x => 2 * x, ys: [0, 4], xlo: y => y / 2, xhi: y => Math.sqrt(y),
+       dydx: ["0", "2", "x²", "2x"], dxdy: ["0", "4", "y/2", "√y"], curves: [[t => [t, t * t], [-.2, 2.12], "y = x²", 1.55, [10, 8]], [t => [t, 2 * t], [-.15, 2.2], "y = 2x", 1.1, [-10, -8, "end"]]] },
+     { xs: [0, 4], ylo: () => 0, yhi: x => Math.sqrt(x), ys: [0, 2], xlo: y => y * y, xhi: () => 4, dx: 0,
+diff -ru base5/walkthroughs/si_session_01_vectors_dot_products_walkthrough_reviewed.json c3/walkthroughs/si_session_01_vectors_dot_products_walkthrough_reviewed.json
+--- base5/walkthroughs/si_session_01_vectors_dot_products_walkthrough_reviewed.json	2026-09-30 15:59:23
++++ c3/walkthroughs/si_session_01_vectors_dot_products_walkthrough_reviewed.json	2026-10-07 12:38:34
+@@ -114,7 +114,7 @@
+     "Magnitude",
+     "Perpendicular check"
+    ],
+-   "studentPromptLatex": "Let \\(u=\\langle 3,-1,2\\rangle\\) and \\(v=\\langle -2,4,1\\rangle\\). Find \\(2u-v\\), compute \\(u\\cdot v\\), find \\(\\|u\\|\\), and decide whether \\(u\\) and \\(v\\) are perpendicular.",
++   "studentPromptLatex": "Let \\(u=[3,-1,2]\\) and \\(v=[-2,4,1]\\). Find \\(2u-v\\), compute \\(u\\cdot v\\), find \\(\\|u\\|\\), and decide whether \\(u\\) and \\(v\\) are perpendicular.",
+    "whatToSayBefore": "Ask: which parts of this problem give vectors, and which parts give numbers?",
+    "visualSpec": {
+     "type": "component_table",
+@@ -152,12 +152,12 @@
+    "walkthrough": [
+     {
+      "label": "Scale \\(u\\)",
+-     "latex": "2u=2\\langle 3,-1,2\\rangle=\\langle 6,-2,4\\rangle.",
++     "latex": "2u=2[3,-1,2]=[6,-2,4].",
+      "sayOutLoud": "Scalar multiplication just multiplies every component."
+     },
+     {
+      "label": "Subtract \\(v\\)",
+-     "latex": "2u-v=\\langle 6,-2,4\\rangle-\\langle -2,4,1\\rangle=\\langle 8,-6,3\\rangle.",
++     "latex": "2u-v=[6,-2,4]-[-2,4,1]=[8,-6,3].",
+      "sayOutLoud": "Be careful with the minus sign on the first component: 6 minus negative 2 is 8."
+     },
+     {
+@@ -176,7 +176,7 @@
+      "sayOutLoud": "Perpendicular would mean dot product exactly zero."
+     }
+    ],
+-   "finalAnswerLatex": "2u-v=\\langle 8,-6,3\\rangle,\\quad u\\cdot v=-8,\\quad \\|u\\|=\\sqrt{14},\\quad \\text{not perpendicular.}",
++   "finalAnswerLatex": "2u-v=[8,-6,3],\\quad u\\cdot v=-8,\\quad \\|u\\|=\\sqrt{14},\\quad \\text{not perpendicular.}",
+    "commonMistakes": [
+     "Subtracting \\(v\\) incorrectly: \\(6-(-2)=8\\), not 4.",
+     "Stopping at \\(u\\cdot v=-8\\) and saying perpendicular. It must be zero.",
+@@ -244,7 +244,7 @@
+     },
+     {
+      "label": "Subtract component by component",
+-     "latex": "\\overrightarrow{AB}=\\langle 5-1,\\;0-(-2),\\;-1-3\\rangle=\\langle 4,2,-4\\rangle.",
++     "latex": "\\overrightarrow{AB}=[5-1,\\;0-(-2),\\;-1-3]=[4,2,-4].",
+      "sayOutLoud": "This is the direction and displacement from A to B."
+     },
+     {
+@@ -254,11 +254,11 @@
+     },
+     {
+      "label": "Divide by the length to get a unit vector",
+-     "latex": "\\frac{\\overrightarrow{AB}}{\\|\\overrightarrow{AB}\\|}=\\frac{1}{6}\\langle 4,2,-4\\rangle=\\left\\langle \\frac{2}{3},\\frac{1}{3},-\\frac{2}{3}\\right\\rangle.",
++     "latex": "\\frac{\\overrightarrow{AB}}{\\|\\overrightarrow{AB}\\|}=\\frac{1}{6}[4,2,-4]=\\left[\\frac{2}{3},\\frac{1}{3},-\\frac{2}{3}\\right].",
+      "sayOutLoud": "A unit vector keeps the same direction but has length 1."
+     }
+    ],
+-   "finalAnswerLatex": "\\overrightarrow{AB}=\\langle 4,2,-4\\rangle,\\quad d(A,B)=6,\\quad \\hat{u}=\\left\\langle \\frac{2}{3},\\frac{1}{3},-\\frac{2}{3}\\right\\rangle.",
++   "finalAnswerLatex": "\\overrightarrow{AB}=[4,2,-4],\\quad d(A,B)=6,\\quad \\hat{u}=\\left[\\frac{2}{3},\\frac{1}{3},-\\frac{2}{3}\\right].",
+    "commonMistakes": [
+     "Using \\(A-B\\), which points from B to A instead.",
+     "Writing \\(AB\\) instead of \\(\\overrightarrow{AB}\\).",
+@@ -279,7 +279,7 @@
+     "Perpendicular vectors",
+     "Unit vector"
+    ],
+-   "studentPromptLatex": "Let \\(u=\\langle 2,1\\rangle\\) and \\(v=\\langle k,8\\rangle\\). Find \\(k\\) so that \\(u\\) and \\(v\\) are perpendicular. Then find a unit vector in the direction of \\(v\\).",
++   "studentPromptLatex": "Let \\(u=[2,1]\\) and \\(v=[k,8]\\). Find \\(k\\) so that \\(u\\) and \\(v\\) are perpendicular. Then find a unit vector in the direction of \\(v\\).",
+    "whatToSayBefore": "When a problem says perpendicular, immediately think dot product equals zero.",
+    "visualSpec": {
+     "type": "perpendicular_vectors_2d_exact",
+@@ -301,8 +301,8 @@
+     ],
+     "boardSketchInstructions": [
+      "Draw x-y axes.",
+-     "Draw \\(u=\\langle 2,1\\rangle\\) from the origin.",
+-     "After solving, draw \\(v=\\langle -4,8\\rangle\\) from the origin.",
++     "Draw \\(u=[2,1]\\) from the origin.",
++     "After solving, draw \\(v=[-4,8]\\) from the origin.",
+      "Mark a right-angle symbol between the two directions.",
+      "Write \\(u\\cdot v=0\\) beside the picture."
+     ],
+@@ -316,13 +316,13 @@
+     },
+     {
+      "label": "Set up the dot product",
+-     "latex": "\\langle 2,1\\rangle\\cdot \\langle k,8\\rangle=2k+8.",
++     "latex": "[2,1]\\cdot [k,8]=2k+8.",
+      "sayOutLoud": "Multiply matching components and add."
+     },
+     {
+      "label": "Set it equal to zero",
+      "latex": "2k+8=0\\quad \\Rightarrow\\quad 2k=-8\\quad \\Rightarrow\\quad k=-4.",
+-     "sayOutLoud": "Now the vector is \\(v=\\langle -4,8\\rangle\\)."
++     "sayOutLoud": "Now the vector is \\(v=[-4,8]\\)."
+     },
+     {
+      "label": "Find the length of \\(v\\)",
+@@ -331,11 +331,11 @@
+     },
+     {
+      "label": "Divide by the length",
+-     "latex": "\\hat{v}=\\frac{1}{4\\sqrt{5}}\\langle -4,8\\rangle=\\left\\langle -\\frac{1}{\\sqrt{5}},\\frac{2}{\\sqrt{5}}\\right\\rangle.",
++     "latex": "\\hat{v}=\\frac{1}{4\\sqrt{5}}[-4,8]=\\left[-\\frac{1}{\\sqrt{5}},\\frac{2}{\\sqrt{5}}\\right].",
+      "sayOutLoud": "This is the same direction as v, just length 1."
+     }
+    ],
+-   "finalAnswerLatex": "k=-4,\\quad v=\\langle -4,8\\rangle,\\quad \\hat{v}=\\left\\langle -\\frac{1}{\\sqrt{5}},\\frac{2}{\\sqrt{5}}\\right\\rangle.",
++   "finalAnswerLatex": "k=-4,\\quad v=[-4,8],\\quad \\hat{v}=\\left[-\\frac{1}{\\sqrt{5}},\\frac{2}{\\sqrt{5}}\\right].",
+    "commonMistakes": [
+     "Trying to use a picture before setting up the dot product.",
+     "Solving \\(2k+8=1\\) instead of \\(2k+8=0\\).",
+@@ -363,8 +363,8 @@
+  "qualityControlNotes": [
+   "All uses of vector AB should be written as \\(\\overrightarrow{AB}\\).",
+   "All dot product results in this session are scalars.",
+-  "Problem 2 was independently checked: \\(B-A=\\langle4,2,-4\\rangle\\), norm 6.",
+-  "Problem 3 was independently checked: k=-4 makes \\(\\langle2,1\\rangle\\cdot\\langle-4,8\\rangle=0\\).",
++  "Problem 2 was independently checked: \\(B-A=[4,2,-4]\\), norm 6.",
++  "Problem 3 was independently checked: k=-4 makes \\([2,1]\\cdot[-4,8]=0\\).",
+   "Visuals should be rendered as teaching sketches. Exact coordinates are provided in visualSpec; board drawings may be not to scale unless explicitly marked exact."
+  ],
+  "reviewStatus": "reviewed-and-cleaned",
+@@ -502,7 +502,7 @@
+     "meaning": "u and v point more than 90\u00b0 apart, since their dot product is negative. The length \u221a14 is how long the arrow u is in space.",
+     "ifStuck": [
+      {
+-      "if": "a student writes the dot product as \u27e8\u22126, \u22124, 2\u27e9",
++      "if": "a student writes the dot product as [\u22126, \u22124, 2]",
+       "then": "ask what the last step of the dot product is: add the products. The answer is one number."
+      }
+     ],
+@@ -533,9 +533,9 @@
+       "why": "Order matters for displacement vectors. It will matter again for line integrals and orientation later in the course."
+      },
+      {
+-      "say": "Subtract one component at a time: 5 \u2212 1, 0 \u2212 (\u22122), \u22121 \u2212 3. That gives \u27e84, 2, \u22124\u27e9.",
++      "say": "Subtract one component at a time: 5 \u2212 1, 0 \u2212 (\u22122), \u22121 \u2212 3. That gives [4, 2, \u22124].",
+       "ask": {
+-       "q": "What does \u27e84, 2, \u22124\u27e9 mean physically?",
++       "q": "What does [4, 2, \u22124] mean physically?",
+        "a": "To get from A to B you move 4 in x, 2 in y and \u22124 in z."
+       }
+      },
+@@ -554,7 +554,7 @@
+       }
+      }
+     ],
+-    "meaning": "The displacement \u27e84, 2, \u22124\u27e9 carries both the distance (6) and the direction. The unit vector keeps only the direction, which is what you want when a problem asks which way something points.",
++    "meaning": "The displacement [4, 2, \u22124] carries both the distance (6) and the direction. The unit vector keeps only the direction, which is what you want when a problem asks which way something points.",
+     "ifStuck": [
+      {
+       "if": "a student divides only the first component by 6",
+@@ -595,9 +595,9 @@
+       }
+      },
+      {
+-      "say": "Set it equal to zero: 2k = \u22128, so k = \u22124. Now v = \u27e8\u22124, 8\u27e9.",
++      "say": "Set it equal to zero: 2k = \u22128, so k = \u22124. Now v = [\u22124, 8].",
+       "ask": {
+-       "q": "Check it: what is \u27e82, 1\u27e9 \u00b7 \u27e8\u22124, 8\u27e9?",
++       "q": "Check it: what is [2, 1] \u00b7 [\u22124, 8]?",
+        "a": "\u22128 + 8 = 0."
+       }
+      },
+@@ -609,7 +609,7 @@
+       }
+      },
+      {
+-      "say": "Divide by 4\u221a5: the unit vector is \u27e8\u22121/\u221a5, 2/\u221a5\u27e9.",
++      "say": "Divide by 4\u221a5: the unit vector is [\u22121/\u221a5, 2/\u221a5].",
+       "ask": {
+        "q": "Is this still perpendicular to u?",
+        "a": "Yes. Scaling a vector does not change its direction, so it is still perpendicular to u."
+diff -ru base5/walkthroughs/si_session_18_optimization_vector_fields_divergence_curl_walkthrough.json c3/walkthroughs/si_session_18_optimization_vector_fields_divergence_curl_walkthrough.json
+--- base5/walkthroughs/si_session_18_optimization_vector_fields_divergence_curl_walkthrough.json	2026-10-06 23:26:47
++++ c3/walkthroughs/si_session_18_optimization_vector_fields_divergence_curl_walkthrough.json	2026-10-07 12:38:34
+@@ -39,9 +39,9 @@
+  "keyFormulas": [
+   "Interior critical points: solve \\(f_x=0\\) and \\(f_y=0\\).",
+   "For closed bounded regions: check interior points, edges, and corners.",
+-  "For \\(F=\\langle P,Q\\rangle\\), \\(\\operatorname{div}F=P_x+Q_y\\).",
+-  "For \\(F=\\langle P,Q\\rangle\\), scalar curl is \\(Q_x-P_y\\).",
+-  "For \\(F=\\langle P,Q,R\\rangle\\), \\(\\nabla\\times F=\\langle R_y-Q_z,\\,P_z-R_x,\\,Q_x-P_y\\rangle\\)."
++  "For \\(F=[P,Q]\\), \\(\\operatorname{div}F=P_x+Q_y\\).",
++  "For \\(F=[P,Q]\\), scalar curl is \\(Q_x-P_y\\).",
++  "For \\(F=[P,Q,R]\\), \\(\\nabla\\times F=[R_y-Q_z,\\,P_z-R_x,\\,Q_x-P_y]\\)."
+  ],
+  "commonMistakes": [
+   "Only checking the interior critical point and forgetting the boundary.",
+@@ -51,8 +51,8 @@
+   "Forgetting that 3D curl is a vector."
+  ],
+  "notationWarnings": [
+-  "For 2D fields, write \\(F=\\langle P,Q\\rangle\\) before computing divergence or curl.",
+-  "For 3D fields, write \\(F=\\langle P,Q,R\\rangle\\).",
++  "For 2D fields, write \\(F=[P,Q]\\) before computing divergence or curl.",
++  "For 3D fields, write \\(F=[P,Q,R]\\).",
+   "When checking absolute extrema, label interior, boundary, and corners separately."
+  ],
+  "problems": [
+@@ -137,7 +137,7 @@
+     "Divergence",
+     "Curl"
+    ],
+-   "studentPromptLatex": "Let \\(F(x,y)=\\langle x^2y,xy^2\\rangle\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\). Then evaluate both at \\((1,2)\\).",
++   "studentPromptLatex": "Let \\(F(x,y)=[x^2y,xy^2]\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\). Then evaluate both at \\((1,2)\\).",
+    "whatToSayBefore": "Say: name the components first. P is the first component and Q is the second component.",
+    "visualSpec": {
+     "type": "vector_field_div_curl_2d",
+@@ -191,7 +191,7 @@
+     "Divergence",
+     "Curl"
+    ],
+-   "studentPromptLatex": "Let \\(F(x,y,z)=\\langle xy,yz,zx\\rangle\\). Find \\(\\operatorname{div}F\\) and \\(\\nabla\\times F\\). Then evaluate both at \\((1,-2,3)\\).",
++   "studentPromptLatex": "Let \\(F(x,y,z)=[xy,yz,zx]\\). Find \\(\\operatorname{div}F\\) and \\(\\nabla\\times F\\). Then evaluate both at \\((1,-2,3)\\).",
+    "whatToSayBefore": "Say: in 3D, divergence is still one number, but curl becomes a vector.",
+    "visualSpec": {
+     "type": "vector_field_div_curl_3d",
+@@ -222,14 +222,14 @@
+     },
+     {
+      "label": "Compute curl",
+-     "latex": "\\[\\nabla\\times F=\\langle R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y\\rangle.\\] Here \\(P=xy\\), \\(Q=yz\\), and \\(R=zx\\), so \\[\\nabla\\times F=\\langle 0-y,\\;0-z,\\;0-x\\rangle=\\langle -y,-z,-x\\rangle.\\]"
++     "latex": "\\[\\nabla\\times F=[R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y].\\] Here \\(P=xy\\), \\(Q=yz\\), and \\(R=zx\\), so \\[\\nabla\\times F=[0-y,\\;0-z,\\;0-x]=[-y,-z,-x].\\]"
+     },
+     {
+      "label": "Evaluate curl at the point",
+-     "latex": "\\[(\\nabla\\times F)(1,-2,3)=\\langle 2,-3,-1\\rangle.\\]"
++     "latex": "\\[(\\nabla\\times F)(1,-2,3)=[2,-3,-1].\\]"
+     }
+    ],
+-   "finalAnswerLatex": "\\[\\operatorname{div}F=x+y+z,\\quad \\operatorname{div}F(1,-2,3)=2,\\qquad \\nabla\\times F=\\langle -y,-z,-x\\rangle,\\quad (\\nabla\\times F)(1,-2,3)=\\langle 2,-3,-1\\rangle.\\]",
++   "finalAnswerLatex": "\\[\\operatorname{div}F=x+y+z,\\quad \\operatorname{div}F(1,-2,3)=2,\\qquad \\nabla\\times F=[-y,-z,-x],\\quad (\\nabla\\times F)(1,-2,3)=[2,-3,-1].\\]",
+    "commonMistakes": [
+     "Returning a vector for divergence.",
+     "Returning a scalar for 3D curl.",
+@@ -268,7 +268,7 @@
+  "qualityControlNotes": [
+   "Checked optimization values: interior minimum -5 at (1,2); corner maximum 3 at (3,0) and (3,4).",
+   "Checked 2D divergence/curl: div=4xy, curl=y^2-x^2, values 8 and 3.",
+-  "Checked 3D divergence/curl: div=x+y+z, curl=<-y,-z,-x>, values 2 and <2,-3,-1>.",
++  "Checked 3D divergence/curl: div=x+y+z, curl=[-y,-z,-x], values 2 and [2,-3,-1].",
+   "Visual specs include exact points/values when possible."
+  ],
+  "reviewSummary": "Session 18 is ready with checked optimization and vector field examples.",
+@@ -315,7 +315,7 @@
+     "Absolute extrema: inside + edges + corners",
+     "\\(\\operatorname{div}F=P_x+Q_y\\)",
+     "2D curl \\(=Q_x-P_y\\)",
+-    "\\(\\nabla\\times F=\\langle R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y\\rangle\\)"
++    "\\(\\nabla\\times F=[R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y]\\)"
+    ]
+   },
+   "idea": {
+@@ -471,7 +471,7 @@
+       }
+      },
+      {
+-      "say": "Curl: R_y \u2212 Q_z = 0 \u2212 y, P_z \u2212 R_x = 0 \u2212 z, Q_x \u2212 P_y = 0 \u2212 x. So \u2207 \u00d7 F = \u27e8\u2212y, \u2212z, \u2212x\u27e9.",
++      "say": "Curl: R_y \u2212 Q_z = 0 \u2212 y, P_z \u2212 R_x = 0 \u2212 z, Q_x \u2212 P_y = 0 \u2212 x. So \u2207 \u00d7 F = [\u2212y, \u2212z, \u2212x].",
+       "ask": {
+        "q": "Memory trick for the curl?",
+        "a": "It's a cross product of \u2207 = (\u2202x, \u2202y, \u2202z) with F: a 3 \u00d7 3 determinant with i, j, k on top."
+@@ -479,14 +479,14 @@
+       "why": "The third component, Q_x \u2212 P_y, is exactly the 2D curl from the last problem."
+      },
+      {
+-      "say": "At (1, \u22122, 3): \u27e82, \u22123, \u22121\u27e9.",
++      "say": "At (1, \u22122, 3): [2, \u22123, \u22121].",
+       "ask": {
+        "q": "What does this vector tell you?",
+        "a": "The axis the flow spins around near that point, with its length measuring how fast."
+       }
+      }
+     ],
+-    "meaning": "Near (1, \u22122, 3) the flow spreads out a little and spins around the axis \u27e82, \u22123, \u22121\u27e9.",
++    "meaning": "Near (1, \u22122, 3) the flow spreads out a little and spins around the axis [2, \u22123, \u22121].",
+     "ifStuck": [
+      {
+       "if": "a student mixes up the order of curl components",
+diff -ru base5/walkthroughs/si_session_19_line_integrals_conservative_fields_path_independence_walkthrough.json c3/walkthroughs/si_session_19_line_integrals_conservative_fields_path_independence_walkthrough.json
+--- base5/walkthroughs/si_session_19_line_integrals_conservative_fields_path_independence_walkthrough.json	2026-10-06 23:26:47
++++ c3/walkthroughs/si_session_19_line_integrals_conservative_fields_path_independence_walkthrough.json	2026-10-07 12:38:34
+@@ -36,7 +36,7 @@
+  "keyFormulas": [
+   "Scalar line integral: \\(\\int_C g\\,ds=\\int_a^b g(r(t))\\|r'(t)\\|\\,dt\\).",
+   "Vector line integral: \\(\\int_C F\\cdot dr=\\int_a^b F(r(t))\\cdot r'(t)\\,dt\\).",
+-  "For \\(F=\\langle P,Q\\rangle\\), conservative usually means \\(P_y=Q_x\\) on a nice region.",
++  "For \\(F=[P,Q]\\), conservative usually means \\(P_y=Q_x\\) on a nice region.",
+   "If \\(F=\\nabla f\\), then \\(\\int_C F\\cdot dr=f(\\text{end})-f(\\text{start})\\)."
+  ],
+  "commonMistakes": [
+@@ -123,7 +123,7 @@
+     "Parametrized curve",
+     "Dot product"
+    ],
+-   "studentPromptLatex": "Let \\(F(x,y)=\\langle y,x\\rangle\\) and let \\(C\\) be \\(r(t)=(t,t^2)\\), \\(0\\le t\\le1\\). Compute \\(\\int_C F\\cdot dr\\) directly.",
++   "studentPromptLatex": "Let \\(F(x,y)=[y,x]\\) and let \\(C\\) be \\(r(t)=(t,t^2)\\), \\(0\\le t\\le1\\). Compute \\(\\int_C F\\cdot dr\\) directly.",
+    "whatToSayBefore": "Say: for \\(F\\cdot dr\\), the recipe is field along the curve dotted with velocity.",
+    "visualSpec": {
+     "type": "vector_line_integral_curve",
+@@ -140,7 +140,7 @@
+     "drawInstructions": [
+      "Draw the parabola y=x^2 from (0,0) to (1,1).",
+      "Put arrows on the curve from left to right.",
+-     "Draw a few field arrows F=<y,x> near the curve.",
++     "Draw a few field arrows F=[y,x] near the curve.",
+      "Write F(r(t)) dot r'(t) beside the picture."
+     ]
+    },
+@@ -151,11 +151,11 @@
+     },
+     {
+      "label": "Plug the curve into the field",
+-     "latex": "Along the curve, \\(x=t\\) and \\(y=t^2\\), so \\[F(r(t))=\\langle t^2,t\\rangle.\\]"
++     "latex": "Along the curve, \\(x=t\\) and \\(y=t^2\\), so \\[F(r(t))=[t^2,t].\\]"
+     },
+     {
+      "label": "Dot with velocity",
+-     "latex": "\\[F(r(t))\\cdot r'(t)=\\langle t^2,t\\rangle\\cdot\\langle1,2t\\rangle=t^2+2t^2=3t^2.\\]"
++     "latex": "\\[F(r(t))\\cdot r'(t)=[t^2,t]\\cdot[1,2t]=t^2+2t^2=3t^2.\\]"
+     },
+     {
+      "label": "Integrate",
+@@ -184,7 +184,7 @@
+     "Potential functions",
+     "Path independence"
+    ],
+-   "studentPromptLatex": "Let \\(F(x,y)=\\langle 2xy+3,x^2+4y\\rangle\\). Show that \\(F\\) is conservative, find a potential function \\(\\phi\\), and compute \\(\\int_C F\\cdot dr\\) from \\((0,1)\\) to \\((2,-1)\\).",
++   "studentPromptLatex": "Let \\(F(x,y)=[2xy+3,x^2+4y]\\). Show that \\(F\\) is conservative, find a potential function \\(\\phi\\), and compute \\(\\int_C F\\cdot dr\\) from \\((0,1)\\) to \\((2,-1)\\).",
+    "whatToSayBefore": "Say: if the field is conservative, the path itself does not matter. Only the start and end points matter.",
+    "visualSpec": {
+     "type": "conservative_field_endpoints",
+@@ -410,7 +410,7 @@
+       }
+      },
+      {
+-      "say": "On the curve, F = \u27e8y, x\u27e9 becomes \u27e8t\u00b2, t\u27e9.",
++      "say": "On the curve, F = [y, x] becomes [t\u00b2, t].",
+       "ask": {
+        "q": "Why do we have to substitute?",
+        "a": "We only care about F at points on the curve."
+diff -ru base5/walkthroughs/si_session_20_exam3_review_walkthrough.json c3/walkthroughs/si_session_20_exam3_review_walkthrough.json
+--- base5/walkthroughs/si_session_20_exam3_review_walkthrough.json	2026-10-06 23:26:47
++++ c3/walkthroughs/si_session_20_exam3_review_walkthrough.json	2026-10-07 12:35:52
+@@ -40,7 +40,7 @@
+   "\\(L=\\int_a^b\\|r'(t)\\|dt\\).",
+   "\\(D_uf=\\nabla f\\cdot u\\), where \\(u\\) is a unit vector.",
+   "\\(z=f(a,b)+f_x(a,b)(x-a)+f_y(a,b)(y-b)\\).",
+-  "\\(\\operatorname{div}\\langle P,Q\\rangle=P_x+Q_y\\).",
++  "\\(\\operatorname{div}[P,Q]=P_x+Q_y\\).",
+   "\\(\\operatorname{curl}_{2D}=Q_x-P_y\\).",
+   "If \\(F=\\nabla\\phi\\), then \\(\\int_C F\\cdot dr=\\phi(\\text{end})-\\phi(\\text{start})\\)."
+  ],
+@@ -247,7 +247,7 @@
+     "Curl",
+     "2D vector fields"
+    ],
+-   "studentPromptLatex": "Let \\(F(x,y)=\\langle x^2-y,xy\\rangle\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\), then evaluate both at \\((2,-1)\\).",
++   "studentPromptLatex": "Let \\(F(x,y)=[x^2-y,xy]\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\), then evaluate both at \\((2,-1)\\).",
+    "whatToSayBefore": "Say: name P and Q first. That prevents most mistakes.",
+    "visualSpec": {
+     "type": "vector_field_div_curl_2d",
+@@ -300,7 +300,7 @@
+     "Potential functions",
+     "Line integrals"
+    ],
+-   "studentPromptLatex": "Let \\(F(x,y)=\\langle 2xy+1,x^2+3y^2\\rangle\\). Compute \\(\\int_C F\\cdot dr\\) from \\((1,0)\\) to \\((2,1)\\), assuming \\(C\\) is any smooth path between the points.",
++   "studentPromptLatex": "Let \\(F(x,y)=[2xy+1,x^2+3y^2]\\). Compute \\(\\int_C F\\cdot dr\\) from \\((1,0)\\) to \\((2,1)\\), assuming \\(C\\) is any smooth path between the points.",
+    "whatToSayBefore": "Say: because it says any smooth path, we should check whether the field is conservative.",
+    "visualSpec": {
+     "type": "conservative_field_endpoints",
+diff -ru base5/walkthroughs/si_session_22_exam4_review_walkthrough_FIXED.json c3/walkthroughs/si_session_22_exam4_review_walkthrough_FIXED.json
+--- base5/walkthroughs/si_session_22_exam4_review_walkthrough_FIXED.json	2026-10-06 23:26:47
++++ c3/walkthroughs/si_session_22_exam4_review_walkthrough_FIXED.json	2026-10-07 12:38:34
+@@ -27,7 +27,7 @@
+  "sayThisFirst": [
+   "For surfaces, the picture and orientation matter first.",
+   "A scalar surface integral uses \\(dS\\). A flux integral uses a normal vector.",
+-  "For graphs \\(z=f(x,y)\\), upward normal area vector is \\(\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
++  "For graphs \\(z=f(x,y)\\), upward normal area vector is \\([-f_x,-f_y,1]\\,dA\\).",
+   "Stokes' Theorem changes a surface integral of curl into a line integral around the boundary.",
+   "Green's Theorem is the 2D version: boundary circulation equals interior curl."
+  ],
+@@ -41,8 +41,8 @@
+  ],
+  "keyFormulas": [
+   "Graph surface area element: \\(dS=\\sqrt{1+f_x^2+f_y^2}\\,dA\\).",
+-  "Upward graph normal vector: \\(\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
+-  "Flux: \\(\\iint_S F\\cdot n\\,dS\\), or \\(\\iint_D F(x,y,f(x,y))\\cdot\\langle -f_x,-f_y,1\\rangle\\,dA\\).",
++  "Upward graph normal vector: \\([-f_x,-f_y,1]\\,dA\\).",
++  "Flux: \\(\\iint_S F\\cdot n\\,dS\\), or \\(\\iint_D F(x,y,f(x,y))\\cdot[-f_x,-f_y,1]\\,dA\\).",
+   "Stokes: \\(\\iint_S (\\nabla\\times F)\\cdot n\\,dS=\\oint_{\\partial S}F\\cdot dr\\).",
+   "Cylindrical coordinates: \\(x=r\\cos\\theta\\), \\(y=r\\sin\\theta\\), \\(dV=r\\,dz\\,dr\\,d\\theta\\).",
+   "Green: \\(\\oint_C P\\,dx+Q\\,dy=\\iint_D(Q_x-P_y)\\,dA\\)."
+@@ -129,15 +129,15 @@
+     "Graph normal",
+     "Polar coordinates"
+    ],
+-   "studentPromptLatex": "Let \\(S\\) be the paraboloid \\(z=4-x^2-y^2\\) above the disk \\(x^2+y^2\\le1\\), oriented upward. Let \\(F(x,y,z)=\\langle x,y,z\\rangle\\). Compute the flux \\(\\iint_S F\\cdot n\\,dS\\).",
+-   "whatToSayBefore": "Say: for a graph with upward orientation, use the vector area element \\(\\langle -f_x,-f_y,1\\rangle dA\\).",
++   "studentPromptLatex": "Let \\(S\\) be the paraboloid \\(z=4-x^2-y^2\\) above the disk \\(x^2+y^2\\le1\\), oriented upward. Let \\(F(x,y,z)=[x,y,z]\\). Compute the flux \\(\\iint_S F\\cdot n\\,dS\\).",
++   "whatToSayBefore": "Say: for a graph with upward orientation, use the vector area element \\([-f_x,-f_y,1] dA\\).",
+    "visualSpec": {
+     "type": "flux_graph_upward_paraboloid",
+     "surface": "z=4-x^2-y^2",
+     "baseRegion": "unit disk",
+     "orientation": "upward",
+     "field": "F=<x,y,z>",
+-    "normalAreaVector": "<2x,2y,1>",
++    "normalAreaVector": "[2x,2y,1]",
+     "integrandOnDisk": "4+x^2+y^2",
+     "polarBounds": {
+      "r": [
+@@ -154,22 +154,22 @@
+      "Draw a downward-opening paraboloid above the unit disk.",
+      "Draw upward normal arrows on the surface.",
+      "Write f_x=-2x and f_y=-2y.",
+-     "Write upward vector area element <2x,2y,1>dA.",
++     "Write upward vector area element [2x,2y,1]dA.",
+      "Switch to polar for the unit disk."
+     ]
+    },
+    "walkthrough": [
+     {
+      "label": "Find the upward vector area element",
+-     "latex": "Let \\(f(x,y)=4-x^2-y^2\\). Then \\(f_x=-2x\\) and \\(f_y=-2y\\). For upward orientation, \\[\\langle -f_x,-f_y,1\\rangle\\,dA=\\langle 2x,2y,1\\rangle\\,dA.\\]"
++     "latex": "Let \\(f(x,y)=4-x^2-y^2\\). Then \\(f_x=-2x\\) and \\(f_y=-2y\\). For upward orientation, \\[[-f_x,-f_y,1]\\,dA=[2x,2y,1]\\,dA.\\]"
+     },
+     {
+      "label": "Plug the surface into the vector field",
+-     "latex": "On the surface, \\[F(x,y,f(x,y))=\\langle x,y,4-x^2-y^2\\rangle.\\]"
++     "latex": "On the surface, \\[F(x,y,f(x,y))=[x,y,4-x^2-y^2].\\]"
+     },
+     {
+      "label": "Dot with the vector area element",
+-     "latex": "\\[F\\cdot\\langle 2x,2y,1\\rangle=2x^2+2y^2+4-x^2-y^2=4+x^2+y^2.\\]"
++     "latex": "\\[F\\cdot[2x,2y,1]=2x^2+2y^2+4-x^2-y^2=4+x^2+y^2.\\]"
+     },
+     {
+      "label": "Integrate over the unit disk",
+@@ -182,7 +182,7 @@
+    ],
+    "finalAnswerLatex": "\\[\\boxed{\\frac{9\\pi}{2}}\\]",
+    "commonMistakes": [
+-    "Using \\(\\langle f_x,f_y,-1\\rangle\\) for upward orientation. That is downward.",
++    "Using \\([f_x,f_y,-1]\\) for upward orientation. That is downward.",
+     "Forgetting to plug \\(z=4-x^2-y^2\\) into \\(F\\).",
+     "Forgetting the polar Jacobian \\(r\\)."
+    ],
+@@ -202,7 +202,7 @@
+     "Curl",
+     "Boundary orientation"
+    ],
+-   "studentPromptLatex": "Let \\(F(x,y,z)=\\langle -y,x,z\\rangle\\). Let \\(S\\) be the disk \\(x^2+y^2\\le4\\) in the plane \\(z=3\\), oriented upward. Compute \\(\\iint_S(\\nabla\\times F)\\cdot n\\,dS\\).",
++   "studentPromptLatex": "Let \\(F(x,y,z)=[-y,x,z]\\). Let \\(S\\) be the disk \\(x^2+y^2\\le4\\) in the plane \\(z=3\\), oriented upward. Compute \\(\\iint_S(\\nabla\\times F)\\cdot n\\,dS\\).",
+    "whatToSayBefore": "Say: Stokes lets us use the boundary, but here the curl is so simple that the surface integral is also fast.",
+    "visualSpec": {
+     "type": "stokes_disk_upward",
+@@ -210,25 +210,25 @@
+     "orientation": "upward normal",
+     "boundaryOrientation": "counterclockwise when viewed from above",
+     "field": "F=<-y,x,z>",
+-    "curl": "<0,0,2>",
++    "curl": "[0,0,2]",
+     "area": "4pi",
+     "integralValue": "8pi",
+     "drawInstructions": [
+      "Draw the disk in the horizontal plane z=3.",
+      "Draw upward normal arrows.",
+      "Draw counterclockwise arrows on the circular boundary when viewed from above.",
+-     "Write curl F=<0,0,2>.",
++     "Write curl F=[0,0,2].",
+      "Write: dot with the upward normal gives 2, then multiply by the disk area \\(4\\pi\\)."
+     ]
+    },
+    "walkthrough": [
+     {
+      "label": "Compute the curl",
+-     "latex": "For \\(F=\\langle P,Q,R\\rangle=\\langle -y,x,z\\rangle\\), \\[\\nabla\\times F=\\langle R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y\\rangle=\\langle 0-0,\\;0-0,\\;1-(-1)\\rangle=\\langle0,0,2\\rangle.\\]"
++     "latex": "For \\(F=[P,Q,R]=[-y,x,z]\\), \\[\\nabla\\times F=[R_y-Q_z,\\;P_z-R_x,\\;Q_x-P_y]=[0-0,\\;0-0,\\;1-(-1)]=[0,0,2].\\]"
+     },
+     {
+      "label": "Use the upward normal",
+-     "latex": "The disk is horizontal and oriented upward, so \\(n=\\langle0,0,1\\rangle\\). Thus \\[(\\nabla\\times F)\\cdot n=\\langle0,0,2\\rangle\\cdot\\langle0,0,1\\rangle=2.\\]"
++     "latex": "The disk is horizontal and oriented upward, so \\(n=[0,0,1]\\). Thus \\[(\\nabla\\times F)\\cdot n=[0,0,2]\\cdot[0,0,1]=2.\\]"
+     },
+     {
+      "label": "Integrate over the disk",
+@@ -422,7 +422,7 @@
+  "qualityControlNotes": [
+   "Checked scalar surface integral: dS=sqrt(6)dA and value 5sqrt(6).",
+   "Checked flux through paraboloid: integrand 4+r^2 and value 9pi/2.",
+-  "Checked Stokes/curl problem: curl=<0,0,2>, disk area 4pi, value 8pi.",
++  "Checked Stokes/curl problem: curl=[0,0,2], disk area 4pi, value 8pi.",
+   "Checked cylindrical triple integral: bounds z from 0 to r^2, value 32pi/3.",
+   "Checked Green's Theorem clockwise triangle: CCW value 2, clockwise value -2.",
+   "Visual specs include exact regions, orientations, normal directions, and theorem-specific labels."
+@@ -477,7 +477,7 @@
+    ],
+    "write": [
+     "\\(dS=\\sqrt{1+f_x^2+f_y^2}\\,dA\\)",
+-    "upward flux: \\(F\\cdot\\langle -f_x,-f_y,1\\rangle\\,dA\\)",
++    "upward flux: \\(F\\cdot[-f_x,-f_y,1]\\,dA\\)",
+     "Stokes: \\(\\displaystyle\\iint_S(\\nabla\\times F)\\cdot n\\,dS=\\oint_{\\partial S}F\\cdot dr\\)",
+     "\\(dV=r\\,dz\\,dr\\,d\\theta\\)"
+    ]
+@@ -558,10 +558,10 @@
+    },
+    "si22-p2": {
+     "launch": {
+-     "say": "Find the upward flux of F = \u27e8x, y, z\u27e9 through the paraboloid cap.",
++     "say": "Find the upward flux of F = [x, y, z] through the paraboloid cap.",
+      "tryMinutes": 6,
+      "circulate": [
+-      "Upward: \\(\\langle -f_x,-f_y,1\\rangle=\\langle 2x,2y,1\\rangle\\).",
++      "Upward: \\([-f_x,-f_y,1]=[2x,2y,1]\\).",
+       "Check z was replaced by 4 \u2212 x\u00b2 \u2212 y\u00b2.",
+       "Polar at the end, with the extra r."
+      ]
+@@ -575,14 +575,14 @@
+     "visualize": "polar",
+     "steps": [
+      {
+-      "say": "f_x = \u22122x, f_y = \u22122y. Upward: \u27e82x, 2y, 1\u27e9 dA.",
++      "say": "f_x = \u22122x, f_y = \u22122y. Upward: [2x, 2y, 1] dA.",
+       "ask": {
+        "q": "How do you know it's upward?",
+        "a": "The z-component is +1."
+       }
+      },
+      {
+-      "say": "On the surface, F = \u27e8x, y, 4 \u2212 x\u00b2 \u2212 y\u00b2\u27e9.",
++      "say": "On the surface, F = [x, y, 4 \u2212 x\u00b2 \u2212 y\u00b2].",
+       "ask": {
+        "q": "What does F look like?",
+        "a": "Arrows pointing straight out from the origin."
+@@ -614,7 +614,7 @@
+     "meaning": "The field points away from the origin, so it pushes out through the dome. Adding up that push over the whole cap gives 9\u03c0/2.",
+     "ifStuck": [
+      {
+-      "if": "a student uses \\(\\langle f_x,f_y,-1\\rangle\\)",
++      "if": "a student uses \\([f_x,f_y,-1]\\)",
+       "then": "check its z-component: it points down."
+      }
+     ],
+@@ -639,14 +639,14 @@
+     "visualize": "fields",
+     "steps": [
+      {
+-      "say": "\u2207 \u00d7 \u27e8\u2212y, x, z\u27e9 = \u27e80, 0, 1 \u2212 (\u22121)\u27e9 = \u27e80, 0, 2\u27e9.",
++      "say": "\u2207 \u00d7 [\u2212y, x, z] = [0, 0, 1 \u2212 (\u22121)] = [0, 0, 2].",
+       "ask": {
+-       "q": "What does \u27e80, 0, 2\u27e9 say?",
++       "q": "What does [0, 0, 2] say?",
+        "a": "The field spins counterclockwise around the vertical axis, the same amount everywhere."
+       }
+      },
+      {
+-      "say": "Flat disk, upward: n = \u27e80, 0, 1\u27e9, so (\u2207 \u00d7 F) \u00b7 n = 2.",
++      "say": "Flat disk, upward: n = [0, 0, 1], so (\u2207 \u00d7 F) \u00b7 n = 2.",
+       "ask": {
+        "q": "Why is n so simple?",
+        "a": "The disk is horizontal."

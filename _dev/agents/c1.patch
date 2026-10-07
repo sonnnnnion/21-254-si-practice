@@ -1,0 +1,376 @@
+diff -ru base5/index.html c1/index.html
+--- base5/index.html	2026-10-07 03:05:39
++++ c1/index.html	2026-10-07 12:06:36
+@@ -1441,6 +1441,7 @@
+     color: var(--red-deep);
+     border-color: rgba(200,16,46,.2);
+   }
++  .pill.start-here { background: var(--ink); color: #fff; }
+   .pill.status-report {
+     background: #FBF3DF;
+     color: #7A5B0F;
+@@ -1760,6 +1761,26 @@
+   .g-answer .final-answer-box { margin-top: 0; }
+   .g-answer .g-content { padding-bottom: 8px; }
+ 
++  /* Common mistakes: a quiet fold under the final answer, closed until the student asks */
++  .cm-fold { margin: 10px 0 2px; color: var(--ink-soft); }
++  .cm-fold summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; padding: 4px 0; font: 600 13px var(--font-sans); color: var(--ink-mute); }
++  .cm-fold summary::-webkit-details-marker { display: none; }
++  .cm-fold summary::before { content: "+"; display: inline-block; width: 16px; font-weight: 800; color: var(--gold); }
++  .cm-fold[open] summary::before { content: "\2212"; }
++  .cm-fold summary:hover, .cm-fold summary:focus-visible { color: var(--red-deep); }
++  .cm-list { margin: 4px 0 2px; padding-left: 36px; }
++  .cm-list li { margin: 5px 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-soft); }
++  .cm-list li::marker { color: var(--ink-faint); }
++  .cm-list .math-block { font-size: inherit; line-height: inherit; color: inherit; }
++  .cm-fold[open] .cm-list { animation: gRise .35s var(--ease-out) both; }
++
++  /* "Check final answer": the answer alone, under the next-step row, without opening any step */
++  .g-peek { display: grid; grid-template-rows: 0fr; visibility: hidden; padding-left: 46px; transition: grid-template-rows .5s var(--ease-out), visibility 0s linear .5s; }
++  .g-peek.shown { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .5s var(--ease-out), visibility 0s; }
++  .g-peek-in { min-height: 0; overflow: hidden; }
++  .g-peek .final-answer-box { margin: 10px 0 4px; }
++  .g-peek.shown .final-answer-box { animation: gRise .5s var(--ease-out) both; }
++
+   /* the next step waits at the end of the rail */
+   .g-next-row { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding-left: 46px; min-height: 44px; }
+   .g-next-row[hidden] { display: none; }
+@@ -1802,7 +1823,8 @@
+   @media (max-width: 640px) {
+     .guide-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+     .gt-seg span { font-size: 10.5px; }
+-    .g-inner, .g-next-row { padding-left: 40px; }
++    .g-inner, .g-next-row, .g-peek { padding-left: 40px; }
++    .cm-list { padding-left: 30px; }
+     .g-end { padding-left: 56px; }
+   }
+ 
+@@ -1879,8 +1901,12 @@
+     display: flex;
+     flex-direction: column;
+     gap: 14px;
++    /* on a short window the sidebar scrolls inside itself (and stops above the pop-up and QR button) instead of being cut off */
++    max-height: calc(100vh - var(--nav-h) - 18px - 140px);
++    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
++    padding: 3px; margin: -3px;
+   }
+-  @media (max-width: 980px) { .study-side { position: static; } }
++  @media (max-width: 980px) { .study-side { position: static; max-height: none; overflow: visible; } }
+   .side-card {
+     background: var(--surface);
+     border: 1px solid var(--border);
+@@ -1952,6 +1978,8 @@
+     border-color: var(--ink);
+   }
+   .choice.red.selected { background: var(--red); border-color: var(--red); }
++  .exam-est { margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-mute); }
++  .exam-est b { color: var(--ink); font-weight: 600; }
+ 
+   .pill.pill-lec { background: var(--surface); border-color: var(--border-strong); color: var(--ink-soft); }
+   /* Exam run */
+@@ -2282,7 +2310,7 @@
+     opacity: 0;
+     transform: translateY(8px);
+     transition: opacity 0.22s var(--ease-out), transform 0.22s var(--ease-out);
+-    pointer-events: auto;
++    pointer-events: none;            /* a pop-up never blocks the button under it */
+     min-width: 160px;
+     max-width: 320px;
+     display: flex;
+@@ -4270,7 +4298,7 @@
+ 
+     /* open every collapse */
+     .walk-reveal-body { display: block !important; }
+-    .guide-tools, .guide-track, .g-next-row { display: none !important; }
++    .guide-tools, .guide-track, .g-next-row, .g-peek { display: none !important; }
+     .no-print, .sg-run { display: none !important; }
+     .sg-grid { display: block !important; }
+     .sg-aside { position: static !important; margin-top: 16px; }
+@@ -5586,6 +5614,7 @@
+           <button class="choice selected" data-size-pick="8">8</button>
+           <button class="choice" data-size-pick="10">10</button>
+         </div>
++        <div class="exam-est" id="examEst" hidden></div>
+ 
+         <div style="margin-top: 24px; display:flex; gap:10px; flex-wrap: wrap;">
+           <button class="btn btn-red" id="examGenerate">Start practice exam <span class="arrow">→</span></button>
+@@ -5981,7 +6010,7 @@
+   try { history.replaceState(null, "", location.pathname + (location.hash === "#/si" ? "" : location.hash)); } catch (_) {}
+ }
+ const NAV_BOOT = Date.now().toString(36);
+-const LIST_ROUTE = /^\/(topics|section\/\d+|review|walkthroughs|visualize)$/;
++const LIST_ROUTE = /^\/(topics|section\/\d+|review|walkthroughs|visualize|exam\/run\/done)$/;
+ const scrollByEntry = new Map(), scrollByRoute = new Map();
+ let navSeq = 0, currentNavKey = null, currentNavRoute = null;
+ try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (_) {}
+@@ -6335,7 +6364,8 @@
+   }
+   else if (head === "problem" && parts[1]) {
+     $("#view-problem").classList.add("active"); markNav("/topics");
+-    renderProblem(parts[1]);
++    const pq = parts[1].split("?");                                   // #/problem/ID?from=review|exam
++    renderProblem(pq[0], new URLSearchParams(pq[1] || "").get("from"));
+   }
+   else if (head === "visualize") { $("#view-visualize").classList.add("active"); markNav("/visualize"); renderVisualize(parts[1]); }
+   else if (head === "exam" && parts[1] === "run") { $("#view-examrun").classList.add("active"); markNav("/exam"); renderExamRun(parts[2]); }
+@@ -6386,7 +6416,7 @@
+    ============================================================ */
+ let lastCountedPath = null, qrCounted = false;
+ function countRoute() {
+-  const p = location.hash ? location.hash.replace(/^#/, "") : "/home";
++  const p = (location.hash ? location.hash.replace(/^#/, "") : "/home").replace(/\?.*$/, "");
+   if (p === lastCountedPath) return;                 // de-dupe repeated handleRoute() calls
+   if (window.goatcounter && typeof window.goatcounter.count === "function") {
+     lastCountedPath = p;
+@@ -6911,6 +6941,8 @@
+     return;
+   }
+ 
++  // "Start here": the section's first warm-up or core problem (where it sits in the list never changes)
++  const startP = section.problems.find(q => /warm|core/i.test(q.difficulty || ""));
+   list.innerHTML = problems.map((p, idx) => {
+     const st = getStatus(p.id);
+     return `
+@@ -6924,6 +6956,7 @@
+         </div>
+       </div>
+       <div class="prob-row-right">
++        ${startP && p.id === startP.id && !st ? `<span class="pill start-here">Start here</span>` : ""}
+         ${p.difficulty ? `<span class="pill ${classForDifficulty(p.difficulty)}">${escapeHtml(p.difficulty)}</span>` : ""}
+         ${st === "got" ? `<span class="pill status-got">Got it</span>` : ""}
+         ${st === "review" ? `<span class="pill status-review">Review</span>` : ""}
+@@ -11596,7 +11629,22 @@
+     </div>`;
+ }
+ 
+-function renderProblem(problemId) {
++// Where the student came from. Opened from Need Review or the exam results, Back and Prev/Next follow that list.
++// The route carries it (#/problem/ID?from=review), nothing is remembered, so every other way in is unchanged.
++function problemContext(p, from) {
++  if (from === "review") {
++    const status = getStatusMap(), ids = [];
++    State.sectionsData.forEach(s => s.problems.forEach(q => { if (status[q.id] === "review" || q.id === p.id) ids.push(q.id); }));
++    return { from, ids, listName: "Need Review", backLabel: "Back to Need Review", backRoute: "/review" };
++  }
++  if (from === "exam") {
++    const r = getExamRun();    // only a finished run has a results page to go back to
++    if (r && r.endedAt && r.ids.includes(p.id)) return { from, ids: r.ids.slice(), listName: "Exam Questions", backLabel: "Back to results", backRoute: "/exam/run/done" };
++  }
++  return null;
++}
++
++function renderProblem(problemId, from) {
+   const p = State.problemsById.get(problemId);
+   const run = $("#examRun"); if (run) run.innerHTML = "";   // one guided solution on the page at a time
+   if (!p) {
+@@ -11621,14 +11669,17 @@
+   // Remember for "Resume where you left off" on the home page
+   lsSet(LS.LAST_PROBLEM, p.id);
+ 
+-  // Back button target
+-  $("#problemBackBtn").onclick = () => navigate(`/section/${p.sectionPos}`);
++  // Back button target (the section, or the list the student came from)
++  const ctx = problemContext(p, from), cq = ctx ? "?from=" + ctx.from : "";
++  $("#problemBackBtn").innerHTML = `<span class="arr">→</span> ${ctx ? ctx.backLabel : "Back to section"}`;
++  $("#problemBackBtn").onclick = () => navigate(ctx ? ctx.backRoute : `/section/${p.sectionPos}`);
+ 
+-  // Compute neighbor problems
++  // Compute neighbor problems (in the section, or in the list the student came from)
+   const section = State.sectionsByPos.get(p.sectionPos);
+-  const idx = section.problems.findIndex(x => x.id === p.id);
+-  const prev = idx > 0 ? section.problems[idx - 1] : null;
+-  const next = idx < section.problems.length - 1 ? section.problems[idx + 1] : null;
++  const walk = ctx ? ctx.ids.map(id => State.problemsById.get(id)).filter(Boolean) : section.problems;
++  const idx = walk.findIndex(x => x.id === p.id);
++  const prev = idx > 0 ? walk[idx - 1] : null;
++  const next = idx >= 0 && idx < walk.length - 1 ? walk[idx + 1] : null;
+ 
+   const status  = getStatus(p.id);
+ 
+@@ -11673,7 +11724,7 @@
+     <div class="study-actions">
+       <button class="${statusButtons(status).got.cls}" id="markGot">${statusButtons(status).got.html}</button>
+       <button class="${statusButtons(status).rev.cls}" id="markReview">${statusButtons(status).rev.html}</button>
+-      ${next ? `<button class="btn btn-ghost" id="nextProblemBtn" type="button" data-route="/problem/${escapeHtml(next.id)}">Next problem <span class="arrow" aria-hidden="true">→</span></button>` : ""}
++      ${next ? `<button class="btn btn-ghost" id="nextProblemBtn" type="button" data-route="/problem/${escapeHtml(next.id)}${cq}">Next problem <span class="arrow" aria-hidden="true">→</span></button>` : ""}
+       <button class="btn btn-ghost btn-sm" id="clearStatus"${status ? "" : " hidden"}>Clear status</button>
+       <span class="study-actions-minor">
+         <button class="btn btn-ghost btn-sm" id="copyLinkBtn" type="button">Copy link</button>
+@@ -11687,12 +11738,12 @@
+   // the chips under the title; the id travels with a report on its own)
+   $("#studySide").innerHTML = `
+     <div class="side-card">
+-      <h4>Move Through Section</h4>
++      <h4>${ctx ? "Move Through " + ctx.listName : "Move Through Section"}</h4>
+       <div class="study-nav">
+-        <button class="btn btn-ghost btn-sm" id="studyPrev" ${prev ? `data-go="${prev.id}"` : "disabled"}>← Prev</button>
+-        <button class="btn btn-ghost btn-sm" id="studyNext" ${next ? `data-go="${next.id}"` : "disabled"}>Next →</button>
++        <button class="btn btn-ghost btn-sm" id="studyPrev" ${prev ? `data-go="${prev.id}${cq}"` : "disabled"}>← Prev</button>
++        <button class="btn btn-ghost btn-sm" id="studyNext" ${next ? `data-go="${next.id}${cq}"` : "disabled"}>Next →</button>
+       </div>
+-      ${sectionMapHtml(section, p.id)}
++      ${ctx ? `<div class="sec-map-cap"><span>Problem <b>${idx + 1}</b> of ${walk.length}</span></div>` : sectionMapHtml(section, p.id)}
+       <button class="shortcuts-hint" id="shortcutsTrigger" type="button" aria-label="Show keyboard shortcuts">
+         Tip: press <kbd>?</kbd> for keyboard shortcuts
+       </button>
+@@ -11702,7 +11753,7 @@
+       <div style="display:flex; flex-direction:column; gap:6px;">
+         <button class="btn btn-ghost btn-sm btn-block" id="sideRandom">Random Problem</button>
+         <button class="btn btn-ghost btn-sm btn-block" id="sideRandomSection">Random from Section</button>
+-        <button class="btn btn-ghost btn-sm btn-block" data-route="/section/${p.sectionPos}">Back to Section</button>
++        <button class="btn btn-ghost btn-sm btn-block" data-route="${ctx ? ctx.backRoute : "/section/" + p.sectionPos}">${ctx ? ctx.backLabel : "Back to Section"}</button>
+       </div>
+     </div>
+   `;
+@@ -11752,6 +11803,13 @@
+   return steps;
+ }
+ 
++// "Common mistakes (n)": a closed fold that sits right after the final answer
++function mistakesHtml(p) {
++  const ms = (p.commonMistakes || []).filter(m => m && String(m).trim());
++  if (!ms.length) return "";
++  return `<details class="cm-fold"><summary>Common mistakes (${ms.length})</summary><ul class="cm-list">${ms.map(m => `<li><div class="math-block">${m}</div></li>`).join("")}</ul></details>`;
++}
++
+ function guideHtml(p) {
+   const steps = guideSteps(p);
+   if (!steps.length) return "";
+@@ -11763,7 +11821,7 @@
+           <span class="g-node" aria-hidden="true">${s.n}</span>
+           <div class="g-title"><div class="g-kick">${escapeHtml(s.kick)}</div>${s.name ? `<div class="g-name">${escapeHtml(s.name)}</div>` : ""}</div>
+           <div class="g-content">${s.kind === "answer"
+-            ? `<div class="final-answer-box"><div class="math-block">${s.html}</div></div>`
++            ? `<div class="final-answer-box"><div class="math-block">${s.html}</div></div>${mistakesHtml(p)}`
+             : `<div class="math-block">${s.html}</div>`}</div>
+         </div>
+       </li>`).join("");
+@@ -11787,7 +11845,11 @@
+         <span class="g-ghost" aria-hidden="true"></span>
+         <button class="btn btn-red g-next" id="guideNext" type="button"><span class="g-label">Show a hint</span> <span class="arrow" aria-hidden="true">→</span></button>
+         <button class="g-link" id="guideSkip" type="button">Skip to the solution</button>
++        ${p.finalAnswerLatex ? `<button class="g-link" id="guideCheck" type="button" aria-expanded="false" aria-controls="guidePeek">Check final answer</button>` : ""}
+       </div>
++      ${p.finalAnswerLatex ? `<div class="g-peek" id="guidePeek" aria-hidden="true"><div class="g-peek-in">
++        <div class="final-answer-box"><div class="final-answer-label">Final answer</div><div class="math-block">${p.finalAnswerLatex}</div></div>${mistakesHtml(p)}
++      </div></div>` : ""}
+       <div class="g-end" id="guideEnd" hidden>
+         <span class="g-node" aria-hidden="true">${G_AGAIN}</span>
+         ${p.similarProblemPrompt
+@@ -11809,6 +11871,9 @@
+   const all = $("#guideAll"), reset = $("#guideReset"), end = $("#guideEnd");
+   const segs = Array.from(guide.querySelectorAll(".gt-seg"));
+   const hasSolution = kinds.some(k => k !== "hint");
++  // "Check final answer": the answer alone, in its own box under the row (no step opens)
++  const check = $("#guideCheck"), peek = $("#guidePeek"), ai = kinds.indexOf("answer");
++  let peekOn = false;
+ 
+   const nextIndex = () => { for (let i = 0; i < total; i++) if (!shown.has(i) && !passed.has(i)) return i; return -1; };
+   const save = () => GuideMemory.set(p.id, { shown: [...shown], passed: [...passed] });
+@@ -11844,6 +11909,14 @@
+       if (label.textContent !== txt) { label.textContent = txt; label.classList.remove("swap"); void label.offsetWidth; label.classList.add("swap"); }
+       skip.hidden = !(kinds[ni] === "hint" && hasSolution);
+     }
++    if (ai >= 0 && shown.has(ai)) peekOn = false;       // the real answer step is open: the peek has done its job
++    if (check && peek) {
++      check.hidden = ai < 0 || shown.has(ai) || (ai === ni && !peekOn);
++      check.textContent = peekOn ? "Hide final answer" : "Check final answer";
++      check.setAttribute("aria-expanded", peekOn ? "true" : "false");
++      peek.classList.toggle("shown", peekOn);
++      peek.setAttribute("aria-hidden", peekOn ? "false" : "true");
++    }
+     const wasEnd = !end.hidden;
+     end.hidden = ni !== -1 || shown.size === 0;
+     if (!end.hidden && !wasEnd && fresh.length) { end.classList.remove("enter"); void end.offsetWidth; end.classList.add("enter"); }
+@@ -11876,7 +11949,7 @@
+     passed.clear(); save(); paint(fresh, true);
+   }
+   function startOver() {
+-    shown.clear(); passed.clear(); save(); paint();
++    shown.clear(); passed.clear(); peekOn = false; save(); paint();
+     const top = guide.getBoundingClientRect().top;
+     if (top < 80) window.scrollBy({ top: top - 96, behavior: "smooth" });
+   }
+@@ -11894,8 +11967,19 @@
+     });
+   }
+   skip.addEventListener("click", skipToSolution);
++  if (check && peek) check.addEventListener("click", () => {
++    peekOn = !peekOn; paint();
++    if (!peekOn) return;
++    requestAnimationFrame(() => {                        // bring the box into view once it has opened
++      const inner = peek.firstElementChild, top = peek.getBoundingClientRect().top;
++      const overflow = top + inner.scrollHeight + 24 - window.innerHeight, room = top - 96;
++      if (overflow > 0 && room > 0) window.scrollBy({ top: Math.min(overflow, room), behavior: "smooth" });
++    });
++  });
+   all.addEventListener("click", showAll);
+   reset.addEventListener("click", startOver);
++  // Common mistakes open closed: make sure their math is typeset (a no-op when it already is)
++  guide.addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("cm-fold") && e.target.open) typesetMath(e.target); }, true);
+ 
+   // first paint (restored steps appear without animating in)
+   guide.classList.add("no-anim"); paint();
+@@ -11960,6 +12044,17 @@
+   $$("[data-size-pick]").forEach(b => {
+     b.classList.toggle("selected", Number(b.dataset.sizePick) === State.examSize);
+   });
++  // One short line under the size buttons: how long each size takes (same estimate the run's red mark uses)
++  const est = $("#examEst");
++  if (est) {
++    const per = examPool(State.examChoice).map(g => g.problems.reduce((m, p) => m + (+p.estimatedMinutes || 10), 0) / g.problems.length);
++    const avg = per.length ? per.reduce((a, b) => a + b, 0) / per.length : 0;     // a set takes one problem per lecture in turn
++    est.hidden = !avg;
++    if (avg) est.innerHTML = $$("[data-size-pick]").map((b, i) => {
++      const n = Number(b.dataset.sizePick), t = `${i ? n : n + " problems"} &asymp; ${Math.max(10, Math.ceil(n * avg / 5) * 5)} min`;
++      return n === State.examSize ? `<b>${t}</b>` : t;
++    }).join(" &middot; ");
++  }
+   renderExamResume();
+ }
+ 
+@@ -12045,6 +12140,7 @@
+     else if (!late) box.classList.remove("is-late");
+   };
+   box.hidden = false; paint();
++  const r0 = getExamRun(); if (r0) box.title = `Time so far. Turns red at ${examLateSec(r0) / 60} minutes.`;
+   examTick = setInterval(paint, 1000);
+ }
+ function stopExamClock() { if (examTick) { clearInterval(examTick); examTick = null; } }
+@@ -12152,7 +12248,7 @@
+       <div class="prob-list">
+         ${ps.map((p, k) => {
+           const st = getStatus(p.id);
+-          return `<button class="prob-row" data-problem-id="${escapeHtml(p.id)}">
++          return `<button class="prob-row" data-problem-id="${escapeHtml(p.id)}" data-from="exam">
+             <div class="prob-row-main">
+               <div class="prob-row-title">${String(k + 1).padStart(2, "0")}. ${escapeHtml(p.title)}</div>
+               <div class="prob-row-sub">
+@@ -12225,7 +12321,7 @@
+   content.innerHTML = `
+     <div class="prob-list">
+       ${review.map((p, i) => `
+-        <button class="prob-row" data-problem-id="${escapeHtml(p.id)}">
++        <button class="prob-row" data-problem-id="${escapeHtml(p.id)}" data-from="review">
+           <div class="prob-row-main">
+             <div class="prob-row-title">${String(i+1).padStart(2,'0')}. ${escapeHtml(p.title)}</div>
+             <div class="prob-row-sub">
+@@ -21933,7 +22029,7 @@
+     const row = e.target.closest(".prob-row[data-problem-id]");
+     if (row) {
+       e.preventDefault();
+-      navigate(`/problem/${row.dataset.problemId}`);
++      navigate(`/problem/${row.dataset.problemId}${row.dataset.from ? "?from=" + row.dataset.from : ""}`);
+       return;
+     }
+   });
+@@ -21999,7 +22095,7 @@
+     const pool = getReviewProblems();
+     if (!pool.length) { showToast("No problems flagged for review yet"); return; }
+     const pick = pool[Math.floor(Math.random() * pool.length)];
+-    navigate(`/problem/${pick.id}`);
++    navigate(`/problem/${pick.id}?from=review`);
+   });
+ 
+   // About modal (footer)

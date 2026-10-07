@@ -1,0 +1,165 @@
+diff -ru base5/index.html d1/index.html
+--- base5/index.html	2026-10-07 03:05:39
++++ d1/index.html	2026-10-07 12:19:19
+@@ -13513,11 +13513,11 @@
+       o += `<g opacity="${q2(sideOp * (1 - zeroOp))}">` + vzLabel(P.X(mE[0]), P.Y(mE[1]) + 5, `|${vzB(g.bn)}|`, bCol, 15);
+       // the base is the shadow's signed length
+       const cOp = ramp(pl, 1.4, 1.7);                    // (the text is ~1.5 long: not on a shadow too short to hold it)
+-      if (cOp > .01) o += `<g opacity="${q2(cOp)}">${vzAlong(P, [0, 0], pr, nrm, 19, `comp = ${vzNum(comp)}`, "#7A5C0F", 13.5)}</g>`;
++      if (cOp > .01) o += `<g opacity="${q2(cOp)}">${vzAlong(P, [0, 0], pr, nrm, 19, vzSub("comp", g.bn, `(${g.an})`), "#7A5C0F", 13.5)}</g>`;
+       const cen = [pr[0] / 2 + nrmR[0] * lb / 2, pr[1] / 2 + nrmR[1] * lb / 2], room = pl > 1.5 && lb > 1.1;
+       const at = room ? cen : [pr[0] + ub[0] * sg * .3 + nrmR[0] * lb / 2, pr[1] + ub[1] * sg * .3 + nrmR[1] * lb / 2];
+       const g2 = vzGlide("area@", [P.X(at[0]), P.Y(at[1])], 40);
+-      o += vzLabel(g2[0] + (room ? 0 : 6 * sg * Math.sign(ub[0] || 1)), g2[1] + 6, `${vzB(g.an)} · ${vzB(g.bn)} = ${vzShort(g.ab)}`, neg ? VZ.ink : VZ.deep, 16, room ? "middle" : (sg * (ub[0] || 1) > 0 ? "start" : "end"));
++      o += vzLabel(g2[0] + (room ? 0 : 6 * sg * Math.sign(ub[0] || 1)), g2[1] + 6, `${vzB(g.an)} · ${vzB(g.bn)}`, neg ? VZ.ink : VZ.deep, 16, room ? "middle" : (sg * (ub[0] || 1) > 0 ? "start" : "end"));
+       const nOp = room && neg ? ramp(pl, 1.5, 1.8) * ramp(lb, 1.6, 1.9) * (1 - (this._kStack || 0)) : 0;   // (this note steps aside while the two names are stacked on this side)
+       if (nOp > .01) o += `<g opacity="${q2(nOp)}">${vzLabel(g2[0], g2[1] + 26, `<tspan font-style="normal" font-size="12.5">a negative area</tspan>`, VZ.grey, 12.5)}</g>`;
+       o += `</g>`;
+@@ -14785,7 +14785,7 @@
+     // the highlighted cell's area, beside it
+     const at = this.pos(rv(c + 1) + .12, (tv(2) + tv(3)) / 2, m), flat = 1 - vzClamp((m - .25) / .2, 0, 1), curled = vzClamp((m - .7) / .25, 0, 1);
+     if (flat > .01) o += `<g opacity="${q2(flat)}">${vzLabel(at[0], at[1] + 5, "Δr Δθ", VZ.deep, 15, "start")}</g>`;
+-    if (curled > .01) o += `<g opacity="${q2(curled)}">${vzLabel(at[0], at[1] + 5, `<tspan font-weight="700" fill="${VZ.red}">${vzShort(r)}</tspan> Δr Δθ`, VZ.deep, 15, "start")}</g>`;
++    if (curled > .01) o += `<g opacity="${q2(curled)}">${vzLabel(at[0], at[1] + 5, `<tspan font-weight="700" fill="${VZ.red}">r</tspan> Δr Δθ`, VZ.deep, 15, "start")}</g>`;
+     o += vzNoteFade(22, 432, m, [.12, .88], ["the (r, θ) plane: every cell is Δr by Δθ", "curling the rectangle around the origin", "the (x, y) plane: each cell's area is r Δr Δθ"]);
+     return o;
+   },
+@@ -15450,7 +15450,7 @@
+     if (band > .01) o += P.path([[0, 0], v1, sum, v2, [0, 0]], `stroke="${VZ.red}" stroke-width="7" stroke-opacity="${q2(band)}" stroke-linecap="round" stroke-linejoin="round"`);
+     if (!flat) o += P.poly([[0, 0], v1, sum, v2], `fill="${VZ.red}" fill-opacity=".14" stroke="${VZ.red}" stroke-opacity=".55" stroke-width="1.4"`);
+     // the area, inside the parallelogram; when it is thin or flat, its middle sits on the tips' names, so the label
+-    // moves beside the near half of it instead (and says "area 0" once it is flat)
++    // moves beside the near half of it instead
+     let lx = P.X(sum[0] / 2), ly = P.Y(sum[1] / 2) + 5;
+     if (sn < .3) {
+       const big = len(sum) > 12, d = big ? sum : len(v1) >= len(v2) ? v1 : v2, q = big ? S([sum[0] / 4, sum[1] / 4]) : O;
+@@ -15458,7 +15458,7 @@
+       let nx = L > 1 ? -dy / L : 0, ny = L > 1 ? dx / L : 1; if (ny < 0) { nx = -nx; ny = -ny; }
+       lx = q[0] + nx * 26; ly = q[1] + ny * 26 + 5;
+     }
+-    const area = "area " + (flat ? "0" : vzShort(Math.abs(det)));
++    const area = "area";
+     o += vzLabel(lx, ly, area, VZ.deep, 15);
+     boxes.push([lx - area.length * 4.2 - 4, ly - 17, lx + area.length * 4.2 + 4, ly + 4]);
+     // a name beside the middle of segment A → B (screen), on the side away from the point "away"
+@@ -15540,7 +15540,7 @@
+     if (nb > .01) o += `<g opacity="${q2(nb)}">${vzTipLabels(P, [{ v: e1, html: vzB("e", "1"), col: VZ.red }, { v: e2, html: vzB("e", "2"), col: VZ.ink }])}</g>`;
+     if (na > .01) o += `<g opacity="${q2(na)}">${vzTipLabels(P, [{ v: e1, html: "A" + vzB("e", "1"), col: VZ.red }, { v: e2, html: "A" + vzB("e", "2"), col: VZ.ink }])}</g>`;
+     // the area: inside the image when the whole label fits there, otherwise the nearest clear spot outside it
+-    const txt = "area " + (flat ? "0" : vzShort(Math.round(Math.abs(det) * 100) / 100)), tw = txt.length * 8.8 + 8, th = 22;
++    const txt = "area", tw = txt.length * 8.8 + 8, th = 22;
+     const scr = p => [P.X(p[0]), P.Y(p[1])], poly = [[0, 0], e1, far, e2].map(scr);
+     const inside = (x, y) => { let sg = 0; for (let i = 0; i < 4; i++) { const a = poly[i], b = poly[(i + 1) % 4], c = (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]); if (Math.abs(c) < 1e-6) continue; if (sg && Math.sign(c) !== sg) return false; sg = Math.sign(c); } return true; };
+     const corners = (x, y, m = 0) => [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, -1], [0, 1]].map(([a, b]) => [x + a * (tw / 2 + 3 + m), y + b * (th / 2 + 2 + m)]);
+@@ -15847,17 +15847,14 @@
+     const [xa, ya] = pt(c, L), [xb, yb] = pt(c, 0); sl.push(pr(xa, ya, 0), pr(xb, yb, 0));
+     o += `<path d="M${sl.map(P2).join("L")}Z" fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}" stroke-width="2" stroke-linejoin="round"/>`;
+     // the slice's area, just above the highest part of its top edge under the label (no edge runs through the words)
+-    const A = byX ? 1 + c * c / 8 : 2 + 2 * c / 3, mid = pt(c, L / 2), mq = pr(mid[0], mid[1], f(mid[0], mid[1]));
+-    const lab = `area A(${byX ? "x" : "y"}) = ${vzNum(A)}`, hw = lab.length * 15 * .55 / 2 + 4, top = sl.slice(0, N + 1), xl = mq[0] - hw, xr = mq[0] + hw;
++    const mid = pt(c, L / 2), mq = pr(mid[0], mid[1], f(mid[0], mid[1]));
++    const lab = `area A(${byX ? "x" : "y"})`, hw = lab.length * 15 * .55 / 2 + 4, top = sl.slice(0, N + 1), xl = mq[0] - hw, xr = mq[0] + hw;
+     let ly = mq[1];
+     top.forEach((q, j) => {
+       if (q[0] >= xl && q[0] <= xr) ly = Math.min(ly, q[1]);
+       const r = top[j + 1]; if (r) [xl, xr].forEach(e => { if ((q[0] - e) * (r[0] - e) < 0) ly = Math.min(ly, q[1] + (r[1] - q[1]) * (e - q[0]) / (r[0] - q[0])); });
+     });
+     o += vzLabel(mq[0], ly - 10, lab, VZ.deep, 15);
+-    // where the slice stands: just in front of its foot (x-slices), or just past its x = 0 end (y-slices), clear of the solid
+-    const ft = byX ? pr(c, -.4, 0) : pr(-.1, c, 0);
+-    o += byX ? vzLabel(ft[0], ft[1] + 5, `x = ${vzNum(c)}`, VZ.deep, 14) : vzLabel(ft[0] - 6, ft[1] + 5, `y = ${vzNum(c)}`, VZ.deep, 14, "end");
+     // the small graph of A, with the area under it so far shaded
+     if (!thumb) {
+       const gx = 430, gy = 292, gw = 140, gh = 84, span = byX ? 2 : 1, Amax = byX ? 1.5 : 2.67, Ag = v => byX ? 1 + v * v / 8 : 2 + 2 * v / 3;
+@@ -15870,8 +15867,7 @@
+       o += `<line x1="${q2(X(c))}" y1="${q2(Y(0))}" x2="${q2(X(c))}" y2="${q2(Y(Ag(c)))}" stroke="${VZ.deep}" stroke-width="2"/>`;
+       // under the axis: 0 … x … 2 (or 0 … y … 1)
+       o += vzNote(gx - 22, gy - 14, `A(${byX ? "x" : "y"})`, "start", VZ.deep) + vzNote(gx, gy + gh + 17, "0", "middle", VZ.grey) + vzNote(gx + gw / 2, gy + gh + 17, byX ? "x" : "y", "middle", VZ.grey) + vzNote(gx + gw, gy + gh + 17, byX ? "2" : "1", "middle", VZ.grey);
+-      const V = byX ? c + c * c * c / 24 : 2 * c + c * c / 3;
+-      o += vzNote(gx - 22, gy - 32, `swept so far: ${vzNum(V)} of 7/3`, "start", VZ.ink);
++      o += vzNote(gx - 22, gy - 32, "swept so far", "start", VZ.ink);
+     }
+     o += vzKey([["fill", VZ.red, "the slice now"], ["line", VZ.red, "the surface z = f(x, y)"]]);
+     return o;
+@@ -15952,7 +15948,6 @@
+     }
+     const lab = this.r(.25 * Math.PI); o += vzLabel(P.X(lab[0]) + 18, P.Y(lab[1]) - 8, "C", VZ.red, 18, "start");
+     if (fin > .5) { const c = this.r(0); o += `<g opacity="${q2((fin - .5) * 2)}">${vzLabel(P.X(2.3), P.Y(0) + 6, "D", VZ.deep, 20)}</g>`; }
+-    o += vzNote(578, 34, `∫ x dy so far: ${vzNum(this.sum(T))}`, "end", VZ.ink);
+     o += vzKey([["fill", VZ.red, "x Δy > 0 (going up)"], ["fill", VZ.ink, "x Δy < 0 (coming down)"], ["line", VZ.red, "C, walked so far"]]);
+     return o;
+   },
+@@ -16533,7 +16528,7 @@
+     }
+     let o = card(10, 250) + card(280, 310) + `<g clip-path="url(#vz-jl)">${L}</g><g clip-path="url(#vz-jr)">${Rz}</g>`;
+     const zo = vzClamp((kz - 1.05) / .3, 0, 1);
+-    if (zo > .01) o += `<g opacity="${q2(zo)}">${vzNote(580, 404, "zoomed ×" + vzNum(kz, 1), "end", VZ.grey)}</g>`;
++    if (zo > .01) o += `<g opacity="${q2(zo)}">${vzNote(580, 404, "zoomed in", "end", VZ.grey)}</g>`;
+     const head = (x, t) => `<text x="${x}" y="34" font-family="'Manrope', sans-serif" font-size="16" font-weight="700" fill="${VZ.ink}" text-anchor="middle">${t}</text>`;
+     o += head(135, `(${m.u}, ${m.v}) plane`) + head(435, "(x, y) plane");
+     o += vzArrow(212, 28, 360, 28, "I", 2) + vzLabel(286, 20, "<tspan font-style=\"italic\">T</tspan>", VZ.ink, 15);
+@@ -16765,17 +16760,6 @@
+     const gap = 10 + Math.abs(nx) * 50 + Math.abs(ny) * 7;   // half the label's width or height, whichever faces the curve
+     const hx = Gt[0] + nx * gap, hy = Gt[1] + ny * gap;
+     o += vzLabel(hx, hy + 5, "height f(x, y)", "#7A5C0F", 14);
+-    const mOp = vzClamp(6.5 - s.n, 0, 1);                       // one panel's measurements, on the biggest panel, while the panels are few
+-    if (mOp > .01 && !thumb) {
+-      const big = ps.slice().sort((a, b) => b.h * b.ds - a.h * a.ds)[0];
+-      if (big) {
+-        // half way up the panel, or lower or higher on it when that would put it on the graph's name
+-        const M = [(big.A[0] + big.B[0]) / 2, (big.A[1] + big.B[1]) / 2], txt = `${vzNum(big.h)} × ${vzNum(big.ds)}`, hw = txt.length * 3.6 + 4;
+-        const clear = q => Math.abs(q[0] - hx) > hw + 52 || Math.abs(q[1] - hy) > 17;
+-        const q = [.5, .3, .72, .16, .86].map(k => pr(M[0], M[1], big.h * k)).find(clear) || pr(M[0], M[1], big.h / 2);
+-        o += `<g opacity="${q2(mOp)}">${vzLabel(q[0], q[1] + 5, txt, VZ.deep, 13)}</g>`;
+-      }
+-    }
+     o += vzKey([["line", VZ.red, "C on the floor"], ["line", VZ.gold, "the graph of f above C"], ["fill", VZ.red, "panels: f × Δs"]]);
+     return o;
+   },
+@@ -16793,7 +16777,7 @@
+   id: "green", title: "Green's theorem", card: "Green's theorem",
+   tagline: "Small loops add up to the loop around the edge.",
+   blurb: "Split \\(D\\) into cells and go counterclockwise around each. Each cell's circulation is its spin \\(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\) added over the cell. Inside, every shared edge is walked twice, once each way, and cancels; only the outer edge is left. So \\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_D\\left(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)dA\\).",
+-  tryIt: "With a few cells, add their numbers yourself.",
++  tryIt: "Add more cells: the inside edges keep cancelling.",
+   state: { n: 2 },
+   thumb: { n: 3 },
+   controls: [{ k: "n", label: "cells across", min: 1, max: 6, step: 1, digits: 0, fmt: v => String(Math.round(v)), play: 1.1, progress: true, aria: "the number of cells",
+@@ -16840,14 +16824,6 @@
+       const lastOld = m - 1;
+       o += both(c[0], c[1], j === 0, j === 0, op) + both(c[1], c[2], i === lastOld, i === N - 1, op) + both(c[2], c[3], j === lastOld, j === N - 1, op) + both(c[3], c[0], i === 0, i === 0, op);
+     });
+-    // with a few cells, each one's circulation written in it (fading out while the grid changes)
+-    // (the old numbers fade out as the new cells start to slide in; the new ones fade in as they settle)
+-    const showN = f ? (m <= 3 ? 1 - Math.min(1, e * 3) : 0) + (m + 1 <= 3 ? Math.max(0, e * 3 - 2) : 0) : m <= 3 ? 1 : 0;
+-    if (showN > .02 && !thumb) cells.forEach(({ a, a2, b, b2, op }) => {
+-      const v = this.cell(a, a2, b, b2), cx = (a + a2) / 2, cy = (b + b2) / 2;
+-      // plain text, not vzLabel: its glide matches labels by order, so they slid across the grid whenever the cell count changed
+-      o += `<text x="${q2(P.X(cx))}" y="${q2(P.Y(cy) + 6)}" opacity="${q2(showN * op)}" font-family="'Fraunces', Georgia, serif" font-size="17" font-style="italic" fill="${v < 0 ? VZ.ink : VZ.deep}" text-anchor="middle" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke" style="font-variant-numeric:tabular-nums">${(v < 0 ? "−" : "") + vzNum(Math.abs(v))}</text>`;
+-    });
+     o += P.poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], `fill="none" stroke="${VZ.red}" stroke-width="2.4"`);
+     o += vzLabel(P.X(x1) + 14, P.Y(y1) - 6, "C", VZ.red, 18) + vzLabel(P.X(x0) + 22, P.Y(y1) + 26, "D", VZ.deep, 17);
+     o += vzKey([["line", VZ.red, "on C: counts"], ["line", VZ.grey, "inside: cancels"], ["fill", VZ.red, "cell: + spin"], ["fill", VZ.ink, "cell: − spin"]]);
+@@ -21833,8 +21809,8 @@
+   },
+   draw(s, t, thumb) {
+     const cam = this.cam(s), G = this.geo(s), u = vzClamp(s.t, 0, 1), E = (a, b) => vzEase(vzClamp((u - a) / (b - a), 0, 1));
+-    // the takes, each finished before Play rests at its end: cut; pull apart; tint and number the boxes; push together; inner walls cancel
+-    const cut = E(.16, .27), gap = .5 * (E(.32, .44) - E(.66, .77)), tint = E(.5, .58), nums = E(.51, .59) * (1 - E(.67, .73)), gone = E(.75, .82);
++    // the takes, each finished before Play rests at its end: cut; pull apart; tint the boxes; push together; inner walls cancel
++    const cut = E(.16, .27), gap = .5 * (E(.32, .44) - E(.66, .77)), tint = E(.5, .58), gone = E(.75, .82);
+     const pr = p => cam(p[0], p[1], p[2]), P2 = q => q2(q[0]) + " " + q2(q[1]), V = cam.view, n = G.n;
+     const off = b => b.c.map(x => x * gap * 1.2);                 // a box slides straight out from the centre
+     const sm = (a, b, x) => { const q = vzClamp((x - a) / (b - a), 0, 1); return q * q * (3 - 2 * q); };
+@@ -21887,11 +21863,6 @@
+     });
+     let o = this.axes(cam, sm, add, 1 + 1.2 * gap * (1 - 1 / n));
+     o += items.sort((A, B) => B.dep - A.dep).map(x => x.svg).join("");
+-    // each box's net outflow, written on it while the boxes are apart (the nearest on top), in plain figures (an italic 0 reads as o)
+-    if (nums > .01 && !thumb && n === 2) G.boxes.map(b => { const d = off(b); return { b, q: pr(b.c.map((x, i) => x + d[i])) }; }).sort((A, B) => B.q[2] - A.q[2]).forEach(({ b, q }) => {
+-      const v = Math.round(b.out * 100) / 100;
+-      o += `<text x="${q2(q[0])}" y="${q2(q[1] + 5)}" opacity="${q2(nums)}" font-family="'Manrope', sans-serif" font-size="14" font-weight="700" fill="${col(b.out) === VZ.red ? VZ.deep : VZ.ink}" text-anchor="middle" stroke="${VZ.paper}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke">${(v > 0 ? "+" : v < 0 ? "−" : "") + vzShort(Math.abs(v))}</text>`;
+-    });
+     if (!thumb) {
+       const caps = ["1 · the flow through S, the surface of the solid T", "2 · cut T into small boxes", "3 · pull apart: what leaves one box enters the next", "4 · each box's net outflow ≈ div F × its volume",
+         "5 · push together: the inner walls cancel", "only S is left: ∯ F · dS = ∭ div F dV"];

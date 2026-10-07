@@ -40,7 +40,7 @@
   "\\(L=\\int_a^b\\|r'(t)\\|dt\\).",
   "\\(D_uf=\\nabla f\\cdot u\\), where \\(u\\) is a unit vector.",
   "\\(z=f(a,b)+f_x(a,b)(x-a)+f_y(a,b)(y-b)\\).",
-  "\\(\\operatorname{div}\\langle P,Q\\rangle=P_x+Q_y\\).",
+  "\\(\\operatorname{div}[P,Q]=P_x+Q_y\\).",
   "\\(\\operatorname{curl}_{2D}=Q_x-P_y\\).",
   "If \\(F=\\nabla\\phi\\), then \\(\\int_C F\\cdot dr=\\phi(\\text{end})-\\phi(\\text{start})\\)."
  ],
@@ -247,7 +247,7 @@
     "Curl",
     "2D vector fields"
    ],
-   "studentPromptLatex": "Let \\(F(x,y)=\\langle x^2-y,xy\\rangle\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\), then evaluate both at \\((2,-1)\\).",
+   "studentPromptLatex": "Let \\(F(x,y)=[x^2-y,xy]\\). Find \\(\\operatorname{div}F\\) and scalar curl \\(Q_x-P_y\\), then evaluate both at \\((2,-1)\\).",
    "whatToSayBefore": "Say: name P and Q first. That prevents most mistakes.",
    "visualSpec": {
     "type": "vector_field_div_curl_2d",
@@ -300,7 +300,7 @@
     "Potential functions",
     "Line integrals"
    ],
-   "studentPromptLatex": "Let \\(F(x,y)=\\langle 2xy+1,x^2+3y^2\\rangle\\). Compute \\(\\int_C F\\cdot dr\\) from \\((1,0)\\) to \\((2,1)\\), assuming \\(C\\) is any smooth path between the points.",
+   "studentPromptLatex": "Let \\(F(x,y)=[2xy+1,x^2+3y^2]\\). Compute \\(\\int_C F\\cdot dr\\) from \\((1,0)\\) to \\((2,1)\\), assuming \\(C\\) is any smooth path between the points.",
    "whatToSayBefore": "Say: because it says any smooth path, we should check whether the field is conservative.",
    "visualSpec": {
     "type": "conservative_field_endpoints",

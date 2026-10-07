@@ -45,7 +45,9 @@
       processHtmlClass: 'tex2jax_process'
     },
     startup: {
-      typeset: false
+      typeset: false,
+      // a view drawn before MathJax arrived asked for math: typeset it now
+      ready() { MathJax.startup.defaultReady(); MathJax.startup.promise.then(() => { if (window.__mjWaiting) { window.__mjWaiting = false; typesetMath(); } }); }
     }
   };
 </script>
@@ -1441,6 +1443,7 @@
     color: var(--red-deep);
     border-color: rgba(200,16,46,.2);
   }
+  .pill.start-here { background: var(--ink); color: #fff; }
   .pill.status-report {
     background: #FBF3DF;
     color: #7A5B0F;
@@ -1760,6 +1763,26 @@
   .g-answer .final-answer-box { margin-top: 0; }
   .g-answer .g-content { padding-bottom: 8px; }
 
+  /* Common mistakes: a quiet fold under the final answer, closed until the student asks */
+  .cm-fold { margin: 10px 0 2px; color: var(--ink-soft); }
+  .cm-fold summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; padding: 4px 0; font: 600 13px var(--font-sans); color: var(--ink-mute); }
+  .cm-fold summary::-webkit-details-marker { display: none; }
+  .cm-fold summary::before { content: "+"; display: inline-block; width: 16px; font-weight: 800; color: var(--gold); }
+  .cm-fold[open] summary::before { content: "\2212"; }
+  .cm-fold summary:hover, .cm-fold summary:focus-visible { color: var(--red-deep); }
+  .cm-list { margin: 4px 0 2px; padding-left: 36px; }
+  .cm-list li { margin: 5px 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-soft); }
+  .cm-list li::marker { color: var(--ink-faint); }
+  .cm-list .math-block { font-size: inherit; line-height: inherit; color: inherit; }
+  .cm-fold[open] .cm-list { animation: gRise .35s var(--ease-out) both; }
+
+  /* "Check final answer": the answer alone, under the next-step row, without opening any step */
+  .g-peek { display: grid; grid-template-rows: 0fr; visibility: hidden; padding-left: 46px; transition: grid-template-rows .5s var(--ease-out), visibility 0s linear .5s; }
+  .g-peek.shown { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .5s var(--ease-out), visibility 0s; }
+  .g-peek-in { min-height: 0; overflow: hidden; }
+  .g-peek .final-answer-box { margin: 10px 0 4px; }
+  .g-peek.shown .final-answer-box { animation: gRise .5s var(--ease-out) both; }
+
   /* the next step waits at the end of the rail */
   .g-next-row { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding-left: 46px; min-height: 44px; }
   .g-next-row[hidden] { display: none; }
@@ -1802,7 +1825,8 @@
   @media (max-width: 640px) {
     .guide-head { flex-direction: column; align-items: flex-start; gap: 8px; }
     .gt-seg span { font-size: 10.5px; }
-    .g-inner, .g-next-row { padding-left: 40px; }
+    .g-inner, .g-next-row, .g-peek { padding-left: 40px; }
+    .cm-list { padding-left: 30px; }
     .g-end { padding-left: 56px; }
   }
 
@@ -1879,8 +1903,12 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    /* on a short window the sidebar scrolls inside itself (and stops above the pop-up and QR button) instead of being cut off */
+    max-height: calc(100vh - var(--nav-h) - 18px - 140px);
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    padding: 3px; margin: -3px;
   }
-  @media (max-width: 980px) { .study-side { position: static; } }
+  @media (max-width: 980px) { .study-side { position: static; max-height: none; overflow: visible; } }
   .side-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -1952,6 +1980,8 @@
     border-color: var(--ink);
   }
   .choice.red.selected { background: var(--red); border-color: var(--red); }
+  .exam-est { margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-mute); }
+  .exam-est b { color: var(--ink); font-weight: 600; }
 
   .pill.pill-lec { background: var(--surface); border-color: var(--border-strong); color: var(--ink-soft); }
   /* Exam run */
@@ -2282,7 +2312,7 @@
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.22s var(--ease-out), transform 0.22s var(--ease-out);
-    pointer-events: auto;
+    pointer-events: none;            /* a pop-up never blocks the button under it */
     min-width: 160px;
     max-width: 320px;
     display: flex;
@@ -3909,6 +3939,12 @@
   .vz-nav-btn:hover { border-color: var(--ink-faint); color: var(--ink); text-decoration: none; }
   .vz-report { display: block; margin: 12px 0 0; padding: 0; border: 0; background: none; font: 500 12px var(--font-sans); color: var(--ink-mute); cursor: pointer; }
   .vz-report:hover { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+  .vz-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 12px 0 0; }
+  .vz-foot .vz-report, body.vz-detail .vz-foot .vz-report { margin: 0; }
+  .vz-practice { font: 600 12.5px var(--font-sans); color: var(--red-deep); text-decoration: none; }
+  .vz-practice:hover, .vz-practice:focus-visible { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+  body.vz-detail .vz-foot { margin-top: 8px; }
+  @media (max-width: 640px) { .vz-foot .vz-practice, .vz-foot .vz-report { padding: 6px 0; } }          /* a bigger thumb target on phones */
   /* a panel that has to scroll (short laptop screens) fades out along its foot until the end is reached */
   .vz-fade { position: sticky; bottom: 0; height: 0; margin: 0 -16px; pointer-events: none; }
   .vz-fade::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44px; opacity: 0; transition: opacity .25s ease;
@@ -3970,8 +4006,20 @@
   .vz-eq.vz-on, .vz-eq.vz-off { font-size: 17px; margin: 2px 0 8px; }
   .vz-lim sup, .vz-lim sub { position: static; font-size: 1em; }
   .vz-eq.vz-on { color: var(--ink); font-weight: 600; } .vz-eq.vz-off { color: var(--ink-faint); }
-  /* index: the six concept pictures lead */
+  /* index: the topic pictures lead, then the tools, then the methods (a few until "Show all"); a small box filters the cards */
   .vz-jump { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
+  .vz-find { display: flex; align-items: center; gap: 12px; margin: 12px 0 10px; }
+  .vz-find-in { -webkit-appearance: none; appearance: none; flex: 1 1 auto; width: auto; max-width: 340px; padding: 9px 12px 9px 38px; border-radius: 999px; font-size: 14px;
+    background: var(--surface) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2356606C' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5 20 20'/%3E%3C/svg%3E") no-repeat 14px center; }
+  .vz-find-note { flex: none; min-width: 72px; font-size: 12px; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+  .vz-chip.vz-chip-dim { opacity: .4; }
+  .vz-group[hidden], .vz-card[hidden], .vz-none[hidden] { display: none; }
+  .vz-group.vz-folded:not(.vz-searching) .vz-card.vz-extra { display: none; }          /* a long list shows a few until "Show all" ... */
+  .vz-group.vz-searching .vz-showall { display: none; }                                  /* ... but a search shows every match */
+  .vz-showall { margin: 12px 0 0; }
+  .vz-reveal { animation: vzRootIn .3s ease; }                                            /* a card that comes back fades in (opacity only: the hover lift stays) */
+  .vz-none { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 26px 0 8px; font-size: 14.5px; color: var(--ink-soft); }
+  @media (max-width: 640px) { .vz-find-in { max-width: none; font-size: 16px; } .vz-find-note { min-width: 64px; } }
   .vz-top-right { display: flex; align-items: center; gap: 12px; }
   /* draggable pictures: the page doesn't scroll under a finger that is dragging a vector */
   /* a finger on a handle drags it; a finger anywhere else on the picture scrolls the page as usual (the touchstart
@@ -4270,7 +4318,7 @@
 
     /* open every collapse */
     .walk-reveal-body { display: block !important; }
-    .guide-tools, .guide-track, .g-next-row { display: none !important; }
+    .guide-tools, .guide-track, .g-next-row, .g-peek { display: none !important; }
     .no-print, .sg-run { display: none !important; }
     .sg-grid { display: block !important; }
     .sg-aside { position: static !important; margin-top: 16px; }
@@ -5586,6 +5634,7 @@
           <button class="choice selected" data-size-pick="8">8</button>
           <button class="choice" data-size-pick="10">10</button>
         </div>
+        <div class="exam-est" id="examEst" hidden></div>
 
         <div style="margin-top: 24px; display:flex; gap:10px; flex-wrap: wrap;">
           <button class="btn btn-red" id="examGenerate">Start practice exam <span class="arrow">→</span></button>
@@ -5981,7 +6030,7 @@ if (QR_ARRIVAL) {
   try { history.replaceState(null, "", location.pathname + (location.hash === "#/si" ? "" : location.hash)); } catch (_) {}
 }
 const NAV_BOOT = Date.now().toString(36);
-const LIST_ROUTE = /^\/(topics|section\/\d+|review|walkthroughs|visualize)$/;
+const LIST_ROUTE = /^\/(topics|section\/\d+|review|walkthroughs|visualize|exam\/run\/done)$/;
 const scrollByEntry = new Map(), scrollByRoute = new Map();
 let navSeq = 0, currentNavKey = null, currentNavRoute = null;
 try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (_) {}
@@ -6269,6 +6318,7 @@ function typesetMath(root) {
       try { MathJax.typesetClear(); } catch (_) {}
     });
   }
+  window.__mjWaiting = true;   // MathJax still loading: its ready() hook typesets the page
   return Promise.resolve();
 }
 
@@ -6335,7 +6385,8 @@ function handleRoute() {
   }
   else if (head === "problem" && parts[1]) {
     $("#view-problem").classList.add("active"); markNav("/topics");
-    renderProblem(parts[1]);
+    const pq = parts[1].split("?");                                   // #/problem/ID?from=review|exam
+    renderProblem(pq[0], new URLSearchParams(pq[1] || "").get("from"));
   }
   else if (head === "visualize") { $("#view-visualize").classList.add("active"); markNav("/visualize"); renderVisualize(parts[1]); }
   else if (head === "exam" && parts[1] === "run") { $("#view-examrun").classList.add("active"); markNav("/exam"); renderExamRun(parts[2]); }
@@ -6386,7 +6437,7 @@ window.addEventListener("online", () => showToast("Back online", "neutral", 1800
    ============================================================ */
 let lastCountedPath = null, qrCounted = false;
 function countRoute() {
-  const p = location.hash ? location.hash.replace(/^#/, "") : "/home";
+  const p = (location.hash ? location.hash.replace(/^#/, "") : "/home").replace(/\?.*$/, "");
   if (p === lastCountedPath) return;                 // de-dupe repeated handleRoute() calls
   if (window.goatcounter && typeof window.goatcounter.count === "function") {
     lastCountedPath = p;
@@ -6911,6 +6962,8 @@ function renderProblemList() {
     return;
   }
 
+  // "Start here": the section's first warm-up or core problem (where it sits in the list never changes)
+  const startP = section.problems.find(q => /warm|core/i.test(q.difficulty || ""));
   list.innerHTML = problems.map((p, idx) => {
     const st = getStatus(p.id);
     return `
@@ -6924,6 +6977,7 @@ function renderProblemList() {
         </div>
       </div>
       <div class="prob-row-right">
+        ${startP && p.id === startP.id && !st ? `<span class="pill start-here">Start here</span>` : ""}
         ${p.difficulty ? `<span class="pill ${classForDifficulty(p.difficulty)}">${escapeHtml(p.difficulty)}</span>` : ""}
         ${st === "got" ? `<span class="pill status-got">Got it</span>` : ""}
         ${st === "review" ? `<span class="pill status-review">Review</span>` : ""}
@@ -11596,7 +11650,22 @@ function conceptPanelHtml(p) {
     </div>`;
 }
 
-function renderProblem(problemId) {
+// Where the student came from. Opened from Need Review or the exam results, Back and Prev/Next follow that list.
+// The route carries it (#/problem/ID?from=review), nothing is remembered, so every other way in is unchanged.
+function problemContext(p, from) {
+  if (from === "review") {
+    const status = getStatusMap(), ids = [];
+    State.sectionsData.forEach(s => s.problems.forEach(q => { if (status[q.id] === "review" || q.id === p.id) ids.push(q.id); }));
+    return { from, ids, listName: "Need Review", backLabel: "Back to Need Review", backRoute: "/review" };
+  }
+  if (from === "exam") {
+    const r = getExamRun();    // only a finished run has a results page to go back to
+    if (r && r.endedAt && r.ids.includes(p.id)) return { from, ids: r.ids.slice(), listName: "Exam Questions", backLabel: "Back to results", backRoute: "/exam/run/done" };
+  }
+  return null;
+}
+
+function renderProblem(problemId, from) {
   const p = State.problemsById.get(problemId);
   const run = $("#examRun"); if (run) run.innerHTML = "";   // one guided solution on the page at a time
   if (!p) {
@@ -11621,14 +11690,17 @@ function renderProblem(problemId) {
   // Remember for "Resume where you left off" on the home page
   lsSet(LS.LAST_PROBLEM, p.id);
 
-  // Back button target
-  $("#problemBackBtn").onclick = () => navigate(`/section/${p.sectionPos}`);
+  // Back button target (the section, or the list the student came from)
+  const ctx = problemContext(p, from), cq = ctx ? "?from=" + ctx.from : "";
+  $("#problemBackBtn").innerHTML = `<span class="arr">→</span> ${ctx ? ctx.backLabel : "Back to section"}`;
+  $("#problemBackBtn").onclick = () => navigate(ctx ? ctx.backRoute : `/section/${p.sectionPos}`);
 
-  // Compute neighbor problems
+  // Compute neighbor problems (in the section, or in the list the student came from)
   const section = State.sectionsByPos.get(p.sectionPos);
-  const idx = section.problems.findIndex(x => x.id === p.id);
-  const prev = idx > 0 ? section.problems[idx - 1] : null;
-  const next = idx < section.problems.length - 1 ? section.problems[idx + 1] : null;
+  const walk = ctx ? ctx.ids.map(id => State.problemsById.get(id)).filter(Boolean) : section.problems;
+  const idx = walk.findIndex(x => x.id === p.id);
+  const prev = idx > 0 ? walk[idx - 1] : null;
+  const next = idx >= 0 && idx < walk.length - 1 ? walk[idx + 1] : null;
 
   const status  = getStatus(p.id);
 
@@ -11673,7 +11745,7 @@ function renderProblem(problemId) {
     <div class="study-actions">
       <button class="${statusButtons(status).got.cls}" id="markGot">${statusButtons(status).got.html}</button>
       <button class="${statusButtons(status).rev.cls}" id="markReview">${statusButtons(status).rev.html}</button>
-      ${next ? `<button class="btn btn-ghost" id="nextProblemBtn" type="button" data-route="/problem/${escapeHtml(next.id)}">Next problem <span class="arrow" aria-hidden="true">→</span></button>` : ""}
+      ${next ? `<button class="btn btn-ghost" id="nextProblemBtn" type="button" data-route="/problem/${escapeHtml(next.id)}${cq}">Next problem <span class="arrow" aria-hidden="true">→</span></button>` : ""}
       <button class="btn btn-ghost btn-sm" id="clearStatus"${status ? "" : " hidden"}>Clear status</button>
       <span class="study-actions-minor">
         <button class="btn btn-ghost btn-sm" id="copyLinkBtn" type="button">Copy link</button>
@@ -11687,12 +11759,12 @@ function renderProblem(problemId) {
   // the chips under the title; the id travels with a report on its own)
   $("#studySide").innerHTML = `
     <div class="side-card">
-      <h4>Move Through Section</h4>
+      <h4>${ctx ? "Move Through " + ctx.listName : "Move Through Section"}</h4>
       <div class="study-nav">
-        <button class="btn btn-ghost btn-sm" id="studyPrev" ${prev ? `data-go="${prev.id}"` : "disabled"}>← Prev</button>
-        <button class="btn btn-ghost btn-sm" id="studyNext" ${next ? `data-go="${next.id}"` : "disabled"}>Next →</button>
+        <button class="btn btn-ghost btn-sm" id="studyPrev" ${prev ? `data-go="${prev.id}${cq}"` : "disabled"}>← Prev</button>
+        <button class="btn btn-ghost btn-sm" id="studyNext" ${next ? `data-go="${next.id}${cq}"` : "disabled"}>Next →</button>
       </div>
-      ${sectionMapHtml(section, p.id)}
+      ${ctx ? `<div class="sec-map-cap"><span>Problem <b>${idx + 1}</b> of ${walk.length}</span></div>` : sectionMapHtml(section, p.id)}
       <button class="shortcuts-hint" id="shortcutsTrigger" type="button" aria-label="Show keyboard shortcuts">
         Tip: press <kbd>?</kbd> for keyboard shortcuts
       </button>
@@ -11702,7 +11774,7 @@ function renderProblem(problemId) {
       <div style="display:flex; flex-direction:column; gap:6px;">
         <button class="btn btn-ghost btn-sm btn-block" id="sideRandom">Random Problem</button>
         <button class="btn btn-ghost btn-sm btn-block" id="sideRandomSection">Random from Section</button>
-        <button class="btn btn-ghost btn-sm btn-block" data-route="/section/${p.sectionPos}">Back to Section</button>
+        <button class="btn btn-ghost btn-sm btn-block" data-route="${ctx ? ctx.backRoute : "/section/" + p.sectionPos}">${ctx ? ctx.backLabel : "Back to Section"}</button>
       </div>
     </div>
   `;
@@ -11752,6 +11824,13 @@ function guideSteps(p) {
   return steps;
 }
 
+// "Common mistakes (n)": a closed fold that sits right after the final answer
+function mistakesHtml(p) {
+  const ms = (p.commonMistakes || []).filter(m => m && String(m).trim());
+  if (!ms.length) return "";
+  return `<details class="cm-fold"><summary>Common mistakes (${ms.length})</summary><ul class="cm-list">${ms.map(m => `<li><div class="math-block">${m}</div></li>`).join("")}</ul></details>`;
+}
+
 function guideHtml(p) {
   const steps = guideSteps(p);
   if (!steps.length) return "";
@@ -11763,7 +11842,7 @@ function guideHtml(p) {
           <span class="g-node" aria-hidden="true">${s.n}</span>
           <div class="g-title"><div class="g-kick">${escapeHtml(s.kick)}</div>${s.name ? `<div class="g-name">${escapeHtml(s.name)}</div>` : ""}</div>
           <div class="g-content">${s.kind === "answer"
-            ? `<div class="final-answer-box"><div class="math-block">${s.html}</div></div>`
+            ? `<div class="final-answer-box"><div class="math-block">${s.html}</div></div>${mistakesHtml(p)}`
             : `<div class="math-block">${s.html}</div>`}</div>
         </div>
       </li>`).join("");
@@ -11787,7 +11866,11 @@ function guideHtml(p) {
         <span class="g-ghost" aria-hidden="true"></span>
         <button class="btn btn-red g-next" id="guideNext" type="button"><span class="g-label">Show a hint</span> <span class="arrow" aria-hidden="true">→</span></button>
         <button class="g-link" id="guideSkip" type="button">Skip to the solution</button>
+        ${p.finalAnswerLatex ? `<button class="g-link" id="guideCheck" type="button" aria-expanded="false" aria-controls="guidePeek">Check final answer</button>` : ""}
       </div>
+      ${p.finalAnswerLatex ? `<div class="g-peek" id="guidePeek" aria-hidden="true"><div class="g-peek-in">
+        <div class="final-answer-box"><div class="final-answer-label">Final answer</div><div class="math-block">${p.finalAnswerLatex}</div></div>${mistakesHtml(p)}
+      </div></div>` : ""}
       <div class="g-end" id="guideEnd" hidden>
         <span class="g-node" aria-hidden="true">${G_AGAIN}</span>
         ${p.similarProblemPrompt
@@ -11809,6 +11892,9 @@ function wireGuide(p) {
   const all = $("#guideAll"), reset = $("#guideReset"), end = $("#guideEnd");
   const segs = Array.from(guide.querySelectorAll(".gt-seg"));
   const hasSolution = kinds.some(k => k !== "hint");
+  // "Check final answer": the answer alone, in its own box under the row (no step opens)
+  const check = $("#guideCheck"), peek = $("#guidePeek"), ai = kinds.indexOf("answer");
+  let peekOn = false;
 
   const nextIndex = () => { for (let i = 0; i < total; i++) if (!shown.has(i) && !passed.has(i)) return i; return -1; };
   const save = () => GuideMemory.set(p.id, { shown: [...shown], passed: [...passed] });
@@ -11844,6 +11930,14 @@ function wireGuide(p) {
       if (label.textContent !== txt) { label.textContent = txt; label.classList.remove("swap"); void label.offsetWidth; label.classList.add("swap"); }
       skip.hidden = !(kinds[ni] === "hint" && hasSolution);
     }
+    if (ai >= 0 && shown.has(ai)) peekOn = false;       // the real answer step is open: the peek has done its job
+    if (check && peek) {
+      check.hidden = ai < 0 || shown.has(ai) || (ai === ni && !peekOn);
+      check.textContent = peekOn ? "Hide final answer" : "Check final answer";
+      check.setAttribute("aria-expanded", peekOn ? "true" : "false");
+      peek.classList.toggle("shown", peekOn);
+      peek.setAttribute("aria-hidden", peekOn ? "false" : "true");
+    }
     const wasEnd = !end.hidden;
     end.hidden = ni !== -1 || shown.size === 0;
     if (!end.hidden && !wasEnd && fresh.length) { end.classList.remove("enter"); void end.offsetWidth; end.classList.add("enter"); }
@@ -11876,7 +11970,7 @@ function wireGuide(p) {
     passed.clear(); save(); paint(fresh, true);
   }
   function startOver() {
-    shown.clear(); passed.clear(); save(); paint();
+    shown.clear(); passed.clear(); peekOn = false; save(); paint();
     const top = guide.getBoundingClientRect().top;
     if (top < 80) window.scrollBy({ top: top - 96, behavior: "smooth" });
   }
@@ -11894,8 +11988,19 @@ function wireGuide(p) {
     });
   }
   skip.addEventListener("click", skipToSolution);
+  if (check && peek) check.addEventListener("click", () => {
+    peekOn = !peekOn; paint();
+    if (!peekOn) return;
+    requestAnimationFrame(() => {                        // bring the box into view once it has opened
+      const inner = peek.firstElementChild, top = peek.getBoundingClientRect().top;
+      const overflow = top + inner.scrollHeight + 24 - window.innerHeight, room = top - 96;
+      if (overflow > 0 && room > 0) window.scrollBy({ top: Math.min(overflow, room), behavior: "smooth" });
+    });
+  });
   all.addEventListener("click", showAll);
   reset.addEventListener("click", startOver);
+  // Common mistakes open closed: make sure their math is typeset (a no-op when it already is)
+  guide.addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("cm-fold") && e.target.open) typesetMath(e.target); }, true);
 
   // first paint (restored steps appear without animating in)
   guide.classList.add("no-anim"); paint();
@@ -11960,6 +12065,17 @@ function renderExamSetup() {
   $$("[data-size-pick]").forEach(b => {
     b.classList.toggle("selected", Number(b.dataset.sizePick) === State.examSize);
   });
+  // One short line under the size buttons: how long each size takes (same estimate the run's red mark uses)
+  const est = $("#examEst");
+  if (est) {
+    const per = examPool(State.examChoice).map(g => g.problems.reduce((m, p) => m + (+p.estimatedMinutes || 10), 0) / g.problems.length);
+    const avg = per.length ? per.reduce((a, b) => a + b, 0) / per.length : 0;     // a set takes one problem per lecture in turn
+    est.hidden = !avg;
+    if (avg) est.innerHTML = $$("[data-size-pick]").map((b, i) => {
+      const n = Number(b.dataset.sizePick), t = `${i ? n : n + " problems"} &asymp; ${Math.max(10, Math.ceil(n * avg / 5) * 5)} min`;
+      return n === State.examSize ? `<b>${t}</b>` : t;
+    }).join(" &middot; ");
+  }
   renderExamResume();
 }
 
@@ -12045,6 +12161,7 @@ function startExamClock() {
     else if (!late) box.classList.remove("is-late");
   };
   box.hidden = false; paint();
+  const r0 = getExamRun(); if (r0) box.title = `Time so far. Turns red at ${examLateSec(r0) / 60} minutes.`;
   examTick = setInterval(paint, 1000);
 }
 function stopExamClock() { if (examTick) { clearInterval(examTick); examTick = null; } }
@@ -12152,7 +12269,7 @@ function renderExamSummary(r, ps) {
       <div class="prob-list">
         ${ps.map((p, k) => {
           const st = getStatus(p.id);
-          return `<button class="prob-row" data-problem-id="${escapeHtml(p.id)}">
+          return `<button class="prob-row" data-problem-id="${escapeHtml(p.id)}" data-from="exam">
             <div class="prob-row-main">
               <div class="prob-row-title">${String(k + 1).padStart(2, "0")}. ${escapeHtml(p.title)}</div>
               <div class="prob-row-sub">
@@ -12225,7 +12342,7 @@ function renderReview() {
   content.innerHTML = `
     <div class="prob-list">
       ${review.map((p, i) => `
-        <button class="prob-row" data-problem-id="${escapeHtml(p.id)}">
+        <button class="prob-row" data-problem-id="${escapeHtml(p.id)}" data-from="review">
           <div class="prob-row-main">
             <div class="prob-row-title">${String(i+1).padStart(2,'0')}. ${escapeHtml(p.title)}</div>
             <div class="prob-row-sub">
@@ -12258,8 +12375,6 @@ const VZ = { red: "#C8102E", deep: "#9A0B22", ink: "#1F2933", grey: "#6B7682", f
              tint: "#FCEFF1", soft: "#F7DEE2", paper: "#FBF8F4" };
 // The index is organized by idea; each picture belongs to one group (VZ_GROUP_OF), in VZ_ORDER.
 const VZ_GROUP_OF = {
-  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-dirderiv", "m-extrema", "m-wire", "m-potential", "m-square", "m-switch", "m-green", "m-surfarea", "m-flux", "m-dome", "m-cylinder"],
-  "Check your own work": ["tool-rref", "tool-det", "tool-eigen", "tool-vec"],
   "Vectors, span, and subspaces": ["vectors", "span", "independence", "coords", "subspace"],
   "Matrices as maps": ["transpose", "matrix", "compose", "det", "inverse", "nullcol", "systems", "gauss"],
   "Dot and cross products": ["projection", "projplane", "cross"],
@@ -12269,9 +12384,39 @@ const VZ_GROUP_OF = {
   "Double integrals": ["riemann", "fubini", "order", "polar", "jacobian"],
   "Vector fields and line integrals": ["gradfield", "fields", "curtain", "work", "conservative", "green", "greenarea"],
   "Surfaces and flux": ["surface", "orient", "flux", "stokes", "divthm"],
+  // the topic pictures lead; the tools and the (long) list of methods come after them
+  "Check your own work": ["tool-rref", "tool-det", "tool-eigen", "tool-vec"],
+  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-dirderiv", "m-extrema", "m-wire", "m-potential", "m-square", "m-switch", "m-green", "m-surfarea", "m-flux", "m-dome", "m-cylinder"],
 };
 const VZ_GROUPS = Object.keys(VZ_GROUP_OF);
 const VZ_ORDER = VZ_GROUPS.flatMap(g => VZ_GROUP_OF[g]);
+// "Practice this": the Practice Lab section that matches each picture (a few pictures sit in a different section from the
+// rest of their group). A picture with no entry here and no group entry below simply shows no link.
+const VZ_SECTION_OF = {
+  compose: 1, transpose: 1, "m-matmul": 1,
+  systems: 2, gauss: 2, "m-gauss": 2, "tool-rref": 2,
+  span: 3, independence: 3, coords: 3, subspace: 3, vectors: 1, nullcol: 3, "m-nullcol": 3, "m-subspace": 3, "m-span": 3,
+  matrix: 4, det: 4, inverse: 4, "m-reflect": 4, "m-det3": 4, "m-inverse": 4, "tool-det": 4,
+  eigen: 5, "m-eigen": 5, "m-complex": 5, "tool-eigen": 5,
+  projection: 6, projplane: 6, cross: 6, diag: 6, powers: 6, "m-markov": 6, "m-planedist": 6, "m-plane3": 6, "tool-vec": 6,
+  curves: 7, spacecurve: 7, arclength: 7, level: 7, partials: 7, chain: 7, gradient: 7, critical: 7, "m-dirderiv": 7, "m-extrema": 7,
+  gradfield: 8, fields: 8, curtain: 8, work: 8, conservative: 8, "m-wire": 8, "m-potential": 8, "m-square": 8,
+  riemann: 9, fubini: 9, order: 9, polar: 9, jacobian: 9, green: 9, greenarea: 9, "m-switch": 9, "m-green": 9,
+  surface: 10, orient: 10, flux: 10, stokes: 10, divthm: 10, "m-surfarea": 10, "m-flux": 10, "m-dome": 10, "m-cylinder": 10,
+};
+const VZ_SECTION_OF_GROUP = {
+  "Vectors, span, and subspaces": 3, "Matrices as maps": 4, "Dot and cross products": 6, "Eigenvalues and eigenvectors": 5, "Curves": 7,
+  "Functions of two variables": 7, "Double integrals": 9, "Vector fields and line integrals": 8, "Surfaces and flux": 10,
+};
+function vzSectionFor(def) {
+  const n = VZ_SECTION_OF[def.id] || VZ_SECTION_OF_GROUP[def.group] || 0;
+  return n >= 1 && n <= 10 ? n : 0;
+}
+// the foot of a picture's or method's side panel: a small "Practice this" link (when a section matches) beside "Report a problem"
+function vzFootHtml(def) {
+  const n = vzSectionFor(def);
+  return `<div class="vz-foot">${n ? `<a class="vz-practice" href="#/section/${n}" data-route="/section/${n}" title="Open Practice Lab Section ${n}">Practice this &rarr;</a>` : ""}<button class="vz-report" type="button" id="vzReport">Report a problem</button></div>`;
+}
 function vzAdd(def) { VZ_LIST.push(def); VZ_BY_ID[def.id] = def; }
 const q2 = v => Math.round(v * 100) / 100;
 function vzNum(v, d = 2) {
@@ -12439,6 +12584,88 @@ function vzPanelEdge(panel) {
   if (window.ResizeObserver) { vzPanelRO = new ResizeObserver(set); vzPanelRO.observe(panel); [...panel.children].forEach(c => vzPanelRO.observe(c)); }
   set();
 }
+/* The index: the topic pictures first, then the tools, then the methods, a long list that shows a few until "Show all".
+   A small box filters the cards as you type. The box and the unfolded list are remembered while a student visits a
+   picture and comes back. */
+const VZ_FOLD = { "Methods, step by step": { show: 4, what: "methods" } };
+const VZ_IDX = { q: "", open: {} };
+// lower-case words without punctuation or maths, so "Green's" and "greens" find the same cards
+const vzNorm = s => String(s == null ? "" : s).toLowerCase().replace(/\\\(.*?\\\)/g, " ").replace(/[’'`]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+function vzIndexHtml() {
+  const groups = VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g));
+  return `
+      <div class="section-head">
+        <div>
+          <div class="kicker">Visualize</div>
+          <h2>See the ideas move</h2>
+          <p>Drag, slide, or press Play, and watch the core ideas move.</p>
+        </div>
+      </div>
+      <div class="vz-find">
+        <input class="input vz-find-in" id="vzFind" type="search" placeholder="Find a picture…" aria-label="Find a picture" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" value="${escapeHtml(VZ_IDX.q)}" />
+        <span class="vz-find-note" id="vzFindNote" role="status"></span>
+      </div>
+      <nav class="vz-jump" aria-label="Jump to a group">${groups.map((g, gi) => `<button type="button" class="vz-chip" data-jump="vzg-${gi}">${escapeHtml(g)}</button>`).join("")}</nav>
+      ${groups.map((g, gi) => {
+        const items = VZ_LIST.filter(v => v.group === g);
+        const fold = VZ_FOLD[g] && VZ_FOLD[g].show < items.length ? VZ_FOLD[g] : null, folded = !!fold && !VZ_IDX.open[g];
+        return `<div class="vz-group${folded ? " vz-folded" : ""}" id="vzg-${gi}"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map((v, k) => `
+          <a class="vz-card${fold && k >= fold.show ? " vz-extra" : ""}" href="#/visualize/${v.id}" data-q="${vzNorm([v.card, v.title, v.tagline || v.blurb, v.group].filter(Boolean).join(" "))}">
+            <svg class="vz-thumb" viewBox="0 0 ${VZ_W} ${VZ_H}" aria-hidden="true" data-th="${v.id}">${vzDefs(v.defs)}<g clip-path="url(#vz-clip)">${v._th || ""}</g></svg>
+            <span class="vz-card-title">${escapeHtml(v.card || v.title)}</span>
+            <span class="vz-card-blurb">${escapeHtml(v.tagline || v.blurb)}</span>
+          </a>`).join("")}</div>${fold ? `<button type="button" class="vz-chip vz-showall" data-all="Show all ${fold.what} (${items.length})" data-few="Show fewer ${fold.what}" data-g="${escapeHtml(g)}" aria-expanded="${!folded}">${folded ? `Show all ${fold.what} (${items.length})` : `Show fewer ${fold.what}`}</button>` : ""}</div>`;
+      }).join("")}
+      <p class="vz-none" id="vzNone" hidden><span></span> <button type="button" class="vz-chip" id="vzNoneClear">Show everything</button></p>`;
+}
+// show the cards that match the box (every word must appear in the card's title or text); an empty box shows all
+function vzFindApply(root) {
+  const words = vzNorm(VZ_IDX.q).split(" ").filter(Boolean), on = words.length > 0, total = root.querySelectorAll(".vz-card").length;
+  let shown = 0, only = null;
+  root.querySelectorAll(".vz-group").forEach((g, gi) => {
+    let n = 0;
+    g.querySelectorAll(".vz-card").forEach(c => {
+      const ok = !on || words.every(w => c.dataset.q.includes(w));
+      if (ok && c.hidden) c.classList.add("vz-reveal");          // a card coming back fades in rather than snapping
+      c.hidden = !ok;
+      if (ok) { n++; only = c; }
+    });
+    g.hidden = on && !n;
+    g.classList.toggle("vz-searching", on);                      // while searching, a folded list shows every match
+    const chip = root.querySelector(`[data-jump="vzg-${gi}"]`);
+    if (chip) chip.classList.toggle("vz-chip-dim", on && !n);
+    shown += n;
+  });
+  const note = root.querySelector("#vzFindNote"), none = root.querySelector("#vzNone");
+  if (note) note.textContent = on ? `${shown} of ${total}` : `${total} in all`;
+  if (none) { none.hidden = !(on && !shown); if (on && !shown) none.firstElementChild.textContent = `Nothing matches “${VZ_IDX.q.trim().slice(0, 40)}”. Try a shorter word.`; }
+  root._only = shown === 1 ? only : null;
+}
+function vzIndexWire(root) {
+  const find = root.querySelector("#vzFind");
+  if (!find) return;
+  const clear = () => { find.value = ""; VZ_IDX.q = ""; vzFindApply(root); };
+  vzFindApply(root);
+  find.addEventListener("input", () => { VZ_IDX.q = find.value; vzFindApply(root); });
+  find.addEventListener("keydown", e => {
+    if (e.key === "Escape" && find.value) { e.preventDefault(); clear(); }
+    else if (e.key === "Enter" && root._only) location.hash = root._only.getAttribute("href");   // one match: open it
+  });
+  root.querySelector("#vzNoneClear").addEventListener("click", () => { clear(); find.focus(); });
+  root.querySelectorAll(".vz-showall").forEach(btn => btn.addEventListener("click", () => {
+    const g = btn.closest(".vz-group"), open = g.classList.contains("vz-folded");
+    VZ_IDX.open[btn.dataset.g] = open;
+    g.classList.toggle("vz-folded", !open);
+    if (open) g.querySelectorAll(".vz-extra").forEach(c => c.classList.add("vz-reveal"));
+    btn.textContent = open ? btn.dataset.few : btn.dataset.all; btn.setAttribute("aria-expanded", String(open));
+  }));
+  root.querySelector(".vz-jump").addEventListener("click", e => {
+    const b = e.target.closest("[data-jump]"); if (!b) return;
+    let g = document.getElementById(b.dataset.jump);
+    if (g && g.hidden) { clear(); g = document.getElementById(b.dataset.jump); }   // a group with no match: show everything again
+    if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 80, behavior: "smooth" });
+  });
+}
 function renderVisualize(id) {
   const root = $("#vizRoot");
   if (!root) return;
@@ -12449,34 +12676,14 @@ function renderVisualize(id) {
   VzView.labs = {}; VzView.tipSide = {}; VzView.dis = null;  // label glides, sides and dissolves belong to one picture
   const def = id && VZ_BY_ID[id];
   if (!def) {                                               // the index: every picture as a card
-    root.innerHTML = `
-      <div class="section-head">
-        <div>
-          <div class="kicker">Visualize</div>
-          <h2>See the ideas move</h2>
-          <p>Drag, slide, or press Play, and watch the core ideas move.</p>
-        </div>
-      </div>
-      <nav class="vz-jump" aria-label="Jump to a group">${VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g)).map((g, gi) => `<button type="button" class="vz-chip" data-jump="vzg-${gi}">${escapeHtml(g)}</button>`).join("")}</nav>
-      ${VZ_GROUPS.filter(g => VZ_LIST.some(v => v.group === g)).map((g, gi) => {
-        const items = VZ_LIST.filter(v => v.group === g);
-        return `<div class="vz-group" id="vzg-${gi}"><h3 class="vz-group-title">${escapeHtml(g)}</h3><div class="vz-cards">${items.map(v => `
-          <a class="vz-card" href="#/visualize/${v.id}">
-            <svg class="vz-thumb" viewBox="0 0 ${VZ_W} ${VZ_H}" aria-hidden="true" data-th="${v.id}">${vzDefs(v.defs)}<g clip-path="url(#vz-clip)">${v._th || ""}</g></svg>
-            <span class="vz-card-title">${escapeHtml(v.card || v.title)}</span>
-            <span class="vz-card-blurb">${escapeHtml(v.tagline || v.blurb)}</span>
-          </a>`).join("")}</div></div>`;
-      }).join("")}`;
+    root.innerHTML = vzIndexHtml();
     fadeIn();
     typesetMath(root);                                       // blurbs carry inline math
-    // thumbnails not drawn yet are filled in a few per frame, so the page never stalls on all 47 at once
+    // thumbnails not drawn yet are filled in a few per frame, so the page never stalls on all of them at once
     const todo = [...root.querySelectorAll("svg[data-th]")].filter(el => !VZ_BY_ID[el.dataset.th]._th);
     const fill = () => { if (!root.isConnected) return; todo.splice(0, 6).forEach(el => { const g = el.querySelector("g[clip-path]"); if (g) g.innerHTML = vzThumb(VZ_BY_ID[el.dataset.th]); el.classList.add("vz-th-in"); }); if (todo.length) requestAnimationFrame(fill); };
     if (todo.length) requestAnimationFrame(fill);
-    root.querySelector(".vz-jump").addEventListener("click", e => {
-      const b = e.target.closest("[data-jump]"); if (!b) return;
-      const g = document.getElementById(b.dataset.jump); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 80, behavior: "smooth" });
-    });
+    vzIndexWire(root);
     return;
   }
   const i = VZ_LIST.indexOf(def), prev = VZ_LIST[(i - 1 + VZ_LIST.length) % VZ_LIST.length], next = VZ_LIST[(i + 1) % VZ_LIST.length];
@@ -12503,7 +12710,7 @@ function renderVisualize(id) {
         ${def.presets ? `<div class="vz-presets">${def.presets.map((p, k) => `<button class="vz-chip" type="button" data-preset="${k}" aria-pressed="false">${escapeHtml(p[0])}</button>`).join("")}</div>` : ""}
         <div class="vz-readout" id="vzReadout" aria-live="polite"></div>
         <details class="vz-more"><summary>The idea</summary><p class="vz-blurb">${escapeHtml(def.blurb)}</p></details>
-        <button class="vz-report" type="button" id="vzReport">Report a problem</button>
+        ${vzFootHtml(def)}
         <div class="vz-fade" aria-hidden="true"></div>
       </aside>
     </div>
@@ -13113,12 +13320,12 @@ function vzGaussScene(cam, M, G, hi = -1, opt = {}) {
   }).filter(Boolean);
   // a small frame of axis directions through the solution, so x = a, y = b, z = c read as square to them
   let o = "";
-  const busy = [], lines = [];                          // spots and lines the planes' names keep away from
+  const busy = [], lines = [], axl = [];                // spots and lines the planes' names keep away from (axl: the axis letters)
   [[1, 0, 0, "x"], [0, 1, 0, "y"], [0, 0, 1, "z"]].forEach(([a, b, c, nm]) => {
     const tip = [C0[0] + 1.25 * a, C0[1] + 1.25 * b, C0[2] + 1.25 * c], T = pr(tip), S = pr(C0), L = Math.hypot(T[0] - S[0], T[1] - S[1]) || 1;
     const at = [T[0] + (T[0] - S[0]) / L * 11, T[1] + (T[1] - S[1]) / L * 11];
     o += `<g opacity=".5">${vzArrow3(cam, C0, tip, "G", 1.3)}</g>` + vzLabel(at[0], at[1] + 5, nm, VZ.grey, 14);
-    busy.push(at);
+    busy.push(at); axl.push(at);
   });
   disks.slice().sort((a, b) => b.dep - a.dep).forEach(D => {
     const on = D.i === hi ? (opt.hiW == null ? 1 : opt.hiW) : 0;      // the row being changed: brighter, rising and falling with its operation
@@ -13171,6 +13378,7 @@ function vzGaussScene(cam, M, G, hi = -1, opt = {}) {
       obst.forEach(q => { d = Math.min(d, dist(p, q, true) - 3); });
       lines.forEach(q => { d = Math.min(d, dist(p, q, false) - 3); });
       busy.forEach(z => { d = Math.min(d, Math.hypot(z[0] - p[0], z[1] - p[1]) * .7); });
+      axl.forEach(z => { d = Math.min(d, 2 * Math.max(Math.abs(z[0] - p[0]) - 15, Math.abs(z[1] - p[1]) - 16) + 6); });   // an axis letter: the two boxes must not touch
       near.forEach(z => { d = Math.min(d, Math.hypot(z[0] - p[0], z[1] - p[1]) * .6); });
       if (!obst.some(q => inside(p, q))) d += 10;
       if (p[0] < 24 || p[0] > W - 24 || p[1] < 28 || p[1] > H - 40 || avoid.some(([x0, y0, x1, y1]) => p[0] > x0 && p[0] < x1 && p[1] > y0 && p[1] < y1)) d -= 40;
@@ -13513,11 +13721,11 @@ vzAdd({
       o += `<g opacity="${q2(sideOp * (1 - zeroOp))}">` + vzLabel(P.X(mE[0]), P.Y(mE[1]) + 5, `|${vzB(g.bn)}|`, bCol, 15);
       // the base is the shadow's signed length
       const cOp = ramp(pl, 1.4, 1.7);                    // (the text is ~1.5 long: not on a shadow too short to hold it)
-      if (cOp > .01) o += `<g opacity="${q2(cOp)}">${vzAlong(P, [0, 0], pr, nrm, 19, `comp = ${vzNum(comp)}`, "#7A5C0F", 13.5)}</g>`;
+      if (cOp > .01) o += `<g opacity="${q2(cOp)}">${vzAlong(P, [0, 0], pr, nrm, 19, vzSub("comp", g.bn, `(${g.an})`), "#7A5C0F", 13.5)}</g>`;
       const cen = [pr[0] / 2 + nrmR[0] * lb / 2, pr[1] / 2 + nrmR[1] * lb / 2], room = pl > 1.5 && lb > 1.1;
       const at = room ? cen : [pr[0] + ub[0] * sg * .3 + nrmR[0] * lb / 2, pr[1] + ub[1] * sg * .3 + nrmR[1] * lb / 2];
       const g2 = vzGlide("area@", [P.X(at[0]), P.Y(at[1])], 40);
-      o += vzLabel(g2[0] + (room ? 0 : 6 * sg * Math.sign(ub[0] || 1)), g2[1] + 6, `${vzB(g.an)} · ${vzB(g.bn)} = ${vzShort(g.ab)}`, neg ? VZ.ink : VZ.deep, 16, room ? "middle" : (sg * (ub[0] || 1) > 0 ? "start" : "end"));
+      o += vzLabel(g2[0] + (room ? 0 : 6 * sg * Math.sign(ub[0] || 1)), g2[1] + 6, `${vzB(g.an)} · ${vzB(g.bn)}`, neg ? VZ.ink : VZ.deep, 16, room ? "middle" : (sg * (ub[0] || 1) > 0 ? "start" : "end"));
       const nOp = room && neg ? ramp(pl, 1.5, 1.8) * ramp(lb, 1.6, 1.9) * (1 - (this._kStack || 0)) : 0;   // (this note steps aside while the two names are stacked on this side)
       if (nOp > .01) o += `<g opacity="${q2(nOp)}">${vzLabel(g2[0], g2[1] + 26, `<tspan font-style="normal" font-size="12.5">a negative area</tspan>`, VZ.grey, 12.5)}</g>`;
       o += `</g>`;
@@ -13657,7 +13865,7 @@ function vzNames(items, obst, box, mem) {
       const x = it.at[0] + ux * (gap + more) - uy * side, y = it.at[1] + uy * (gap + more - 4) + ux * side;
       const d = Math.min(9, ...placed.map(p => Math.max(Math.abs(p[0] - x) / ((p[2] + w) / 2), Math.abs(p[1] - y) / (p[2] < 10 ? 16 : 28))));
       const edge = x - w / 2 < 6 || x + w / 2 > W - 6 || y < top || y > H - 12 || (keyY < H && y > keyY && x - w / 2 < W * 5 / 6) ? 40 : 0;   // the edges, the caption, the key (it spans ~5/6 of the width)
-      const sc = (d >= 1 ? 100 : d * 50) - i * 2 - edge + (mem && mem[key] === i ? 14 : 0);
+      const sc = (d >= (it.air || 1) ? 100 : d * 50) - i * 2 - edge + (mem && mem[key] === i ? 14 : 0);
       if (sc > bs) { bs = sc; best = [x, y]; bi = i; }
     });
     if (it.op > .01) { if (mem) mem[key] = bi; placed.push([best[0], best[1], w]); o += `<g opacity="${q2(Math.min(1, it.op))}">${vzLabel(best[0], best[1] + 5, it.html, it.col, sz)}</g>`; }
@@ -13754,7 +13962,7 @@ function vzProjScene(cam, camR, G, ph, opt = {}) {
   if (len(G.perp) > .3) items.push(Object.assign(midOf(G.sum, G.v), { id: "perp", html: nm.perp || (G.bad ? "v − sum" : vzB("v") + `<tspan>⊥</tspan><tspan font-style="normal" font-size="14">  length ${vzRootTxt(vzDot(G.perp, G.perp))}</tspan>`), col: VZ.deep, op: dist, gap: 10 }));
   if (G.bad && len(sub(G.v, G.tru)) > .3) {
     const T = pr(G.tru), Sm = pr(G.sum), dx = T[0] - Sm[0], dy = T[1] - Sm[1], L = Math.hypot(dx, dy) || 1;
-    items.push({ id: "tru", at: [T[0], T[1]], dir: [dx / L, dy / L], html: "closest", col: VZ.ink, op: truS, size: 14 });   // (short: a long name has no clear spot between v, its drop and the sum)
+    items.push({ id: "tru", at: [T[0], T[1]], dir: [dx / L, dy / L], html: "closest", col: VZ.ink, op: truS, size: 14, air: 1.4 });   // (short: a long name has no clear spot between v, its drop and the sum)
   }
   // P and its equation, at the corner or edge of the patch farthest from every arrow (judged in the view at rest)
   const prR = p => camR(p[0], p[1], p[2]), busy = [];
@@ -14785,7 +14993,7 @@ vzAdd({
     // the highlighted cell's area, beside it
     const at = this.pos(rv(c + 1) + .12, (tv(2) + tv(3)) / 2, m), flat = 1 - vzClamp((m - .25) / .2, 0, 1), curled = vzClamp((m - .7) / .25, 0, 1);
     if (flat > .01) o += `<g opacity="${q2(flat)}">${vzLabel(at[0], at[1] + 5, "Δr Δθ", VZ.deep, 15, "start")}</g>`;
-    if (curled > .01) o += `<g opacity="${q2(curled)}">${vzLabel(at[0], at[1] + 5, `<tspan font-weight="700" fill="${VZ.red}">${vzShort(r)}</tspan> Δr Δθ`, VZ.deep, 15, "start")}</g>`;
+    if (curled > .01) o += `<g opacity="${q2(curled)}">${vzLabel(at[0], at[1] + 5, `<tspan font-weight="700" fill="${VZ.red}">r</tspan> Δr Δθ`, VZ.deep, 15, "start")}</g>`;
     o += vzNoteFade(22, 432, m, [.12, .88], ["the (r, θ) plane: every cell is Δr by Δθ", "curling the rectangle around the origin", "the (x, y) plane: each cell's area is r Δr Δθ"]);
     return o;
   },
@@ -15450,7 +15658,7 @@ vzAdd({
     if (band > .01) o += P.path([[0, 0], v1, sum, v2, [0, 0]], `stroke="${VZ.red}" stroke-width="7" stroke-opacity="${q2(band)}" stroke-linecap="round" stroke-linejoin="round"`);
     if (!flat) o += P.poly([[0, 0], v1, sum, v2], `fill="${VZ.red}" fill-opacity=".14" stroke="${VZ.red}" stroke-opacity=".55" stroke-width="1.4"`);
     // the area, inside the parallelogram; when it is thin or flat, its middle sits on the tips' names, so the label
-    // moves beside the near half of it instead (and says "area 0" once it is flat)
+    // moves beside the near half of it instead
     let lx = P.X(sum[0] / 2), ly = P.Y(sum[1] / 2) + 5;
     if (sn < .3) {
       const big = len(sum) > 12, d = big ? sum : len(v1) >= len(v2) ? v1 : v2, q = big ? S([sum[0] / 4, sum[1] / 4]) : O;
@@ -15458,7 +15666,7 @@ vzAdd({
       let nx = L > 1 ? -dy / L : 0, ny = L > 1 ? dx / L : 1; if (ny < 0) { nx = -nx; ny = -ny; }
       lx = q[0] + nx * 26; ly = q[1] + ny * 26 + 5;
     }
-    const area = "area " + (flat ? "0" : vzShort(Math.abs(det)));
+    const area = "area";
     o += vzLabel(lx, ly, area, VZ.deep, 15);
     boxes.push([lx - area.length * 4.2 - 4, ly - 17, lx + area.length * 4.2 + 4, ly + 4]);
     // a name beside the middle of segment A → B (screen), on the side away from the point "away"
@@ -15540,7 +15748,7 @@ vzAdd({
     if (nb > .01) o += `<g opacity="${q2(nb)}">${vzTipLabels(P, [{ v: e1, html: vzB("e", "1"), col: VZ.red }, { v: e2, html: vzB("e", "2"), col: VZ.ink }])}</g>`;
     if (na > .01) o += `<g opacity="${q2(na)}">${vzTipLabels(P, [{ v: e1, html: "A" + vzB("e", "1"), col: VZ.red }, { v: e2, html: "A" + vzB("e", "2"), col: VZ.ink }])}</g>`;
     // the area: inside the image when the whole label fits there, otherwise the nearest clear spot outside it
-    const txt = "area " + (flat ? "0" : vzShort(Math.round(Math.abs(det) * 100) / 100)), tw = txt.length * 8.8 + 8, th = 22;
+    const txt = "area", tw = txt.length * 8.8 + 8, th = 22;
     const scr = p => [P.X(p[0]), P.Y(p[1])], poly = [[0, 0], e1, far, e2].map(scr);
     const inside = (x, y) => { let sg = 0; for (let i = 0; i < 4; i++) { const a = poly[i], b = poly[(i + 1) % 4], c = (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]); if (Math.abs(c) < 1e-6) continue; if (sg && Math.sign(c) !== sg) return false; sg = Math.sign(c); } return true; };
     const corners = (x, y, m = 0) => [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, -1], [0, 1]].map(([a, b]) => [x + a * (tw / 2 + 3 + m), y + b * (th / 2 + 2 + m)]);
@@ -15847,17 +16055,14 @@ vzAdd({
     const [xa, ya] = pt(c, L), [xb, yb] = pt(c, 0); sl.push(pr(xa, ya, 0), pr(xb, yb, 0));
     o += `<path d="M${sl.map(P2).join("L")}Z" fill="${VZ.red}" fill-opacity=".5" stroke="${VZ.deep}" stroke-width="2" stroke-linejoin="round"/>`;
     // the slice's area, just above the highest part of its top edge under the label (no edge runs through the words)
-    const A = byX ? 1 + c * c / 8 : 2 + 2 * c / 3, mid = pt(c, L / 2), mq = pr(mid[0], mid[1], f(mid[0], mid[1]));
-    const lab = `area A(${byX ? "x" : "y"}) = ${vzNum(A)}`, hw = lab.length * 15 * .55 / 2 + 4, top = sl.slice(0, N + 1), xl = mq[0] - hw, xr = mq[0] + hw;
+    const mid = pt(c, L / 2), mq = pr(mid[0], mid[1], f(mid[0], mid[1]));
+    const lab = `area A(${byX ? "x" : "y"})`, hw = lab.length * 15 * .55 / 2 + 4, top = sl.slice(0, N + 1), xl = mq[0] - hw, xr = mq[0] + hw;
     let ly = mq[1];
     top.forEach((q, j) => {
       if (q[0] >= xl && q[0] <= xr) ly = Math.min(ly, q[1]);
       const r = top[j + 1]; if (r) [xl, xr].forEach(e => { if ((q[0] - e) * (r[0] - e) < 0) ly = Math.min(ly, q[1] + (r[1] - q[1]) * (e - q[0]) / (r[0] - q[0])); });
     });
     o += vzLabel(mq[0], ly - 10, lab, VZ.deep, 15);
-    // where the slice stands: just in front of its foot (x-slices), or just past its x = 0 end (y-slices), clear of the solid
-    const ft = byX ? pr(c, -.4, 0) : pr(-.1, c, 0);
-    o += byX ? vzLabel(ft[0], ft[1] + 5, `x = ${vzNum(c)}`, VZ.deep, 14) : vzLabel(ft[0] - 6, ft[1] + 5, `y = ${vzNum(c)}`, VZ.deep, 14, "end");
     // the small graph of A, with the area under it so far shaded
     if (!thumb) {
       const gx = 430, gy = 292, gw = 140, gh = 84, span = byX ? 2 : 1, Amax = byX ? 1.5 : 2.67, Ag = v => byX ? 1 + v * v / 8 : 2 + 2 * v / 3;
@@ -15870,8 +16075,7 @@ vzAdd({
       o += `<line x1="${q2(X(c))}" y1="${q2(Y(0))}" x2="${q2(X(c))}" y2="${q2(Y(Ag(c)))}" stroke="${VZ.deep}" stroke-width="2"/>`;
       // under the axis: 0 … x … 2 (or 0 … y … 1)
       o += vzNote(gx - 22, gy - 14, `A(${byX ? "x" : "y"})`, "start", VZ.deep) + vzNote(gx, gy + gh + 17, "0", "middle", VZ.grey) + vzNote(gx + gw / 2, gy + gh + 17, byX ? "x" : "y", "middle", VZ.grey) + vzNote(gx + gw, gy + gh + 17, byX ? "2" : "1", "middle", VZ.grey);
-      const V = byX ? c + c * c * c / 24 : 2 * c + c * c / 3;
-      o += vzNote(gx - 22, gy - 32, `swept so far: ${vzNum(V)} of 7/3`, "start", VZ.ink);
+      o += vzNote(gx - 22, gy - 32, "swept so far", "start", VZ.ink);
     }
     o += vzKey([["fill", VZ.red, "the slice now"], ["line", VZ.red, "the surface z = f(x, y)"]]);
     return o;
@@ -15952,7 +16156,6 @@ vzAdd({
     }
     const lab = this.r(.25 * Math.PI); o += vzLabel(P.X(lab[0]) + 18, P.Y(lab[1]) - 8, "C", VZ.red, 18, "start");
     if (fin > .5) { const c = this.r(0); o += `<g opacity="${q2((fin - .5) * 2)}">${vzLabel(P.X(2.3), P.Y(0) + 6, "D", VZ.deep, 20)}</g>`; }
-    o += vzNote(578, 34, `∫ x dy so far: ${vzNum(this.sum(T))}`, "end", VZ.ink);
     o += vzKey([["fill", VZ.red, "x Δy > 0 (going up)"], ["fill", VZ.ink, "x Δy < 0 (coming down)"], ["line", VZ.red, "C, walked so far"]]);
     return o;
   },
@@ -16102,8 +16305,10 @@ vzAdd({
     let o = "";
     quads.sort((A, B) => B.d - A.d).forEach(q => {
       // shaded by which side faces you (the side the parameterization's normal points out of is red), softly near edge-on
-      const k = vzClamp(q.face * 4, -1, 1), red = k > 0;
-      o += `<path d="M${q.Q.map(p => P2(cam(...p))).join("L")}Z" fill="${red ? VZ.red : VZ.ink}" fill-opacity="${q2(.12 + .2 * Math.abs(k))}" stroke="#fff" stroke-opacity=".55" stroke-width=".6" stroke-linejoin="round"/>`;
+      // (an opaque tint, not a see-through fill: when Play starts over, the old drawing dissolves on top of the new one, and
+      // two see-through copies of the same strip stacked would flash darker)
+      const k = vzClamp(q.face * 4, -1, 1), red = k > 0, a = .12 + .2 * Math.abs(k), tint = [1, 3, 5].map((i2, j) => Math.round([0xFB, 0xF8, 0xF4][j] + (parseInt((red ? VZ.red : VZ.ink).slice(i2, i2 + 2), 16) - [0xFB, 0xF8, 0xF4][j]) * a).toString(16).padStart(2, "0")).join("");
+      o += `<path d="M${q.Q.map(p => P2(cam(...p))).join("L")}Z" fill="#${tint}" stroke="#fff" stroke-opacity=".55" stroke-width=".6" stroke-linejoin="round"/>`;
     });
     // the middle line and the walk along it
     const T = 2 * Math.PI * vzClamp(s.t, 0, 1), mid = [], walked = [];
@@ -16388,7 +16593,7 @@ vzAdd({
   presets: [["Triangle", { reg: 0 }], ["Between y = x² and y = 2x", { reg: 1 }], ["Under y = √x", { reg: 2 }]],
   regions: [
     { xs: [0, 2], ylo: x => x, yhi: () => 2, ys: [0, 2], xlo: () => 0, xhi: y => y, brk: 112,
-      dydx: ["0", "2", "x", "2"], dxdy: ["0", "2", "0", "y"], curves: [[t => [t, t], [-.3, 2.3], "y = x", 2.3, [8, 4]], [t => [t, 2], [-.3, 2.4], "y = 2", 2.4, [8, 4]], [t => [0, t], [-.3, 2.4], "x = 0", 2.4, [-8, -6, "end"]]] },
+      dydx: ["0", "2", "x", "2"], dxdy: ["0", "2", "0", "y"], curves: [[t => [t, t], [-.3, 2.3], "y = x", 2.3, [8, 4]], [t => [t, 2], [-.3, 2.4], "y = 2", 2.4, [8, -9]], [t => [0, t], [-.3, 2.4], "x = 0", 2.4, [-8, -6, "end"]]] },
     { xs: [0, 2], ylo: x => x * x, yhi: x => 2 * x, ys: [0, 4], xlo: y => y / 2, xhi: y => Math.sqrt(y),
       dydx: ["0", "2", "x²", "2x"], dxdy: ["0", "4", "y/2", "√y"], curves: [[t => [t, t * t], [-.2, 2.12], "y = x²", 1.55, [10, 8]], [t => [t, 2 * t], [-.15, 2.2], "y = 2x", 1.1, [-10, -8, "end"]]] },
     { xs: [0, 4], ylo: () => 0, yhi: x => Math.sqrt(x), ys: [0, 2], xlo: y => y * y, xhi: () => 4, dx: 0,
@@ -16533,7 +16738,7 @@ vzAdd({
     }
     let o = card(10, 250) + card(280, 310) + `<g clip-path="url(#vz-jl)">${L}</g><g clip-path="url(#vz-jr)">${Rz}</g>`;
     const zo = vzClamp((kz - 1.05) / .3, 0, 1);
-    if (zo > .01) o += `<g opacity="${q2(zo)}">${vzNote(580, 404, "zoomed ×" + vzNum(kz, 1), "end", VZ.grey)}</g>`;
+    if (zo > .01) o += `<g opacity="${q2(zo)}">${vzNote(580, 404, "zoomed in", "end", VZ.grey)}</g>`;
     const head = (x, t) => `<text x="${x}" y="34" font-family="'Manrope', sans-serif" font-size="16" font-weight="700" fill="${VZ.ink}" text-anchor="middle">${t}</text>`;
     o += head(135, `(${m.u}, ${m.v}) plane`) + head(435, "(x, y) plane");
     o += vzArrow(212, 28, 360, 28, "I", 2) + vzLabel(286, 20, "<tspan font-style=\"italic\">T</tspan>", VZ.ink, 15);
@@ -16765,17 +16970,6 @@ vzAdd({
     const gap = 10 + Math.abs(nx) * 50 + Math.abs(ny) * 7;   // half the label's width or height, whichever faces the curve
     const hx = Gt[0] + nx * gap, hy = Gt[1] + ny * gap;
     o += vzLabel(hx, hy + 5, "height f(x, y)", "#7A5C0F", 14);
-    const mOp = vzClamp(6.5 - s.n, 0, 1);                       // one panel's measurements, on the biggest panel, while the panels are few
-    if (mOp > .01 && !thumb) {
-      const big = ps.slice().sort((a, b) => b.h * b.ds - a.h * a.ds)[0];
-      if (big) {
-        // half way up the panel, or lower or higher on it when that would put it on the graph's name
-        const M = [(big.A[0] + big.B[0]) / 2, (big.A[1] + big.B[1]) / 2], txt = `${vzNum(big.h)} × ${vzNum(big.ds)}`, hw = txt.length * 3.6 + 4;
-        const clear = q => Math.abs(q[0] - hx) > hw + 52 || Math.abs(q[1] - hy) > 17;
-        const q = [.5, .3, .72, .16, .86].map(k => pr(M[0], M[1], big.h * k)).find(clear) || pr(M[0], M[1], big.h / 2);
-        o += `<g opacity="${q2(mOp)}">${vzLabel(q[0], q[1] + 5, txt, VZ.deep, 13)}</g>`;
-      }
-    }
     o += vzKey([["line", VZ.red, "C on the floor"], ["line", VZ.gold, "the graph of f above C"], ["fill", VZ.red, "panels: f × Δs"]]);
     return o;
   },
@@ -16793,7 +16987,7 @@ vzAdd({
   id: "green", title: "Green's theorem", card: "Green's theorem",
   tagline: "Small loops add up to the loop around the edge.",
   blurb: "Split \\(D\\) into cells and go counterclockwise around each. Each cell's circulation is its spin \\(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\) added over the cell. Inside, every shared edge is walked twice, once each way, and cancels; only the outer edge is left. So \\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_D\\left(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)dA\\).",
-  tryIt: "With a few cells, add their numbers yourself.",
+  tryIt: "Add more cells: the inside edges keep cancelling.",
   state: { n: 2 },
   thumb: { n: 3 },
   controls: [{ k: "n", label: "cells across", min: 1, max: 6, step: 1, digits: 0, fmt: v => String(Math.round(v)), play: 1.1, progress: true, aria: "the number of cells",
@@ -16839,14 +17033,6 @@ vzAdd({
       o += P.poly(c, `fill="none" stroke="${VZ.grey}" stroke-width="1" stroke-dasharray="3 4" opacity="${q2(.5 * op)}"`);
       const lastOld = m - 1;
       o += both(c[0], c[1], j === 0, j === 0, op) + both(c[1], c[2], i === lastOld, i === N - 1, op) + both(c[2], c[3], j === lastOld, j === N - 1, op) + both(c[3], c[0], i === 0, i === 0, op);
-    });
-    // with a few cells, each one's circulation written in it (fading out while the grid changes)
-    // (the old numbers fade out as the new cells start to slide in; the new ones fade in as they settle)
-    const showN = f ? (m <= 3 ? 1 - Math.min(1, e * 3) : 0) + (m + 1 <= 3 ? Math.max(0, e * 3 - 2) : 0) : m <= 3 ? 1 : 0;
-    if (showN > .02 && !thumb) cells.forEach(({ a, a2, b, b2, op }) => {
-      const v = this.cell(a, a2, b, b2), cx = (a + a2) / 2, cy = (b + b2) / 2;
-      // plain text, not vzLabel: its glide matches labels by order, so they slid across the grid whenever the cell count changed
-      o += `<text x="${q2(P.X(cx))}" y="${q2(P.Y(cy) + 6)}" opacity="${q2(showN * op)}" font-family="'Fraunces', Georgia, serif" font-size="17" font-style="italic" fill="${v < 0 ? VZ.ink : VZ.deep}" text-anchor="middle" stroke="${VZ.paper}" stroke-width="4" stroke-linejoin="round" paint-order="stroke" style="font-variant-numeric:tabular-nums">${(v < 0 ? "−" : "") + vzNum(Math.abs(v))}</text>`;
     });
     o += P.poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], `fill="none" stroke="${VZ.red}" stroke-width="2.4"`);
     o += vzLabel(P.X(x1) + 14, P.Y(y1) - 6, "C", VZ.red, 18) + vzLabel(P.X(x0) + 22, P.Y(y1) + 26, "D", VZ.deep, 17);
@@ -17157,7 +17343,7 @@ function renderSteps(def, i, prev, next) {
         <div class="vz-ptop-k st-outline-k">The method</div>
         <ol class="st-outline">${steps.map((s, j) => `<li data-goto="${j}"><span class="st-o-n">${j + 1}</span><span>${escapeHtml(s.t)}</span></li>`).join("")}</ol>
         <details class="vz-more"><summary>The idea</summary><p class="vz-blurb">${def.blurb}</p></details>
-        <button class="vz-report" type="button" id="vzReport">Report a problem</button>
+        ${vzFootHtml(def)}
         <div class="vz-fade" aria-hidden="true"></div>
       </aside>
     </div>
@@ -21833,8 +22019,8 @@ vzAdd({
   },
   draw(s, t, thumb) {
     const cam = this.cam(s), G = this.geo(s), u = vzClamp(s.t, 0, 1), E = (a, b) => vzEase(vzClamp((u - a) / (b - a), 0, 1));
-    // the takes, each finished before Play rests at its end: cut; pull apart; tint and number the boxes; push together; inner walls cancel
-    const cut = E(.16, .27), gap = .5 * (E(.32, .44) - E(.66, .77)), tint = E(.5, .58), nums = E(.51, .59) * (1 - E(.67, .73)), gone = E(.75, .82);
+    // the takes, each finished before Play rests at its end: cut; pull apart; tint the boxes; push together; inner walls cancel
+    const cut = E(.16, .27), gap = .5 * (E(.32, .44) - E(.66, .77)), tint = E(.5, .58), gone = E(.75, .82);
     const pr = p => cam(p[0], p[1], p[2]), P2 = q => q2(q[0]) + " " + q2(q[1]), V = cam.view, n = G.n;
     const off = b => b.c.map(x => x * gap * 1.2);                 // a box slides straight out from the centre
     const sm = (a, b, x) => { const q = vzClamp((x - a) / (b - a), 0, 1); return q * q * (3 - 2 * q); };
@@ -21887,11 +22073,6 @@ vzAdd({
     });
     let o = this.axes(cam, sm, add, 1 + 1.2 * gap * (1 - 1 / n));
     o += items.sort((A, B) => B.dep - A.dep).map(x => x.svg).join("");
-    // each box's net outflow, written on it while the boxes are apart (the nearest on top), in plain figures (an italic 0 reads as o)
-    if (nums > .01 && !thumb && n === 2) G.boxes.map(b => { const d = off(b); return { b, q: pr(b.c.map((x, i) => x + d[i])) }; }).sort((A, B) => B.q[2] - A.q[2]).forEach(({ b, q }) => {
-      const v = Math.round(b.out * 100) / 100;
-      o += `<text x="${q2(q[0])}" y="${q2(q[1] + 5)}" opacity="${q2(nums)}" font-family="'Manrope', sans-serif" font-size="14" font-weight="700" fill="${col(b.out) === VZ.red ? VZ.deep : VZ.ink}" text-anchor="middle" stroke="${VZ.paper}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke">${(v > 0 ? "+" : v < 0 ? "−" : "") + vzShort(Math.abs(v))}</text>`;
-    });
     if (!thumb) {
       const caps = ["1 · the flow through S, the surface of the solid T", "2 · cut T into small boxes", "3 · pull apart: what leaves one box enters the next", "4 · each box's net outflow ≈ div F × its volume",
         "5 · push together: the inner walls cancel", "only S is left: ∯ F · dS = ∭ div F dV"];
@@ -21933,7 +22114,7 @@ function wireGlobal() {
     const row = e.target.closest(".prob-row[data-problem-id]");
     if (row) {
       e.preventDefault();
-      navigate(`/problem/${row.dataset.problemId}`);
+      navigate(`/problem/${row.dataset.problemId}${row.dataset.from ? "?from=" + row.dataset.from : ""}`);
       return;
     }
   });
@@ -21999,7 +22180,7 @@ function wireGlobal() {
     const pool = getReviewProblems();
     if (!pool.length) { showToast("No problems flagged for review yet"); return; }
     const pick = pool[Math.floor(Math.random() * pool.length)];
-    navigate(`/problem/${pick.id}`);
+    navigate(`/problem/${pick.id}?from=review`);
   });
 
   // About modal (footer)
