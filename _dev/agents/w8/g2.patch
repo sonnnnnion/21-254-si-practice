@@ -1,6 +1,6 @@
 diff -ru base8/index.html g2/index.html
 --- base8/index.html	2026-11-04 01:26:00
-+++ g2/index.html	2026-11-04 02:50:28
++++ g2/index.html	2026-11-04 11:39:13
 @@ -4428,6 +4428,9 @@
    /* ---- wave-8 css spacer 4 ---- */
    /* ---- wave-8 css spacer 5 ---- */
@@ -122,7 +122,7 @@ diff -ru base8/index.html g2/index.html
  
  
  stAdd({
-@@ -25649,7 +25568,986 @@
+@@ -25649,7 +25568,988 @@
  /* ---- wave-8 spacer G23 ---- */
  /* ---- wave-8 spacer G24 ---- */
  /* ---- wave-8 spacer G25 ---- */
@@ -186,13 +186,13 @@ diff -ru base8/index.html g2/index.html
 +  const sp = t => Math.hypot(...g2D(S.r, t)), cum = S._cum || (S._cum = g2Cum(S.a, S.b, t => S.f(t) * sp(t)));
 +  const at = (q, a, d) => q.map(x => ph(x, a, d));
 +  const rise = at(P.rise, .2, 1.3), sw = P.sweep.map(q => ph(q, .3, q[2] === "u" ? 3 : 2.2)), rv = P.rev ? ph(P.rev, .3, 3) : 0, revOn = P.rev && k === P.rev[0];
-+  const draw = k < 0 ? 0 : ph(P.draw, .1, 1.8);
++  const draw = k < 0 ? 1 : ph(P.draw, .1, 1.8);            // at the intro C is simply drawn; step 1 traces it again with r(t)
 +  // where the sum has reached on each piece (t from its start), and whether a segment [t0, t1] is already added
 +  const front = pcs.map(([a, c], j) => revOn ? c : a + (c - a) * sw[j]);
 +  const summed = (j, t0, t1) => revOn ? t0 >= pcs[j][1] - (pcs[j][1] - pcs[j][0]) * rv - 1e-9 : t1 <= front[j] + 1e-9;
 +  let o = S.floor(cam, k);
 +  const full = []; for (let i = 0; i <= 120; i++) full.push(S.r(S.a + (S.b - S.a) * i / 120));
-+  o += vzPath3(cam, full, `stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 4" opacity="${q2(.55 * (1 - draw))}"`);
++  o += vzPath3(cam, full, `stroke="${VZ.grey}" stroke-width="2.6" stroke-dasharray="6 5" opacity="${q2(.85 * (1 - draw))}"`);
 +  // the curtain (a flat curve): one strip per segment, coloured by f, its height growing with the step that puts r(t) into f
 +  const segs = [];
 +  pcs.forEach(([a, c], j) => { const n = Math.max(12, Math.round(S.n * (c - a) / (S.b - S.a))); for (let i = 0; i < n; i++) segs.push([j, a + (c - a) * i / n, a + (c - a) * (i + 1) / n]); });
@@ -379,14 +379,14 @@ diff -ru base8/index.html g2/index.html
 +  const dotAt = t => { const v = g2D(S.r, t), F = F3(S.r(t)); return F[0] * v[0] + F[1] * v[1] + F[2] * v[2]; };
 +  const cum = S._cum || (S._cum = g2Cum(S.a, S.b, dotAt));
 +  const revOn = !!P.rev && k === P.rev[0], sg = revOn ? -1 : 1, span = S.b - S.a;
-+  const draw = k < 0 ? 0 : ph(P.draw, .1, 1.8), eF = ph(P.F, .2, .9), eD = ph(P.dot, .2, 1), sw = revOn ? ph(P.rev, .3, 3) : ph(P.sweep, .3, 3);
++  const draw = k < 0 ? 1 : ph(P.draw, .1, 1.8), eF = ph(P.F, .2, .9), eD = ph(P.dot, .2, 1), sw = revOn ? ph(P.rev, .3, 3) : ph(P.sweep, .3, 3);
 +  const inSweep = (revOn || (P.sweep && k === P.sweep[0])), tFront = revOn ? S.b - span * sw : S.a + span * sw;
 +  let o = S.floor(cam, k);
 +  if (S.grid) S.grid.forEach(p => { const F = F3(p), n = Math.hypot(...F); if (n < 1e-6) return; const l = S.gL * (.35 + .65 * Math.min(1, n / S.Fmax)) / n; o += `<g opacity=".32">${vzArrow3(cam, p, g2Add(p, F, l), "G", 1.4)}</g>`; });
 +  if (S.under) o += S.under(cam, k, L);
 +  // C: dashed until it is parametrized, then drawn in; once F · r′ is found, green where F helps the motion and red where it hurts
 +  const full = []; for (let i = 0; i <= 140; i++) full.push(S.r(S.a + span * i / 140));
-+  o += vzPath3(cam, full, `stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 4" opacity="${q2(.6 * (1 - draw))}"`);
++  o += vzPath3(cam, full, `stroke="${VZ.grey}" stroke-width="2.6" stroke-dasharray="6 5" opacity="${q2(.85 * (1 - draw))}"`);
 +  const cp = []; for (let i = 0; i <= 140; i++) cp.push(S.r(S.a + span * draw * i / 140));
 +  if (draw > .005) o += vzPath3(cam, cp, `stroke="${VZ.ink}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="${q2(1 - .7 * eD)}"`);
 +  if (eD > .005) for (let i = 0; i < 140; i++) {
@@ -561,13 +561,13 @@ diff -ru base8/index.html g2/index.html
 +  for (const q of kf) { const e = L(q[0], q[1], q[5] != null ? q[5] : .1, .8); if (e <= 0) break; if (q[2] != null) { x += (q[2] - x) * e; y += (q[3] - y) * e; } op += (q[4] - op) * e; }
 +  return [x, y, op];
 +}
-+function g2Map(M, e) {                                    // contour map of f (gold) with F (dark): F is square to every level curve
++function g2Map(M, e, ghost) {                             // ghost: the field alone, light grey (the intro)                                    // contour map of f (gold) with F (dark): F is square to every level curve
 +  const [x0, x1, y0, y1] = M.box, s = 300 / (x1 - x0), X = x => 30 + (x - x0) * s, Y = y => 390 - (y - y0) * s;
 +  let o = `<rect x="30" y="90" width="300" height="300" rx="10" fill="#fff" fill-opacity=".65" stroke="${VZ.ink}" stroke-opacity=".14"/>`;
 +  if (x0 < 0 && x1 > 0) o += `<line x1="${q2(X(0))}" y1="90" x2="${q2(X(0))}" y2="390" stroke="${VZ.ink}" stroke-opacity=".25"/>`;
 +  if (y0 < 0 && y1 > 0) o += `<line x1="30" y1="${q2(Y(0))}" x2="330" y2="${q2(Y(0))}" stroke="${VZ.ink}" stroke-opacity=".25"/>`;
 +  o += vzNote(326, Y(0) - 6, "x", "end", VZ.grey) + vzNote(X(0) + 6, 104, "y", "start", VZ.grey);
-+  if (M.f) {
++  if (M.f && !ghost) {
 +    const N = 48, d = (x1 - x0) / N, G = [], all = [];
 +    for (let j = 0; j <= N; j++) { const row = []; for (let i = 0; i <= N; i++) { const v = M.f(x0 + i * d, y0 + j * d); row.push(v); all.push(v); } G.push(row); }
 +    all.sort((a, b) => a - b); const lo = all[Math.floor(all.length * .04)], hi = all[Math.floor(all.length * .96)];
@@ -576,8 +576,8 @@ diff -ru base8/index.html g2/index.html
 +  }
 +  const n = 8, h = (x1 - x0) / n; let mx = 0; const pts = [];
 +  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const x = x0 + (i + .5) * h, y = y0 + (j + .5) * h, F = M.F(x, y), m = Math.hypot(F[0], F[1]); mx = Math.max(mx, m); pts.push([x, y, F, m]); }
-+  pts.forEach(([x, y, F, m]) => { if (m < 1e-6) return; const l = h * .44 * (.4 + .6 * m / mx) / m; o += vzArrow(X(x), Y(y), X(x + F[0] * l), Y(y + F[1] * l), "I", 1.7); });
-+  if (M.loop) {
++  pts.forEach(([x, y, F, m]) => { if (m < 1e-6) return; const l = h * .44 * (.4 + .6 * m / mx) / m; o += vzArrow(X(x), Y(y), X(x + F[0] * l), Y(y + F[1] * l), ghost ? "G" : "I", ghost ? 1.5 : 1.7); });
++  if (M.loop && !ghost) {
 +    const c = [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]];
 +    o += `<path d="M${c.map(p => q2(X(p[0])) + " " + q2(Y(p[1]))).join("L")}" fill="${VZ.red}" fill-opacity=".06" stroke="${VZ.red}" stroke-width="2.6" stroke-linejoin="round"/>`;
 +    [[.5, 0, 1, 0], [1, .5, 0, 1], [.5, 1, -1, 0], [0, .5, 0, -1]].forEach(([x, y, dx, dy]) => { o += g2Chev((a, b) => [X(a), Y(b), 0], [x, y, 0], [dx, dy, 0], VZ.red, 1); });
@@ -588,6 +588,8 @@ diff -ru base8/index.html g2/index.html
 +function g2MgPic(def, k, b, u) {
 +  const S = def.sits[g2Sit[def.id]], L = stLines(def, k, b, u), K = S.map.K, eM = k >= K ? L(K, 0, 0, .8) : 0, out = 1 - eM;
 +  let o = vzLabel(180, 42, S.top, VZ.ink, 16);
++  const eG = k < 0 ? 1 : k === 0 ? 1 - stEase(u, 0, .8) : 0;   // the intro: F itself, faint, so "is F a gradient?" has something to look at
++  if (eG > .01) o += g2Map(S.map, .6 * eG, true);
 +  if (out > .01) {
 +    let g = "";
 +    S.items.forEach(it => {

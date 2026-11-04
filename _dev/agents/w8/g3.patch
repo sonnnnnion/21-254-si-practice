@@ -1,6 +1,6 @@
 diff -ru base8/index.html g3/index.html
 --- base8/index.html	2026-11-04 01:26:00
-+++ g3/index.html	2026-11-04 04:19:45
++++ g3/index.html	2026-11-04 12:16:53
 @@ -4434,6 +4434,11 @@
    /* ---- wave-8 css spacer 4 ---- */
    /* ---- wave-8 css spacer 5 ---- */
@@ -86,7 +86,7 @@ diff -ru base8/index.html g3/index.html
  
  stAdd({
    id: "m-cylinder", title: "Volume with cylindrical coordinates", card: "Triple integral: cylindrical",
-@@ -25655,7 +25611,657 @@
+@@ -25655,7 +25611,665 @@
  /* ---- wave-8 spacer G33 ---- */
  /* ---- wave-8 spacer G34 ---- */
  /* ---- wave-8 spacer G35 ---- */
@@ -515,7 +515,7 @@ diff -ru base8/index.html g3/index.html
 +      { t: "Mixed partials agree", tex: ["f_{xy}=(f_x)_y=2xe^y+3", "f_{yx}=(f_y)_x=2xe^y+3", "f_{xy}=f_{yx}\\ \\checkmark\\quad\\text{(Clairaut)}"],
 +        why: "Take \\(f_x\\) in \\(y\\), and \\(f_y\\) in \\(x\\). For nice functions the two orders always agree (Clairaut's theorem): a free check on your work.", sum: "\\(f_{xy}=f_{yx}=2xe^y+3\\)" },
 +    ] },
-+  { chip: "Chain rule dz/dt", kind: "tree", bot: ["t"], lhs: "dz/dt", z: "z = x²y + y²",
++  { chip: "Chain rule dz/dt", kind: "tree", bot: ["t"], lhs: "dz/dt", z: "z = x²y + y²", cap: "z = x²y + y²,  x = cos t,  y = sin t",
 +    e: [["∂z/∂x = 2xy", "∂z/∂y = x² + 2y"], [["dx/dt = −sin t"], ["dy/dt = cos t"]]],
 +    prod: ["(2xy)(−sin t)", "(x² + 2y)(cos t)"], val: "= 1 at t = 0",
 +    notes: ["z depends on x and y; each depends on t", "the tree: two paths from z down to t", "path 1: z → x → t, one product", "path 2: z → y → t, one product", "add one product per path"],
@@ -530,7 +530,7 @@ diff -ru base8/index.html g3/index.html
 +      { t: "Add the paths", tex: ["\\dfrac{dz}{dt}=\\dfrac{\\partial z}{\\partial x}\\dfrac{dx}{dt}+\\dfrac{\\partial z}{\\partial y}\\dfrac{dy}{dt}=-2xy\\sin t+(x^2+2y)\\cos t", "t=0:\\ \\ x=1,\\ y=0:\\qquad \\dfrac{dz}{dt}=0+(1)(1)=1"],
 +        why: "One product per path, added. To get a number, put in \\(x\\) and \\(y\\) at that \\(t\\) too.", sum: "\\(\\tfrac{dz}{dt}=1\\) at \\(t=0\\)" },
 +    ] },
-+  { chip: "Two parameters ∂z/∂s", kind: "tree", bot: ["s", "t"], lhs: "∂z/∂s", z: "z = xy + y²",
++  { chip: "Two parameters ∂z/∂s", kind: "tree", bot: ["s", "t"], lhs: "∂z/∂s", z: "z = xy + y²", cap: "z = xy + y²,  x = st,  y = s − t²",
 +    e: [["∂z/∂x = y", "∂z/∂y = x + 2y"], [["∂x/∂s = t", "∂x/∂t"], ["∂y/∂s = 1", "∂y/∂t"]]],
 +    prod: ["(y)(t)", "(x + 2y)(1)"], val: "= 5 at (s, t) = (2, 1)",
 +    notes: ["x and y each depend on s and t", "for ∂z/∂s, only the paths that end at s", "path 1: z → x → s", "path 2: z → y → s", "add one product per path"],
@@ -576,15 +576,17 @@ diff -ru base8/index.html g3/index.html
 +  const edge = (A, B, col, w, op, e, dash) => e > .01 ? `<line x1="${A[0]}" y1="${A[1]}" x2="${q2(A[0] + (B[0] - A[0]) * e)}" y2="${q2(A[1] + (B[1] - A[1]) * e)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" opacity="${q2(op)}"${dash ? ' stroke-dasharray="4 5"' : ""}/>` : "";
 +  [X, Y].forEach((M, j) => {
 +    const lit = on(j), e1 = Math.min(1, grow * 2), e2 = vzClamp(grow * 2 - 1, 0, 1);
-+    o += edge(Z, M, VZ.grey, 2, .55, e1) + (lit > .01 ? `<g opacity="${q2(lit)}">${edge(Z, M, pc[j], 4.6, 1, 1)}</g>` : "");
++    // the skeleton is there from the start (pale); step 1 draws over it in ink, then each path lights up in its colour
++    o += edge(Z, M, VZ.grey, 2, .35, 1) + edge(Z, M, VZ.ink, 2.2, .6, e1) + (lit > .01 ? `<g opacity="${q2(lit)}">${edge(Z, M, pc[j], 4.6, 1, 1)}</g>` : "");
 +    bots[j].forEach((B, i) => {
 +      const used = i === 0;                                 // only the paths that end at the first bottom variable count
-+      o += edge(M, B, VZ.grey, 2, used ? .55 : .3, e2, !used) + (used && lit > .01 ? `<g opacity="${q2(lit)}">${edge(M, B, pc[j], 4.6, 1, 1)}</g>` : "");
++      o += edge(M, B, VZ.grey, 2, used ? .35 : .25, 1, !used) + (used ? edge(M, B, VZ.ink, 2.2, .6, e2) : "") + (used && lit > .01 ? `<g opacity="${q2(lit)}">${edge(M, B, pc[j], 4.6, 1, 1)}</g>` : "");
 +    });
 +  });
 +  const node = (P, t, op, col) => op > .01 ? `<g opacity="${q2(op)}"><circle cx="${P[0]}" cy="${P[1]}" r="20" fill="${VZ.paper}" stroke="${col || VZ.ink}" stroke-width="1.8"/>${vzLabel(P[0], P[1] + 7, t, col || VZ.ink, 21)}</g>` : "";
-+  o += node(Z, "z", 1) + node(X, "x", Math.min(1, grow * 2.5)) + node(Y, "y", Math.min(1, grow * 2.5));
-+  bots.forEach((bb, j) => bb.forEach((B, i) => { if (two || j === 0) o += node(B, S.bot[i], vzClamp(grow * 2 - 1.2, 0, 1) * (i === 0 ? 1 : .5), i === 0 ? VZ.ink : VZ.grey); }));
++  o += node(Z, "z", 1) + node(X, "x", 1) + node(Y, "y", 1);
++  bots.forEach((bb, j) => bb.forEach((B, i) => { if (two || j === 0) o += node(B, S.bot[i], i === 0 ? 1 : .5, i === 0 ? VZ.ink : VZ.grey); }));
++  if (k < 0) o += vzLabel(180, 336, S.cap, VZ.grey, 16);   // intro: the functions under the bare structure
 +  // the derivative on each edge that counts, beside its midpoint (the unused ones stay unlabelled)
 +  const el = vzClamp(grow * 1.6 - .6, 0, 1);
 +  if (el > .01) {
@@ -628,8 +630,8 @@ diff -ru base8/index.html g3/index.html
 +const G3S_NEG = "#5B7A99";                                  // c < 0 levels: blue-grey
 +const G3S_SITS = [
 +  { chip: "Bowl", P: vzPlane(180, 100, 56), win: [-2.25, 2.25, -1.2, 1.2], lv: [1, 2, 3, 4], zf: 0, top: 4.4,
-+    lc: c => [g3Ell(Math.sqrt(c), Math.sqrt(c) / 2)], ll: c => [Math.sqrt(c), 0, 3, 15, "start"],
-+    cam: g3Cam(180, 298, 54, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), r * Math.sin(t), 4 * r * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
++    lc: c => [g3Ell(Math.sqrt(c), Math.sqrt(c) / 2)], ll: c => [Math.sqrt(c) * .7071, Math.sqrt(c) / 2 * .7071, 0, 5, "middle"],   // each number on its own ellipse, along the 45° ray
++    cam: g3Cam(180, 282, 62, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), r * Math.sin(t), 4 * r * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
 +    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
 +    box: [2.2, 1.1], surfAt: [4, 0],
 +    notes: ["z = x² + 4y²: what does it look like?", "the map: level curves f = c, seen from above", "each level curve floats at its height c", "the wall x = 0 cuts out a parabola", "the wall y = 0 cuts out a wider one", "join them: a bowl"],
@@ -648,8 +650,8 @@ diff -ru base8/index.html g3/index.html
 +    ] },
 +  { chip: "Saddle", P: vzPlane(180, 100, 56), win: [-2.25, 2.25, -1.2, 1.2], lv: [-2, -1, 0, 1, 2], zf: -4.4, top: 4.4, oval: 1,
 +    lc: c => g3HypE(c), col: c => c > 0 ? VZ.gold : c < 0 ? G3S_NEG : "#6B4E0C", wd: c => c === 0 ? 3 : 2,   // c = 0: dark and thick, apart from the red and ink traces
-+    labs: [[1, [1.581, -.612], [1.62, -1.0], "start"], [-1, [-1.225, .791], [-1.42, 1.02], "end"], [0, [1.414, .707], [1.56, 1.02], "start"]],   // one label per family, outside the oval, with a short leader
-+    cam: g3Cam(180, 284, 50, -120, .5, [0, 0, 0], .3), r: (p, t) => [2 * p * Math.cos(t), p * Math.sin(t), 4 * p * p * Math.cos(2 * t)], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
++    labs: [[1, [1.581, -.612], [1.62, -1.0], "start"], [-1, [-1.225, .791], [-1.5, .93], "end"], [0, [1.414, .707], [1.6, .93], "start"]],   // one label per family, outside the oval, with a short leader
++    cam: g3Cam(180, 276, 55, -120, .5, [0, 0, 0], .27), r: (p, t) => [2 * p * Math.cos(t), p * Math.sin(t), 4 * p * p * Math.cos(2 * t)], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
 +    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, -4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
 +    box: [2.2, 1.1], surfAt: [4, 0],
 +    notes: ["z = x² − 4y² over an oval: what does it look like?", "the map: hyperbolas, and two crossing lines at c = 0", "each level curve floats at its height c", "the wall x = 0: a parabola opening down", "the wall y = 0: a parabola opening up", "join them: a saddle"],
@@ -666,9 +668,9 @@ diff -ru base8/index.html g3/index.html
 +      { t: "Stack them: the surface", tex: ["\\text{up along } x,\\ \\text{down along } y", "=\\ \\text{a saddle}"],
 +        why: "Opposite-facing parabolas and hyperbola levels: a hyperbolic paraboloid, shaped like a saddle.", sum: "a saddle" },
 +    ] },
-+  { chip: "Cone vs bowl", P: vzPlane(180, 100, 27), win: [-3, 3, -3, 3], lv: [1, 2, 3, 4], zf: 0, top: 4.4,
-+    lc: c => [g3Ell(c / 2, c / 2)], ll: c => [c / 2 * .7071, c / 2 * .7071, 0, 5, "middle"],   // each number on its own circle, along the 45° ray
-+    cam: g3Cam(180, 314, 50, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), 2 * r * Math.sin(t), 4 * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
++  { chip: "Cone vs bowl", P: vzPlane(180, 94, 22), win: [-3, 3, -3, 3], lv: [1, 2, 3, 4], zf: 0, top: 4.4,
++    lc: c => [g3Ell(c / 2, c / 2)], ll: c => [(c % 2 ? 1 : -1) * c / 2 * .7071, c / 2 * .7071, 0, 5, "middle"],   // each number on its own circle: odd ones on the 45° ray, even ones on the 135° ray, so they never touch
++    cam: g3Cam(180, 286, 57, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), 2 * r * Math.sin(t), 4 * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
 +    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 2 * Math.abs(y)], -2, 2) }, { at: [2, 1], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, 2 * Math.abs(x)], -2, 2) }],
 +    box: [2.1, 2.1], surfAt: [3, 0], cmp: { at: [4, 0], lc: c => g3Ell(Math.sqrt(2 * c), Math.sqrt(2 * c)) },
 +    notes: ["z = 2√(x² + y²): what does it look like?", "the map: circles, evenly spaced", "each level curve floats at its height c", "both walls: straight lines making a V", "join them: a cone", "the bowl's circles crowd together: it gets steeper"],
@@ -704,6 +706,12 @@ diff -ru base8/index.html g3/index.html
 +  else S.lv.forEach((c, i) => { const e = draw(i); if (e > .3) { const [x, y, dx, dy, an] = S.ll(c); o += `<g opacity="${q2(Math.min(1, (e - .3) / .4))}">${vzLabel(P.X(x) + dx, P.Y(y) + dy, String(c).replace("-", "−"), "#7A5C0F", 15, an)}</g>`; } });
 +  // the 3-D stack below: floor, surface, walls, the lifted levels, then the traces on top with halos
 +  const [bx, by] = S.box, zf = S.zf, zt = S.top;
++  if (P.X(x0) + 112 < P.X(0)) o += vzNote(P.X(x0), P.Y(y1) - 9, "map: from above", "start", VZ.grey);   // the heading over the frame's left edge, clear of the y label
++  else o += vzNote(P.X(x0) - 8, P.Y(y1) + 10, "map: from above", "end", VZ.grey);                         // a narrow map: beside it, on the left
++  { const q = cam(0, 0, zt); o += vzNote(20, Math.max(P.Y(y0) + 26, q[1] - 6), "3-D", "start", VZ.grey); }
++  // the 3-D axes on the floor, and z straight up, so the empty stage already says where things go
++  const ax = [[[-bx * 1.08, 0, zf], [bx * 1.08, 0, zf], "x"], [[0, -by * 1.25, zf], [0, by * 1.25, zf], "y"], [[0, 0, zf], [0, 0, zt], "z"]];
++  ax.forEach(([A, B2, nm]) => { const e = cam(...B2); o += `<path d="M${P3(A)}L${P3(B2)}" stroke="${VZ.ink}" stroke-width="1.1" opacity=".4" fill="none"/>` + vzLabel(e[0] + (nm === "z" ? 0 : nm === "x" ? -9 : 8), e[1] + (nm === "z" ? -6 : nm === "x" ? -6 : 14), nm, VZ.grey, 14, nm === "x" ? "end" : nm === "y" ? "start" : "middle"); });
 +  o += `<path d="M${[[-bx, -by, zf], [bx, -by, zf], [bx, by, zf], [-bx, by, zf]].map(P3).join("L")}Z" fill="${VZ.gold}" fill-opacity=".07" stroke="${VZ.ink}" stroke-opacity=".2"/>`;
 +  const sf = L(S.surfAt[0], S.surfAt[1], .2, 1.4);
 +  if (S.oval && k >= 1) o += `<g opacity="${q2(k === 1 ? L(1, 0, 1.6, .8) * .6 : .6)}">${vzPath3(cam, g3Seg(t => [2 * Math.cos(t), Math.sin(t), 4 * Math.cos(2 * t)], 0, 2 * Math.PI, 72), `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="4 3"`)}</g>`;   // the rim: where the levels end

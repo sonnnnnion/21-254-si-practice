@@ -176,3 +176,8 @@ genuinely teach (vector calc is visual). Owner greenlights before ANY publish. U
   NOT on main: owner greenlights first.
 - Ideas next: Stokes run the other way (surface ∬curl → walk the edge); a 2nd Stokes situation (hemisphere → disk);
   triple-integral bounds method (L35) beyond divthm.
+- 2026-11-04 polish pass (owner: "same polish as everything else"): compared every new method's frames and intro
+  frames against m-critical / m-flux / m-green / m-potential. Fixed: empty intros (m-chain tree skeleton, m-merge faint
+  field, m-lineint/m-work solid C with endpoints, m-sketch axes + "map / 3-D" headings), washed-out m-paramsurf
+  (axes, contrast, bigger plane with P, a, b; chips on one row), m-sketch 3-D 15% bigger + number labels on rays.
+  Re-QA: student.mjs 1440+390 clean, steps 47 clean, methflicker smooth, monkey 100 pages 0 errors.

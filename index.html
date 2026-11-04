@@ -26141,13 +26141,13 @@ function g2LiPic(def, k, b, u) {
   const sp = t => Math.hypot(...g2D(S.r, t)), cum = S._cum || (S._cum = g2Cum(S.a, S.b, t => S.f(t) * sp(t)));
   const at = (q, a, d) => q.map(x => ph(x, a, d));
   const rise = at(P.rise, .2, 1.3), sw = P.sweep.map(q => ph(q, .3, q[2] === "u" ? 3 : 2.2)), rv = P.rev ? ph(P.rev, .3, 3) : 0, revOn = P.rev && k === P.rev[0];
-  const draw = k < 0 ? 0 : ph(P.draw, .1, 1.8);
+  const draw = k < 0 ? 1 : ph(P.draw, .1, 1.8);            // at the intro C is simply drawn; step 1 traces it again with r(t)
   // where the sum has reached on each piece (t from its start), and whether a segment [t0, t1] is already added
   const front = pcs.map(([a, c], j) => revOn ? c : a + (c - a) * sw[j]);
   const summed = (j, t0, t1) => revOn ? t0 >= pcs[j][1] - (pcs[j][1] - pcs[j][0]) * rv - 1e-9 : t1 <= front[j] + 1e-9;
   let o = S.floor(cam, k);
   const full = []; for (let i = 0; i <= 120; i++) full.push(S.r(S.a + (S.b - S.a) * i / 120));
-  o += vzPath3(cam, full, `stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 4" opacity="${q2(.55 * (1 - draw))}"`);
+  o += vzPath3(cam, full, `stroke="${VZ.grey}" stroke-width="2.6" stroke-dasharray="6 5" opacity="${q2(.85 * (1 - draw))}"`);
   // the curtain (a flat curve): one strip per segment, coloured by f, its height growing with the step that puts r(t) into f
   const segs = [];
   pcs.forEach(([a, c], j) => { const n = Math.max(12, Math.round(S.n * (c - a) / (S.b - S.a))); for (let i = 0; i < n; i++) segs.push([j, a + (c - a) * i / n, a + (c - a) * (i + 1) / n]); });
@@ -26334,14 +26334,14 @@ function g2WkPic(def, k, b, u) {
   const dotAt = t => { const v = g2D(S.r, t), F = F3(S.r(t)); return F[0] * v[0] + F[1] * v[1] + F[2] * v[2]; };
   const cum = S._cum || (S._cum = g2Cum(S.a, S.b, dotAt));
   const revOn = !!P.rev && k === P.rev[0], sg = revOn ? -1 : 1, span = S.b - S.a;
-  const draw = k < 0 ? 0 : ph(P.draw, .1, 1.8), eF = ph(P.F, .2, .9), eD = ph(P.dot, .2, 1), sw = revOn ? ph(P.rev, .3, 3) : ph(P.sweep, .3, 3);
+  const draw = k < 0 ? 1 : ph(P.draw, .1, 1.8), eF = ph(P.F, .2, .9), eD = ph(P.dot, .2, 1), sw = revOn ? ph(P.rev, .3, 3) : ph(P.sweep, .3, 3);
   const inSweep = (revOn || (P.sweep && k === P.sweep[0])), tFront = revOn ? S.b - span * sw : S.a + span * sw;
   let o = S.floor(cam, k);
   if (S.grid) S.grid.forEach(p => { const F = F3(p), n = Math.hypot(...F); if (n < 1e-6) return; const l = S.gL * (.35 + .65 * Math.min(1, n / S.Fmax)) / n; o += `<g opacity=".32">${vzArrow3(cam, p, g2Add(p, F, l), "G", 1.4)}</g>`; });
   if (S.under) o += S.under(cam, k, L);
   // C: dashed until it is parametrized, then drawn in; once F · r′ is found, green where F helps the motion and red where it hurts
   const full = []; for (let i = 0; i <= 140; i++) full.push(S.r(S.a + span * i / 140));
-  o += vzPath3(cam, full, `stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 4" opacity="${q2(.6 * (1 - draw))}"`);
+  o += vzPath3(cam, full, `stroke="${VZ.grey}" stroke-width="2.6" stroke-dasharray="6 5" opacity="${q2(.85 * (1 - draw))}"`);
   const cp = []; for (let i = 0; i <= 140; i++) cp.push(S.r(S.a + span * draw * i / 140));
   if (draw > .005) o += vzPath3(cam, cp, `stroke="${VZ.ink}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="${q2(1 - .7 * eD)}"`);
   if (eD > .005) for (let i = 0; i < 140; i++) {
@@ -26516,13 +26516,13 @@ function g2Kf(L, kf) {
   for (const q of kf) { const e = L(q[0], q[1], q[5] != null ? q[5] : .1, .8); if (e <= 0) break; if (q[2] != null) { x += (q[2] - x) * e; y += (q[3] - y) * e; } op += (q[4] - op) * e; }
   return [x, y, op];
 }
-function g2Map(M, e) {                                    // contour map of f (gold) with F (dark): F is square to every level curve
+function g2Map(M, e, ghost) {                             // ghost: the field alone, light grey (the intro)                                    // contour map of f (gold) with F (dark): F is square to every level curve
   const [x0, x1, y0, y1] = M.box, s = 300 / (x1 - x0), X = x => 30 + (x - x0) * s, Y = y => 390 - (y - y0) * s;
   let o = `<rect x="30" y="90" width="300" height="300" rx="10" fill="#fff" fill-opacity=".65" stroke="${VZ.ink}" stroke-opacity=".14"/>`;
   if (x0 < 0 && x1 > 0) o += `<line x1="${q2(X(0))}" y1="90" x2="${q2(X(0))}" y2="390" stroke="${VZ.ink}" stroke-opacity=".25"/>`;
   if (y0 < 0 && y1 > 0) o += `<line x1="30" y1="${q2(Y(0))}" x2="330" y2="${q2(Y(0))}" stroke="${VZ.ink}" stroke-opacity=".25"/>`;
   o += vzNote(326, Y(0) - 6, "x", "end", VZ.grey) + vzNote(X(0) + 6, 104, "y", "start", VZ.grey);
-  if (M.f) {
+  if (M.f && !ghost) {
     const N = 48, d = (x1 - x0) / N, G = [], all = [];
     for (let j = 0; j <= N; j++) { const row = []; for (let i = 0; i <= N; i++) { const v = M.f(x0 + i * d, y0 + j * d); row.push(v); all.push(v); } G.push(row); }
     all.sort((a, b) => a - b); const lo = all[Math.floor(all.length * .04)], hi = all[Math.floor(all.length * .96)];
@@ -26531,8 +26531,8 @@ function g2Map(M, e) {                                    // contour map of f (g
   }
   const n = 8, h = (x1 - x0) / n; let mx = 0; const pts = [];
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const x = x0 + (i + .5) * h, y = y0 + (j + .5) * h, F = M.F(x, y), m = Math.hypot(F[0], F[1]); mx = Math.max(mx, m); pts.push([x, y, F, m]); }
-  pts.forEach(([x, y, F, m]) => { if (m < 1e-6) return; const l = h * .44 * (.4 + .6 * m / mx) / m; o += vzArrow(X(x), Y(y), X(x + F[0] * l), Y(y + F[1] * l), "I", 1.7); });
-  if (M.loop) {
+  pts.forEach(([x, y, F, m]) => { if (m < 1e-6) return; const l = h * .44 * (.4 + .6 * m / mx) / m; o += vzArrow(X(x), Y(y), X(x + F[0] * l), Y(y + F[1] * l), ghost ? "G" : "I", ghost ? 1.5 : 1.7); });
+  if (M.loop && !ghost) {
     const c = [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]];
     o += `<path d="M${c.map(p => q2(X(p[0])) + " " + q2(Y(p[1]))).join("L")}" fill="${VZ.red}" fill-opacity=".06" stroke="${VZ.red}" stroke-width="2.6" stroke-linejoin="round"/>`;
     [[.5, 0, 1, 0], [1, .5, 0, 1], [.5, 1, -1, 0], [0, .5, 0, -1]].forEach(([x, y, dx, dy]) => { o += g2Chev((a, b) => [X(a), Y(b), 0], [x, y, 0], [dx, dy, 0], VZ.red, 1); });
@@ -26543,6 +26543,8 @@ function g2Map(M, e) {                                    // contour map of f (g
 function g2MgPic(def, k, b, u) {
   const S = def.sits[g2Sit[def.id]], L = stLines(def, k, b, u), K = S.map.K, eM = k >= K ? L(K, 0, 0, .8) : 0, out = 1 - eM;
   let o = vzLabel(180, 42, S.top, VZ.ink, 16);
+  const eG = k < 0 ? 1 : k === 0 ? 1 - stEase(u, 0, .8) : 0;   // the intro: F itself, faint, so "is F a gradient?" has something to look at
+  if (eG > .01) o += g2Map(S.map, .6 * eG, true);
   if (out > .01) {
     let g = "";
     S.items.forEach(it => {
@@ -27486,7 +27488,7 @@ const G3C_SITS = [
       { t: "Mixed partials agree", tex: ["f_{xy}=(f_x)_y=2xe^y+3", "f_{yx}=(f_y)_x=2xe^y+3", "f_{xy}=f_{yx}\\ \\checkmark\\quad\\text{(Clairaut)}"],
         why: "Take \\(f_x\\) in \\(y\\), and \\(f_y\\) in \\(x\\). For nice functions the two orders always agree (Clairaut's theorem): a free check on your work.", sum: "\\(f_{xy}=f_{yx}=2xe^y+3\\)" },
     ] },
-  { chip: "Chain rule dz/dt", kind: "tree", bot: ["t"], lhs: "dz/dt", z: "z = x²y + y²",
+  { chip: "Chain rule dz/dt", kind: "tree", bot: ["t"], lhs: "dz/dt", z: "z = x²y + y²", cap: "z = x²y + y²,  x = cos t,  y = sin t",
     e: [["∂z/∂x = 2xy", "∂z/∂y = x² + 2y"], [["dx/dt = −sin t"], ["dy/dt = cos t"]]],
     prod: ["(2xy)(−sin t)", "(x² + 2y)(cos t)"], val: "= 1 at t = 0",
     notes: ["z depends on x and y; each depends on t", "the tree: two paths from z down to t", "path 1: z → x → t, one product", "path 2: z → y → t, one product", "add one product per path"],
@@ -27501,7 +27503,7 @@ const G3C_SITS = [
       { t: "Add the paths", tex: ["\\dfrac{dz}{dt}=\\dfrac{\\partial z}{\\partial x}\\dfrac{dx}{dt}+\\dfrac{\\partial z}{\\partial y}\\dfrac{dy}{dt}=-2xy\\sin t+(x^2+2y)\\cos t", "t=0:\\ \\ x=1,\\ y=0:\\qquad \\dfrac{dz}{dt}=0+(1)(1)=1"],
         why: "One product per path, added. To get a number, put in \\(x\\) and \\(y\\) at that \\(t\\) too.", sum: "\\(\\tfrac{dz}{dt}=1\\) at \\(t=0\\)" },
     ] },
-  { chip: "Two parameters ∂z/∂s", kind: "tree", bot: ["s", "t"], lhs: "∂z/∂s", z: "z = xy + y²",
+  { chip: "Two parameters ∂z/∂s", kind: "tree", bot: ["s", "t"], lhs: "∂z/∂s", z: "z = xy + y²", cap: "z = xy + y²,  x = st,  y = s − t²",
     e: [["∂z/∂x = y", "∂z/∂y = x + 2y"], [["∂x/∂s = t", "∂x/∂t"], ["∂y/∂s = 1", "∂y/∂t"]]],
     prod: ["(y)(t)", "(x + 2y)(1)"], val: "= 5 at (s, t) = (2, 1)",
     notes: ["x and y each depend on s and t", "for ∂z/∂s, only the paths that end at s", "path 1: z → x → s", "path 2: z → y → s", "add one product per path"],
@@ -27547,15 +27549,17 @@ function g3cTree(S, def, k, b, u) {
   const edge = (A, B, col, w, op, e, dash) => e > .01 ? `<line x1="${A[0]}" y1="${A[1]}" x2="${q2(A[0] + (B[0] - A[0]) * e)}" y2="${q2(A[1] + (B[1] - A[1]) * e)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" opacity="${q2(op)}"${dash ? ' stroke-dasharray="4 5"' : ""}/>` : "";
   [X, Y].forEach((M, j) => {
     const lit = on(j), e1 = Math.min(1, grow * 2), e2 = vzClamp(grow * 2 - 1, 0, 1);
-    o += edge(Z, M, VZ.grey, 2, .55, e1) + (lit > .01 ? `<g opacity="${q2(lit)}">${edge(Z, M, pc[j], 4.6, 1, 1)}</g>` : "");
+    // the skeleton is there from the start (pale); step 1 draws over it in ink, then each path lights up in its colour
+    o += edge(Z, M, VZ.grey, 2, .35, 1) + edge(Z, M, VZ.ink, 2.2, .6, e1) + (lit > .01 ? `<g opacity="${q2(lit)}">${edge(Z, M, pc[j], 4.6, 1, 1)}</g>` : "");
     bots[j].forEach((B, i) => {
       const used = i === 0;                                 // only the paths that end at the first bottom variable count
-      o += edge(M, B, VZ.grey, 2, used ? .55 : .3, e2, !used) + (used && lit > .01 ? `<g opacity="${q2(lit)}">${edge(M, B, pc[j], 4.6, 1, 1)}</g>` : "");
+      o += edge(M, B, VZ.grey, 2, used ? .35 : .25, 1, !used) + (used ? edge(M, B, VZ.ink, 2.2, .6, e2) : "") + (used && lit > .01 ? `<g opacity="${q2(lit)}">${edge(M, B, pc[j], 4.6, 1, 1)}</g>` : "");
     });
   });
   const node = (P, t, op, col) => op > .01 ? `<g opacity="${q2(op)}"><circle cx="${P[0]}" cy="${P[1]}" r="20" fill="${VZ.paper}" stroke="${col || VZ.ink}" stroke-width="1.8"/>${vzLabel(P[0], P[1] + 7, t, col || VZ.ink, 21)}</g>` : "";
-  o += node(Z, "z", 1) + node(X, "x", Math.min(1, grow * 2.5)) + node(Y, "y", Math.min(1, grow * 2.5));
-  bots.forEach((bb, j) => bb.forEach((B, i) => { if (two || j === 0) o += node(B, S.bot[i], vzClamp(grow * 2 - 1.2, 0, 1) * (i === 0 ? 1 : .5), i === 0 ? VZ.ink : VZ.grey); }));
+  o += node(Z, "z", 1) + node(X, "x", 1) + node(Y, "y", 1);
+  bots.forEach((bb, j) => bb.forEach((B, i) => { if (two || j === 0) o += node(B, S.bot[i], i === 0 ? 1 : .5, i === 0 ? VZ.ink : VZ.grey); }));
+  if (k < 0) o += vzLabel(180, 336, S.cap, VZ.grey, 16);   // intro: the functions under the bare structure
   // the derivative on each edge that counts, beside its midpoint (the unused ones stay unlabelled)
   const el = vzClamp(grow * 1.6 - .6, 0, 1);
   if (el > .01) {
@@ -27599,8 +27603,8 @@ function g3HypE(c) {                                      // the level set x² �
 const G3S_NEG = "#5B7A99";                                  // c < 0 levels: blue-grey
 const G3S_SITS = [
   { chip: "Bowl", P: vzPlane(180, 100, 56), win: [-2.25, 2.25, -1.2, 1.2], lv: [1, 2, 3, 4], zf: 0, top: 4.4,
-    lc: c => [g3Ell(Math.sqrt(c), Math.sqrt(c) / 2)], ll: c => [Math.sqrt(c), 0, 3, 15, "start"],
-    cam: g3Cam(180, 298, 54, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), r * Math.sin(t), 4 * r * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
+    lc: c => [g3Ell(Math.sqrt(c), Math.sqrt(c) / 2)], ll: c => [Math.sqrt(c) * .7071, Math.sqrt(c) / 2 * .7071, 0, 5, "middle"],   // each number on its own ellipse, along the 45° ray
+    cam: g3Cam(180, 282, 62, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), r * Math.sin(t), 4 * r * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
     tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
     box: [2.2, 1.1], surfAt: [4, 0],
     notes: ["z = x² + 4y²: what does it look like?", "the map: level curves f = c, seen from above", "each level curve floats at its height c", "the wall x = 0 cuts out a parabola", "the wall y = 0 cuts out a wider one", "join them: a bowl"],
@@ -27619,8 +27623,8 @@ const G3S_SITS = [
     ] },
   { chip: "Saddle", P: vzPlane(180, 100, 56), win: [-2.25, 2.25, -1.2, 1.2], lv: [-2, -1, 0, 1, 2], zf: -4.4, top: 4.4, oval: 1,
     lc: c => g3HypE(c), col: c => c > 0 ? VZ.gold : c < 0 ? G3S_NEG : "#6B4E0C", wd: c => c === 0 ? 3 : 2,   // c = 0: dark and thick, apart from the red and ink traces
-    labs: [[1, [1.581, -.612], [1.62, -1.0], "start"], [-1, [-1.225, .791], [-1.42, 1.02], "end"], [0, [1.414, .707], [1.56, 1.02], "start"]],   // one label per family, outside the oval, with a short leader
-    cam: g3Cam(180, 284, 50, -120, .5, [0, 0, 0], .3), r: (p, t) => [2 * p * Math.cos(t), p * Math.sin(t), 4 * p * p * Math.cos(2 * t)], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
+    labs: [[1, [1.581, -.612], [1.62, -1.0], "start"], [-1, [-1.225, .791], [-1.5, .93], "end"], [0, [1.414, .707], [1.6, .93], "start"]],   // one label per family, outside the oval, with a short leader
+    cam: g3Cam(180, 276, 55, -120, .5, [0, 0, 0], .27), r: (p, t) => [2 * p * Math.cos(t), p * Math.sin(t), 4 * p * p * Math.cos(2 * t)], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
     tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, -4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
     box: [2.2, 1.1], surfAt: [4, 0],
     notes: ["z = x² − 4y² over an oval: what does it look like?", "the map: hyperbolas, and two crossing lines at c = 0", "each level curve floats at its height c", "the wall x = 0: a parabola opening down", "the wall y = 0: a parabola opening up", "join them: a saddle"],
@@ -27637,9 +27641,9 @@ const G3S_SITS = [
       { t: "Stack them: the surface", tex: ["\\text{up along } x,\\ \\text{down along } y", "=\\ \\text{a saddle}"],
         why: "Opposite-facing parabolas and hyperbola levels: a hyperbolic paraboloid, shaped like a saddle.", sum: "a saddle" },
     ] },
-  { chip: "Cone vs bowl", P: vzPlane(180, 100, 27), win: [-3, 3, -3, 3], lv: [1, 2, 3, 4], zf: 0, top: 4.4,
-    lc: c => [g3Ell(c / 2, c / 2)], ll: c => [c / 2 * .7071, c / 2 * .7071, 0, 5, "middle"],   // each number on its own circle, along the 45° ray
-    cam: g3Cam(180, 314, 50, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), 2 * r * Math.sin(t), 4 * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
+  { chip: "Cone vs bowl", P: vzPlane(180, 94, 22), win: [-3, 3, -3, 3], lv: [1, 2, 3, 4], zf: 0, top: 4.4,
+    lc: c => [g3Ell(c / 2, c / 2)], ll: c => [(c % 2 ? 1 : -1) * c / 2 * .7071, c / 2 * .7071, 0, 5, "middle"],   // each number on its own circle: odd ones on the 45° ray, even ones on the 135° ray, so they never touch
+    cam: g3Cam(180, 286, 57, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), 2 * r * Math.sin(t), 4 * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
     tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 2 * Math.abs(y)], -2, 2) }, { at: [2, 1], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, 2 * Math.abs(x)], -2, 2) }],
     box: [2.1, 2.1], surfAt: [3, 0], cmp: { at: [4, 0], lc: c => g3Ell(Math.sqrt(2 * c), Math.sqrt(2 * c)) },
     notes: ["z = 2√(x² + y²): what does it look like?", "the map: circles, evenly spaced", "each level curve floats at its height c", "both walls: straight lines making a V", "join them: a cone", "the bowl's circles crowd together: it gets steeper"],
@@ -27675,6 +27679,12 @@ function g3sPic(def, k, b, u) {
   else S.lv.forEach((c, i) => { const e = draw(i); if (e > .3) { const [x, y, dx, dy, an] = S.ll(c); o += `<g opacity="${q2(Math.min(1, (e - .3) / .4))}">${vzLabel(P.X(x) + dx, P.Y(y) + dy, String(c).replace("-", "−"), "#7A5C0F", 15, an)}</g>`; } });
   // the 3-D stack below: floor, surface, walls, the lifted levels, then the traces on top with halos
   const [bx, by] = S.box, zf = S.zf, zt = S.top;
+  if (P.X(x0) + 112 < P.X(0)) o += vzNote(P.X(x0), P.Y(y1) - 9, "map: from above", "start", VZ.grey);   // the heading over the frame's left edge, clear of the y label
+  else o += vzNote(P.X(x0) - 8, P.Y(y1) + 10, "map: from above", "end", VZ.grey);                         // a narrow map: beside it, on the left
+  { const q = cam(0, 0, zt); o += vzNote(20, Math.max(P.Y(y0) + 26, q[1] - 6), "3-D", "start", VZ.grey); }
+  // the 3-D axes on the floor, and z straight up, so the empty stage already says where things go
+  const ax = [[[-bx * 1.08, 0, zf], [bx * 1.08, 0, zf], "x"], [[0, -by * 1.25, zf], [0, by * 1.25, zf], "y"], [[0, 0, zf], [0, 0, zt], "z"]];
+  ax.forEach(([A, B2, nm]) => { const e = cam(...B2); o += `<path d="M${P3(A)}L${P3(B2)}" stroke="${VZ.ink}" stroke-width="1.1" opacity=".4" fill="none"/>` + vzLabel(e[0] + (nm === "z" ? 0 : nm === "x" ? -9 : 8), e[1] + (nm === "z" ? -6 : nm === "x" ? -6 : 14), nm, VZ.grey, 14, nm === "x" ? "end" : nm === "y" ? "start" : "middle"); });
   o += `<path d="M${[[-bx, -by, zf], [bx, -by, zf], [bx, by, zf], [-bx, by, zf]].map(P3).join("L")}Z" fill="${VZ.gold}" fill-opacity=".07" stroke="${VZ.ink}" stroke-opacity=".2"/>`;
   const sf = L(S.surfAt[0], S.surfAt[1], .2, 1.4);
   if (S.oval && k >= 1) o += `<g opacity="${q2(k === 1 ? L(1, 0, 1.6, .8) * .6 : .6)}">${vzPath3(cam, g3Seg(t => [2 * Math.cos(t), Math.sin(t), 4 * Math.cos(2 * t)], 0, 2 * Math.PI, 72), `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="4 3"`)}</g>`;   // the rim: where the levels end
@@ -27867,9 +27877,9 @@ const G4_GRIDCAP = "each grid line of the rectangle lands on S";
 const g4TanCap = (a, c) => `${g4R(a)} runs along a red line, ${g4R(c)} along a dark one`;
 const g4CrossCap = (a, c) => `${g4R(a)} × ${g4R(c)} is square to both: a normal`;
 const G4_SURF = [
-  { chip: "A plane piece", problem: "Parametrize the piece of the plane through \\(P(1,0,1)\\) spanned by \\(\\mathbf a=[2,0,-1]\\) and \\(\\mathbf b=[0,1,1]\\), with \\(0\\le u,v\\le1\\), and find a normal vector.",
+  { chip: "Plane", problem: "Parametrize the piece of the plane through \\(P(1,0,1)\\) spanned by \\(\\mathbf a=[2,0,-1]\\) and \\(\\mathbf b=[0,1,1]\\), with \\(0\\le u,v\\le1\\), and find a normal vector.",
     g: { S: (a, c) => [1 + 2 * a, c, 1 - a + c], ur: [0, 1], vr: [0, 1], NU: 6, NV: 6, ru: () => [2, 0, -1], rv: () => [0, 1, 1], pt: [.5, .5], nu: "u", nv: "v", bl: ["0", "1", "0", "1"],
-      c: [2, .5, 1], sc: 88, az: 50, el: .45, CX: 196, CY: 278, ts: .55, nl: 1.2, axes: 0, many: [[.15, .15], [.85, .15], [.15, .85], [.85, .85]] },
+      c: [2, .5, 1], sc: 124, az: 50, el: .45, CX: 186, CY: 280, ts: .55, nl: 1.1, axl: [2.6, 1.4, 1.6], bd: [1, 1, 1, 1], intro: true, many: [[.15, .15], [.85, .15], [.15, .85], [.85, .85]] },
     cap: ["start at P, then move along a and b", G4_GRIDCAP, g4TanCap("u", "v"), g4CrossCap("u", "v"), "the same normal everywhere: it is flat"],
     steps: [
       { t: "Pick the recipe", tex: ["\\text{a plane:}\\quad \\mathbf r(u,v)=P+u\\,\\mathbf a+v\\,\\mathbf b"], why: "Start at a point of the plane and add any amounts of two directions that lie in it.", sum: "point \\(+\\,u\\,\\mathbf a+v\\,\\mathbf b\\)" },
@@ -27878,9 +27888,9 @@ const G4_SURF = [
       { t: "The normal: cross the tangents", tex: ["\\mathbf r_u\\times\\mathbf r_v=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\2&0&-1\\\\0&1&1\\end{vmatrix}=[1,\\ -2,\\ 2]"], why: "The cross product is square to both tangent vectors, so it is normal to the surface.", sum: "\\(\\mathbf N=[1,-2,2]\\)" },
       { t: "Check it", tex: ["\\mathbf N\\cdot\\mathbf a=2-2=0,\\qquad\\mathbf N\\cdot\\mathbf b=-2+2=0", "\\text{the plane: } x-2y+2z=3"], why: "Both dot products are 0, as they must be. The normal also gives the plane's equation through \\(P\\).", sum: "\\(x-2y+2z=3\\)" },
     ] },
-  { chip: "A graph z = g(x, y)", problem: "Parametrize the roof \\(z=2-x^2\\) over the rectangle \\(-1\\le x\\le1,\\ 0\\le y\\le2\\), and find an upward normal.",
+  { chip: "Graph z = g(x, y)", problem: "Parametrize the roof \\(z=2-x^2\\) over the rectangle \\(-1\\le x\\le1,\\ 0\\le y\\le2\\), and find an upward normal.",
     g: { S: (a, c) => [a, c, 2 - a * a], ur: [-1, 1], vr: [0, 2], NU: 8, NV: 6, ru: a => [1, 0, -2 * a], rv: () => [0, 1, 0], pt: [.5, 1], nu: "x", nv: "y", bl: ["−1", "1", "0", "2"],
-      c: [0, 1, 1], sc: 84, az: -20, el: .45, CX: 196, CY: 290, ts: .7, nl: 1, axes: 0, many: [[-.75, .35], [0, .35], [.75, 1.65], [-.75, 1.65], [0, 1.65], [.75, .35]] },
+      c: [0, 1, 1], sc: 84, az: -20, el: .45, CX: 196, CY: 290, ts: .7, nl: 1, axl: [1.5, 2.6, 2.5], axn: "xz", bd: [1, 1, 1, 1], many: [[-.75, .35], [0, .35], [.75, 1.65], [-.75, 1.65], [0, 1.65], [.75, .35]] },
     cap: ["a graph: x and y are the parameters", G4_GRIDCAP, g4TanCap("x", "y"), g4CrossCap("x", "y"), "every normal points up"],
     steps: [
       { t: "Pick the recipe", tex: ["z=g(x,y):\\quad\\text{use } x \\text{ and } y \\text{ as the parameters}"], why: "A graph already tells you the height above each point \\((x,y)\\).", sum: "parameters \\(x,y\\)" },
@@ -27889,9 +27899,9 @@ const G4_SURF = [
       { t: "The normal: cross the tangents", tex: ["\\mathbf r_x\\times\\mathbf r_y=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\1&0&-2x\\\\0&1&0\\end{vmatrix}=[2x,\\ 0,\\ 1]"], why: "For every graph this comes out as \\([-g_x,\\,-g_y,\\,1]\\): worth remembering.", sum: "\\(\\mathbf N=[2x,0,1]\\)" },
       { t: "Which way it points", tex: ["z\\text{-part}=1>0:\\ \\ \\text{it points up}", "\\text{at }(\\tfrac12,1):\\quad \\mathbf N=[1,\\ 0,\\ 1]"], why: "The \\(z\\)-part is always \\(+1\\), so this normal points up everywhere, as asked.", sum: "upward ✓" },
     ] },
-  { chip: "A cylinder (θ, z)", problem: "Parametrize the cylinder \\(x^2+y^2=4\\) for \\(0\\le z\\le3\\), and find an outward normal.",
+  { chip: "Cylinder (θ, z)", problem: "Parametrize the cylinder \\(x^2+y^2=4\\) for \\(0\\le z\\le3\\), and find an outward normal.",
     g: { S: (a, c) => [2 * Math.cos(a), 2 * Math.sin(a), c], ur: [0, 2 * Math.PI], vr: [0, 3], NU: 16, NV: 5, ru: a => [-2 * Math.sin(a), 2 * Math.cos(a), 0], rv: () => [0, 0, 1], pt: [Math.PI / 4, 1.5], nu: "θ", nv: "z", bl: ["0", "2π", "0", "3"],
-      c: [0, 0, 1.5], sc: 58, az: -180, el: .42, CX: 190, CY: 282, ts: .55, nl: 1.1, axes: 0, hl: [.1, .3], many: [[Math.PI / 6, .5], [Math.PI / 2, .5], [5 * Math.PI / 6, .5], [Math.PI / 6, 2.5], [Math.PI / 2, 2.5], [5 * Math.PI / 6, 2.5]] },
+      c: [0, 0, 1.5], sc: 58, az: -180, el: .42, CX: 190, CY: 282, ts: .55, nl: 1.1, axl: [2.6, 2.6, 3.7], axn: "x", bd: [0, 0, 1, 1], hl: [.1, .3], many: [[Math.PI / 6, .5], [Math.PI / 2, .5], [5 * Math.PI / 6, .5], [Math.PI / 6, 2.5], [Math.PI / 2, 2.5], [5 * Math.PI / 6, 2.5]] },
     cap: ["a circle at every height: θ and z", G4_GRIDCAP, g4TanCap("θ", "z"), g4CrossCap("θ", "z"), "every normal points away from the axis"],
     steps: [
       { t: "Pick the recipe", tex: ["x=2\\cos\\theta,\\quad y=2\\sin\\theta,\\quad z=z"], why: "Each slice at height \\(z\\) is a circle of radius 2. So the parameters are the angle \\(\\theta\\) round it and the height \\(z\\).", sum: "parameters \\(\\theta,z\\)" },
@@ -27900,9 +27910,9 @@ const G4_SURF = [
       { t: "The normal: cross the tangents", tex: ["\\mathbf r_\\theta\\times\\mathbf r_z=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\-2\\sin\\theta&2\\cos\\theta&0\\\\0&0&1\\end{vmatrix}=[2\\cos\\theta,\\ 2\\sin\\theta,\\ 0]"], why: "Expand along the last row: only the 1 survives.", sum: "\\(\\mathbf N=[2\\cos\\theta,2\\sin\\theta,0]\\)" },
       { t: "Which way it points", tex: ["\\mathbf N=[x,\\ y,\\ 0]", { html: "It points straight out from the \\(z\\)-axis: outward." }], why: "Compare with the point \\([x,y,z]\\) itself: \\(\\mathbf N\\) is its level part, which points away from the axis.", sum: "outward ✓" },
     ] },
-  { chip: "A sphere (φ, θ)", problem: "Parametrize the sphere \\(x^2+y^2+z^2=4\\), and find an outward normal.",
+  { chip: "Sphere (φ, θ)", problem: "Parametrize the sphere \\(x^2+y^2+z^2=4\\), and find an outward normal.",
     g: { S: (a, c) => [2 * Math.sin(a) * Math.cos(c), 2 * Math.sin(a) * Math.sin(c), 2 * Math.cos(a)], ur: [0, Math.PI], vr: [0, 2 * Math.PI], NU: 9, NV: 16, ru: (a, c) => [2 * Math.cos(a) * Math.cos(c), 2 * Math.cos(a) * Math.sin(c), -2 * Math.sin(a)], rv: (a, c) => [-2 * Math.sin(a) * Math.sin(c), 2 * Math.sin(a) * Math.cos(c), 0], pt: [Math.PI / 4, Math.PI / 3], nu: "φ", nv: "θ", bl: ["0", "π", "0", "2π"],
-      c: [0, 0, 0], sc: 64, az: -180, el: .42, CX: 190, CY: 276, ts: .42, nl: 1.45, axes: 0, hl: [.2, .1], many: [[Math.PI / 4, Math.PI / 2], [Math.PI / 2, Math.PI / 6], [Math.PI / 2, Math.PI / 2], [Math.PI / 2, 5 * Math.PI / 6], [2 * Math.PI / 3, Math.PI / 3], [Math.PI / 4, 5 * Math.PI / 6]] },
+      c: [0, 0, 0], sc: 64, az: -180, el: .42, CX: 190, CY: 276, ts: .42, nl: 1.45, axl: [2.7, 2.7, 2.8], axn: "xz", bd: [0, 0, 0, 0], hl: [.2, .1], many: [[Math.PI / 4, Math.PI / 2], [Math.PI / 2, Math.PI / 6], [Math.PI / 2, Math.PI / 2], [Math.PI / 2, 5 * Math.PI / 6], [2 * Math.PI / 3, Math.PI / 3], [Math.PI / 4, 5 * Math.PI / 6]] },
     cap: ["φ down from the north pole, θ round the axis", G4_GRIDCAP, g4TanCap("φ", "θ"), g4CrossCap("φ", "θ"), "every normal points out from the centre"],
     steps: [
       { t: "Pick the recipe", tex: ["x=2\\sin\\varphi\\cos\\theta,\\quad y=2\\sin\\varphi\\sin\\theta,\\quad z=2\\cos\\varphi"], why: "Spherical coordinates with \\(\\rho=2\\) fixed: \\(\\varphi\\) is measured down from the north pole, \\(\\theta\\) round the \\(z\\)-axis.", sum: "parameters \\(\\varphi,\\theta\\)" },
@@ -27911,9 +27921,9 @@ const G4_SURF = [
       { t: "The normal: cross the tangents", tex: ["\\mathbf r_\\varphi\\times\\mathbf r_\\theta=[4\\sin^2\\!\\varphi\\cos\\theta,\\ 4\\sin^2\\!\\varphi\\sin\\theta,\\ 4\\sin\\varphi\\cos\\varphi]", "=2\\sin\\varphi\\;\\mathbf r(\\varphi,\\theta)"], why: "Expand the determinant, then pull out \\(2\\sin\\varphi\\): what is left is the point itself.", sum: "\\(\\mathbf N=2\\sin\\varphi\\,\\mathbf r\\)" },
       { t: "Which way it points", tex: ["2\\sin\\varphi\\ge0:\\quad \\mathbf N\\text{ points outward}", "|\\mathbf N|=2\\sin\\varphi\\cdot2=4\\sin\\varphi"], why: "A positive multiple of the position vector points away from the centre. Its length \\(4\\sin\\varphi\\) is what \\(dS\\) uses.", sum: "outward ✓" },
     ] },
-  { chip: "A cone", problem: "Parametrize the cone \\(z=2\\sqrt{x^2+y^2}\\) for \\(0\\le z\\le4\\), and find a normal vector.",
+  { chip: "Cone", problem: "Parametrize the cone \\(z=2\\sqrt{x^2+y^2}\\) for \\(0\\le z\\le4\\), and find a normal vector.",
     g: { S: (a, c) => [a * Math.cos(c), a * Math.sin(c), 2 * a], ur: [0, 2], vr: [0, 2 * Math.PI], NU: 5, NV: 16, ru: (a, c) => [Math.cos(c), Math.sin(c), 2], rv: (a, c) => [-a * Math.sin(c), a * Math.cos(c), 0], pt: [1.4, Math.PI / 6], nu: "u", nv: "θ", bl: ["0", "2", "0", "2π"],
-      c: [0, 0, 2], sc: 52, az: -180, el: .5, CX: 190, CY: 288, ts: .62, nl: 1.1, axes: 0, hl: [.3, .1], many: [[1.6, Math.PI / 6], [1.6, Math.PI / 2], [1.6, 5 * Math.PI / 6], [.8, Math.PI / 3], [.8, 2 * Math.PI / 3]] },
+      c: [0, 0, 2], sc: 52, az: -180, el: .5, CX: 190, CY: 288, ts: .62, nl: 1.1, axl: [2.6, 2.6, 4.6], axn: "xy", bd: [0, 1, 0, 0], hl: [.3, .1], many: [[1.6, Math.PI / 6], [1.6, Math.PI / 2], [1.6, 5 * Math.PI / 6], [.8, Math.PI / 3], [.8, 2 * Math.PI / 3]] },
     cap: ["polar in x and y; the height is 2u", G4_GRIDCAP, g4TanCap("u", "θ"), g4CrossCap("u", "θ"), "these normals point up, in toward the axis"],
     steps: [
       { t: "Pick the recipe", tex: ["x=u\\cos\\theta,\\quad y=u\\sin\\theta", "\\sqrt{x^2+y^2}=u,\\ \\text{so } z=2u"], why: "Polar coordinates in \\(x,y\\), with \\(u\\) the distance from the axis. Then the height is just \\(2u\\).", sum: "parameters \\(u,\\theta\\)" },
@@ -27923,25 +27933,47 @@ const G4_SURF = [
       { t: "Which way it points", tex: ["z\\text{-part } u\\ge0:\\ \\text{up, and in toward the axis}", "\\text{outward instead: } \\mathbf r_\\theta\\times\\mathbf r_u=-\\mathbf N"], why: "Read the direction off the signs. Swapping the order of the cross product flips the normal.", sum: "up and in; swap for out" },
     ] },
 ];
+// short x, y, z axes from the origin, each cut back so that it and its name stay on the stage, above the legend
+function g4Axes(cam, lens, names = "xyz") {
+  const O = cam(0, 0, 0), inS = q => q[0] > 16 && q[0] < 344 && q[1] > 16 && q[1] < 380;
+  if (!inS(O)) return ["", ""];                                     // the origin is off the picture (the plane piece): no axes rather than stubs under the legend
+  return ["x", "y", "z"].map((n, i) => {
+    if (!names.includes(n)) return ["", ""];                         // an axis pointing at the viewer, hidden by the surface: left out
+    let t = 1, B; const at = t => { const p = [0, 0, 0]; p[i] = lens[i] * t; return cam(...p); };
+    for (; t > .2; t -= .04) { B = at(t); const dx = B[0] - O[0], dy = B[1] - O[1], l = Math.hypot(dx, dy) || 1; if (inS(B) && inS([B[0] + dx / l * 14, B[1] + dy / l * 14])) break; }
+    B = at(t); const dx = B[0] - O[0], dy = B[1] - O[1], l = Math.hypot(dx, dy) || 1;
+    return [`<line x1="${q2(O[0])}" y1="${q2(O[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${VZ.ink}" stroke-width="1.1" opacity=".4"/>`, vzLabel(B[0] + dx / l * 11, B[1] + dy / l * 11 + 5, n, VZ.grey, 15)];
+  }).reduce((a, x) => [a[0] + x[0], a[1] + x[1]], ["", ""]);   // [the lines, drawn first; the names, drawn last so no surface hides them]
+}
 function g4SurfPic(def, k, b, u) {
   const s = def._sits[def._si], g = s.g, L = stLines(def, k, b, u), T = performance.now() / 1000;
   const c0 = vzCam(0, 0, g.sc, vzRad(g.az + 4 * Math.sin(T / 3.6)), g.el), cam = (x, y, z) => { const q = c0(x - g.c[0], y - g.c[1], z - g.c[2]); return [g.CX + q[0], g.CY + q[1], q[2]]; };
   const P2 = q => q2(q[0]) + " " + q2(q[1]), [U0, U1] = g.ur, [V0, V1] = g.vr, NU = g.NU, NV = g.NV, view = c0.view;
   const S = (i, j) => g.S(U0 + (U1 - U0) * i / NU, V0 + (V1 - V0) * j / NV);
-  let o = "";
+  const H = (p, q, key, w) => { const A = cam(...p), B = cam(...q); return `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="#fff" stroke-width="${w + 3.5}" stroke-linecap="round" opacity=".85"/>` + vzArrow(A[0], A[1], B[0], B[1], key, w); };   // an arrow on a white halo
+  const AX = g4Axes(cam, g.axl, g.axn);
+  let o = AX[0];
   // the surface in patches, far ones first; from step 2 its grid lines land, row by row (red: v fixed, dark: u fixed)
   const eG = k >= 2 ? 1 : k === 1 ? L(1, 0, .2, .9) : 0, quads = [];
   for (let i = 0; i < NU; i++) for (let j = 0; j < NV; j++) {
     const Q = [S(i, j), S(i + 1, j), S(i + 1, j + 1), S(i, j + 1)], C = Q.map(p => cam(...p));
     const n = g4Cross(Q[1].map((x, m) => x - Q[0][m]), Q[2].map((x, m) => x - Q[0][m])), nl = Math.hypot(...n), sh = nl > 1e-9 ? Math.abs(n[0] * view[0] + n[1] * view[1] + n[2] * view[2]) / nl : .5;
-    quads.push({ d: C.reduce((a, q) => a + q[2], 0) / 4, C, sh, i });
+    quads.push({ d: C.reduce((a, q) => a + q[2], 0) / 4, C, sh, i, j });
   }
   quads.sort((A, B) => B.d - A.d).forEach(q => {
     const d = `M${q.C.map(P2).join("L")}Z`, w = vzClamp((eG * (NU + 3) - q.i) / 3, 0, 1);
-    o += `<path d="${d}" fill="${VZ.paper}" fill-opacity=".92" stroke="${VZ.paper}" stroke-width=".6"/><path d="${d}" fill="${VZ.red}" fill-opacity="${q2(.07 + .16 * q.sh)}"/>`;
-    if (w > .01) o += `<g opacity="${q2(.7 * w)}" fill="none" stroke-width="1.1"><path d="M${P2(q.C[0])}L${P2(q.C[1])}M${P2(q.C[3])}L${P2(q.C[2])}" stroke="${VZ.red}"/><path d="M${P2(q.C[0])}L${P2(q.C[3])}M${P2(q.C[1])}L${P2(q.C[2])}" stroke="${VZ.ink}"/></g>`;
+    o += `<path d="${d}" fill="${VZ.paper}" fill-opacity=".93" stroke="${VZ.paper}" stroke-width=".6"/><path d="${d}" fill="${VZ.red}" fill-opacity="${q2(.15 + .2 * q.sh)}"/>`;
+    if (w < .99) o += `<path d="${d}" fill="none" stroke="${VZ.ink}" stroke-opacity="${q2(.24 * (1 - w))}" stroke-width=".8"/>`;   // before the grid lands: a plain mesh, so the shape reads
+    const bd = g.bd, E = [[bd[0] && q.i === 0, 0, 3], [bd[1] && q.i === NU - 1, 1, 2], [bd[2] && q.j === 0, 0, 1], [bd[3] && q.j === NV - 1, 3, 2]].filter(e => e[0]);
+    if (E.length) o += `<path d="${E.map(e => `M${P2(q.C[e[1]])}L${P2(q.C[e[2]])}`).join("")}" fill="none" stroke="${VZ.deep}" stroke-width="1.8" stroke-linecap="round"/>`;   // the surface's own edge
+    if (w > .01) o += `<g opacity="${q2(.88 * w)}" fill="none" stroke-width="1.2"><path d="M${P2(q.C[0])}L${P2(q.C[1])}M${P2(q.C[3])}L${P2(q.C[2])}" stroke="${VZ.red}"/><path d="M${P2(q.C[0])}L${P2(q.C[3])}M${P2(q.C[1])}L${P2(q.C[2])}" stroke="${VZ.ink}"/></g>`;
   });
   const [ua, va] = g.pt, p0 = g.S(ua, va), s0 = cam(...p0), hl = g.hl || [.25, .25];
+  // the plane's givens before any work: the point P and the two directions a and b from it
+  if (g.intro && k <= 0) {
+    const P = g.S(0, 0), A = g4Add(P, g.ru(), 1), B = g4Add(P, g.rv(), 1), sP = cam(...P), bl = n => `<tspan font-weight="700">${n}</tspan>`;
+    o += H(P, A, "R", 2.8) + H(P, B, "I", 2.8) + g4Dot(sP[0], sP[1], VZ.deep) + vzLabel(sP[0] - 10, sP[1] + 6, "P", VZ.deep, 17, "end") + g4Tip(sP, cam(...A), bl("a"), VZ.red, 14, 17) + g4Tip(sP, cam(...B), bl("b"), VZ.ink, 14, 17);
+  }
   // the two grid lines through the chosen point, bold (step 3 on)
   if (k >= 2) {
     const e = L(2, 0, .05, .5), cu = [], cv = [];
@@ -27951,17 +27983,17 @@ function g4SurfPic(def, k, b, u) {
   // many normals at once (step 5): which way they all point
   if (k >= 4) {
     const e = L(4, 0, .2, .8);
-    g.many.forEach(([a, c]) => { const p = g.S(a, c), n = g4Unit(g4Cross(g.ru(a, c), g.rv(a, c))); if (e > .01) o += `<g opacity=".85">${vzArrow3(cam, p, g4Add(p, n, g.nl * .7 * e), "O", 2)}</g>`; });
+    g.many.forEach(([a, c]) => { const p = g.S(a, c), n = g4Unit(g4Cross(g.ru(a, c), g.rv(a, c))); if (e > .01) o += `<g opacity=".9">${H(p, g4Add(p, n, g.nl * .7 * e), "O", 2.2)}</g>`; });
   }
   // r_u and r_v at the point (step 3), then r_u × r_v (step 4)
   if (k >= 2) {
     const ru = g.ru(ua, va), rv = g.rv(ua, va), eA = L(2, 0, .2, .8), eB = L(2, 1, .2, .8), A = g4Add(p0, ru, g.ts * eA), B = g4Add(p0, rv, g.ts * eB);
     const q5 = k >= 4 ? L(4, 0, .1, .6) : 0, dim = q2(1 - .75 * q5), lab = x => q2(x * (1 - q5));   // step 5: the tangents step back and their names go, so the many normals read cleanly
-    if (eA > .01) o += `<g opacity="${dim}">${vzArrow3(cam, p0, A, "R", 2.8)}</g><g opacity="${lab(vzClamp((eA - .6) / .4, 0, 1))}">${g4Tip(s0, cam(...A), g4R(g.nu), VZ.red)}</g>`;
-    if (eB > .01) o += `<g opacity="${dim}">${vzArrow3(cam, p0, B, "I", 2.8)}</g><g opacity="${lab(vzClamp((eB - .6) / .4, 0, 1))}">${g4Tip(s0, cam(...B), g4R(g.nv), VZ.ink)}</g>`;
+    if (eA > .01) o += `<g opacity="${dim}">${H(p0, A, "R", 2.8)}</g><g opacity="${lab(vzClamp((eA - .6) / .4, 0, 1))}">${g4Tip(s0, cam(...A), g4R(g.nu), VZ.red)}</g>`;
+    if (eB > .01) o += `<g opacity="${dim}">${H(p0, B, "I", 2.8)}</g><g opacity="${lab(vzClamp((eB - .6) / .4, 0, 1))}">${g4Tip(s0, cam(...B), g4R(g.nv), VZ.ink)}</g>`;
     if (k >= 3) {
       const eN = L(3, def.steps[3].tex.length - 1, .2, 1), tip = g4Add(p0, g4Unit(g4Cross(ru, rv)), g.nl * eN), en = vzClamp((eN - .6) / .4, 0, 1);
-      if (eN > .01) o += vzArrow3(cam, p0, tip, "O", 3.2) + `<g opacity="${lab(en)}">${g4Tip(s0, cam(...tip), `${g4R(g.nu)} × ${g4R(g.nv)}`, G4_GOLD, 22)}</g>` + (q5 > .01 ? `<g opacity="${q2(q5)}">${g4Tip(s0, cam(...tip), '<tspan font-weight="700">N</tspan>', G4_GOLD, 16, 17)}</g>` : "");
+      if (eN > .01) o += H(p0, tip, "O", 3.2) + `<g opacity="${lab(en)}">${g4Tip(s0, cam(...tip), `${g4R(g.nu)} × ${g4R(g.nv)}`, G4_GOLD, 22)}</g>` + (q5 > .01 ? `<g opacity="${q2(q5)}">${g4Tip(s0, cam(...tip), '<tspan font-weight="700">N</tspan>', G4_GOLD, 16, 17)}</g>` : "");
     }
   }
   if (k >= 1) o += g4Dot(s0[0], s0[1], VZ.deep);
@@ -27985,7 +28017,7 @@ function g4SurfPic(def, k, b, u) {
   }
   const key = k >= 1 ? [["line", VZ.red, `${g.nv} fixed`], ["line", VZ.ink, `${g.nu} fixed`]] : [];
   if (k >= 3) key.push(["line", VZ.gold, "normal"]);
-  return o + (key.length ? vzKey(key, 16, 420) : "") + stNote(180, 447, s.cap[Math.max(0, k)] || "", VZ.ink);
+  return o + AX[1] + (key.length ? vzKey(key, 16, 420) : "") + stNote(180, 447, s.cap[Math.max(0, k)] || "", VZ.ink);
 }
 stAdd(g4Sits({
   id: "m-paramsurf", title: "Parametrize a surface", card: "Parametrize a surface",
