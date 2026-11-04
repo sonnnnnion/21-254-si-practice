@@ -21,3 +21,8 @@ Owner's latest ask: "make everything at its best level". Owner greenlights befor
 4. Look at new m-stokes chips 2/3 and the m-sketch saddle sticks up close (1440 + 390).
 5. Final: merge, student.mjs both widths, steps.mjs (all 47), methflicker (16 ids), monkey; commit + push dev;
    summarize to owner. Do NOT push main.
+
+## Dispatched at checkpoint (if interrupted, re-check these copies' patches; re-send if not done)
+- g2: clear flags in m-work, m-dblint, m-greencheck, m-lineint, m-surfint (list above, desktop run) → zero flags.
+- g1: m-param level-curve x clip + ∇f label; m-tangent circle-chip tangent-line label off the circle.
+- Phone (390) run of all 16 was in progress; re-run it after the merge.
