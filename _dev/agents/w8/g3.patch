@@ -1,6 +1,6 @@
 diff -ru base8/index.html g3/index.html
 --- base8/index.html	2026-11-04 01:26:00
-+++ g3/index.html	2026-11-04 12:16:53
++++ g3/index.html	2026-11-04 13:12:45
 @@ -4434,6 +4434,11 @@
    /* ---- wave-8 css spacer 4 ---- */
    /* ---- wave-8 css spacer 5 ---- */
@@ -86,7 +86,7 @@ diff -ru base8/index.html g3/index.html
  
  stAdd({
    id: "m-cylinder", title: "Volume with cylindrical coordinates", card: "Triple integral: cylindrical",
-@@ -25655,7 +25611,665 @@
+@@ -25655,7 +25611,682 @@
  /* ---- wave-8 spacer G33 ---- */
  /* ---- wave-8 spacer G34 ---- */
  /* ---- wave-8 spacer G35 ---- */
@@ -633,7 +633,7 @@ diff -ru base8/index.html g3/index.html
 +    lc: c => [g3Ell(Math.sqrt(c), Math.sqrt(c) / 2)], ll: c => [Math.sqrt(c) * .7071, Math.sqrt(c) / 2 * .7071, 0, 5, "middle"],   // each number on its own ellipse, along the 45° ray
 +    cam: g3Cam(180, 282, 62, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), r * Math.sin(t), 4 * r * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
 +    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
-+    box: [2.2, 1.1], surfAt: [4, 0],
++    box: [2.2, 1.1], surfAt: [4, 0], f: (x, y) => x * x + 4 * y * y, sg: [1.4, .7],
 +    notes: ["z = x² + 4y²: what does it look like?", "the map: level curves f = c, seen from above", "each level curve floats at its height c", "the wall x = 0 cuts out a parabola", "the wall y = 0 cuts out a wider one", "join them: a bowl"],
 +    problem: "Sketch the surface \\(z=x^2+4y^2\\) from its level curves and traces.",
 +    steps: [
@@ -653,7 +653,7 @@ diff -ru base8/index.html g3/index.html
 +    labs: [[1, [1.581, -.612], [1.62, -1.0], "start"], [-1, [-1.225, .791], [-1.5, .93], "end"], [0, [1.414, .707], [1.6, .93], "start"]],   // one label per family, outside the oval, with a short leader
 +    cam: g3Cam(180, 276, 55, -120, .5, [0, 0, 0], .27), r: (p, t) => [2 * p * Math.cos(t), p * Math.sin(t), 4 * p * p * Math.cos(2 * t)], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
 +    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, -4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
-+    box: [2.2, 1.1], surfAt: [4, 0],
++    box: [2.2, 1.1], surfAt: [4, 0], f: (x, y) => x * x - 4 * y * y, sg: [1.6, .6],
 +    notes: ["z = x² − 4y² over an oval: what does it look like?", "the map: hyperbolas, and two crossing lines at c = 0", "each level curve floats at its height c", "the wall x = 0: a parabola opening down", "the wall y = 0: a parabola opening up", "join them: a saddle"],
 +    problem: "Sketch the surface \\(z=x^2-4y^2\\) over the oval \\(\\tfrac{x^2}4+y^2\\le1\\) from its level curves and traces.",
 +    steps: [
@@ -672,7 +672,7 @@ diff -ru base8/index.html g3/index.html
 +    lc: c => [g3Ell(c / 2, c / 2)], ll: c => [(c % 2 ? 1 : -1) * c / 2 * .7071, c / 2 * .7071, 0, 5, "middle"],   // each number on its own circle: odd ones on the 45° ray, even ones on the 135° ray, so they never touch
 +    cam: g3Cam(180, 286, 57, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), 2 * r * Math.sin(t), 4 * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
 +    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 2 * Math.abs(y)], -2, 2) }, { at: [2, 1], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, 2 * Math.abs(x)], -2, 2) }],
-+    box: [2.1, 2.1], surfAt: [3, 0], cmp: { at: [4, 0], lc: c => g3Ell(Math.sqrt(2 * c), Math.sqrt(2 * c)) },
++    box: [2.1, 2.1], surfAt: [3, 0], cmp: { at: [4, 0], lc: c => g3Ell(Math.sqrt(2 * c), Math.sqrt(2 * c)) }, f: (x, y) => 2 * Math.hypot(x, y), sg: [1.4, 1.4],
 +    notes: ["z = 2√(x² + y²): what does it look like?", "the map: circles, evenly spaced", "each level curve floats at its height c", "both walls: straight lines making a V", "join them: a cone", "the bowl's circles crowd together: it gets steeper"],
 +    problem: "Sketch \\(z=2\\sqrt{x^2+y^2}\\) from its level curves and traces. Then compare its level curves with those of the bowl \\(z=\\tfrac12(x^2+y^2)\\).",
 +    steps: [
@@ -713,6 +713,22 @@ diff -ru base8/index.html g3/index.html
 +  const ax = [[[-bx * 1.08, 0, zf], [bx * 1.08, 0, zf], "x"], [[0, -by * 1.25, zf], [0, by * 1.25, zf], "y"], [[0, 0, zf], [0, 0, zt], "z"]];
 +  ax.forEach(([A, B2, nm]) => { const e = cam(...B2); o += `<path d="M${P3(A)}L${P3(B2)}" stroke="${VZ.ink}" stroke-width="1.1" opacity=".4" fill="none"/>` + vzLabel(e[0] + (nm === "z" ? 0 : nm === "x" ? -9 : 8), e[1] + (nm === "z" ? -6 : nm === "x" ? -6 : 14), nm, VZ.grey, 14, nm === "x" ? "end" : nm === "y" ? "start" : "middle"); });
 +  o += `<path d="M${[[-bx, -by, zf], [bx, -by, zf], [bx, by, zf], [-bx, by, zf]].map(P3).join("L")}Z" fill="${VZ.gold}" fill-opacity=".07" stroke="${VZ.ink}" stroke-opacity=".2"/>`;
++  // the intro's idea: above every floor point (x, y), a stick up (or down) to its height f(x, y). A 5 × 5 grid of them,
++  // rising row by row; from step 1 they stay as a ghost under the levels, and leave when the walls come in
++  const so = k < 0 ? 1 : k === 0 ? 1 - .8 * F(0, 0, .6) : k === 1 ? .2 : k === 2 ? .2 * (1 - L(2, 0, 0, .5)) : 0;
++  if (so > .01) {
++    const z0 = 0, pts = [];
++    for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) { const x = S.sg[0] * (i - 2) / 2, y = S.sg[1] * (j - 2) / 2, h = S.f(x, y), q = cam(x, y, z0); pts.push({ x, y, h, d: q[2], i }); }
++    pts.sort((a, c) => c.d - a.d);                         // far sticks first, so the near ones cross over them
++    let g = S.oval ? `<path d="M${[[-bx, -by, 0], [bx, -by, 0], [bx, by, 0], [-bx, by, 0]].map(P3).join("L")}Z" fill="none" stroke="${VZ.ink}" stroke-opacity=".25" stroke-dasharray="3 3"/>` : "";   // the saddle: sticks stand on the level z = 0
++    pts.forEach(({ x, y, h, i }) => {
++      const gr = k < 0 ? stEase(u, .2 + .12 * i, .8) : 1, z = z0 + h * gr, A = cam(x, y, z0), B = cam(x, y, z), col = h < -1e-9 ? G3S_NEG : VZ.gold, top = h < -1e-9 ? G3S_NEG : "#7A5C0F";
++      g += `<circle cx="${q2(A[0])}" cy="${q2(A[1])}" r="1.8" fill="${VZ.grey}" opacity=".7"/>`;
++      if (Math.abs(B[1] - A[1]) > .5) g += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${col}" stroke-width="1.4"/>`;
++      g += `<circle cx="${q2(B[0])}" cy="${q2(B[1])}" r="2.6" fill="${top}" stroke="${VZ.paper}" stroke-width=".8" opacity="${q2(gr)}"/>`;
++    });
++    o += `<g opacity="${q2(so)}">${g}</g>`;
++  }
 +  const sf = L(S.surfAt[0], S.surfAt[1], .2, 1.4);
 +  if (S.oval && k >= 1) o += `<g opacity="${q2(k === 1 ? L(1, 0, 1.6, .8) * .6 : .6)}">${vzPath3(cam, g3Seg(t => [2 * Math.cos(t), Math.sin(t), 4 * Math.cos(2 * t)], 0, 2 * Math.PI, 72), `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="4 3"`)}</g>`;   // the rim: where the levels end
 +  if (sf > .01) o += `<g opacity="${q2(.75 * sf)}">${g3Surf(S)}</g>`;
@@ -739,6 +755,7 @@ diff -ru base8/index.html g3/index.html
 +    const r2 = [["line", G3S_NEG, "c < 0 (up/down)"]]; S.tr.forEach(t => { if (k > t.at[0] || (k === t.at[0] && b >= t.at[1])) r2.push(["line", t.col, t.key]); });
 +    o += vzKey([["line", VZ.gold, "c > 0 (left/right)"], ["line", "#6B4E0C", "c = 0"]].concat(k >= S.surfAt[0] ? [["fill", VZ.grey, "surface"]] : []), 16, 404) + vzKey(r2, 16, 426);
 +  } else if (key.length) o += vzKey(key, 16, 426);
++  if (k < 0) return o + stNote(180, 430, "z = f(x, y): a height above each point —", VZ.ink) + stNote(180, 449, "what shape do the tops make?", VZ.ink);
 +  return o + stNote(180, 450, S.notes[Math.max(0, Math.min(S.notes.length - 1, k + 1))], VZ.ink);
 +}
 +stAdd({

@@ -27606,7 +27606,7 @@ const G3S_SITS = [
     lc: c => [g3Ell(Math.sqrt(c), Math.sqrt(c) / 2)], ll: c => [Math.sqrt(c) * .7071, Math.sqrt(c) / 2 * .7071, 0, 5, "middle"],   // each number on its own ellipse, along the 45° ray
     cam: g3Cam(180, 282, 62, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), r * Math.sin(t), 4 * r * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
     tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
-    box: [2.2, 1.1], surfAt: [4, 0],
+    box: [2.2, 1.1], surfAt: [4, 0], f: (x, y) => x * x + 4 * y * y, sg: [1.4, .7],
     notes: ["z = x² + 4y²: what does it look like?", "the map: level curves f = c, seen from above", "each level curve floats at its height c", "the wall x = 0 cuts out a parabola", "the wall y = 0 cuts out a wider one", "join them: a bowl"],
     problem: "Sketch the surface \\(z=x^2+4y^2\\) from its level curves and traces.",
     steps: [
@@ -27626,7 +27626,7 @@ const G3S_SITS = [
     labs: [[1, [1.581, -.612], [1.62, -1.0], "start"], [-1, [-1.225, .791], [-1.5, .93], "end"], [0, [1.414, .707], [1.6, .93], "start"]],   // one label per family, outside the oval, with a short leader
     cam: g3Cam(180, 276, 55, -120, .5, [0, 0, 0], .27), r: (p, t) => [2 * p * Math.cos(t), p * Math.sin(t), 4 * p * p * Math.cos(2 * t)], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
     tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, -4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
-    box: [2.2, 1.1], surfAt: [4, 0],
+    box: [2.2, 1.1], surfAt: [4, 0], f: (x, y) => x * x - 4 * y * y, sg: [1.6, .6],
     notes: ["z = x² − 4y² over an oval: what does it look like?", "the map: hyperbolas, and two crossing lines at c = 0", "each level curve floats at its height c", "the wall x = 0: a parabola opening down", "the wall y = 0: a parabola opening up", "join them: a saddle"],
     problem: "Sketch the surface \\(z=x^2-4y^2\\) over the oval \\(\\tfrac{x^2}4+y^2\\le1\\) from its level curves and traces.",
     steps: [
@@ -27645,7 +27645,7 @@ const G3S_SITS = [
     lc: c => [g3Ell(c / 2, c / 2)], ll: c => [(c % 2 ? 1 : -1) * c / 2 * .7071, c / 2 * .7071, 0, 5, "middle"],   // each number on its own circle: odd ones on the 45° ray, even ones on the 135° ray, so they never touch
     cam: g3Cam(180, 286, 57, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), 2 * r * Math.sin(t), 4 * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
     tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 2 * Math.abs(y)], -2, 2) }, { at: [2, 1], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, 2 * Math.abs(x)], -2, 2) }],
-    box: [2.1, 2.1], surfAt: [3, 0], cmp: { at: [4, 0], lc: c => g3Ell(Math.sqrt(2 * c), Math.sqrt(2 * c)) },
+    box: [2.1, 2.1], surfAt: [3, 0], cmp: { at: [4, 0], lc: c => g3Ell(Math.sqrt(2 * c), Math.sqrt(2 * c)) }, f: (x, y) => 2 * Math.hypot(x, y), sg: [1.4, 1.4],
     notes: ["z = 2√(x² + y²): what does it look like?", "the map: circles, evenly spaced", "each level curve floats at its height c", "both walls: straight lines making a V", "join them: a cone", "the bowl's circles crowd together: it gets steeper"],
     problem: "Sketch \\(z=2\\sqrt{x^2+y^2}\\) from its level curves and traces. Then compare its level curves with those of the bowl \\(z=\\tfrac12(x^2+y^2)\\).",
     steps: [
@@ -27686,6 +27686,22 @@ function g3sPic(def, k, b, u) {
   const ax = [[[-bx * 1.08, 0, zf], [bx * 1.08, 0, zf], "x"], [[0, -by * 1.25, zf], [0, by * 1.25, zf], "y"], [[0, 0, zf], [0, 0, zt], "z"]];
   ax.forEach(([A, B2, nm]) => { const e = cam(...B2); o += `<path d="M${P3(A)}L${P3(B2)}" stroke="${VZ.ink}" stroke-width="1.1" opacity=".4" fill="none"/>` + vzLabel(e[0] + (nm === "z" ? 0 : nm === "x" ? -9 : 8), e[1] + (nm === "z" ? -6 : nm === "x" ? -6 : 14), nm, VZ.grey, 14, nm === "x" ? "end" : nm === "y" ? "start" : "middle"); });
   o += `<path d="M${[[-bx, -by, zf], [bx, -by, zf], [bx, by, zf], [-bx, by, zf]].map(P3).join("L")}Z" fill="${VZ.gold}" fill-opacity=".07" stroke="${VZ.ink}" stroke-opacity=".2"/>`;
+  // the intro's idea: above every floor point (x, y), a stick up (or down) to its height f(x, y). A 5 × 5 grid of them,
+  // rising row by row; from step 1 they stay as a ghost under the levels, and leave when the walls come in
+  const so = k < 0 ? 1 : k === 0 ? 1 - .8 * F(0, 0, .6) : k === 1 ? .2 : k === 2 ? .2 * (1 - L(2, 0, 0, .5)) : 0;
+  if (so > .01) {
+    const z0 = 0, pts = [];
+    for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) { const x = S.sg[0] * (i - 2) / 2, y = S.sg[1] * (j - 2) / 2, h = S.f(x, y), q = cam(x, y, z0); pts.push({ x, y, h, d: q[2], i }); }
+    pts.sort((a, c) => c.d - a.d);                         // far sticks first, so the near ones cross over them
+    let g = S.oval ? `<path d="M${[[-bx, -by, 0], [bx, -by, 0], [bx, by, 0], [-bx, by, 0]].map(P3).join("L")}Z" fill="none" stroke="${VZ.ink}" stroke-opacity=".25" stroke-dasharray="3 3"/>` : "";   // the saddle: sticks stand on the level z = 0
+    pts.forEach(({ x, y, h, i }) => {
+      const gr = k < 0 ? stEase(u, .2 + .12 * i, .8) : 1, z = z0 + h * gr, A = cam(x, y, z0), B = cam(x, y, z), col = h < -1e-9 ? G3S_NEG : VZ.gold, top = h < -1e-9 ? G3S_NEG : "#7A5C0F";
+      g += `<circle cx="${q2(A[0])}" cy="${q2(A[1])}" r="1.8" fill="${VZ.grey}" opacity=".7"/>`;
+      if (Math.abs(B[1] - A[1]) > .5) g += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${col}" stroke-width="1.4"/>`;
+      g += `<circle cx="${q2(B[0])}" cy="${q2(B[1])}" r="2.6" fill="${top}" stroke="${VZ.paper}" stroke-width=".8" opacity="${q2(gr)}"/>`;
+    });
+    o += `<g opacity="${q2(so)}">${g}</g>`;
+  }
   const sf = L(S.surfAt[0], S.surfAt[1], .2, 1.4);
   if (S.oval && k >= 1) o += `<g opacity="${q2(k === 1 ? L(1, 0, 1.6, .8) * .6 : .6)}">${vzPath3(cam, g3Seg(t => [2 * Math.cos(t), Math.sin(t), 4 * Math.cos(2 * t)], 0, 2 * Math.PI, 72), `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="4 3"`)}</g>`;   // the rim: where the levels end
   if (sf > .01) o += `<g opacity="${q2(.75 * sf)}">${g3Surf(S)}</g>`;
@@ -27712,6 +27728,7 @@ function g3sPic(def, k, b, u) {
     const r2 = [["line", G3S_NEG, "c < 0 (up/down)"]]; S.tr.forEach(t => { if (k > t.at[0] || (k === t.at[0] && b >= t.at[1])) r2.push(["line", t.col, t.key]); });
     o += vzKey([["line", VZ.gold, "c > 0 (left/right)"], ["line", "#6B4E0C", "c = 0"]].concat(k >= S.surfAt[0] ? [["fill", VZ.grey, "surface"]] : []), 16, 404) + vzKey(r2, 16, 426);
   } else if (key.length) o += vzKey(key, 16, 426);
+  if (k < 0) return o + stNote(180, 430, "z = f(x, y): a height above each point —", VZ.ink) + stNote(180, 449, "what shape do the tops make?", VZ.ink);
   return o + stNote(180, 450, S.notes[Math.max(0, Math.min(S.notes.length - 1, k + 1))], VZ.ink);
 }
 stAdd({
@@ -28030,20 +28047,15 @@ stAdd(g4Sits({
 /* ---------- m-stokes: circulation with Stokes' theorem (Lecture 34) ----------
    C (the cylinder cut by a tilted plane) with its direction, the flat piece S of the plane, N by the right-hand rule,
    curl F arrows through S, then the patches of S added up. */
-stAdd({
-  id: "m-stokes", title: "Circulation with Stokes' theorem", card: "Stokes' theorem, step by step",
-  tagline: "Swap the loop for the curl, over the easiest surface with that edge.",
-  blurb: "\\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_S\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S\\) for any surface \\(S\\) with edge \\(C\\). Pick the easiest \\(S\\) (often a flat piece), orient it with the right-hand rule, and integrate \\(\\operatorname{curl}\\mathbf F\\cdot\\mathbf N\\) over its parameter region.",
-  problem: "Use Stokes' theorem to find \\(\\oint_C\\mathbf F\\cdot d\\mathbf r\\) for \\(\\mathbf F=[-y-z,\\ x,\\ xz]\\), where \\(C\\) is where the cylinder \\(x^2+y^2=4\\) meets the plane \\(z=3+y\\), counterclockwise seen from above.",
-  picLive: true,
-  pic(k, b, u) {
+function g4StokesLoopPic(k, b, u) {   // chip 1: C, the flat piece S of the plane, N by the right-hand rule, curl F through S
     const T = performance.now() / 1000, L = stLines(this, k, b, u), PI = Math.PI;
     const c0 = vzCam(0, 0, 48, vzRad(-50 + 4 * Math.sin(T / 3.6)), .45), cam = (x, y, z) => { const q = c0(x, y, z - 2.7); return [180 + q[0], 222 + q[1], q[2]]; };
     const P2 = q => q2(q[0]) + " " + q2(q[1]), C = t => [2 * Math.cos(t), 2 * Math.sin(t), 3 + 2 * Math.sin(t)];
     const ring = z => { const p = []; for (let j = 0; j <= 64; j++) { const a = j * PI / 32; p.push([2 * Math.cos(a), 2 * Math.sin(a), z]); } return p; };
     // the cylinder, faint: only where C comes from
     let cy = ""; for (let j = 0; j < 16; j++) { const a = j * PI / 8; cy += vzPath3(cam, [[2 * Math.cos(a), 2 * Math.sin(a), 0], [2 * Math.cos(a), 2 * Math.sin(a), 5.6]], ""); }
-    let o = `<g stroke="${VZ.grey}" stroke-width="1" opacity=".28" fill="none">${cy}${vzPath3(cam, ring(0), "")}${vzPath3(cam, ring(5.6), "")}</g>`;
+    const AX = g4Axes(cam, [2.9, 2.9, 6.3]);
+    let o = AX[0] + `<g stroke="${VZ.grey}" stroke-width="1" opacity=".28" fill="none">${cy}${vzPath3(cam, ring(0), "")}${vzPath3(cam, ring(5.6), "")}</g>`;
     // S's shadow D on the floor: S is parametrized over it (step 2 on)
     if (k >= 1) { const e = L(1, 1, .2, .8); o += `<g opacity="${q2(e)}">${vzPath3(cam, ring(0), `fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="1.4" stroke-dasharray="5 4"`)}${vzLab3(cam, [.4, -1.2, 0], "D", G4_GOLD, 0, 6, 16)}</g>`; }
     // S, the flat piece of the plane inside C, in polar patches: shaded by curl F · N in step 4, turning gold ring by ring in step 5
@@ -28087,8 +28099,95 @@ stAdd({
     if (k >= 1) key.push(["fill", VZ.red, "S"]);
     key.push(["line", VZ.ink, k === 5 ? "F" : "curl F"]);
     if (k >= 2) key.push(["line", VZ.gold, "N"]);
-    return o + vzKey(key, 16, 420) + stNote(180, 447, ["C, and curl F (dark arrows) on the way", "S: the flat piece of the plane inside C", "fingers along C: the thumb gives N", "darker S: more curl F · N (the high side)", "add up curl F · N over all of S", "the direct way: F · r′(t) all round C"][Math.max(0, k)], VZ.ink);
-  },
+    return o + AX[1] + vzKey(key, 16, 420) + stNote(180, 447, ["C, and curl F (dark arrows) on the way", "S: the flat piece of the plane inside C", "fingers along C: the thumb gives N", "darker S: more curl F · N (the high side)", "add up curl F · N over all of S", "the direct way: F · r′(t) all round C"][Math.max(0, k)], VZ.ink);
+}
+// m-stokes chips 2 and 3: a curved surface whose edge C is the circle x² + y² = 4, z = 0 (counterclockwise from above)
+function g4CapPic(def, k, b, u, hemi) {
+  const T = performance.now() / 1000, L = stLines(def, k, b, u), PI = Math.PI;
+  const c0 = vzCam(0, 0, 52, vzRad(-50 + 4 * Math.sin(T / 3.6)), .45), cam = (x, y, z) => { const q = c0(x, y, z - 1.4); return [180 + q[0], 232 + q[1], q[2]]; };
+  const P2 = q => q2(q[0]) + " " + q2(q[1]), view = c0.view, C = t => [2 * Math.cos(t), 2 * Math.sin(t), 0];
+  const H = (p, q, key, w) => { const A = cam(...p), B = cam(...q); return `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="#fff" stroke-width="${w + 3.5}" stroke-linecap="round" opacity=".85"/>` + vzArrow(A[0], A[1], B[0], B[1], key, w); };
+  const AX = g4Axes(cam, [2.9, 2.9, 5]);
+  let o = AX[0];
+  // the curved surface S in patches, far ones first (chip 3: it fades to a ghost once the disk takes over)
+  const pt = hemi ? (i, j) => { const f = PI / 2 * i / 6, a = j * PI / 12; return [2 * Math.sin(f) * Math.cos(a), 2 * Math.sin(f) * Math.sin(a), 2 * Math.cos(f)]; } : (i, j) => { const r = i / 3, a = j * PI / 12; return [r * Math.cos(a), r * Math.sin(a), 4 - r * r]; };
+  const ghost = hemi ? (k < 1 ? 1 : k === 1 ? 1 - .72 * L(1, 0, .1, 1) : .28) : 1, quads = [];
+  for (let i = 0; i < 6; i++) for (let j = 0; j < 24; j++) {
+    const Q = [pt(i, j), pt(i + 1, j), pt(i + 1, j + 1), pt(i, j + 1)], Cq = Q.map(p => cam(...p)), n = g4Cross(Q[1].map((x, m) => x - Q[0][m]), Q[3].map((x, m) => x - Q[0][m])), nl = Math.hypot(...n);
+    quads.push({ d: Cq.reduce((a, q) => a + q[2], 0) / 4, Cq, sh: nl > 1e-9 ? Math.abs(n[0] * view[0] + n[1] * view[1] + n[2] * view[2]) / nl : .6 });
+  }
+  let sv = "";
+  quads.sort((A, B) => B.d - A.d).forEach(q => { const d = `M${q.Cq.map(P2).join("L")}Z`; sv += `<path d="${d}" fill="${VZ.paper}" fill-opacity=".86"/><path d="${d}" fill="${VZ.red}" fill-opacity="${q2(.13 + .18 * q.sh)}" stroke="#fff" stroke-opacity=".55" stroke-width=".6"/>`; });
+  o += `<g opacity="${q2(ghost)}">${sv}${vzLab3(cam, hemi ? [-1.1, -.9, 1.5] : [-.9, -.8, 2.9], "S", VZ.deep, 0, 6, 18)}</g>`;
+  // chip 3: the flat disk D with the same edge slides up into place, normal k (step 2 on)
+  const eD = hemi ? (k < 1 ? 0 : k === 1 ? L(1, 0, .3, 1.2) : 1) : 0, zD = -1.3 * (1 - eD), disk = [];
+  for (let j = 0; j <= 48; j++) disk.push([2 * Math.cos(j * PI / 24), 2 * Math.sin(j * PI / 24), zD]);
+  if (eD > .01) {
+    const tint = k >= 3 ? .14 + .1 * (k === 3 ? L(3, 0, .2, .8) : 1) : .14, fill = k === 4 ? L(4, 0, .2, 2.4) : 0;
+    o += `<g opacity="${q2(Math.min(1, eD * 2))}">${vzPath3(cam, disk, `fill="${VZ.ink}" fill-opacity="${q2(tint)}" stroke="${VZ.ink}" stroke-opacity=".5" stroke-width="1.2"`)}`;
+    if (fill > .005) { const g = []; for (let j = 0; j <= 48; j++) g.push([2 * fill * Math.cos(j * PI / 24), 2 * fill * Math.sin(j * PI / 24), 0]); o += vzPath3(cam, g, `fill="${VZ.gold}" fill-opacity=".4" stroke="none"`); }
+    o += `</g>`;
+  }
+  // C, lit up, with three arrowheads riding round it counterclockwise (seen from above)
+  const cp = []; for (let j = 0; j <= 96; j++) cp.push(C(j * PI / 48));
+  const lit = !hemi && k === 1 ? L(1, 0, .1, .8) : hemi && k === 1 ? L(1, 0, 1, .6) : 0;
+  if (lit > .01) o += vzPath3(cam, cp, `stroke="${VZ.red}" stroke-width="9" opacity="${q2(.22 * lit)}" stroke-linecap="round"`);
+  o += vzPath3(cam, cp, `stroke="${VZ.red}" stroke-width="${q2(2.8 + lit)}"`);
+  for (let i = 0; i < 3; i++) { const a = i * 2 * PI / 3 + .35 * T, A = cam(...C(a)), B = cam(...C(a + .22)); o += vzArrow(A[0], A[1], B[0], B[1], "R", 3); }
+  o += vzLab3(cam, C(-.75), "C", VZ.red, 16, 14, 18);
+  // normals: up through the cap (or out of the hemisphere), then up through the disk
+  const eN = k <= 0 ? L(0, 0, .2, .9) : 1, nOp = hemi ? ghost : (k >= 2 ? .45 : 1);
+  if (eN > .01 && nOp > .05) {
+    const ns = hemi ? [[2, 3], [3, 9], [3, 15], [4, 1], [4, 20], [1, 12]] : [[2, 3], [3, 9], [4, 15], [4, 21], [1, 18], [5, 6]];
+    o += `<g opacity="${q2(nOp)}">` + ns.map(([i, j]) => { const p = pt(i, j), n = hemi ? g4Unit(p) : g4Unit([2 * p[0], 2 * p[1], 1]); return H(p, g4Add(p, n, .75 * eN), "O", 2.2); }).join("") + `</g>`;
+  }
+  if (eD > .99 && k >= 1) [[0, 0], [1.2, .35], [1.25, 1.2], [1.3, 1.75]].forEach(([r, a]) => { const p = [r * Math.cos(a * PI), r * Math.sin(a * PI), 0], e = k === 1 ? L(1, 0, 1.5, .6) : 1; if (e > .01) o += `<g opacity="${q2(e)}">${H(p, [p[0], p[1], .8 * e], "O", 2.4)}</g>`; });
+  // chip 3, step 3: curl F = [2y − x, 1, 4 + z], arrows up through the disk
+  if (hemi && k === 2) { const e = L(2, 0, .2, .9); [[.8, .2], [.8, .8], [.8, 1.4], [1.5, .55], [1.5, 1.05], [1.5, 1.6]].forEach(([r, a]) => { const p = [r * Math.cos(a * PI), r * Math.sin(a * PI), 0], c = [2 * p[1] - p[0], 1, 4]; if (e > .01) o += `<g opacity="${q2(e)}">${H(p, g4Add(p, c, .2 * e), "I", 2)}</g>`; }); }
+  // chip 2, steps 3–5: walk round C, with r′(t) (and F, from step 4) at the walker; step 5 traces the sum in gold
+  if (!hemi && k >= 2) {
+    const eT = k === 4 ? L(4, 0, .1, 2.6) : 0, t = k === 4 ? 2 * PI * eT : (T * .45) % (2 * PI), p = C(t), rp = [-2 * Math.sin(t), 2 * Math.cos(t), 0], F = [-p[1], p[0], p[0] * p[1]];
+    if (k === 4 && eT > .005) { const tr = []; for (let i = 0; i <= 64; i++) tr.push(C(t * i / 64)); o += vzPath3(cam, tr, `stroke="${VZ.gold}" stroke-width="5" stroke-linecap="round" opacity=".8"`); }
+    const eR = k === 2 ? L(2, 1, .1, .7) : 1, eF = k === 3 ? L(3, 0, .2, .7) : k > 3 ? 1 : 0;
+    if (eF > .01) o += `<g opacity="${q2(eF)}">${H(p, g4Add(p, F, .42), "I", 2.4)}</g>`;
+    if (eR > .01) o += `<g opacity="${q2(eR)}">${H(p, g4Add(p, rp, .42), "D", 2.8)}</g>`;
+    const s = cam(...p); o += g4Dot(s[0], s[1], VZ.red);
+  }
+  const key = [["line", VZ.red, "C"], ["fill", VZ.red, hemi && k < 1 ? "hemisphere" : "S"]];
+  if (eD > .01) key.push(["fill", VZ.ink, "disk"]);
+  key.push(["line", VZ.gold, "normal"]);
+  if (!hemi && k >= 2) key.push(["line", VZ.deep, "r′(t)"]);
+  if (!hemi && k >= 3) key.push(["line", VZ.ink, "F"]);
+  if (hemi && k === 2) key.push(["line", VZ.ink, "curl F"]);
+  const cap = hemi ? ["a hemisphere, with edge C", "same edge C: the flat disk will do", "only the edge matters, not the surface", "on the disk, curl F · k is 4 everywhere", "4 times the disk's area"]
+    : ["S: a curved cap, normals pointing up", "its edge C: counterclockwise from above", "walk round C: r(t), with r′(t) along it", "F lines up with r′(t) all the way round", "add up F · r′ once round C"];
+  return o + AX[1] + vzKey(key, 16, 420) + stNote(180, 447, cap[Math.max(0, k)], VZ.ink);
+}
+const G4_STK2 = {
+  chip: "Surface → loop", pic(k, b, u) { return g4CapPic(this, k, b, u, false); },
+  problem: "Find \\(\\iint_S\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S\\) for \\(\\mathbf F=[z-y,\\ x+z^2,\\ xy]\\), where \\(S\\) is the cap \\(z=4-x^2-y^2,\\ z\\ge0\\), with the normal pointing up.",
+  steps: [
+    { t: "Spot the shortcut", tex: ["\\iint_S\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S=\\oint_C\\mathbf F\\cdot d\\mathbf r", { html: "Parametrizing the cap is work. Its edge is just a circle." }], why: "Stokes works both ways: a surface integral of a curl can be traded for a walk round the surface's edge.", sum: "use the edge \\(C\\)" },
+    { t: "Find the edge and its direction", tex: ["4-x^2-y^2=0:\\quad C:\\ x^2+y^2=4,\\ z=0", { html: "The normal points up, so by the right-hand rule \\(C\\) runs counterclockwise seen from above." }], why: "The edge is where the cap meets the floor. Curl your right hand's fingers along \\(C\\) and your thumb must point along the normal.", sum: "\\(C\\): circle of radius 2, counterclockwise" },
+    { t: "Parametrize C", tex: ["\\mathbf r(t)=[2\\cos t,\\ 2\\sin t,\\ 0],\\quad 0\\le t\\le2\\pi", "\\mathbf r'(t)=[-2\\sin t,\\ 2\\cos t,\\ 0]"], why: "Increasing \\(t\\) goes counterclockwise, as it must.", sum: "\\(\\mathbf r(t)=[2\\cos t,2\\sin t,0]\\)" },
+    { t: "F on C, dotted with r′", tex: ["\\mathbf F(\\mathbf r(t))=[-2\\sin t,\\ 2\\cos t,\\ 4\\sin t\\cos t]", "\\mathbf F\\cdot\\mathbf r'=4\\sin^2t+4\\cos^2t+0=4"], why: "On \\(C\\), \\(z=0\\): put that in first. The third parts never matter, because \\(\\mathbf r'\\) has no \\(z\\)-part.", sum: "\\(\\mathbf F\\cdot\\mathbf r'=4\\)" },
+    { t: "Integrate", tex: ["\\iint_S\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S=\\int_0^{2\\pi}4\\,dt=8\\pi"], why: "A constant 4 once round the circle. Working out the cap directly gives \\(8\\pi\\) too, with much more effort.", sum: "\\(=8\\pi\\)" },
+  ],
+};
+const G4_STK3 = {
+  chip: "Same edge, easier surface", pic(k, b, u) { return g4CapPic(this, k, b, u, true); },
+  problem: "Find \\(\\iint_S\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S\\) for \\(\\mathbf F=[z-3y,\\ x+xz,\\ y^2]\\), where \\(S\\) is the upper hemisphere \\(x^2+y^2+z^2=4,\\ z\\ge0\\), with the outward normal.",
+  steps: [
+    { t: "Same edge, any surface", tex: ["\\text{edge of } S:\\quad x^2+y^2=4,\\ z=0", { html: "Every surface with this edge gives the same \\(\\iint\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S\\): each one equals \\(\\oint_C\\mathbf F\\cdot d\\mathbf r\\)." }], why: "Stokes only looks at the edge. So swap the hemisphere for the easiest surface with that edge.", sum: "only the edge matters" },
+    { t: "Swap in the flat disk", tex: ["D:\\ x^2+y^2\\le4,\\ z=0,\\qquad \\mathbf n=\\mathbf k=[0,\\ 0,\\ 1]", { html: "Outward on the hemisphere and up on the disk both make \\(C\\) counterclockwise from above." }], why: "The orientations must match through the edge, or the sign flips.", sum: "the disk, normal \\(\\mathbf k\\)" },
+    { t: "Compute curl F", tex: ["\\operatorname{curl}\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\partial_x&\\partial_y&\\partial_z\\\\z-3y&x+xz&y^2\\end{vmatrix}=[2y-x,\\ 1,\\ 4+z]"], why: "The \\(\\mathbf k\\) part is \\(\\partial_x(x+xz)-\\partial_y(z-3y)=1+z+3\\).", sum: "\\([2y-x,\\,1,\\,4+z]\\)" },
+    { t: "curl F · k on the disk", tex: ["z=0:\\quad \\operatorname{curl}\\mathbf F\\cdot\\mathbf k=4+z=4"], why: "On the disk only the \\(\\mathbf k\\) part counts, and \\(z=0\\) there.", sum: "\\(4\\)" },
+    { t: "Integrate over the disk", tex: ["\\iint_S\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S=\\iint_D4\\,dA=4\\cdot4\\pi=16\\pi"], why: "A constant times the disk's area \\(\\pi\\cdot2^2\\). The hemisphere itself, done the long way, gives \\(16\\pi\\) too.", sum: "\\(=16\\pi\\)" },
+  ],
+};
+const G4_STOKES = [
+  { chip: "Loop → surface", pic: g4StokesLoopPic,
+  problem: "Use Stokes' theorem to find \\(\\oint_C\\mathbf F\\cdot d\\mathbf r\\) for \\(\\mathbf F=[-y-z,\\ x,\\ xz]\\), where \\(C\\) is where the cylinder \\(x^2+y^2=4\\) meets the plane \\(z=3+y\\), counterclockwise seen from above.",
   steps: [
     { t: "Compute curl F", tex: ["\\operatorname{curl}\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\partial_x&\\partial_y&\\partial_z\\\\-y-z&x&xz\\end{vmatrix}", "=[\\,0-0,\\ \\ -1-z,\\ \\ 1-(-1)\\,]=[0,\\ -1-z,\\ 2]"], why: "Stokes trades the loop for the curl, so find the curl first.", sum: "\\(\\operatorname{curl}\\mathbf F=[0,-1-z,2]\\)" },
     { t: "Choose S: the flat piece", tex: ["S:\\ \\text{the part of } z=3+y \\text{ inside the cylinder}", "\\mathbf r(x,y)=[x,\\ y,\\ 3+y],\\quad (x,y)\\in D:\\ x^2+y^2\\le4"], why: "Any surface with edge \\(C\\) gives the same answer. The flat piece of the plane is the easiest; its shadow \\(D\\) is a disk.", sum: "\\(S\\): flat, over the disk \\(D\\)" },
@@ -28097,7 +28196,16 @@ stAdd({
     { t: "Integrate over D", tex: ["\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_D(6+y)\\,dA", "=\\int_0^{2\\pi}\\!\\!\\int_0^2(6+r\\sin\\theta)\\,r\\,dr\\,d\\theta", "=6\\cdot4\\pi+0=24\\pi"], why: "\\(d\\mathbf S=\\mathbf N\\,dA\\) already holds the tilt, so integrate over the flat disk \\(D\\). The \\(y\\) part cancels: \\(D\\) is symmetric.", sum: "\\(=24\\pi\\)" },
     { t: "Check: walk round C directly", tex: ["\\mathbf r(t)=[2\\cos t,\\ 2\\sin t,\\ 3+2\\sin t],\\quad 0\\le t\\le2\\pi", "\\int_0^{2\\pi}\\big(16\\cos^2t+8\\sin^2t+8\\sin t\\cos^2t+6\\sin t\\big)\\,dt=24\\pi"], why: "The same answer, with more work: that is why Stokes helps. The last two terms integrate to 0.", sum: "\\(24\\pi\\) ✓" },
   ],
-});
+  },
+  G4_STK2, G4_STK3,
+];
+stAdd(g4Sits({
+  id: "m-stokes", title: "Stokes' theorem, both ways", card: "Stokes' theorem, step by step",
+  tagline: "Trade a loop for a surface, or a surface for its edge: whichever is easier.",
+  blurb: "\\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_S\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S\\) for any surface \\(S\\) with edge \\(C\\), oriented by the right-hand rule. Use it either way: swap a hard loop for an easy surface, a hard surface for its edge, or one surface for an easier one with the same edge.",
+  picLive: true,
+  pic(k, b, u) { return this._sits[this._si].pic.call(this, k, b, u); },
+}, G4_STOKES));
 /* ---------- m-divthm: flux out of a closed surface, by the divergence theorem (Lecture 35) ----------
    The closed surface with an outward normal on each piece, the solid inside, a vertical stick from the bottom
    surface to the top one (the inner z bounds), its shadow D (the outer bounds), then the inside-out sum. */
@@ -28141,7 +28249,7 @@ function g4DivPic(def, k, b, u) {
   const poly = (pts, attrs) => `<path d="M${pts.map(p => P2(cam(...p))).join("L")}Z" ${attrs}/>`;
   const halo = (A, B, w) => `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="#fff" stroke-width="${w}" stroke-linecap="round" opacity=".85"/>`;
   const arrow = (p, d, len, key, w) => { const A = cam(...p), B = cam(...g4Add(p, d, len)); return halo(A, B, w + 3) + vzArrow(A[0], A[1], B[0], B[1], key, w); };
-  const eN = k === 0 ? L(0, 0, .2, .9) : 1, nOp = k === 0 ? 1 : .4, tint = .08 + (k >= 1 ? .07 * (k === 1 ? L(1, 0, .2, .8) : 1) : 0);
+  const eN = k === 0 ? L(0, 0, .2, .9) : 1, nOp = k <= 0 ? 1 : .4, tint = .08 + (k >= 1 ? .07 * (k === 1 ? L(1, 0, .2, .8) : 1) : 0);
   const faceCol = (id) => { if (!g.col || k !== last) return null; const e = L(last, g.col[id] === "out" ? 0 : g.col[id] === "in" ? 1 : 2, .1, .6); return e > .01 ? [g.col[id] === "out" ? VZ.red : g.col[id] === "in" ? VZ.ink : VZ.grey, e] : null; };
   let o = "", pieces = [], normals = [];
   if (g.kind === "box") {
