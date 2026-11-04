@@ -1,0 +1,1393 @@
+diff -ru base6/index.html e3/index.html
+--- base6/index.html	2026-11-03 19:38:41
++++ e3/index.html	2026-11-03 22:03:05
+@@ -4351,6 +4351,24 @@
+   /* ---- wave-6 css spacer 6 ---- */
+   /* ---- wave-6 css spacer 7 ---- */
+   /* @@CSS-E3 (your CSS goes on the lines just below this one) @@ */
++  /* @@E3-CSS-BEGIN */
++  /* tool-crit, tool-field (e3): the student's own function, typed into "The problem" */
++  .t6s-ask { margin: 0 0 8px; }
++  .t6s-form { display: flex; align-items: center; gap: 8px; margin: 0 0 7px; }
++  .t6s-lab { flex: none; font: italic 500 17px var(--font-display); color: var(--ink); white-space: nowrap; }
++  .t6s-box { flex: 1 1 auto; min-width: 0; width: 100%; height: 36px; padding: 0 11px; box-sizing: border-box; border: 1px solid var(--border-strong); border-radius: 9px; background: var(--surface-2); font: 500 14.5px var(--font-mono); color: var(--ink); transition: border-color .15s, box-shadow .15s, background .15s; }
++  .t6s-box:focus { outline: none; border-color: var(--red); background: #fff; box-shadow: 0 0 0 3px var(--red-tint); }
++  .t6s-go { flex: none; transition: box-shadow .2s; }
++  .t6s-go.t6s-ready { box-shadow: 0 0 0 3px var(--red-soft); }
++  .t6s-chips { display: flex; flex-wrap: wrap; gap: 5px; }
++  .t6s-chips .vz-chip { font-size: 12px; padding: 3px 10px; }
++  .t6s-chips .vz-chip.on { border-color: var(--red); color: var(--red-deep); background: var(--surface); }
++  .t6s-chips .t6s-wild { border-style: dashed; }
++  .t6s-msg { margin: 6px 0 0; font: 500 12.5px/1.4 var(--font-sans); color: var(--ink-mute); min-height: 1.4em; transition: color .2s; }
++  .t6s-msg.bad, .t6s-msg.warn { color: var(--gold-ink); }
++  .t6s-msg.ok { color: var(--green); }
++  .st-given.small .t6s-ask { margin-bottom: 4px; }
++  /* @@E3-CSS-END */
+   /* ---- wave-6 css spacer 1 ---- */
+   /* ---- wave-6 css spacer 2 ---- */
+   /* ---- wave-6 css spacer 3 ---- */
+@@ -17405,6 +17423,7 @@
+     ST.raf = requestAnimationFrame(loop);
+   };
+   ST.raf = requestAnimationFrame(loop);
++  if (def.mount) def.mount(root.querySelector("#stGiven"), () => { if (ST.def === def) renderSteps(def, i, prev, next); });   // a method with its own input box (the "Check your own work" tools): wire it up; it rebuilds its steps through the callback
+ }
+ function stStop() {
+   clearTimeout(ST.timer); ST.timer = 0; if (ST.raf) cancelAnimationFrame(ST.raf); ST.raf = 0;
+@@ -21949,7 +21968,1355 @@
+ /* ---- wave-6 spacer 5 ---- */
+ /* ---- wave-6 spacer 6 ---- */
+ /* ---- wave-6 spacer 7 ---- */
+-/* @@AGENT-E3 PLACEHOLDER (tools tool-crit, tool-field) @@ */
++/* @@E3-BEGIN (agent e3: tool-crit, tool-field and their engine) */
++/* ============================================================
++   CHECK YOUR OWN WORK, VECTOR CALCULUS (tool-crit, tool-field)
++   A student types a function or a field; the page writes out the method for it step by step, like the methods.
++   T6S is a small exact engine behind both: an expression is a sum of terms c · a₁^p₁ · a₂^p₂ ⋯ with c an exact
++   fraction (BigInt) and each a an atom (x, y, z, π, e^(…), sin/cos/tan/ln(…), or a bracket (…) to a power).
++   Like terms are collected as they are built, so an exact 0 shows up as an empty sum.
++   ============================================================ */
++const T6S_BIG = 10n ** 15n, T6S_CAP = { len: 140, depth: 24, terms: 160, pow: 12, prod: 6000 };
++function t6sErr(msg) { const e = new Error(msg); e.t6s = 1; return e; }
++// ---- exact fractions [n, d], d > 0, lowest terms
++const t6sGcd = (a, b) => { if (a < 0n) a = -a; if (b < 0n) b = -b; while (b) [a, b] = [b, a % b]; return a; };
++function t6sQ(n, d = 1n) {
++  n = BigInt(n); d = BigInt(d);
++  if (d === 0n) throw t6sErr("It divides by zero somewhere.");
++  if (d < 0n) { n = -n; d = -d; }
++  const g = t6sGcd(n, d) || 1n; n /= g; d /= g;
++  if ((n < 0n ? -n : n) > T6S_BIG || d > T6S_BIG) throw t6sErr("The numbers get too big to show nicely.");
++  return [n, d];
++}
++const T6S_Q0 = [0n, 1n], T6S_Q1 = [1n, 1n], T6S_QM = [-1n, 1n], T6S_QH = [1n, 2n];
++const t6sQa = (a, b) => t6sQ(a[0] * b[1] + b[0] * a[1], a[1] * b[1]);
++const t6sQs = (a, b) => t6sQ(a[0] * b[1] - b[0] * a[1], a[1] * b[1]);
++const t6sQm = (a, b) => t6sQ(a[0] * b[0], a[1] * b[1]);
++const t6sQd = (a, b) => t6sQ(a[0] * b[1], a[1] * b[0]);
++const t6sQn = a => [-a[0], a[1]];
++const t6sQk = a => a[0] + "/" + a[1];
++const t6sQf = a => Number(a[0]) / Number(a[1]);
++const t6sQi = a => a[1] === 1n;
++const t6sQeq = (a, b) => a[0] === b[0] && a[1] === b[1];
++const t6sQfl = a => { let q = a[0] / a[1]; if (a[0] < 0n && q * a[1] !== a[0]) q -= 1n; return q; };   // floor
++function t6sQp(a, k) {                                     // a^k, k a whole number
++  if (k === 0) return T6S_Q1;
++  if (k < 0) { if (!a[0]) throw t6sErr("It divides by zero somewhere."); a = t6sQ(a[1], a[0]); k = -k; }
++  let r = T6S_Q1; for (let i = 0; i < k; i++) r = t6sQm(r, a); return r;
++}
++function t6sIroot(n, s) {                                  // the whole-number s-th root of n ≥ 0, or null
++  if (n < 0n) return null; if (n < 2n) return n;
++  const g = BigInt(Math.round(Number(n) ** (1 / s)));
++  for (const c of [g - 1n, g, g + 1n]) if (c >= 0n && c ** BigInt(s) === n) return c;
++  return null;
++}
++// ---- atoms, terms, sums
++const t6sV = n => ({ k: "v", n, key: "v" + n });
++const T6S_PI = { k: "pi", key: "pi" };
++const t6sFnA = (f, a) => ({ k: "fn", f, a, key: f + "(" + a.key + ")" });
++const t6sExpA = a => ({ k: "exp", a, key: "exp(" + a.key + ")" });
++const t6sPwA = b => ({ k: "pw", b, key: "(" + b.key + ")" });
++const t6sMkT = (c, f) => ({ c, f, k: f.map(([a, e]) => a.key + "^" + t6sQk(e)).join("*") });
++function t6sMkS(terms) {                                   // collect like terms
++  const m = new Map();
++  for (const t of terms) { if (!t.c[0]) continue; const o = m.get(t.k); m.set(t.k, o ? t6sMkT(t6sQa(o.c, t.c), o.f) : t); }
++  const t = [...m.values()].filter(x => x.c[0]).sort((a, b) => a.k < b.k ? -1 : a.k > b.k ? 1 : 0);
++  if (t.length > T6S_CAP.terms) throw t6sErr("That grows into too many terms to show.");
++  return { t, key: t.map(x => t6sQk(x.c) + "·" + x.k).join("+") };
++}
++const T6S_ZERO = { t: [], key: "" };
++const t6sNum = q => t6sMkS([t6sMkT(q, [])]);
++const T6S_ONE = t6sNum(T6S_Q1);
++const t6sAdd = (A, B) => t6sMkS(A.t.concat(B.t));
++const t6sNeg = A => t6sMkS(A.t.map(t => t6sMkT(t6sQn(t.c), t.f)));
++const t6sSub = (A, B) => t6sAdd(A, t6sNeg(B));
++const t6sScale = (A, q) => t6sMkS(A.t.map(t => t6sMkT(t6sQm(t.c, q), t.f)));
++const t6sIsNum = A => !A.t.length || (A.t.length === 1 && !A.t[0].f.length);
++const t6sNumOf = A => A.t.length ? A.t[0].c : T6S_Q0;
++// which of x, y, z an atom or a sum involves
++function t6sVars(a) {
++  if (a.vs != null) return a.vs;
++  let s = a.k === "v" ? a.n : a.k === "pi" ? "" : t6sVarsS(a.k === "pw" ? a.b : a.a);
++  return (a.vs = s);
++}
++function t6sVarsS(S) { let s = ""; for (const t of S.t) for (const [a] of t.f) for (const ch of t6sVars(a)) if (!s.includes(ch)) s += ch; return [...s].sort().join(""); }
++const t6sHas = (a, v) => t6sVars(a).includes(v);
++const t6sHasS = (S, v) => t6sVarsS(S).includes(v);
++// one term c · ∏ aᵢ^eᵢ, tidied: equal atoms merged, e^A·e^B = e^(A+B), a whole-number power of a bracket multiplied out
++function t6sTermS(c, fl) {
++  if (!c[0]) return T6S_ZERO;
++  const m = new Map(), later = []; let ex = null;
++  for (const [a, e] of fl) {
++    if (!e[0]) continue;
++    if (a.k === "exp") { const add = t6sScale(a.a, e); ex = ex ? t6sAdd(ex, add) : add; continue; }
++    const o = m.get(a.key); m.set(a.key, o ? [a, t6sQa(o[1], e)] : [a, e]);
++  }
++  const f = [];
++  for (const [a, e0] of m.values()) {
++    let e = e0;
++    if (!e[0]) continue;
++    if (a.k === "pw" && t6sQi(e) && (a.b.t.length === 1 || e[0] > 0n)) { later.push(t6sPow(a.b, e)); continue; }
++    if (a.k === "pw" && t6sIsNum(a.b)) {                  // a number to a fractional power: keep that power between 0 and 1
++      const fl0 = t6sQfl(e);
++      if (fl0) { c = t6sQm(c, t6sQp(t6sNumOf(a.b), Number(fl0))); e = t6sQs(e, [fl0, 1n]); }
++      if (!e[0]) continue;
++    }
++    f.push([a, e]);
++  }
++  if (ex && ex.t.length) {
++    const t0 = ex.t[0];
++    if (ex.t.length === 1 && t6sQeq(t0.c, T6S_Q1) && t0.f.length === 1 && t0.f[0][0].k === "fn" && t0.f[0][0].f === "ln" && t6sQeq(t0.f[0][1], T6S_Q1)) later.push(t0.f[0][0].a);   // e^(ln A) = A
++    else f.push([t6sExpA(ex), T6S_Q1]);
++  }
++  f.sort((p, q) => p[0].key < q[0].key ? -1 : p[0].key > q[0].key ? 1 : 0);
++  let S = t6sMkS([t6sMkT(c, f)]);
++  for (const L of later) S = t6sMul(S, L);
++  return S;
++}
++const t6sAtomS = (a, e = T6S_Q1) => t6sTermS(T6S_Q1, [[a, e]]);
++function t6sMul(A, B) {
++  if (!A.t.length || !B.t.length) return T6S_ZERO;
++  if (A.t.length * B.t.length > T6S_CAP.prod) throw t6sErr("That grows into too many terms to show.");
++  const out = [];
++  for (const a of A.t) for (const b of B.t) {
++    const plain = !a.f.length || !b.f.length;
++    if (plain) out.push(t6sMkT(t6sQm(a.c, b.c), a.f.length ? a.f : b.f));
++    else out.push(...t6sTermS(t6sQm(a.c, b.c), a.f.concat(b.f)).t);
++  }
++  return t6sMkS(out);
++}
++// the numeric content, sign and common power of x, y, z of a sum: S = c · mono · rest
++function t6sContent(S) {
++  let g = 0n, l = 1n;
++  S.t.forEach(t => { g = t6sGcd(g, t.c[0]); l = l / t6sGcd(l, t.c[1]) * t.c[1]; });
++  let c = t6sQ(g, l); if (S.t[0].c[0] < 0n) c = t6sQn(c);
++  const mono = [];
++  ["x", "y", "z"].forEach(v => {
++    let mn = null;
++    for (const t of S.t) { const h = t.f.find(([a]) => a.k === "v" && a.n === v); if (!h) { mn = null; break; } if (!mn || t6sQf(h[1]) < t6sQf(mn)) mn = h[1]; }
++    if (mn) mono.push([t6sV(v), mn]);
++  });
++  const rest = t6sMkS(S.t.flatMap(t => t6sTermS(t6sQd(t.c, c), t.f.concat(mono.map(([a, e]) => [a, t6sQn(e)]))).t));
++  return { c, mono, rest };
++}
++// S^q, q an exact fraction
++function t6sPow(S, q) {
++  if (!S.t.length) { if (q[0] > 0n) return T6S_ZERO; throw t6sErr("It divides by zero somewhere."); }
++  if (!q[0]) return T6S_ONE;
++  if (t6sQi(q)) {
++    const n = Number(q[0]);
++    if (Math.abs(n) > 40) throw t6sErr("That power is too high to work with.");
++    if (S.t.length === 1) { const t = S.t[0]; return t6sTermS(t6sQp(t.c, n), t.f.map(([a, e]) => [a, t6sQm(e, q)])); }
++    if (n > 0) { if (n > T6S_CAP.pow) throw t6sErr("That power is too high to multiply out."); let R = S; for (let i = 1; i < n; i++) R = t6sMul(R, S); return R; }
++    const { c, mono, rest } = t6sContent(S);             // the same bracket is always written the same way
++    if (rest.t.length === 1) return t6sPow(t6sMul(t6sTermS(c, mono), rest), q);
++    return t6sMul(t6sTermS(t6sQp(c, n), mono.map(([a, e]) => [a, t6sQm(e, q)])), t6sTermS(T6S_Q1, [[t6sPwA(rest), q]]));
++  }
++  if (q[1] > 6n || q[0] > 24n || q[0] < -24n) throw t6sErr("That power is too awkward to work with.");
++  const root = (c) => {                                    // c^q for a number c > 0: exact, or √c-style
++    const r1 = t6sIroot(c[0], Number(q[1])), r2 = t6sIroot(c[1], Number(q[1]));
++    if (r1 != null && r2 != null) return t6sNum(t6sQp(t6sQ(r1, r2), Number(q[0])));
++    return t6sTermS(T6S_Q1, [[t6sPwA(t6sNum(c)), q]]);
++  };
++  if (S.t.length === 1) {
++    const t = S.t[0], odd = t.f.every(([a, e]) => a.k === "exp" || a.k === "pi" || e[0] % 2n !== 0n);
++    if (!t.f.length) {
++      if (t.c[0] > 0n) return root(t.c);
++      if (q[1] % 2n === 0n) throw t6sErr("That takes the square root of a negative number.");
++      return t6sNeg(root(t6sQn(t.c)));
++    }
++    if (odd && t.c[0] > 0n) return t6sMul(root(t.c), t6sTermS(T6S_Q1, t.f.map(([a, e]) => [a, t6sQm(e, q)])));
++    return t6sTermS(T6S_Q1, [[t6sPwA(S), q]]);
++  }
++  // a bracket to a fractional power: a perfect-power numeric content comes out (√(4x² + 4y²) = 2√(x² + y²))
++  let g = 0n, l = 1n; S.t.forEach(t => { g = t6sGcd(g, t.c[0]); l = l / t6sGcd(l, t.c[1]) * t.c[1]; });
++  const r1 = t6sIroot(g, Number(q[1])), r2 = t6sIroot(l, Number(q[1]));
++  if (r1 != null && r2 != null && (g > 1n || l > 1n)) {
++    const c = t6sQ(g, l);
++    return t6sMul(t6sNum(t6sQp(t6sQ(r1, r2), Number(q[0]))), t6sTermS(T6S_Q1, [[t6sPwA(t6sScale(S, t6sQd(T6S_Q1, c))), q]]));
++  }
++  return t6sTermS(T6S_Q1, [[t6sPwA(S), q]]);
++}
++function t6sExp(S) { return S.t.length ? t6sTermS(T6S_Q1, [[t6sExpA(S), T6S_Q1]]) : T6S_ONE; }
++function t6sFn(f, S) {
++  if (f === "exp") return t6sExp(S);
++  if (f === "sqrt") return t6sPow(S, T6S_QH);
++  if (!S.t.length) { if (f === "ln") throw t6sErr("ln(0) isn't a number."); return f === "cos" ? T6S_ONE : T6S_ZERO; }
++  if (f === "ln") {
++    if (t6sIsNum(S)) { const c = S.t[0].c; if (c[0] <= 0n) throw t6sErr("ln of a negative number isn't defined."); if (t6sQeq(c, T6S_Q1)) return T6S_ZERO; }
++    const t0 = S.t[0];
++    if (S.t.length === 1 && t6sQeq(t0.c, T6S_Q1) && t0.f.length === 1 && t0.f[0][0].k === "exp") return t0.f[0][0].a;   // ln(e^A) = A
++  }
++  if (f === "sin" || f === "tan") { if (S.t[0].c[0] < 0n) return t6sNeg(t6sAtomS(t6sFnA(f, t6sNeg(S)))); }
++  if (f === "cos" && S.t[0].c[0] < 0n) S = t6sNeg(S);
++  return t6sAtomS(t6sFnA(f, S));
++}
++// ---- d/dv
++function t6sD(S, v) {
++  const out = [];
++  for (const t of S.t) for (let i = 0; i < t.f.length; i++) {
++    const [a, e] = t.f[i]; if (!t6sHas(a, v)) continue;
++    const da = t6sDA(a, e, v); if (!da.t.length) continue;
++    out.push(...t6sMul(t6sTermS(t.c, t.f.filter((_, j) => j !== i)), da).t);
++  }
++  return t6sMkS(out);
++}
++function t6sDA(a, e, v) {                                  // d/dv of a^e
++  if (a.k === "v") return a.n === v ? t6sTermS(e, [[a, t6sQs(e, T6S_Q1)]]) : T6S_ZERO;
++  if (a.k === "pi") return T6S_ZERO;
++  if (a.k === "exp") return t6sMul(t6sTermS(e, [[a, e]]), t6sD(a.a, v));
++  const inner = a.k === "pw" ? a.b : a.a, d = t6sD(inner, v); if (!d.t.length) return T6S_ZERO;
++  const base = t6sTermS(e, [[a, t6sQs(e, T6S_Q1)]]);
++  let g;
++  if (a.k === "pw") g = T6S_ONE;
++  else if (a.f === "sin") g = t6sFn("cos", inner);
++  else if (a.f === "cos") g = t6sNeg(t6sFn("sin", inner));
++  else if (a.f === "tan") g = t6sAdd(T6S_ONE, t6sPow(t6sAtomS(a), [2n, 1n]));
++  else g = t6sPow(inner, T6S_QM);                         // ln
++  return t6sMul(t6sMul(base, g), d);
++}
++// ---- numbers: evaluate, or compile to a fast function of (x, y, z)
++function t6sFun(S) {
++  const atom = a => {
++    if (a.k === "v") return a.n === "x" ? (x => x) : a.n === "y" ? ((x, y) => y) : ((x, y, z) => z);
++    if (a.k === "pi") return () => Math.PI;
++    const g = t6sFun(a.k === "pw" ? a.b : a.a);
++    if (a.k === "exp") return (x, y, z) => Math.exp(g(x, y, z));
++    if (a.k === "pw") return g;
++    const F = { sin: Math.sin, cos: Math.cos, tan: Math.tan, ln: Math.log, lnabs: v => Math.log(Math.abs(v)) }[a.f];
++    return (x, y, z) => F(g(x, y, z));
++  };
++  const terms = S.t.map(t => {
++    const c = t6sQf(t.c), fs = t.f.map(([a, e]) => { const g = atom(a), p = t6sQf(e); return p === 1 ? g : p === 2 ? ((x, y, z) => { const u = g(x, y, z); return u * u; }) : ((x, y, z) => Math.pow(g(x, y, z), p)); });
++    return (x, y, z) => { let p = c; for (const f of fs) p *= f(x, y, z); return p; };
++  });
++  return (x, y, z) => { let s = 0; for (const f of terms) s += f(x, y, z); return s; };
++}
++// exactly 0 as a function? (collected terms first; then over a common bottom; then a numeric check at scattered points)
++function t6sIsZero(S) {
++  if (!S.t.length) return true;
++  const T = t6sTogether(S); if (!T.N.t.length) return true;
++  const fs = S.t.map(t => t6sFun(t6sMkS([t])));
++  let n = 0;
++  for (let i = 0; i < 11 && n < 6; i++) {
++    const x = .37 + .61 * Math.sin(i * 2.1 + .3), y = -.41 + .73 * Math.cos(i * 1.7 + .9), z = .29 + .57 * Math.sin(i * 1.3 + 2.2);
++    let s = 0, m = 0, ok = true;
++    for (const f of fs) { const v = f(x, y, z); if (!Number.isFinite(v)) { ok = false; break; } s += v; m += Math.abs(v); }
++    if (!ok) continue;
++    n++; if (Math.abs(s) > 1e-9 * (1 + m)) return false;
++  }
++  return n >= 3;
++}
++// over a common bottom: S = N / D, D a product of brackets (…)^m (the bottoms of S's terms), cancelled where they divide N
++function t6sTogether(S) {
++  const need = new Map();
++  for (const t of S.t) for (const [a, e] of t.f) if (a.k === "pw" && e[0] < 0n && !t6sIsNum(a.b) && a.b.t.length > 1) {
++    const o = need.get(a.key); if (!o || t6sQf(t6sQn(e)) > t6sQf(o[1])) need.set(a.key, [a, t6sQn(e)]);
++  }
++  if (!need.size) return { N: S, D: [] };
++  let N = t6sMkS(S.t.flatMap(t => t6sTermS(t.c, t.f.concat([...need.values()])).t));
++  const D = [];
++  for (const [a, m0] of need.values()) {
++    let m = m0;
++    while (t6sQf(m) >= 1 && N.t.length) { const q = t6sPolyDiv(N, a.b); if (!q) break; N = q; m = t6sQs(m, T6S_Q1); }
++    if (m[0]) D.push([a, m]);
++  }
++  if (!N.t.length) return { N, D: [] };
++  return { N, D };
++}
++// exact division of polynomials in x, y, z (null if it doesn't divide, or either isn't a polynomial)
++function t6sPolyDiv(N, B) {
++  const poly = S => S.t.every(t => t.f.every(([a, e]) => a.k === "v" && t6sQi(e) && e[0] > 0n));
++  if (!poly(N) || !poly(B)) return null;
++  const ex = t => ["x", "y", "z"].map(v => { const h = t.f.find(([a]) => a.n === v); return h ? Number(h[1][0]) : 0; });
++  const lead = S => S.t.reduce((b, t) => { if (!b) return t; const p = ex(t), q = ex(b); for (let i = 0; i < 3; i++) if (p[i] !== q[i]) return p[i] > q[i] ? t : b; return b; }, null);
++  const lb = lead(B), eb = ex(lb);
++  let R = N, Qt = [];
++  for (let it = 0; it < 400 && R.t.length; it++) {
++    const lr = lead(R), er = ex(lr); if (er.some((p, i) => p < eb[i])) return null;
++    const mono = t6sMkS([t6sMkT(t6sQd(lr.c, lb.c), ["x", "y", "z"].map((v, i) => [t6sV(v), [BigInt(er[i] - eb[i]), 1n]]).filter(([, e]) => e[0]))]);
++    Qt.push(...mono.t); R = t6sSub(R, t6sMul(mono, B));
++  }
++  return R.t.length ? null : t6sMkS(Qt);
++}
++// ---- reading what the student typed
++const T6S_FNS = ["sqrt", "sin", "cos", "tan", "exp", "log", "ln"];
++const T6S_NAMES = ["sqrt", "sin", "cos", "tan", "exp", "log", "ln", "pi", "e", "x", "y", "z"];
++function t6sLex(src) {
++  const s = String(src == null ? "" : src).replace(/[−–—]/g, "-").replace(/[×·⋅∙]/g, "*").replace(/\*\*/g, "^").replace(/π/g, "pi").replace(/√/g, "sqrt")
++    .replace(/²/g, "^2").replace(/³/g, "^3").replace(/[{\[]/g, "(").replace(/[}\]]/g, ")").toLowerCase();
++  const out = []; let i = 0;
++  while (i < s.length) {
++    const ch = s[i];
++    if (/\s/.test(ch)) { i++; continue; }
++    if (/[0-9.]/.test(ch)) {
++      const m = s.slice(i).match(/^(\d*)(?:\.(\d*))?/);
++      if (!m[0] || m[0] === ".") throw t6sErr("A stray \".\": write decimals like 0.5.");
++      const w = m[1] || "", f = m[2] || "";
++      if (w.replace(/^0+/, "").length > 6 || f.length > 4) throw t6sErr("Use smaller numbers (up to 6 digits, 4 decimals).");
++      out.push({ k: "num", q: t6sQ(BigInt(w || "0") * 10n ** BigInt(f.length) + BigInt(f || "0"), 10n ** BigInt(f.length)) }); i += m[0].length; continue;
++    }
++    if (/[a-z]/.test(ch)) {
++      const rest = s.slice(i), bad = rest.match(/^(arcsin|arccos|arctan|asin|acos|atan|sinh|cosh|tanh|sec|csc|cot|abs)/);
++      if (bad) throw t6sErr(`"${bad[1]}" isn't supported here: use sin, cos, tan, e^, ln, sqrt.`);
++      const nm = T6S_NAMES.find(n => rest.startsWith(n));
++      if (!nm) throw t6sErr(`"${ch}" isn't a letter this tool knows. Use x and y${src && /z/i.test(src) ? ", z" : ""}, numbers, sin, cos, e^, ln, sqrt, pi.`);
++      out.push({ k: "name", v: nm === "log" ? "ln" : nm }); i += nm.length; continue;
++    }
++    if ("+-*/^()".includes(ch)) { out.push({ k: "op", v: ch }); i++; continue; }
++    if (ch === "=") throw t6sErr("Type just the formula (no \"=\").");
++    if (ch === ",") throw t6sErr("A comma: type one formula here.");
++    throw t6sErr(`"${ch}" isn't something this tool can read.`);
++  }
++  return out;
++}
++// plain typing → a sum. vars: the letters allowed as variables ("xy" or "xyz")
++function t6sParse(src, vars) {
++  const raw = String(src == null ? "" : src).trim().replace(/^\s*(f\s*(\(\s*x\s*,\s*y\s*(,\s*z\s*)?\))?|[pqr])\s*=\s*/i, "");
++  if (!raw) throw t6sErr("blank");
++  if (raw.length > T6S_CAP.len) throw t6sErr(`That's a long one: keep it under ${T6S_CAP.len} characters.`);
++  const toks = t6sLex(raw); let i = 0, depth = 0;
++  const peek = () => toks[i], next = () => toks[i++], isOp = (t, v) => t && t.k === "op" && t.v === v;
++  const starts = t => t && (t.k === "num" || t.k === "name" || isOp(t, "("));
++  const need = op => { if (!peek()) throw t6sErr(`Something is missing after "${op}".`); };
++  function expr() {
++    if (++depth > T6S_CAP.depth) throw t6sErr("That's nested too deeply to read.");
++    let S = term();
++    while (isOp(peek(), "+") || isOp(peek(), "-")) { const op = next().v; need(op); const T = term(); S = op === "+" ? t6sAdd(S, T) : t6sSub(S, T); }
++    depth--; return S;
++  }
++  function term() {
++    let S = unary();
++    for (;;) {
++      const t = peek();
++      if (isOp(t, "*") || isOp(t, "/")) { next(); need(t.v); const U = unary(); S = t.v === "*" ? t6sMul(S, U) : t6sMul(S, t6sPow(U, T6S_QM)); }
++      else if (starts(t)) S = t6sMul(S, power());
++      else return S;
++    }
++  }
++  function unary() {
++    if (isOp(peek(), "-")) { next(); need("-"); return t6sNeg(unary()); }
++    if (isOp(peek(), "+")) { next(); need("+"); return unary(); }
++    return power();
++  }
++  function power() {
++    const isE = peek() && peek().k === "name" && peek().v === "e";
++    const P = primary();
++    if (!isOp(peek(), "^")) return P;
++    next(); need("^");
++    if (++depth > T6S_CAP.depth) throw t6sErr("That's nested too deeply to read.");
++    const E = unary(); depth--;
++    return t6sRaise(P, E, isE);
++  }
++  function primary() {
++    const t = next();
++    if (!t) throw t6sErr("Something is missing at the end.");
++    if (t.k === "num") return t6sNum(t.q);
++    if (isOp(t, "(")) { if (isOp(peek(), ")")) throw t6sErr("Empty brackets \"()\"."); const S = expr(); if (!isOp(next(), ")")) throw t6sErr("A bracket is missing its partner \")\"."); return S; }
++    if (t.k === "op") throw t6sErr(t.v === ")" ? "There's an extra \")\"." : `Something is missing before "${t.v}".`);
++    if (t.v === "pi") return t6sAtomS(T6S_PI);
++    if (t.v === "e") return t6sExp(T6S_ONE);
++    if (t.v.length === 1) {
++      if (!vars.includes(t.v)) throw t6sErr(vars.length === 2 ? `Use only x and y here ("${t.v}" isn't one of them).` : `"${t.v}" isn't a variable here.`);
++      return t6sAtomS(t6sV(t.v));
++    }
++    // a function: sin(x), sin x, sin 2x, sin^2(x)
++    let fp = null;
++    if (isOp(peek(), "^") && toks[i + 1] && toks[i + 1].k === "num") { next(); fp = next().q; }
++    let A;
++    if (isOp(peek(), "(")) A = primary();
++    else {
++      if (!peek() || (peek().k === "op" && peek().v !== "-")) throw t6sErr(`${t.v} needs something to act on, like ${t.v}(x).`);
++      A = isOp(peek(), "-") ? (next(), t6sNeg(power())) : power();
++      while (starts(peek()) && !(peek().k === "name" && T6S_FNS.includes(peek().v))) A = t6sMul(A, power());
++    }
++    const F = t6sFn(t.v, A);
++    return fp ? t6sPow(F, fp) : F;
++  }
++  const S = expr();
++  if (i < toks.length) throw t6sErr(isOp(peek(), ")") ? "There's an extra \")\"." : "Something doesn't fit: check the brackets and signs.");
++  return S;
++}
++// P^E with E a number, or e^E / 2^E
++function t6sRaise(P, E, isE) {
++  if (isE) return t6sExp(E);
++  if (t6sIsNum(E)) return t6sPow(P, t6sNumOf(E));
++  if (t6sIsNum(P) && t6sNumOf(P)[0] > 0n) return t6sExp(t6sMul(E, t6sFn("ln", P)));
++  if (!E.t.some(t => t.f.some(([a]) => a.k === "v"))) throw t6sErr("Powers must be plain numbers, like x^2 or x^(1/2).");
++  throw t6sErr("A variable in a power works only with e, like e^(xy).");
++}
++// ---- writing it the way a student would (TeX)
++const t6sTq = q => (q[0] < 0n ? "-" : "") + (q[1] === 1n ? String(q[0] < 0n ? -q[0] : q[0]) : `\\tfrac{${q[0] < 0n ? -q[0] : q[0]}}{${q[1]}}`);
++const t6sTe = e => t6sQi(e) ? (e[0] === 1n ? "" : `^{${e[0]}}`) : `^{${e[0]}/${e[1]}}`;
++const T6S_ORD = { pi: 0, v: 2, pw: 3, fn: 4, exp: 5 };
++function t6sAtomRank(a) { return a.k === "pw" && t6sIsNum(a.b) ? 1 : T6S_ORD[a.k]; }
++function t6sTexF(a, e, last) {                            // one factor a^e, e > 0
++  if (a.k === "v") return e[0] === 1n && e[1] === 2n ? `\\sqrt{${a.n}}` : a.n + t6sTe(e);
++  if (a.k === "pi") return "\\pi" + t6sTe(e);
++  if (a.k === "exp") { const inner = t6sTex(a.a); return inner === "1" ? "e" : `e^{${inner}}`; }
++  if (a.k === "pw") {
++    const b = t6sTex(a.b);
++    if (e[0] === 1n && e[1] === 2n) return `\\sqrt{${b}}`;
++    if (e[0] === 1n && e[1] === 3n) return `\\sqrt[3]{${b}}`;
++    return `\\left(${b}\\right)${t6sTe(e)}`;
++  }
++  if (a.f === "lnabs") { const t = `\\ln\\left|${t6sTex(a.a)}\\right|`; return t6sQeq(e, T6S_Q1) ? t : `\\left(${t}\\right)${t6sTe(e)}`; }
++  const nm = "\\" + a.f, A = a.a, bare = A.t.length === 1 && t6sQeq(A.t[0].c, T6S_Q1) && A.t[0].f.length === 1 && A.t[0].f[0][0].k === "v" && t6sQeq(A.t[0].f[0][1], T6S_Q1);
++  const arg = bare ? " " + A.t[0].f[0][0].n + (last ? "" : "\\,") : `\\left(${t6sTex(A)}\\right)`;
++  if (t6sQeq(e, T6S_Q1)) return nm + arg;
++  if (t6sQi(e)) return `${nm}^{${e[0]}}${arg}`;
++  return `\\left(${nm}${arg}\\right)${t6sTe(e)}`;
++}
++function t6sTexFs(fs) {
++  const s = fs.slice().sort((p, q) => t6sAtomRank(p[0]) - t6sAtomRank(q[0]) || (p[0].k === "fn" && q[0].k === "fn" && t6sVars(p[0]) !== t6sVars(q[0]) ? (t6sVars(p[0]) < t6sVars(q[0]) ? -1 : 1) : 0) || (p[0].key < q[0].key ? -1 : 1));
++  let o = "";
++  s.forEach(([a, e], i) => { const nx = s[i + 1], t = t6sTexF(a, e, !nx || (nx[0].k === "fn")); o += (/\\[a-zA-Z]+$/.test(o) && /^[a-zA-Z]/.test(t) ? " " : "") + t; });
++  return o;
++}
++function t6sTexT(t) {                                      // → { neg, body }
++  const num = t.f.filter(([, e]) => e[0] > 0n), den = t.f.filter(([, e]) => e[0] < 0n).map(([a, e]) => [a, t6sQn(e)]);
++  const n = t.c[0] < 0n ? -t.c[0] : t.c[0], d = t.c[1], nf = t6sTexFs(num);
++  if (!den.length) {
++    if (!num.length) return { neg: t.c[0] < 0n, body: d === 1n ? String(n) : `\\tfrac{${n}}{${d}}` };
++    const cf = d === 1n ? (n === 1n ? "" : String(n)) : `\\tfrac{${n}}{${d}}`;
++    return { neg: t.c[0] < 0n, body: cf + nf };
++  }
++  const top = (n === 1n && nf ? "" : String(n)) + nf;
++  const lone = den.length === 1 && d === 1n && den[0][0].k === "pw" && t6sQeq(den[0][1], T6S_Q1);
++  const bot = (d === 1n ? "" : String(d)) + (lone ? t6sTex(den[0][0].b) : t6sTexFs(den));
++  return { neg: t.c[0] < 0n, body: `\\frac{${top || "1"}}{${bot}}` };
++}
++// the order a student writes terms in: highest power of x, y, z first, functions after, the constant last
++function t6sOrder(S) {
++  const deg = t => { let d = 0, x = 0, y = 0, z = 0, fn = 0; t.f.forEach(([a, e]) => { if (a.k === "v") { const p = t6sQf(e); d += p; if (a.n === "x") x = p; else if (a.n === "y") y = p; else z = p; } else if (a.k !== "pi" && !(a.k === "pw" && t6sIsNum(a.b))) fn = 1; }); return { d, x, y, z, fn, c: !t.f.length }; };
++  return S.t.map(t => [t, deg(t)]).sort(([, a], [, b]) => (a.c - b.c) || (a.fn - b.fn) || (b.d - a.d) || (b.x - a.x) || (b.y - a.y) || (b.z - a.z)).map(([t]) => t);
++}
++function t6sTex(S) {
++  if (!S.t.length) return "0";
++  return t6sOrder(S).map((t, i) => { const { neg, body } = t6sTexT(t); return (i ? (neg ? " - " : " + ") : neg ? "-" : "") + body; }).join("");
++}
++// written over a common bottom when that is tidier: (y² − x²)/(x² + y²)² rather than two fractions
++function t6sNice(S, lead) {
++  // the same e^(…) in every term comes out in front of a bracket: (2x − 2)e^y
++  if (S.t.length > 1) {
++    const ex = S.t[0].f.find(([a]) => a.k === "exp");
++    if (ex && S.t.every(t => t.f.some(([a]) => a.key === ex[0].key))) {
++      const rest = t6sMkS(S.t.map(t => t6sMkT(t.c, t.f.filter(([a]) => a.key !== ex[0].key))));
++      if (!rest.t.some(t => t.f.some(([a, e]) => a.k === "pw" && e[0] < 0n))) return `\\left(${t6sTexPos(rest)}\\right)${t6sTexF(ex[0], ex[1], true)}`;
++    }
++  }
++  const T = t6sTogether(S);
++  if (!T.D.length || S.t.filter(t => t.f.some(([a, e]) => a.k === "pw" && e[0] < 0n)).length < 2) {
++    if (!T.D.length && T.N !== S) return t6sTex(T.N);
++    return t6sTex(S);
++  }
++  const bot = T.D.length === 1 && t6sQeq(T.D[0][1], T6S_Q1) ? t6sTex(T.D[0][0].b) : t6sTexFs(T.D);
++  if (!T.N.t.length) return "0";
++  if (T.N.t.length === 1) { const { neg, body } = t6sTexT(T.N.t[0]); return `${neg ? "-" : ""}\\frac{${body}}{${bot}}`; }
++  return `\\frac{${t6sTexPos(T.N)}}{${bot}}`;
++}
++// a sum that starts with a plus term when it has one (y² − x² rather than −x² + y²)
++function t6sTexPos(S) {
++  const o = t6sOrder(S), i = o.findIndex(t => t.c[0] > 0n);
++  if (i <= 0) return t6sTex(S);
++  const r = [o[i]].concat(o.filter((_, j) => j !== i));
++  return r.map((t, j) => { const { neg, body } = t6sTexT(t); return (j ? (neg ? " - " : " + ") : neg ? "-" : "") + body; }).join("");
++}
++// in brackets when it has more than one term (for "(…) − (…)")
++const t6sPar = S => S.t.length > 1 || (S.t.length === 1 && S.t[0].c[0] < 0n) ? `\\left(${t6sNice(S)}\\right)` : t6sNice(S);
++// what makes the domain smaller than the whole plane: bottoms that can be 0, ln, even roots, tan
++function t6sDomain(S, acc = { den: new Map(), ln: new Map(), root: new Map(), tan: false }) {
++  const walk = X => X.t.forEach(t => t.f.forEach(([a, e]) => {
++    if (a.k === "v" && e[0] < 0n) acc.den.set(a.key, t6sAtomS(a));
++    if (a.k === "v" && !t6sQi(e)) acc.root.set(a.key, t6sAtomS(a));
++    if (a.k === "pw" && !t6sIsNum(a.b)) { if (e[0] < 0n) acc.den.set(a.key, a.b); if (!t6sQi(e) && e[1] % 2n === 0n) acc.root.set(a.key, a.b); }
++    if (a.k === "fn" && a.f === "ln") acc.ln.set(a.key, a.a);
++    if (a.k === "fn" && a.f === "lnabs") acc.den.set(a.key, a.a);
++    if (a.k === "fn" && a.f === "tan") acc.tan = true;
++    if (a.k === "fn" && e[0] < 0n) acc.den.set(a.key, t6sAtomS(a));
++    if (a.k !== "v" && a.k !== "pi") walk(a.k === "pw" ? a.b : a.a);
++  }));
++  walk(S);
++  return acc;
++}
++const t6sDomOk = D => !D.den.size && !D.ln.size && !D.root.size && !D.tan;
++// ---- exact numbers a + b√d (d square-free; d = 1 for a fraction), for the critical points
++const t6sN = (a, b = T6S_Q0, d = 1n) => (!b[0] || d === 1n) ? { a: d === 1n && b[0] ? t6sQa(a, b) : a, b: T6S_Q0, d: 1n } : { a, b, d };
++const t6sNq = q => t6sN(q);
++const t6sNd = (u, v) => u.d === 1n ? v.d : v.d === 1n || u.d === v.d ? u.d : 0n;
++function t6sNadd(u, v) { if (!u || !v) return null; const d = t6sNd(u, v); return d ? t6sN(t6sQa(u.a, v.a), t6sQa(u.b, v.b), d) : null; }
++function t6sNmul(u, v) { if (!u || !v) return null; const d = t6sNd(u, v); return d ? t6sN(t6sQa(t6sQm(u.a, v.a), t6sQm(t6sQm(u.b, v.b), [d, 1n])), t6sQa(t6sQm(u.a, v.b), t6sQm(u.b, v.a)), d) : null; }
++const t6sNneg = u => u && t6sN(t6sQn(u.a), t6sQn(u.b), u.d);
++const t6sNsub = (u, v) => t6sNadd(u, t6sNneg(v));
++function t6sNinv(u) { if (!u) return null; const den = t6sQs(t6sQm(u.a, u.a), t6sQm(t6sQm(u.b, u.b), [u.d, 1n])); if (!den[0]) throw t6sErr("It divides by zero somewhere."); return t6sN(t6sQd(u.a, den), t6sQn(t6sQd(u.b, den)), u.d); }
++const t6sNf = u => t6sQf(u.a) + t6sQf(u.b) * Math.sqrt(Number(u.d));
++const t6sNz = u => !u.a[0] && !u.b[0];
++function t6sNsign(u) {
++  const sa = Math.sign(Number(u.a[0])), sb = Math.sign(Number(u.b[0]));
++  if (!sb) return sa; if (!sa || sa === sb) return sb;
++  const A = u.a[0] * u.a[0] * u.b[1] * u.b[1], B = u.b[0] * u.b[0] * u.a[1] * u.a[1] * u.d;
++  return A > B ? sa : sb;
++}
++const t6sNkey = u => t6sQk(u.a) + "|" + t6sQk(u.b) + "|" + u.d;
++function t6sNtex(u) {
++  if (!u.b[0]) return t6sTq(u.a);
++  const p = u.b[0] < 0n ? -u.b[0] : u.b[0], q = u.b[1], rt = `${p === 1n ? "" : p}\\sqrt{${u.d}}`;
++  if (!u.a[0]) return (u.b[0] < 0n ? "-" : "") + (q === 1n ? rt : `\\tfrac{${rt}}{${q}}`);
++  if (q > 1n && u.a[1] === q) return `\\tfrac{${u.a[0]}${u.b[0] < 0n ? "-" : "+"}${rt}}{${q}}`;
++  return t6sTq(u.a) + (u.b[0] < 0n ? "-" : "+") + (q === 1n ? rt : `\\tfrac{${rt}}{${q}}`);
++}
++function t6sNtxt(u) {                                      // plain text, for the picture
++  const qt = q => (q[0] < 0n ? "−" : "") + (q[0] < 0n ? -q[0] : q[0]) + (q[1] === 1n ? "" : "/" + q[1]);
++  if (!u.b[0]) return qt(u.a);
++  const p = u.b[0] < 0n ? -u.b[0] : u.b[0], q = u.b[1], rt = `${p === 1n ? "" : p}√${u.d}`;
++  if (!u.a[0]) return (u.b[0] < 0n ? "−" : "") + rt + (q === 1n ? "" : "/" + q);
++  if (q > 1n && u.a[1] === q) return `(${u.a[0] < 0n ? "−" + -u.a[0] : u.a[0]} ${u.b[0] < 0n ? "−" : "+"} ${rt})/${q}`;
++  return qt(u.a) + (u.b[0] < 0n ? " − " : " + ") + rt + (q === 1n ? "" : "/" + q);
++}
++function t6sSqrtQ(q) {                                     // √q for q ≥ 0, as a + b√d (null if too big to factor)
++  let M = q[0] * q[1]; if (M < 0n) return null; if (!M) return t6sNq(T6S_Q0);
++  if (M > 10n ** 14n) return null;
++  let s = 1n;
++  for (let p = 2n; p * p <= M; p += p === 2n ? 1n : 2n) while (M % (p * p) === 0n) { M /= p * p; s *= p; }
++  return M === 1n ? t6sNq(t6sQ(s, q[1])) : t6sN(T6S_Q0, t6sQ(s, q[1]), M);
++}
++// ---- polynomials in x and y: P[i][j] = the coefficient of xⁱyʲ (null when S isn't one)
++function t6sBP(S) {
++  const P = [];
++  for (const t of S.t) {
++    let i = 0, j = 0;
++    for (const [a, e] of t.f) { if (a.k !== "v" || a.n === "z" || !t6sQi(e) || e[0] < 0n || e[0] > 30n) return null; if (a.n === "x") i = Number(e[0]); else j = Number(e[0]); }
++    (P[i] = P[i] || [])[j] = t.c;
++  }
++  return P;
++}
++const t6sBg = (P, i, j) => (P[i] && P[i][j]) || T6S_Q0;
++const t6sBdx = P => { for (let i = P.length - 1; i >= 0; i--) if (P[i] && P[i].some(q => q && q[0])) return i; return -1; };
++const t6sBdy = P => { let d = -1; P.forEach(r => r && r.forEach((q, j) => { if (q && q[0] && j > d) d = j; })); return d; };
++const t6sBzero = P => t6sBdx(P) < 0;
++function t6sBsum(P) { const ts = []; P.forEach((r, i) => r && r.forEach((q, j) => { if (q && q[0]) ts.push(t6sMkT(q, [i ? [t6sV("x"), [BigInt(i), 1n]] : null, j ? [t6sV("y"), [BigInt(j), 1n]] : null].filter(Boolean))); })); return t6sMkS(ts); }
++// put x = u (or y = u, when ax = 1): the coefficients of what is left, a polynomial in the other letter (exact numbers, or null)
++function t6sBsub(P, u, ax) {
++  const dx = t6sBdx(P), dy = t6sBdy(P), n = ax ? dx : dy, m = ax ? dy : dx, out = [];
++  for (let j = 0; j <= m; j++) {
++    let acc = t6sNq(T6S_Q0), pw = t6sNq(T6S_Q1);
++    for (let i = 0; i <= n; i++) { acc = t6sNadd(acc, t6sNmul(pw, t6sNq(ax ? t6sBg(P, i, j) : t6sBg(P, j, i)))); pw = t6sNmul(pw, u); if (!acc || !pw) return null; }
++    out.push(acc);
++  }
++  return out;
++}
++function t6sBsubF(P, u, ax) {                             // the same with a decimal u
++  const dx = t6sBdx(P), dy = t6sBdy(P), n = ax ? dx : dy, m = ax ? dy : dx, out = [];
++  for (let j = 0; j <= m; j++) { let acc = 0; for (let i = 0; i <= n; i++) acc += t6sQf(ax ? t6sBg(P, i, j) : t6sBg(P, j, i)) * u ** i; out.push(acc); }
++  return out;
++}
++// x = r (ax) or y = r makes P vanish for every value of the other letter: divide that factor out
++function t6sBdiv(P, r, ax) {
++  const dx = t6sBdx(P), dy = t6sBdy(P), Q = [];
++  const g = (i, j) => ax ? t6sBg(P, i, j) : t6sBg(P, j, i), put = (i, j, q) => { const [a, b] = ax ? [i, j] : [j, i]; (Q[a] = Q[a] || [])[b] = q; };
++  const n = ax ? dx : dy, m = ax ? dy : dx;
++  for (let j = 0; j <= m; j++) { let acc = T6S_Q0; for (let i = n; i >= 1; i--) { acc = t6sQa(t6sQm(acc, r), g(i, j)); put(i - 1, j, acc); } }
++  return Q;
++}
++const t6sBvan = (P, r, ax) => { const c = t6sBsub(P, t6sNq(r), ax); return c && c.every(t6sNz); };
++// rational numbers that might be roots of a polynomial with whole-number coefficients (null when they get too big)
++function t6sCands(ci) {
++  const a0 = ci[0] < 0n ? -ci[0] : ci[0], an = ci[ci.length - 1] < 0n ? -ci[ci.length - 1] : ci[ci.length - 1];
++  if (!a0 || a0 > 10n ** 9n || an > 10n ** 9n) return null;
++  const divs = n => { const out = []; for (let d = 1n; d * d <= n; d++) if (n % d === 0n) { out.push(d); if (d * d !== n) out.push(n / d); } return out; };
++  const ps = divs(a0), qs = divs(an), seen = new Set(), out = [];
++  for (const p of ps) for (const q of qs) for (const s of [1n, -1n]) { const r = t6sQ(s * p, q), k = t6sQk(r); if (!seen.has(k)) { seen.add(k); out.push(r); } }
++  return out.sort((a, b) => Math.abs(t6sQf(a)) - Math.abs(t6sQf(b)) || t6sQf(b) - t6sQf(a));
++}
++const t6sLcm = (a, b) => a / t6sGcd(a, b) * b;
++// ---- one-letter polynomials (index = power): exact roots where they are rational or simple square roots, else decimals
++// → { zero, roots: [{ n: exact | null, f: decimal }], approx, fac: the factored form in TeX (or "") }
++function t6sUv(c0, v) {
++  let c = c0.slice(); while (c.length && !c[c.length - 1][0]) c.pop();
++  if (!c.length) return { zero: true, roots: [] };
++  const roots = [], facs = []; let approx = false, k = 0;
++  while (!c[k][0]) k++;
++  if (k) { roots.push({ n: t6sNq(T6S_Q0) }); facs.push(v + (k > 1 ? `^{${k}}` : "")); c = c.slice(k); }
++  const lead = c[c.length - 1];
++  let R = c, lin = 1n;
++  const ev = (P, r) => P.reduceRight((acc, q) => t6sQa(t6sQm(acc, r), q), T6S_Q0);
++  const defl = (P, r) => { const Q = []; let acc = T6S_Q0; for (let i = P.length - 1; i >= 1; i--) { acc = t6sQa(t6sQm(acc, r), P[i]); Q[i - 1] = acc; } return Q; };
++  if (R.length > 2 || (R.length === 2)) {
++    let L = 1n; R.forEach(q => { L = t6sLcm(L, q[1]); });
++    const cands = t6sCands(R.map(q => q[0] * (L / q[1])));
++    if (cands) for (const r of cands) {
++      let hits = 0;
++      while (R.length > 1 && !ev(R, r)[0]) { R = defl(R, r); hits++; }
++      if (hits) {
++        roots.push({ n: t6sNq(r) }); lin *= r[1] ** BigInt(hits);
++        const f = t6sTex(t6sMkS([t6sMkT([r[1], 1n], [[t6sV(v), T6S_Q1]]), t6sMkT(t6sQn([r[0], 1n]), [])]));
++        facs.push(`(${f})` + (hits > 1 ? `^{${hits}}` : ""));
++      }
++      if (R.length <= 1) break;
++    }
++  }
++  let note = "";
++  if (R.length === 3) {                                    // a quadratic left: the formula
++    const [C, B, A] = R, disc = t6sQs(t6sQm(B, B), t6sQm([4n, 1n], t6sQm(A, C)));
++    let L = 1n; R.forEach(q => { L = t6sLcm(L, q[1]); }); let G = 0n; const ri = R.map(q => q[0] * (L / q[1])); ri.forEach(n => { G = t6sGcd(G, n); }); if (ri[2] < 0n) G = -G;
++    const Rt = ri.map(n => [n / G, 1n]); lin *= Rt[2][0];
++    facs.push(`(${t6sTex(t6sMkS(Rt.map((q, i) => t6sMkT(q, i ? [[t6sV(v), [BigInt(i), 1n]]] : []))))})`);
++    if (disc[0] < 0n) note = "none";
++    else { const sq = t6sSqrtQ(disc); const den = t6sQm([2n, 1n], A);
++      if (sq) [1, -1].forEach(s => roots.push({ n: t6sNmul(t6sNadd(t6sNq(t6sQn(B)), s > 0 ? sq : t6sNneg(sq)), t6sNq(t6sQd(T6S_Q1, den))) }));
++      else { const sd = Math.sqrt(t6sQf(disc)); [1, -1].forEach(s => roots.push({ n: null, f: (-t6sQf(B) + s * sd) / t6sQf(den) })); approx = true; } }
++  } else if (R.length > 3) {                                // degree 3 or more with no rational roots: decimals
++    let L = 1n; R.forEach(q => { L = t6sLcm(L, q[1]); }); let G = 0n; const ri = R.map(q => q[0] * (L / q[1])); ri.forEach(n => { G = t6sGcd(G, n); }); if (ri[ri.length - 1] < 0n) G = -G;
++    const Rt = ri.map(n => [n / G, 1n]); lin *= Rt[Rt.length - 1][0];
++    facs.push(`(${t6sTex(t6sMkS(Rt.map((q, i) => t6sMkT(q, i ? [[t6sV(v), [BigInt(i), 1n]]] : []))))})`);
++    const fr = t6sRealRoots(R.map(t6sQf)); fr.forEach(f => roots.push({ n: null, f })); if (fr.length) approx = true; else note = "none";
++  }
++  roots.forEach(r => { if (r.n) r.f = t6sNf(r.n); });
++  const K = t6sQd(lead, [lin, 1n]), kt = t6sQeq(K, T6S_Q1) ? "" : t6sQeq(K, T6S_QM) ? "-" : t6sTq(K);
++  const deg0 = c0.length - 1 - [...c0].reverse().findIndex(q => q[0]);
++  const fac = deg0 < 2 || !facs.length ? "" : facs.length >= 2 || kt || !/^\(/.test(facs[0]) || /\)\^/.test(facs[0]) ? kt + facs.join("") : "";
++  return { zero: false, roots, approx, fac, note };
++}
++// real roots of a polynomial with decimal coefficients (index = power): Durand–Kerner, then polished
++function t6sRealRoots(c) {
++  c = c.slice(); while (c.length && Math.abs(c[c.length - 1]) < 1e-300) c.pop();
++  const n = c.length - 1; if (n < 1) return [];
++  const a = c.map(v => v / c[n]);
++  let z = Array.from({ length: n }, (_, i) => [Math.cos(2 * Math.PI * i / n + .4) * .9 * (1 + i * .03), Math.sin(2 * Math.PI * i / n + .4) * .9]);
++  const R = 1 + Math.max(...a.slice(0, n).map(Math.abs)); z = z.map(([x, y]) => [x * R, y * R]);
++  const pv = ([x, y]) => { let re = 1, im = 0; for (let i = n - 1; i >= 0; i--) { const r2 = re * x - im * y + a[i], i2 = re * y + im * x; re = r2; im = i2; } return [re, im]; };
++  for (let it = 0; it < 400; it++) {
++    let mv = 0;
++    z = z.map((zi, i) => { let [dr, di] = [1, 0]; z.forEach((zj, j) => { if (j === i) return; const ur = zi[0] - zj[0], ui = zi[1] - zj[1]; [dr, di] = [dr * ur - di * ui, dr * ui + di * ur]; }); const [pr, pi] = pv(zi), m = dr * dr + di * di || 1e-300, qr = (pr * dr + pi * di) / m, qi = (pi * dr - pr * di) / m; mv = Math.max(mv, Math.hypot(qr, qi)); return [zi[0] - qr, zi[1] - qi]; });
++    if (mv < 1e-14) break;
++  }
++  const pf = x => a.reduceRight((s, q) => s * x + q, 0), dp = x => a.slice(1).reduceRight((s, q, i) => s * x + q * (i + 1), 0);
++  const out = [];
++  z.filter(([x, y]) => Math.abs(y) < 1e-6 * (1 + Math.abs(x))).forEach(([x]) => { for (let i = 0; i < 30; i++) { const d = dp(x); if (!d) break; const s = pf(x) / d; x -= s; if (Math.abs(s) < 1e-15 * (1 + Math.abs(x))) break; } if (!out.some(o => Math.abs(o - x) < 1e-7 * (1 + Math.abs(x)))) out.push(x); });
++  return out.sort((p, q) => p - q);
++}
++// a one-letter polynomial whose coefficients are exact numbers (maybe with a √) or decimals
++function t6sUvAny(cs, v) {
++  if (cs && cs.every(u => u && !u.b[0])) return t6sUv(cs.map(u => u.a), v);
++  if (cs && cs.every(Boolean)) {
++    let c = cs.slice(); while (c.length && t6sNz(c[c.length - 1])) c.pop();
++    if (!c.length) return { zero: true, roots: [] };
++    if (c.length === 1) return { zero: false, roots: [], note: "none" };
++    if (c.length === 2) { const n = t6sNneg(t6sNmul(c[0], t6sNinv(c[1]))); if (n) return { zero: false, roots: [{ n, f: t6sNf(n) }] }; }
++    cs = cs.map(t6sNf);
++  }
++  const f = cs.map(u => typeof u === "number" ? u : t6sNf(u)), sc = Math.max(1e-300, ...f.map(Math.abs));
++  let c = f.slice(); while (c.length && Math.abs(c[c.length - 1]) < 1e-11 * sc) c.pop();
++  if (!c.length) return { zero: true, roots: [] };
++  const r = t6sRealRoots(c);
++  return { zero: false, roots: r.map(x => ({ n: null, f: x })), approx: true, note: r.length ? "" : "none" };
++}
++const t6sRtex = r => r.n ? t6sNtex(r.n) : "\\approx " + t6sDec(r.f);
++const t6sDec = (x, d = 3) => { if (!Number.isFinite(x)) return "?"; if (Math.abs(x) < 5 * 10 ** -(d + 1)) return "0"; const s = (+x.toPrecision(Math.max(d, Math.floor(Math.log10(Math.abs(x))) + 1 + Math.min(2, d)))).toString(); return s.includes("e") ? x.toExponential(2) : s; };
++function t6sRlist(rs, v) {
++  if (!rs.length) return "";
++  if (rs.length === 2 && rs[0].n && rs[1].n && t6sNkey(rs[0].n) === t6sNkey(t6sNneg(rs[1].n))) return `${v}=\\pm${t6sNtex(t6sNsign(rs[0].n) > 0 ? rs[0].n : rs[1].n)}`;
++  return `${v}=` + rs.map(t6sRtex).join(rs.length === 2 ? "\\ \\text{ or }\\ " : ",\\ ");
++}
++// ---- the system f_x = 0, f_y = 0 for polynomial tops A and B, solved the way a student would where possible:
++// factor and split into cases; an equation in one letter first; solve one equation for a letter and substitute.
++// → { pts: [{ x, y }] (roots), curves: [TeX], lines: [TeX], approx, fail }
++function t6sSolve2(A, B, nA, nB) {
++  const lines = [], pts = [], curves = []; let approx = false;
++  const say = (main, fac, roots) => {
++    if (fac) { lines.push(main); lines.push(`\\Rightarrow\\ ${fac}=0\\ \\Rightarrow\\ ${roots}`); }
++    else if (main.length + roots.length > 120) { lines.push(main); lines.push(`\\Rightarrow\\ ${roots}`); }
++    else lines.push(`${main}\\ \\Rightarrow\\ ${roots}`);
++  };
++  const uvTex = (cs, v) => {                               // the one-letter equation left after substituting
++    if (cs.every(u => u && !u.b[0])) return t6sTex(t6sMkS(cs.map((u, i) => t6sMkT(u.a, i ? [[t6sV(v), [BigInt(i), 1n]]] : []))));
++    if (!cs.every(Boolean)) return null;
++    const ts = []; for (let i = cs.length - 1; i >= 0; i--) { const u = cs[i]; if (t6sNz(u)) continue; const vt = i ? v + (i > 1 ? `^{${i}}` : "") : ""; const ct = u.a[0] && u.b[0] ? `\\left(${t6sNtex(u)}\\right)` : t6sNtex(u); ts.push((vt && ct === "1" ? "" : vt && ct === "-1" ? "-" : ct) + vt); }
++    return ts.join(" + ").replace(/\+ -/g, "- ") || "0";
++  };
++  // the other equation once x (ax) or y is known
++  const known = (r, Q, nQ, ax) => {
++    const v = ax ? "x" : "y", w = ax ? "y" : "x", cs = r.n ? t6sBsub(Q, r.n, ax) : null;
++    const uv = cs ? t6sUvAny(cs, w) : t6sUvAny(t6sBsubF(Q, r.f, ax), w);
++    if (uv.approx || !r.n) approx = true;
++    const head = `${v}=${t6sRtex(r)}:\\quad ${nQ}`, et = cs ? uvTex(cs, w) : null;
++    if (uv.zero) { curves.push(`${v}=${t6sRtex(r)}`); lines.push(`${head}=0\\ \\text{for every } ${w}`); return; }
++    if (!uv.roots.length) { lines.push(`${head}${et ? "=" + et : ""}=0\\ \\text{has no real solution}`); return; }
++    say(`${head}${et ? "=" + et : ""}=0`, uv.fac && uv.fac !== et ? uv.fac : "", t6sRlist(uv.roots, w));
++    uv.roots.forEach(s => pts.push(ax ? { x: r, y: s } : { x: s, y: r }));
++  };
++  // factor P the student's way: a power of x or y in every term, then factors x − r or y − r (r a fraction)
++  const factor = P => {
++    let cur = P; const xs = [], ys = [];
++    let mi = Infinity, mj = Infinity; cur.forEach((r, i) => r && r.forEach((q, j) => { if (q && q[0]) { mi = Math.min(mi, i); mj = Math.min(mj, j); } }));
++    if (mi > 0 && mi < Infinity) { xs.push({ r: T6S_Q0, m: mi }); cur = cur.slice(mi); }
++    if (mj > 0 && mj < Infinity) { ys.push({ r: T6S_Q0, m: mj }); cur = cur.map(r => r && r.slice(mj)); }
++    [[true, xs], [false, ys]].forEach(([ax, list]) => {
++      for (let pass = 0; pass < 6; pass++) {
++        const deg = ax ? t6sBdx(cur) : t6sBdy(cur); if (deg < 1) break;
++        let hit = null;
++        for (const y0 of [T6S_Q0, T6S_Q1, [2n, 1n]]) {
++          const cs = t6sBsub(cur, t6sNq(y0), !ax).map(u => u.a); let L = 1n; cs.forEach(q => { L = t6sLcm(L, q[1]); });
++          while (cs.length && !cs[cs.length - 1][0]) cs.pop();
++          if (cs.length < 2) continue;
++          const cand = t6sCands(cs.map(q => q[0] * (L / q[1]))); if (!cand) break;
++          hit = cand.find(r => r[0] && t6sBvan(cur, r, ax)); break;
++        }
++        if (!hit) break;
++        let m = 0; while ((ax ? t6sBdx(cur) : t6sBdy(cur)) >= 1 && t6sBvan(cur, hit, ax)) { cur = t6sBdiv(cur, hit, ax); m++; }
++        list.push({ r: hit, m });
++      }
++    });
++    return { xs, ys, rest: cur };
++  };
++  const ftex = (v, r, m) => { const s = r[0] ? `(${t6sTex(t6sMkS([t6sMkT([r[1], 1n], [[t6sV(v), T6S_Q1]]), t6sMkT([-r[0], 1n], [])]))})` : v; return s + (m > 1 ? `^{${m}}` : ""); };
++  // one equation with no factors to split off: in one letter, or solved for a letter and substituted
++  const single = (P, nP, Q, nQ, tried) => {
++    const dx = t6sBdx(P), dy = t6sBdy(P);
++    if (dy <= 0 || dx <= 0) {
++      const ax = dy <= 0, v = ax ? "x" : "y", cs = t6sBsub(P, t6sNq(T6S_Q0), !ax).map(u => u.a), uv = t6sUv(cs, v), et = t6sTex(t6sBsum(P));
++      if (uv.approx) approx = true;
++      if (!uv.roots.length) { lines.push(t6sBdx(P) <= 0 && t6sBdy(P) <= 0 ? `${nP}=${et}\\ \\text{is never } 0` : `${nP}=${et}=0\\ \\text{has no real solution}`); return true; }
++      say(`${nP}=${et}=0`, uv.fac && uv.fac !== et ? uv.fac : "", t6sRlist(uv.roots, v));
++      uv.roots.forEach(r => known(r, Q, nQ, ax));
++      return true;
++    }
++    for (const ax of [true, false]) {                      // linear in x (or y) with a plain-number coefficient
++      const d = ax ? dx : dy; if (d !== 1) continue;
++      const g = (i, j) => ax ? t6sBg(P, i, j) : t6sBg(P, j, i), m = ax ? dy : dx;
++      let ok = g(1, 0)[0] !== 0n; for (let j = 1; j <= m; j++) if (g(1, j)[0]) ok = false;
++      if (!ok) continue;
++      const v = ax ? "x" : "y", w = ax ? "y" : "x", k = g(1, 0), gq = []; for (let j = 0; j <= m; j++) gq.push(t6sQn(t6sQd(g(0, j), k)));
++      const gS = t6sMkS(gq.map((q, j) => t6sMkT(q, j ? [[t6sV(w), [BigInt(j), 1n]]] : [])));
++      lines.push(`${nP}=0\\ \\Rightarrow\\ ${v}=${t6sTex(gS)}`);
++      // compose: Q with v = g(w), a polynomial in w
++      let cs = [T6S_Q0]; const n = ax ? t6sBdx(Q) : t6sBdy(Q), mm = ax ? t6sBdy(Q) : t6sBdx(Q);
++      let gp = [T6S_Q1];
++      const mulP = (a, b) => { const o = Array(a.length + b.length - 1).fill(T6S_Q0); a.forEach((p, i) => b.forEach((q, j) => { o[i + j] = t6sQa(o[i + j], t6sQm(p, q)); })); return o; };
++      const addP = (a, b) => { const o = []; for (let i = 0; i < Math.max(a.length, b.length); i++) o.push(t6sQa(a[i] || T6S_Q0, b[i] || T6S_Q0)); return o; };
++      for (let i = 0; i <= n; i++) {
++        const col = []; for (let j = 0; j <= mm; j++) col.push(ax ? t6sBg(Q, i, j) : t6sBg(Q, j, i));
++        cs = addP(cs, mulP(col, gp)); gp = mulP(gp, gq);
++        if (gp.length > 40) return false;
++      }
++      const uv = t6sUv(cs, w);
++      if (uv.zero) { curves.push(`${v}=${t6sTex(gS)}`); lines.push(`\\text{into } ${nQ}=0:\\quad 0=0\\ \\text{for every } ${w}`); return true; }
++      if (uv.approx) approx = true;
++      const et = t6sTex(t6sMkS(cs.map((q, i) => t6sMkT(q, i ? [[t6sV(w), [BigInt(i), 1n]]] : []))));
++      if (!uv.roots.length) { lines.push(`\\text{into } ${nQ}=0:\\quad ${et}=0\\ \\text{has no real solution}`); return true; }
++      say(`\\text{into } ${nQ}=0:\\quad ${et}=0`, uv.fac && uv.fac !== et ? uv.fac : "", t6sRlist(uv.roots, w));
++      const back = [];
++      uv.roots.forEach(s => {
++        const val = s.n ? (() => { let acc = t6sNq(T6S_Q0), p = t6sNq(T6S_Q1); for (const q of gq) { acc = t6sNadd(acc, t6sNmul(p, t6sNq(q))); p = t6sNmul(p, s.n); } return acc; })() : null;
++        const r = val ? { n: val, f: t6sNf(val) } : { n: null, f: gq.reduce((acc, q, j) => acc + t6sQf(q) * s.f ** j, 0) };
++        pts.push(ax ? { x: r, y: s } : { x: s, y: r });
++        back.push(`${w}=${t6sRtex(s)}:\\ ${v}=${t6sRtex(r)}`);
++      });
++      if (gq.length > 1) lines.push(back.join(",\\qquad "));
++      return true;
++    }
++    return tried ? false : single(Q, nQ, P, nP, true);
++  };
++  if (t6sBzero(A) && t6sBzero(B)) return { pts, curves: ["\\text{every point}"], lines: [`${nA}=0\\ \\text{and}\\ ${nB}=0\\ \\text{everywhere}`], all: true };
++  if (t6sBzero(A) || t6sBzero(B)) {                        // one partial is 0 everywhere: f is a function of one letter
++    const [P, nP, nZ] = t6sBzero(A) ? [B, nB, nA] : [A, nA, nB];
++    lines.push(`${nZ}=0\\ \\text{everywhere, so only } ${nP}=0 \\text{ matters}`);
++    const dx = t6sBdx(P), dy = t6sBdy(P);
++    if (dx <= 0 || dy <= 0) {
++      const ax = dy <= 0, v = ax ? "x" : "y", uv = t6sUv(t6sBsub(P, t6sNq(T6S_Q0), !ax).map(u => u.a), v);
++      if (uv.approx) approx = true;
++      if (!uv.roots.length) { lines.push(`${nP}=${t6sTex(t6sBsum(P))}=0\\ \\text{has no real solution}`); return { pts, curves, lines, approx }; }
++      lines.push(`${nP}=${t6sTex(t6sBsum(P))}=0\\ \\Rightarrow\\ ${t6sRlist(uv.roots, v)}`);
++      uv.roots.forEach(r => curves.push(`${v}=${t6sRtex(r)}`));
++      return { pts, curves, lines, approx };
++    }
++    curves.push(`${t6sTex(t6sBsum(P))}=0`);
++    return { pts, curves, lines, approx };
++  }
++  // which equation to start with: the one that splits into the most pieces, else the simpler one
++  const fa = factor(A), fb = factor(B), pieces = f => f.xs.length + f.ys.length + (t6sBdx(f.rest) > 0 || t6sBdy(f.rest) > 0 ? 1 : 0);
++  const pa = pieces(fa), pb = pieces(fb);
++  const [P, nP, F, Q, nQ] = pb > pa ? [B, nB, fb, A, nA] : [A, nA, fa, B, nB];
++  if (Math.max(pa, pb) >= 2) {
++    const rest = F.rest, rn = t6sBdx(rest) > 0 || t6sBdy(rest) > 0;
++    const k0 = t6sBsum(rest), K = !rn ? t6sNumOf(k0) : T6S_Q1, rt = rn ? t6sContent(k0) : null;
++    const kc = rn ? rt.c : K, kt = t6sQeq(kc, T6S_Q1) ? "" : t6sQeq(kc, T6S_QM) ? "-" : t6sTq(kc);
++    const fl = F.xs.map(f => ["x", f]).concat(F.ys.map(f => ["y", f])).sort((p, q) => (p[1].r[0] ? 1 : 0) - (q[1].r[0] ? 1 : 0));
++    const fac = kt + fl.map(([v, f]) => ftex(v, f.r, f.m)).join("") + (rn ? `\\left(${t6sTex(rt.rest.t.length ? t6sMul(rt.rest, t6sTermS(T6S_Q1, rt.mono)) : k0)}\\right)` : "");
++    const opts = F.xs.map(f => `x=${t6sTq(f.r)}`).concat(F.ys.map(f => `y=${t6sTq(f.r)}`), rn ? [`${t6sTex(rt.rest.t.length ? t6sMul(rt.rest, t6sTermS(T6S_Q1, rt.mono)) : k0)}=0`] : []);
++    lines.push(`${nP}=${fac}=0\\ \\Rightarrow\\ ${opts.join("\\ \\text{ or }\\ ")}`);
++    F.xs.forEach(f => known({ n: t6sNq(f.r), f: t6sQf(f.r) }, Q, nQ, true));
++    F.ys.forEach(f => known({ n: t6sNq(f.r), f: t6sQf(f.r) }, Q, nQ, false));
++    if (rn && !single(rest, "\\text{the last case}", Q, nQ)) return { fail: true, lines, pts, curves };
++  } else if (!single(P, nP, Q, nQ)) return { fail: true, lines, pts, curves };
++  return { pts, curves, lines, approx };
++}
++// ---- the numeric fallback: Newton's method from a grid of starting points in [−W, W]², kept when ∇f really is ~0
++function t6sNewton(fx, fy, fxx, fxy, fyy, W) {
++  const out = [], N = 15;
++  for (let a = 0; a < N; a++) for (let b = 0; b < N; b++) {
++    let x = -W + 2 * W * (a + .5) / N, y = -W + 2 * W * (b + .5) / N, ok = false;
++    for (let it = 0; it < 60; it++) {
++      const g1 = fx(x, y, 0), g2 = fy(x, y, 0), A = fxx(x, y, 0), B = fxy(x, y, 0), C = fyy(x, y, 0), det = A * C - B * B;
++      if (![g1, g2, A, B, C].every(Number.isFinite)) break;
++      if (Math.abs(det) < 1e-13) break;
++      let dx = (C * g1 - B * g2) / det, dy = (A * g2 - B * g1) / det; const L = Math.hypot(dx, dy);
++      if (L > W / 3) { dx *= W / 3 / L; dy *= W / 3 / L; }
++      x -= dx; y -= dy;
++      if (Math.abs(x) > 2 * W || Math.abs(y) > 2 * W) break;
++      if (L < 1e-13 * (1 + Math.hypot(x, y))) { ok = true; break; }
++    }
++    if (!ok && Math.hypot(fx(x, y, 0), fy(x, y, 0)) > 1e-10) continue;
++    if (Math.abs(x) > W * 1.001 || Math.abs(y) > W * 1.001) continue;
++    const s = Math.hypot(fx(x, y, 0), fy(x, y, 0)); if (!(s < 1e-8)) continue;
++    if (!out.some(p => Math.hypot(p[0] - x, p[1] - y) < 1e-6 * (1 + W))) out.push([Math.abs(x) < 1e-12 ? 0 : x, Math.abs(y) < 1e-12 ? 0 : y]);
++  }
++  return out.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
++}
++// ---- ∫ S dv, one term at a time, for a well-defined class: powers of v; e^(…), sin(…), cos(…) and (…)^p whose inside
++// has a v-free derivative k, or whose other v-parts are a v-free multiple of k (substitution); vⁿ times e^(av), sin(av),
++// cos(av) (by parts). → { F, bad } (bad: the terms it can't do, or null)
++function t6sInt(S, v) {
++  const out = [], bad = [];
++  const outer = (a, e, k) => {                             // ∫ a^e dv when the inside's derivative is the v-free k
++    const inv = t6sPow(k, T6S_QM);
++    if (a.k === "exp") return t6sMul(t6sAtomS(a), inv);
++    if (a.k === "fn" && t6sQeq(e, T6S_Q1) && a.f === "sin") return t6sNeg(t6sMul(t6sFn("cos", a.a), inv));
++    if (a.k === "fn" && t6sQeq(e, T6S_Q1) && a.f === "cos") return t6sMul(t6sFn("sin", a.a), inv);
++    const pos = B => B.t.every(t => t.c[0] > 0n && t.f.every(([q, p]) => q.k === "v" && t6sQi(p) && p[0] % 2n === 0n)) && B.t.some(t => !t.f.length || true);
++    if (a.k === "pw") return t6sQeq(e, T6S_QM) ? t6sMul(pos(a.b) ? t6sFn("ln", a.b) : t6sAtomS(t6sFnA("lnabs", a.b)), inv) : t6sMul(t6sTermS(t6sQd(T6S_Q1, t6sQa(e, T6S_Q1)), [[a, t6sQa(e, T6S_Q1)]]), inv);
++    return null;
++  };
++  const inside = a => a.k === "pw" ? a.b : a.a;
++  const one = t => {
++    const dep = t.f.filter(([a]) => t6sHas(a, v)), C = t6sTermS(t.c, t.f.filter(([a]) => !t6sHas(a, v)));
++    if (!dep.length) return t6sMul(C, t6sAtomS(t6sV(v)));
++    if (dep.length === 1 && dep[0][0].k === "v") { const e = dep[0][1]; return t6sQeq(e, T6S_QM) ? t6sMul(C, t6sAtomS(t6sFnA("lnabs", t6sAtomS(t6sV(v))))) : t6sMul(C, t6sTermS(t6sQd(T6S_Q1, t6sQa(e, T6S_Q1)), [[t6sV(v), t6sQa(e, T6S_Q1)]])); }
++    // substitution: one outer factor, the rest a v-free multiple of the inside's derivative
++    for (let i = 0; i < dep.length; i++) {
++      const [a, e] = dep[i]; if (a.k === "v" || (a.k === "fn" && (a.f === "tan" || a.f === "ln" || !t6sQeq(e, T6S_Q1)))) continue;
++      const k = t6sD(inside(a), v); if (!k.t.length) continue;
++      const others = dep.filter((_, j) => j !== i);
++      if (!others.length) { if (t6sHasS(k, v)) continue; const o = outer(a, e, k); if (o) return t6sMul(C, o); continue; }
++      let ratio = t6sMul(t6sTermS(T6S_Q1, others), t6sPow(k, T6S_QM)); const T = t6sTogether(ratio); if (!T.D.length) ratio = T.N;
++      if (t6sHasS(ratio, v)) continue;
++      const o = outer(a, e, T6S_ONE); if (o) return t6sMul(t6sMul(C, ratio), o);
++    }
++    // by parts (tabular): vⁿ times e^(…)/sin/cos(…) with a v-free inside derivative
++    if (dep.length === 2) {
++      const pv = dep.find(([a, e]) => a.k === "v" && t6sQi(e) && e[0] > 0n && e[0] <= 6n), g = dep.find(([a]) => !pv || a !== pv[0]);
++      if (pv && g && (g[0].k === "exp" || (g[0].k === "fn" && (g[0].f === "sin" || g[0].f === "cos") && t6sQeq(g[1], T6S_Q1)))) {
++        const k = t6sD(inside(g[0]), v);
++        if (k.t.length && !t6sHasS(k, v)) {
++          const n = Number(pv[1][0]); let G = outer(g[0], g[1], k), acc = T6S_ZERO, coef = T6S_Q1, ok = !!G;
++          for (let j = 0; j <= n && ok; j++) {
++            acc = t6sAdd(acc, t6sMul(t6sNum(coef), t6sMul(t6sAtomS(t6sV(v), [BigInt(n - j), 1n]), G)));
++            coef = t6sQm(coef, [-BigInt(n - j), 1n]);
++            if (j < n) { const nx = t6sInt(G, v); if (nx.bad) ok = false; else G = nx.F; }
++          }
++          if (ok) return t6sMul(C, acc);
++        }
++      }
++    }
++    return null;
++  };
++  for (const t of S.t) { const r = one(t); if (r) out.push(...r.t); else bad.push(t); }
++  return { F: t6sMkS(out), bad: bad.length ? t6sMkS(bad) : null };
++}
++// ---- shared by the two tools: sampling on a grid, level curves that skip holes, the input box in "The problem"
++function t6sGrid(f, W, n) {                                // f on an (n + 1)² grid over [−W, W]²; NaN where it isn't defined
++  const F = [], d = 2 * W / n;
++  for (let j = 0; j <= n; j++) { const r = []; for (let i = 0; i <= n; i++) { let v; try { v = f(-W + i * d, -W + j * d, 0); } catch (e) { v = NaN; } r.push(Number.isFinite(v) && Math.abs(v) < 1e12 ? v : NaN); } F.push(r); }
++  const fin = F.flat().filter(Number.isFinite).map(Math.abs).sort((a, b) => a - b);
++  return { F, n, W, d, med: fin.length ? fin[Math.floor(fin.length / 2)] : 0, ok: fin.length };
++}
++// the level curve G = L as one path; cells with a hole, or a jump through a pole, are skipped
++function t6sContour(G, P, L) {
++  const { F, n, W, d } = G, big = 40 * (G.med + Math.abs(L) + 1e-9), segs = [];
++  const X = i => q2(P.X(-W + i * d)), Y = j => q2(P.Y(-W + j * d));
++  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
++    const v0 = F[j][i], v1 = F[j][i + 1], v2 = F[j + 1][i + 1], v3 = F[j + 1][i];
++    if (!(Number.isFinite(v0) && Number.isFinite(v1) && Number.isFinite(v2) && Number.isFinite(v3))) continue;
++    if (Math.max(Math.abs(v0), Math.abs(v1), Math.abs(v2), Math.abs(v3)) > big) continue;
++    const pts = [], lx = (a, b) => (L - a) / (b - a);
++    if ((v0 < L) !== (v1 < L)) pts.push([i + lx(v0, v1), j]);
++    if ((v1 < L) !== (v2 < L)) pts.push([i + 1, j + lx(v1, v2)]);
++    if ((v3 < L) !== (v2 < L)) pts.push([i + lx(v3, v2), j + 1]);
++    if ((v0 < L) !== (v3 < L)) pts.push([i, j + lx(v0, v3)]);
++    for (let k = 0; k + 1 < pts.length; k += 2) segs.push(`M${X(pts[k][0])} ${Y(pts[k][1])}L${X(pts[k + 1][0])} ${Y(pts[k + 1][1])}`);
++  }
++  return segs.join("");
++}
++// level values spread through the range f actually takes on the picture (quantiles), so a steep f still shows curves
++function t6sLevels(G, k) {
++  const v = G.F.flat().filter(Number.isFinite).sort((a, b) => a - b); if (v.length < 10) return [];
++  const out = []; for (let i = 1; i <= k; i++) { const L = v[Math.floor(v.length * i / (k + 1))]; if (!out.length || L - out[out.length - 1] > 1e-9 * (1 + Math.abs(L))) out.push(L); }
++  return out;
++}
++const t6sNiceW = (m, steps = [2.5, 3, 4, 5, 6, 8, 10, 12, 15, 20]) => steps.find(s => s >= m) || steps[steps.length - 1];
++const t6sPtTxt = p => p.x.n && p.y.n ? `(${t6sNtxt(p.x.n)}, ${t6sNtxt(p.y.n)})` : `≈ (${t6sDec(p.x.f, 2).replace("-", "−")}, ${t6sDec(p.y.f, 2).replace("-", "−")})`;
++const t6sPtTex = p => (p.x.n && p.y.n ? "" : "\\approx") + `(${t6sRtex(p.x).replace("\\approx ", "")},\\ ${t6sRtex(p.y).replace("\\approx ", "")})`;
++// the frame both tools draw in (360 × 460): a square plot, its axes and the ±W ends
++function t6sFrame(P, W, clip) {
++  const x0 = P.X(-W), x1 = P.X(W), y0 = P.Y(W), y1 = P.Y(-W);
++  let o = `<defs><clipPath id="${clip}"><rect x="${q2(x0)}" y="${q2(y0)}" width="${q2(x1 - x0)}" height="${q2(y1 - y0)}" rx="10"/></clipPath></defs>`;
++  o += `<rect x="${q2(x0)}" y="${q2(y0)}" width="${q2(x1 - x0)}" height="${q2(y1 - y0)}" rx="10" fill="#fff" fill-opacity=".7" stroke="${VZ.ink}" stroke-opacity=".14"/>`;
++  o += `<path d="M${q2(x0)} ${q2(P.Y(0))}H${q2(x1)}M${q2(P.X(0))} ${q2(y0)}V${q2(y1)}" stroke="${VZ.ink}" stroke-opacity=".22" fill="none"/>`;
++  const w = String(W).replace("-", "−");
++  o += vzNote(x1 - 2, P.Y(0) + 15, "x", "end", VZ.grey) + vzNote(P.X(0) + 6, y0 + 14, "y", "start", VZ.grey);
++  o += vzNote(x0 + 2, y1 + 15, "−" + w, "start", VZ.faint) + vzNote(x1, y1 + 15, w, "end", VZ.faint);
++  return o;
++}
++// the input in "The problem": a box, Solve, example chips and one line of feedback. Typing is checked as you go;
++// Solve (or Enter) rebuilds the steps for the new function. A bad entry never replaces the last good one.
++function t6sForm(def, label) {
++  const chips = def.examples.map((x, i) => `<button type="button" class="vz-chip t6s-chip${x.wild ? " t6s-wild" : ""}" data-t6x="${i}">${escapeHtml(x.chip)}</button>`).join("");
++  return `<div class="t6s-form"><label class="t6s-lab" for="${def.id}-in">${label}</label><input class="t6s-box" id="${def.id}-in" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-describedby="${def.id}-msg"><button type="button" class="btn btn-red btn-sm t6s-go" data-t6s="go">Solve</button></div>
++    <div class="t6s-chips">${chips}</div><p class="t6s-msg${def._noteKind ? " " + def._noteKind : ""}" id="${def.id}-msg" aria-live="polite">${escapeHtml(def._note || def.hint)}</p>`;
++}
++function t6sMount(def, given, rebuild) {
++  const box = given.querySelector(".t6s-box"), msg = given.querySelector(".t6s-msg"), go = given.querySelector("[data-t6s='go']");
++  if (!box || !msg || !go) return;
++  box.value = def._typed != null ? def._typed : def._src;
++  const say = (t, kind) => { msg.textContent = t; msg.className = "t6s-msg" + (kind ? " " + kind : ""); };
++  const check = () => {
++    def._typed = box.value;
++    if (box.value.trim() === def._src.trim()) { say(def._note || def.hint, def._noteKind); go.classList.remove("t6s-ready"); return; }
++    const err = def.check(box.value);
++    if (err) say(err, "bad"); else say("Press Solve (or Enter) to see the steps for it.", "ok");
++    go.classList.toggle("t6s-ready", !err);
++  };
++  const run = (src, keep) => {
++    if (src.trim() === def._src.trim() && !def._note) { say(def.hint, ""); return; }
++    const err = def.load(src);
++    if (err) { say(err, "bad"); box.focus(); return; }
++    def._typed = null; def._focusNext = !!keep; def._fresh = true; rebuild();
++  };
++  box.addEventListener("input", () => { clearTimeout(def._tm); def._tm = setTimeout(check, 160); });
++  box.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); clearTimeout(def._tm); run(box.value, true); } });
++  go.addEventListener("click", () => { clearTimeout(def._tm); run(box.value, false); });
++  given.querySelectorAll("[data-t6x]").forEach(b => b.addEventListener("click", () => { clearTimeout(def._tm); run(def.examples[+b.dataset.t6x].src, false); }));
++  given.querySelectorAll("[data-t6x]").forEach(b => b.classList.toggle("on", def.examples[+b.dataset.t6x].src === def._src));
++  if (def._typed != null && def._typed !== def._src) check();
++  if (def._focusNext) { def._focusNext = false; try { box.focus({ preventScroll: true }); box.setSelectionRange(box.value.length, box.value.length); } catch (e) {} }
++  if (def._fresh) { def._fresh = false; const b = document.getElementById("stBoard"); if (b && b.animate) b.animate([{ opacity: .4 }, { opacity: 1 }], { duration: 420, easing: "ease-out" }); }
++}
++// run the engine, turning its own errors into a sentence and anything unexpected into a kind "too tangled"
++function t6sTry(fn, blank) {
++  try { return { v: fn() }; }
++  catch (e) { return { err: e && e.t6s ? (e.message === "blank" ? blank : e.message) : "That one is too tangled for this tool. Try a simpler version." }; }
++}
++/* ---------- tool-crit: critical points of your own f(x, y) ---------- */
++const TCR_DEF = "x^3 + y^3 - 6xy";
++const TCR_EX = [
++  { chip: "Split into cases", src: "x^2 y - 2xy + y^2" },
++  { chip: "Square roots", src: "(x^2 - 2x + y^2) e^y" },
++  { chip: "D = 0", src: "x^4 + y^3 - 3y" },
++  { chip: "Too wild", src: "sin(x) cos(y) + x/4", wild: true },
++];
++const TCR_COL = { min: VZ.ink, max: VZ.red, saddle: VZ.gold, flat: VZ.grey };   // same colours as crit3d and m-critical
++const TCR_NAME = { min: "local min", max: "local max", saddle: "saddle", flat: "can't tell" };
++// a polynomial's value at an exact point (null when the point and the coefficients don't mix exactly)
++function tcrAt(P, p) {
++  if (!P || !p.x.n || !p.y.n) return null;
++  try { const cs = t6sBsub(P, p.x.n, true); if (!cs) return null; let acc = t6sNq(T6S_Q0), pw = t6sNq(T6S_Q1); for (const c of cs) { acc = t6sNadd(acc, t6sNmul(c, pw)); pw = t6sNmul(pw, p.y.n); if (!acc || !pw) return null; } return acc; } catch (e) { return null; }
++}
++// everything about f: the partials, the system, its solutions and their types, the picture's curves
++function tcrWork(src) {
++  const S = t6sParse(src, "xy"), fx = t6sD(S, "x"), fy = t6sD(S, "y"), fxx = t6sD(fx, "x"), fyy = t6sD(fy, "y"), fxy = t6sD(fx, "y");
++  const F = t6sFun(S), Fx = t6sFun(fx), Fy = t6sFun(fy), Fxx = t6sFun(fxx), Fyy = t6sFun(fyy), Fxy = t6sFun(fxy);
++  const w = { src, S, fx, fy, fxx, fyy, fxy, F, Fx, Fy, Fxx, Fyy, Fxy, tex: t6sTex(S), zx: t6sIsZero(fx), zy: t6sIsZero(fy) };
++  w.trig = /\b(sin|cos|tan)\(/.test(S.key);
++  // the tops of f_x and f_y: bottoms (they can't be 0 at a critical point) and a never-zero e^(…) come off
++  const top = G => {
++    const T = t6sTogether(G); let N = T.N; const notes = []; if (T.D.length) notes.push("den");
++    const neg = {}; N.t.forEach(t => t.f.forEach(([a, e]) => { if (a.k === "v" && e[0] < 0n && (!neg[a.n] || t6sQf(e) < t6sQf(neg[a.n]))) neg[a.n] = e; }));
++    if (Object.keys(neg).length) { N = t6sMul(N, t6sTermS(T6S_Q1, Object.entries(neg).map(([v, e]) => [t6sV(v), t6sQn(e)]))); notes.push("den"); }
++    if (N.t.length > 1 || (N.t.length === 1 && N.t[0].f.length > 1)) {
++      const ex = N.t[0].f.find(([a]) => a.k === "exp");
++      if (ex && N.t.every(t => t.f.some(([a]) => a.key === ex[0].key))) { N = t6sMkS(N.t.map(t => t6sMkT(t.c, t.f.filter(([a]) => a.key !== ex[0].key)))); notes.push(ex[0]); }
++    }
++    return { N, notes, bp: t6sBP(N) };
++  };
++  w.tx = w.zx ? { N: T6S_ZERO, notes: [], bp: [] } : top(fx); w.ty = w.zy ? { N: T6S_ZERO, notes: [], bp: [] } : top(fy);
++  let sol = w.tx.bp && w.ty.bp ? t6sTry(() => t6sSolve2(w.tx.bp, w.ty.bp, "f_x", "f_y")).v : null;
++  if (sol && sol.fail) sol = null;
++  w.exact = !!sol; w.W = 4;
++  if (sol) { w.lines = sol.lines; w.curves = sol.curves || []; w.all = !!sol.all; w.approx = !!sol.approx; w.pts = sol.pts; }
++  else {                                                   // no tidy exact solution: Newton's method from many starting points
++    w.lines = []; w.curves = []; w.approx = true;
++    w.pts = t6sNewton(Fx, Fy, Fxx, Fxy, Fyy, w.W).map(([x, y]) => ({ x: { n: null, f: x }, y: { n: null, f: y } }));
++  }
++  // keep only true critical points (a bottom of f can't be 0 there), each once
++  const seen = []; w.dropped = 0;
++  w.pts = w.pts.filter(p => {
++    const gx = Fx(p.x.f, p.y.f, 0), gy = Fy(p.x.f, p.y.f, 0), s = 1 + Math.abs(F(p.x.f, p.y.f, 0));
++    if (!(Number.isFinite(gx) && Number.isFinite(gy) && Math.abs(gx) < 1e-6 * s && Math.abs(gy) < 1e-6 * s)) { w.dropped++; return false; }
++    if (seen.some(q => Math.hypot(q.x.f - p.x.f, q.y.f - p.y.f) < 1e-9)) return false;
++    seen.push(p); return true;
++  }).sort((p, q) => p.x.f - q.x.f || p.y.f - q.y.f);
++  if (w.exact) { const m = Math.max(0, ...w.pts.map(p => Math.max(Math.abs(p.x.f), Math.abs(p.y.f)))); w.W = t6sNiceW(Math.max(2.5, 1.3 * m)); w.outside = w.pts.filter(p => Math.max(Math.abs(p.x.f), Math.abs(p.y.f)) > w.W).length; }
++  else w.outside = 0;
++  // the second-derivative test at each point: exact where the second partials are polynomials and the point is exact
++  const bxx = t6sBP(fxx), byy = t6sBP(fyy), bxy = t6sBP(fxy);
++  w.pts.forEach(p => {
++    const A = tcrAt(bxx, p), C = tcrAt(byy, p), B = tcrAt(bxy, p);
++    let D = null; try { if (A && B && C) D = t6sNsub(t6sNmul(A, C), t6sNmul(B, B)); } catch (e) { D = null; }
++    if (D && A) { p.A = { n: A, f: t6sNf(A) }; p.D = { n: D, f: t6sNf(D) }; const sd = t6sNsign(D), sa = t6sNsign(A); p.type = sd < 0 ? "saddle" : sd === 0 ? "flat" : sa > 0 ? "min" : sa < 0 ? "max" : "flat"; }
++    else {
++      const a = Fxx(p.x.f, p.y.f, 0), c = Fyy(p.x.f, p.y.f, 0), b = Fxy(p.x.f, p.y.f, 0), d = a * c - b * b, tol = 1e-7 * (1 + Math.abs(a * c) + b * b);
++      p.A = { n: null, f: a }; p.D = { n: null, f: Math.abs(d) < tol ? 0 : d };
++      p.type = Math.abs(d) < tol ? "flat" : d < 0 ? "saddle" : a > 0 ? "min" : "max";
++    }
++  });
++  // the picture: level curves of f, and the curves f_x = 0 and f_y = 0 (they cross at the critical points)
++  const G = t6sGrid(F, w.W, 64);
++  w.lev = t6sLevels(G, 9).map(L => t6sContour(G, w.P = vzPlane(180, 222, 158 / w.W), L)).filter(Boolean);
++  w.nx = w.zx ? "" : t6sContour(t6sGrid(Fx, w.W, 72), w.P, 0);
++  w.ny = w.zy ? "" : t6sContour(t6sGrid(Fy, w.W, 72), w.P, 0);
++  return w;
++}
++// the steps, written the way they'd be done by hand
++function tcrSteps(w) {
++  const steps = [], fxT = w.zx ? "0" : t6sNice(w.fx), fyT = w.zy ? "0" : t6sNice(w.fy);
++  steps.push({ t: "Take both partial derivatives", pk: "parts", tex: [`f_x=${fxT}`, `f_y=${fyT}`],
++    why: "For \\(f_x\\), treat \\(y\\) as a constant; for \\(f_y\\), treat \\(x\\) as a constant.", sum: "\\(f_x,\\ f_y\\)" });
++  const zero = [`\\begin{cases}${fxT}=0\\\\ ${fyT}=0\\end{cases}`];
++  const exs = [...w.tx.notes, ...w.ty.notes].filter(n => n !== "den"), den = [...w.tx.notes, ...w.ty.notes].includes("den");
++  if (exs.length || den) {
++    const parts = [];
++    if (exs.length) parts.push(`\\(${t6sTexF(exs[0], T6S_Q1, true)}\\) is never 0, so divide it out`);
++    if (den) parts.push("a fraction is 0 only when its top is 0");
++    zero.push({ html: parts.join("; ") + ":" });
++    zero.push(`\\begin{cases}${w.zx ? "0" : t6sTex(w.tx.N)}=0\\\\ ${w.zy ? "0" : t6sTex(w.ty.N)}=0\\end{cases}`);
++  }
++  steps.push({ t: "Set both to zero", pk: "zero", tex: zero,
++    why: "A critical point is where \\(\\nabla f=\\mathbf 0\\): both partials are 0 at the same point.", sum: "\\(f_x=0,\\ f_y=0\\)" });
++  // solving
++  let lines = w.lines.slice(), why;
++  if (!w.exact) {
++    lines = [{ html: `No tidy exact solution here, so the points were found numerically (≈): Newton's method from many starting points with \\(|x|,|y|\\le ${w.W}\\).` }];
++    if (w.trig) lines.push({ html: "sin and cos repeat, so there are infinitely many more outside this window." });
++    why = "Exact algebra gets stuck on this system. A computer can still home in on each solution to many decimals.";
++  } else if (/\\text\{ or \}/.test(lines[0] || "") && /=.*\(/.test(lines[0] || "")) why = "Factor: a product is 0 when one of its factors is 0. Each factor gives a case; put it into the other equation.";
++  else if (/\\Rightarrow\\ [xy]=[^\\]/.test(lines[0] || "") && /into/.test(lines.join(""))) why = "Solve one equation for one letter, then substitute into the other. That leaves one letter to solve for.";
++  else why = "Solve the equation with one letter first, then put each answer into the other equation.";
++  if (w.approx && w.exact) lines.push({ html: "Some roots have no exact form: they are shown to 3 decimals (≈)." });
++  if (lines.length > 9) { const n = lines.length - 8; lines = lines.slice(0, 8).concat([{ html: `… and ${n} more line${n > 1 ? "s" : ""} like these.` }]); }
++  if (!lines.length) lines = [{ html: "Nothing to solve." }];
++  steps.push({ t: "Solve the system", pk: "solve", tex: lines, why, sum: "solve" });
++  // lines of critical points, or none at all
++  const ptsTex = w.pts.slice(0, 12).map(t6sPtTex).join(",\\ ") + (w.pts.length > 12 ? `,\\ \\dots\\ (${w.pts.length}\\text{ in all})` : "");
++  if (w.all) {
++    steps.push({ t: "Every point is critical", pk: "curve", tex: [{ html: "\\(f\\) is constant: \\(f_x=f_y=0\\) everywhere." }], why: "A constant function is flat everywhere: no hills, no valleys, no saddles to find.", sum: "every point" });
++    return steps;
++  }
++  if (w.curves.length) {
++    const cv = w.curves.slice(0, 6).map(c => c.replace(/\\approx /, "\\approx\\,")).join(",\\quad ");
++    const tex = [`\\text{every point on }\\ ${cv}`];
++    if (w.pts.length) tex.push(`\\text{and the points }${ptsTex}`);
++    steps.push({ t: "Whole lines of critical points", pk: "curve", tex,
++      why: "Here the two equations don't pin down single points: every point on these lines makes both partials 0. Infinitely many critical points.", sum: "lines of critical points" });
++    steps.push({ t: "The test can't decide on a line", pk: "class", tex: [`D=f_{xx}f_{yy}-f_{xy}^2=${t6sTry(() => { const D = t6sSub(t6sMul(w.fxx, w.fyy), t6sMul(w.fxy, w.fxy)); return t6sIsZero(D) ? "0" : t6sNice(D); }).v || "\\dots"}`, { html: "Along a line of critical points \\(D=0\\): the second-derivative test can't tell. Look at \\(f\\) itself near the line instead." }],
++      why: "\\(f\\) has the same value all along such a line, so moving along it, \\(f\\) neither rises nor falls.", sum: "the test can't tell" });
++    return steps;
++  }
++  if (!w.pts.length) {
++    steps.push({ t: "No critical points", pk: "none", tex: [{ html: w.exact ? "The system has no real solution: \\(\\nabla f\\) is never \\(\\mathbf 0\\)." : `None found with \\(|x|,|y|\\le ${w.W}\\).` }],
++      why: "With no critical points, \\(f\\) has no local max, min or saddle anywhere" + (w.exact ? "." : " in this window."), sum: "none" });
++    return steps;
++  }
++  const per = w.exact ? 3 : 2, chunks = []; for (let i = 0; i < Math.min(12, w.pts.length); i += per) chunks.push(w.pts.slice(i, i + per).map(t6sPtTex).join(",\\ ") + (i + per < Math.min(12, w.pts.length) ? "," : ""));
++  if (w.pts.length > 12) chunks.push(`\\dots\\ (${w.pts.length}\\text{ in all})`);
++  steps.push({ t: "List the critical points", pk: "list", tex: chunks.concat(w.dropped ? [{ html: `(${w.dropped} solution${w.dropped > 1 ? "s" : ""} dropped: \\(f\\) isn't defined there.)` }] : [], w.outside ? [{ html: `${w.outside} of them lie outside the picture.` }] : []),
++    why: "Every solution of the system, written as a point \\((x,y)\\).", sum: `${w.pts.length} point${w.pts.length > 1 ? "s" : ""}` });
++  const dS = t6sTry(() => t6sSub(t6sMul(w.fxx, w.fyy), t6sMul(w.fxy, w.fxy))).v, dT = dS ? (t6sIsZero(dS) ? "0" : t6sNice(dS)) : "";
++  steps.push({ t: "Second partial derivatives", pk: "hess", tex: (h3 => h3.join("").length > 45 ? h3 : [h3.join(",\\quad ")])([`f_{xx}=${t6sNice(w.fxx)}`, `f_{yy}=${t6sNice(w.fyy)}`, `f_{xy}=${t6sNice(w.fxy)}`]).concat(dT && dT.length < 160 ? (dT.length > 40 ? ["D=f_{xx}f_{yy}-f_{xy}^2", `=${dT}`] : [`D=f_{xx}f_{yy}-f_{xy}^2=${dT}`]) : ["D=f_{xx}f_{yy}-f_{xy}^2"]),
++    why: "The second-derivative test uses \\(D=f_{xx}f_{yy}-f_{xy}^2\\) at each critical point.", sum: "\\(f_{xx},\\ f_{yy},\\ f_{xy},\\ D\\)" });
++  const v = r => r.n ? t6sNtex(r.n) : (w.exact ? "\\approx " : "") + t6sDec(r.f), pT = p => w.exact ? t6sPtTex(p) : t6sPtTex(p).replace(/^\\approx/, "");
++  const rows = w.pts.slice(0, 9).map(p => `${pT(p)} & ${v(p.A)} & ${v(p.D)} & \\text{${TCR_NAME[p.type]}}`);
++  steps.push({ t: "D at each point", pk: "table", tex: (w.exact ? [] : [{ html: "All values rounded (\\(\\approx\\))." }]).concat([`\\begin{array}{c|c|c|l}(x,y)&f_{xx}&D&\\\\\\hline ${rows.join("\\\\")}\\end{array}`]).concat(w.pts.length > 9 ? [{ html: `(and ${w.pts.length - 9} more)` }] : []),
++    why: "Put each point into \\(f_{xx}\\) and \\(D\\). Only the signs matter.", sum: "signs of \\(D\\) and \\(f_{xx}\\)" });
++  const by = {}; w.pts.forEach(p => { (by[p.type] = by[p.type] || []).push(p); });
++  const wy = { min: "D>0,\\ f_{xx}>0", max: "D>0,\\ f_{xx}<0", saddle: "D<0", flat: "D=0" };
++  const cls = ["min", "max", "saddle", "flat"].filter(t => by[t]).map(t => !w.exact && by[t].length > 1 ? `${wy[t]}:\\quad \\text{${{ min: "local mins", max: "local maxes", saddle: "saddles", flat: "can't tell" }[t]} (${by[t].length} of them)}` : `${wy[t]}:\\quad \\text{${TCR_NAME[t]}${t === "flat" ? "" : by[t].length > 1 ? (t === "saddle" ? "s" : "s") : ""} at }${by[t].slice(0, w.exact ? 4 : 2).map(t6sPtTex).join(",\\ ")}${by[t].length > (w.exact ? 4 : 2) ? ",\\ \\dots" : ""}`.replace("local mins", "local mins").replace("local maxs", "local maxes"));
++  if (by.flat) cls.push({ html: "Where \\(D=0\\) the test can't tell: look at how \\(f\\) behaves near that point." });
++  steps.push({ t: "Classify", pk: "class", tex: cls,
++    why: "\\(D>0\\): a max or a min (the sign of \\(f_{xx}\\) says which). \\(D<0\\): a saddle. \\(D=0\\): the test can't tell.", sum: "classified" });
++  return steps;
++}
++function tcrPic(def, k, b, u) {
++  const w = def._w; if (!w) return "";
++  const st = def.steps[Math.max(0, Math.min(def.steps.length - 1, k))], pk = k < 0 ? "intro" : st.pk, P = w.P, W = w.W;
++  const e = d => stEase(u, .15, d || .8), ord = ["intro", "parts", "zero", "solve", "list", "hess", "table", "class"], at = ord.indexOf(pk);
++  let o = t6sFrame(P, W, "tcr-clip") + `<g clip-path="url(#tcr-clip)">`;
++  const lv = pk === "intro" ? 1 : pk === "parts" ? e(1) : 1;
++  o += `<g opacity="${q2(.85 * lv)}">${w.lev.map((d, i) => `<path d="${d}" fill="none" stroke="${i < w.lev.length / 2 ? VZ.grey : VZ.ink}" stroke-opacity="${i < w.lev.length / 2 ? .45 : .38}" stroke-width="1.2"/>`).join("")}</g>`;
++  // f_x = 0 (red) and f_y = 0 (gold): from "set both to zero" until the second partials take over
++  const nul = pk === "zero" ? e(1) : (at >= 3 && at <= 4) || pk === "none" || pk === "curve" ? 1 : pk === "hess" ? 1 - e(.9) : 0;
++  if (nul > .01) o += `<g opacity="${q2(nul)}"><path d="${w.nx}" fill="none" stroke="${VZ.red}" stroke-width="${pk === "curve" ? 4 : 2.4}" stroke-linecap="round" stroke-opacity=".85"/><path d="${w.ny}" fill="none" stroke="${VZ.gold}" stroke-width="${pk === "curve" ? 4 : 2.4}" stroke-dasharray="${pk === "curve" ? "none" : "7 5"}" stroke-linecap="round"/></g>`;
++  o += `</g>`;
++  // the points: dark when found, coloured by type once D is in
++  const shown = w.pts.filter(p => Math.abs(p.x.f) <= W && Math.abs(p.y.f) <= W);
++  const pa = pk === "solve" ? e(1) : at >= 4 || pk === "curve" ? 1 : 0, ca = pk === "table" ? stEase(u, .4, 1) : pk === "class" ? 1 : 0;
++  if (pa > .01) {
++    const boxes = [], labs = pk === "list" && shown.length <= 6 ? e(1) : 0;
++    shown.forEach(p => {
++      const x = P.X(p.x.f), y = P.Y(p.y.f), col = TCR_COL[p.type] || VZ.ink;
++      o += `<g opacity="${q2(pa)}"><circle cx="${q2(x)}" cy="${q2(y)}" r="6.5" fill="${VZ.ink}" stroke="#fff" stroke-width="1.8"/>`;
++      if (ca > .01) o += `<circle cx="${q2(x)}" cy="${q2(y)}" r="${q2(6.5 + 1.5 * ca)}" fill="${col}" stroke="#fff" stroke-width="1.8" opacity="${q2(ca)}"/>`;
++      o += `</g>`;
++      if (labs > .01) {                                    // each label in the first corner that's free and on the picture
++        const t = t6sPtTxt(p), wd = t.length * 7.2 + 6;
++        const spots = [[10, -10, "start"], [-10, -10, "end"], [10, 20, "start"], [-10, 20, "end"]];
++        let best = spots[0];
++        for (const s of spots) { const bx = s[2] === "start" ? x + s[0] : x + s[0] - wd, by = y + s[1] - 13; if (bx < P.X(-W) + 2 || bx + wd > P.X(W) - 2 || by < P.Y(W) + 2 || by + 17 > P.Y(-W)) continue; if (boxes.some(q => bx < q[0] + q[2] && q[0] < bx + wd && by < q[1] + 17 && q[1] < by + 17)) continue; best = s; break; }
++        const bx = best[2] === "start" ? x + best[0] : x + best[0] - wd; boxes.push([bx, y + best[1] - 13, wd]);
++        o += `<g opacity="${q2(labs)}">${vzNote(x + best[0], y + best[1], t, best[2], VZ.ink)}</g>`;
++      }
++    });
++  }
++  // the key and one short caption
++  let key = null, cap;
++  if (pk === "zero" || pk === "solve" || pk === "list" || pk === "none" || pk === "curve") key = [["line", VZ.red, "f_x = 0"], ["dash", VZ.gold, "f_y = 0"]];
++  if (ca > .01) key = ["min", "max", "saddle", "flat"].map(t => ["dot", TCR_COL[t], t === "flat" ? "can't tell" : t === "saddle" ? "saddle" : t]);
++  if (key) o += `<g opacity="${q2(pk === "zero" ? e(1) : pk === "table" ? ca : 1)}">${vzKey(key, 22, 412).replace(/>f_([xy]) = 0</g, '>f<tspan baseline-shift="sub" font-size="10">$1</tspan> = 0<')}</g>`;
++  cap = { intro: "level curves of f", parts: "level curves of f", zero: "critical points: where the curves cross", solve: w.pts.length ? "they cross at the critical points" : "the curves never cross", list: `${w.pts.length} critical point${w.pts.length === 1 ? "" : "s"}${w.outside ? " (some off the picture)" : ""}`,
++    hess: "is each one a max, a min or a saddle?", table: "the colour shows each point's type", class: shown.length ? "each critical point, by type" : "", none: "the curves never cross: no critical points", curve: "a whole line of critical points" }[pk] || "";
++  if (!w.exact && (pk === "solve" || pk === "list")) cap = "found numerically (≈)";
++  o += stNote(180, 446, cap, VZ.ink);
++  return o;
++}
++const TCR = {
++  id: "tool-crit", title: "Critical points of your own function", card: "Critical points: your f",
++  tagline: "Type f(x, y): see its critical points found and classified.",
++  blurb: "Set \\(f_x=0\\) and \\(f_y=0\\) and solve them together. Then the second-derivative test: \\(D=f_{xx}f_{yy}-f_{xy}^2\\) at each point. \\(D>0\\) means a max or a min (by the sign of \\(f_{xx}\\)), \\(D<0\\) a saddle, \\(D=0\\) no verdict.",
++  hint: "Plain typing works: 3xy, x^2, e^(xy), sin(x)cos(y), sqrt(x), ln(x).",
++  examples: TCR_EX, picDur: 2600,
++  check(src) { return t6sTry(() => t6sParse(src, "xy"), "Type a function of x and y, like x^2 + 3xy.").err || null; },
++  load(src) {
++    const r = t6sTry(() => { const w = tcrWork(src); return { w, steps: tcrSteps(w) }; }, "Type a function of x and y, like x^2 + 3xy.");
++    if (r.err) return r.err;
++    this._src = src; this._w = r.v.w; this.steps = r.v.steps; this._note = ""; this._noteKind = "";
++    if (!r.v.w.exact) { this._note = r.v.w.pts.length ? "No exact solution: the points are numeric (≈)." : "No exact solution, and none found numerically."; this._noteKind = "warn"; }
++    else if (r.v.w.curves.length) { this._note = "Infinitely many critical points: whole lines of them."; this._noteKind = "warn"; }
++    const vs = t6sVarsS(r.v.w.S);
++    if (!vs) { this._note = "f is a constant: every point is critical."; this._noteKind = "warn"; }
++    else if (vs.length < 2) { this._note = `Only ${vs} appears, so f is a function of one variable.`; this._noteKind = "warn"; }
++    this.problem = `<p class="t6s-ask">Find and classify the critical points of \\(f(x,y)=${t6sNice(r.v.w.S)}\\).</p>` + t6sForm(this, "f(x, y) =");
++    this._lt = null;
++    return null;
++  },
++  mount(given, rebuild) { t6sMount(this, given, rebuild); },
++  pic(k, b, u) { return tcrPic(this, k, b, u); },
++};
++TCR.load(TCR_DEF);
++stAdd(TCR);
++/* ---------- tool-field: curl, divergence and (if there is one) the potential of your own field ---------- */
++const TFL_DEF = "[2xy + 3, x^2 - 4y]";
++const TFL_EX = [
++  { chip: "Not conservative", src: "[x - y, x + y]" },
++  { chip: "3-D", src: "[y z, x z + 2y, x y + 1]" },
++  { chip: "The swirl trap", src: "[-y/(x^2 + y^2), x/(x^2 + y^2)]" },
++  { chip: "Too wild", src: "[sin(x^2) + y, x + 1/y]", wild: true },
++];
++// "[P, Q]" or "[P, Q, R]" (brackets optional) → the pieces as text
++function tflSplit(src) {
++  let s = String(src == null ? "" : src).trim().replace(/^\s*f\s*(\(\s*x\s*,\s*y\s*(,\s*z\s*)?\))?\s*=\s*/i, "").trim();
++  if (!s) throw t6sErr("blank");
++  if (s.length > 2 * T6S_CAP.len) throw t6sErr("That's a long one: keep each piece short.");
++  const pairs = { "[": "]", "(": ")", "<": ">", "⟨": "⟩" };
++  if (pairs[s[0]] && s[s.length - 1] === pairs[s[0]]) {       // strip the outer bracket only if it wraps everything
++    let d = 0, wraps = true;
++    for (let i = 0; i < s.length; i++) { const c = s[i]; if ("([{<⟨".includes(c)) d++; else if (")]}>⟩".includes(c)) { d--; if (d === 0 && i < s.length - 1) { wraps = false; break; } } }
++    if (wraps) s = s.slice(1, -1);
++  }
++  const parts = []; let d = 0, cur = "";
++  for (const c of s) { if ("([{".includes(c)) d++; else if (")]}".includes(c)) d--; if (c === "," && d === 0) { parts.push(cur); cur = ""; } else cur += c; }
++  parts.push(cur);
++  if (parts.length < 2) throw t6sErr("Type a field with 2 or 3 pieces, separated by commas: [P, Q] or [P, Q, R].");
++  if (parts.length > 3) throw t6sErr("A field here has 2 or 3 pieces, not " + parts.length + ".");
++  return parts.map(p => p.trim());
++}
++function tflParse(src) {
++  const parts = tflSplit(src), vars = parts.length === 3 ? "xyz" : "xy", nm = ["P", "Q", "R"];
++  return parts.map((p, i) => {
++    if (!p) throw t6sErr(`The ${["first", "second", "third"][i]} piece (${nm[i]}) is blank: type 0 if that's what you mean.`);
++    try { return t6sParse(p, vars); }
++    catch (e) {
++      if (e.t6s && parts.length === 2 && /z/i.test(p) && /letter|variable|Use only/.test(e.message)) throw t6sErr("z appears: give the field three pieces, [P, Q, R].");
++      if (e.t6s) throw t6sErr(`In ${nm[i]}: ${e.message === "blank" ? "it's blank." : e.message}`);
++      throw e;
++    }
++  });
++}
++function tflWork(src) {
++  const F = tflParse(src), n = F.length, V = ["x", "y", "z"].slice(0, n), w = { src, F, n };
++  w.tex = F.map(S => t6sTex(S));
++  w.d = F.map((S, i) => t6sD(S, V[i]));                    // P_x, Q_y, R_z
++  w.div = w.d.reduce((a, b) => t6sAdd(a, b));
++  w.divZero = t6sIsZero(w.div);
++  const pd = (i, v) => t6sD(F[i], v);
++  w.cp = n === 2 ? [[pd(1, "x"), pd(0, "y")]] : [[pd(2, "y"), pd(1, "z")], [pd(0, "z"), pd(2, "x")], [pd(1, "x"), pd(0, "y")]];
++  w.curl = w.cp.map(([a, b]) => t6sSub(a, b));
++  w.cz = w.curl.map(t6sIsZero); w.curlZero = w.cz.every(Boolean);
++  const dom = F.reduce((acc, S) => t6sDomain(S, acc), undefined);
++  w.dom = dom; w.domOk = t6sDomOk(dom);
++  const fs = F.map(t6sFun), at = (x, y) => fs.map(f => f(x, y, 0));
++  w.fs = fs;
++  w.hole0 = n === 2 && at(0, 0).some(v => !Number.isFinite(v));
++  if (w.hole0) for (const r of [.35, 1, 2]) for (const [a, b] of [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) if (at(r * a, r * b).some(v => !Number.isFinite(v))) w.hole0 = false;   // only a lone hole at the origin, not a whole line of gaps
++  if (w.curlZero && w.hole0) {                             // a hole at the origin: go once around it
++    let c = 0; const M = 720;
++    for (let k = 0; k < M; k++) { const t = 2 * Math.PI * (k + .5) / M, [p, q] = at(Math.cos(t), Math.sin(t)); c += (-p * Math.sin(t) + q * Math.cos(t)) * 2 * Math.PI / M; }
++    w.circ = Math.abs(c) < 1e-6 ? 0 : c;
++  }
++  // the potential: integrate each piece in its own letter, then merge
++  if (w.curlZero && !w.circ) {
++    w.ints = F.map((S, i) => t6sInt(S, V[i]));
++    const keep = new Map(); let clash = false;
++    w.ints.forEach(r => r.F.t.forEach(t => { const o = keep.get(t.k); if (!o) keep.set(t.k, t); else if (!t6sQeq(o.c, t.c)) clash = true; }));
++    w.f = t6sMkS([...keep.values()]);
++    // a piece with no antiderivative found that only involves its own letter stays as ∫₀ (that letter)
++    w.bad = w.ints.map((r, i) => r.bad);
++    w.badOwn = w.bad.every((B, i) => !B || t6sVarsS(B) === V[i]);
++    w.potOk = !clash && w.badOwn && V.every((v, i) => t6sIsZero(t6sSub(t6sAdd(t6sD(w.f, v), w.bad[i] || T6S_ZERO), F[i])));
++  }
++  // the picture: F on [−W, W]² (the slice z = 0 for a 3-D field), div and the spin shaded, level curves of f
++  const W = w.W = 3, P = w.P = vzPlane(180, 222, 158 / W);
++  w.arrows = []; const m = 11, sp = 2 * W / (m - 1), mags = [];
++  for (let i = 0; i < m; i++) for (let j = 0; j < m; j++) { const x = -W + i * sp, y = -W + j * sp, v = at(x, y); if (v.every(Number.isFinite) && Math.hypot(v[0], v[1]) < 1e9) { w.arrows.push([x, y, v[0], v[1]]); mags.push(Math.hypot(v[0], v[1])); } }
++  mags.sort((a, b) => a - b); w.m90 = mags.length ? mags[Math.floor(.9 * (mags.length - 1))] || mags[mags.length - 1] : 1; w.sp = sp;
++  const shade = S => {                                     // cells, binned by strength, as 2 × 4 paths
++    const f = t6sFun(S), N = 40, d = 2 * W / N, vals = []; for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const v = f(-W + (i + .5) * d, -W + (j + .5) * d, 0); vals.push(Number.isFinite(v) ? v : NaN); }
++    const a = vals.filter(Number.isFinite).map(Math.abs).sort((p, q) => p - q), top = a.length ? a[Math.floor(.9 * (a.length - 1))] || a[a.length - 1] : 0, flat = !t6sVarsS(S);   // a constant: one light, even tint
++    const bins = { p: ["", "", "", "", "", ""], n: ["", "", "", "", "", ""] };
++    if (top > 0) vals.forEach((v, k) => { if (!Number.isFinite(v) || Math.abs(v) < 1e-9 * (1 + top)) return; const b = flat ? 2 : Math.min(5, Math.floor(Math.abs(v) / top * 5.5)), i = Math.floor(k / N), j = k % N; bins[v > 0 ? "p" : "n"][b] += `M${q2(P.X(-W + i * d))} ${q2(P.Y(-W + (j + 1) * d))}h${q2(d * P.u + .4)}v${q2(d * P.u + .4)}h${q2(-d * P.u - .4)}Z`; });
++    return bins;
++  };
++  w.shDiv = w.divZero ? null : shade(w.div);
++  w.shCurl = w.cz[w.cz.length - 1] ? null : shade(w.curl[w.curl.length - 1]);
++  if (w.f && w.potOk) {                                   // a piece kept as ∫₀ is added numerically (Simpson's rule), so the curves are f's own
++    const ff = t6sFun(w.f), bf = w.bad.map(B => B && t6sFun(B)), simp = (g, v, k) => { const N = 32, h = v / N; let s = 0; for (let i = 0; i <= N; i++) { const t = i * h, a = [0, 0, 0]; a[k] = t; s += (i === 0 || i === N ? 1 : i % 2 ? 4 : 2) * g(...a); } return s * h / 3; };
++    const G = t6sGrid((x, y) => ff(x, y, 0) + bf.reduce((acc, g, k) => g ? acc + simp(g, [x, y, 0][k], k) : acc, 0), W, 56); w.lev = t6sLevels(G, 9).map(L => t6sContour(G, P, L)).filter(Boolean); }
++  return w;
++}
++// a piece kept as an integral: ∫₀ˣ g(t) dt, the letter renamed t
++const tflDt = (B, v) => { const t = t6sTex(B).replace(new RegExp(v, "g"), "t"); return (B.t.length > 1 || B.t[0].c[0] < 0n ? `\\left(${t}\\right)` : t) + "\\,dt"; };
++function tflSteps(w) {
++  const n = w.n, V = ["x", "y", "z"].slice(0, n), nm = ["P", "Q", "R"].slice(0, n), steps = [];
++  const where = n === 2 ? "\\mathbb R^2" : "\\mathbb R^3", Fv = `[${nm.join(",")}]`;
++  steps.push({ t: "Name the pieces", pk: "pieces", tex: nm.map((p, i) => `${p}=${w.tex[i]}`),
++    why: `Write \\(\\mathbf F=${Fv}\\). Each piece is a function of ${n === 2 ? "\\(x\\) and \\(y\\)" : "\\(x\\), \\(y\\) and \\(z\\)"}.`, sum: `\\(\\mathbf F=${Fv}\\)` });
++  const divT = w.divZero ? "0" : t6sNice(w.div);
++  steps.push({ t: "Divergence", pk: "div", tex: [`\\nabla\\cdot\\mathbf F=${nm.map((p, i) => p + "_" + V[i]).join("+")}`, `=${w.d.map(t6sPar).join("+")}`, `=${divT}`],
++    why: `Take each piece's derivative in its own letter (\\(${nm.map((p, i) => p + "_" + V[i]).join("\\), \\(")}\\)) and add.`, sum: `\\(\\nabla\\cdot\\mathbf F=${divT}\\)` });
++  const ct = w.curl.map((S, i) => w.cz[i] ? "0" : t6sNice(S));
++  if (n === 2) steps.push({ t: "Curl", pk: "curl", tex: ["\\operatorname{curl}\\mathbf F=Q_x-P_y", `=${t6sPar(w.cp[0][0])}-${t6sPar(w.cp[0][1])}`, `=${ct[0]}`],
++    why: "The 2-D curl measures spin: how fast a tiny paddle wheel in the flow would turn.", sum: `\\(\\operatorname{curl}\\mathbf F=${ct[0]}\\)` });
++  else {
++    const nms = [["R_y", "Q_z"], ["P_z", "R_x"], ["Q_x", "P_y"]];
++    steps.push({ t: "Curl", pk: "curl", tex: [`\\nabla\\times\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\ \\partial_x&\\partial_y&\\partial_z\\\\ P&Q&R\\end{vmatrix}`]
++      .concat(w.cp.map(([a, b], i) => `${nms[i][0]}-${nms[i][1]}=${t6sPar(a)}-${t6sPar(b)}=${ct[i]}`), [`\\nabla\\times\\mathbf F=\\left[${ct.join(",\\ ")}\\right]`]),
++      why: "Expand along the top row: the \\(\\mathbf i\\) part is \\(R_y-Q_z\\), then \\(P_z-R_x\\), then \\(Q_x-P_y\\).", sum: `\\(\\nabla\\times\\mathbf F=[${ct.join(",")}]\\)` });
++  }
++  const read = [];
++  read.push({ html: w.divZero ? `div \\(\\mathbf F=0\\) ${w.domOk ? "everywhere" : "wherever F is defined"}: <b>incompressible</b> (no spreading out or squeezing in).` : `div \\(\\mathbf F\\neq0\\): <b>not incompressible</b>${t6sVarsS(w.div) ? `; it is 0 only where \\(${divT}=0\\)` : ""}.` });
++  read.push({ html: w.curlZero ? `curl \\(\\mathbf F=\\mathbf 0\\) ${w.domOk ? "everywhere" : "wherever F is defined"}: <b>irrotational</b> (no spin).` : `curl \\(\\mathbf F\\neq\\mathbf 0\\): <b>not irrotational</b>${n === 2 && t6sVarsS(w.curl[0]) ? `; no spin only where \\(${ct[0]}=0\\)` : ""}.` });
++  steps.push({ t: "Read the results", pk: "read", tex: read, why: "Incompressible means div = 0; irrotational means curl = 0. Check whether each holds everywhere.", sum: "read div and curl" });
++  // conservative?
++  const holes = [...w.dom.den.values()].map(S => `${t6sTex(S)}=0`).concat([...w.dom.ln.values()].map(S => `${t6sTex(S)}\\le0`), [...w.dom.root.values()].map(S => `${t6sTex(S)}<0`), w.dom.tan ? ["\\tan \\text{ blows up}"] : []);
++  const hl = holes.slice(0, 3).join(",\\ ");
++  if (!w.curlZero) {
++    steps.push({ t: "Conservative?", pk: "cons", tex: [`\\nabla\\times\\mathbf F\\neq\\mathbf 0\\ \\Rightarrow\\ \\text{not conservative}`],
++      why: "Every gradient field has curl 0. This one doesn't, so it has no potential: work along a path depends on the path.", sum: "not conservative" });
++    return steps;
++  }
++  if (w.circ) {
++    const k = w.circ / Math.PI, kt = Math.abs(k - Math.round(k)) < 1e-6 ? (Math.round(k) === 1 ? "" : Math.round(k) === -1 ? "-" : Math.round(k)) + "\\pi" : t6sDec(w.circ);
++    steps.push({ t: "Conservative? Watch the hole", pk: "cons", tex: [{ html: `curl 0, but \\(\\mathbf F\\) isn't defined at the origin: the domain has a hole.` }, `\\oint_{x^2+y^2=1}\\mathbf F\\cdot d\\mathbf r=${kt}\\neq0`, "\\Rightarrow\\ \\text{not conservative around the origin}"],
++      why: "Curl 0 is enough only on a region with no holes. Around this hole the loop integral isn't 0, so no potential works all the way round: the classic swirl trap.", sum: "not conservative around the hole" });
++    return steps;
++  }
++  if (w.hole0 && w.circ === 0) steps.push({ t: "Conservative? Check the hole", pk: "cons", tex: [{ html: `curl 0, but \\(\\mathbf F\\) isn't defined at the origin: the domain has a hole.` }, `\\oint_{x^2+y^2=1}\\mathbf F\\cdot d\\mathbf r=0`, "\\Rightarrow\\ \\text{no swirl: } \\mathbf F=\\nabla f\\ \\text{away from the origin}"],
++      why: "With a hole, curl 0 is not enough by itself: also go once around the hole. Here that loop integral is 0, so a potential works everywhere except the origin.", sum: "conservative (away from the origin)" });
++  else steps.push({ t: "Conservative?", pk: "cons", tex: w.domOk ? [`\\nabla\\times\\mathbf F=\\mathbf 0\\ \\text{on all of }${where}`, "\\Rightarrow\\ \\mathbf F=\\nabla f\\ \\text{for some } f"]
++      : [{ html: `curl 0, but \\(\\mathbf F\\) isn't defined everywhere (${holes.length ? `\\(${hl}\\)` : "gaps"}).` }, { html: "So F is conservative on any region that avoids those gaps and has no holes. " + (n === 2 && w.dom.den.size ? "Classic trap: \\([-y,x]/(x^2+y^2)\\) has curl 0 but isn't conservative around the origin." : "") }],
++    why: w.domOk ? `Curl \\(\\mathbf 0\\) on a region with no holes (here all of \\(${where}\\)) means \\(\\mathbf F\\) is a gradient field.` : "Curl 0 guarantees a potential only on a region without holes.", sum: "conservative" + (w.domOk ? "" : " (away from the gaps)") });
++  // the potential: integrate each piece and merge
++  const Fd = { x: "dx", y: "dy", z: "dz" };
++  const intT = w.ints.map((r, i) => {
++    const good = r.F.t.length ? t6sTex(r.F) : "";
++    const bad = r.bad ? (w.badOwn ? `\\int_0^{${V[i]}}${tflDt(r.bad, V[i])}` : `\\int ${t6sPar(r.bad)}\\,${Fd[V[i]]}`) : "";
++    return `\\int ${t6sPar(w.F[i])}\\,${Fd[V[i]]}=${[good, bad].filter(Boolean).join("+") || "0"}`;
++  });
++  const anyBad = w.bad.some(Boolean);
++  steps.push({ t: "Integrate each piece", pk: "pot0", tex: intT.concat(anyBad ? [{ html: "A piece with no by-hand antiderivative found stays as an integral from 0, like \\(\\int_0^x\\). (Some, like \\(\\int\\sin(t^2)\\,dt\\), have no formula at all.)" }] : []),
++    why: `Integrate \\(P\\) in \\(x\\), \\(Q\\) in \\(y\\)${n === 3 ? " and \\(R\\) in \\(z\\)" : ""}. Each answer is \\(f\\), up to terms without that letter.`, sum: "integrate each piece" });
++  if (!w.potOk) {
++    steps.push({ t: "No formula for f here", pk: "pot0", tex: [{ html: w.badOwn ? "The pieces don't merge cleanly into one formula." : "A piece mixes letters and has no by-hand antiderivative." }, { html: w.domOk ? "F is still conservative (curl 0, no holes): a potential exists, it just isn't a formula this tool can write." : "Where F is conservative, a potential exists; it just isn't a formula this tool can write." }],
++      why: "Not every potential can be written with familiar functions. The work along a path is still f(end) − f(start).", sum: "no formula" });
++    return steps;
++  }
++  const badT = w.bad.map((B, i) => B ? `\\int_0^{${V[i]}}${tflDt(B, V[i])}` : "").filter(Boolean);
++  const fT = [w.f.t.length ? t6sTex(w.f) : ""].concat(badT).filter(Boolean).join("+") || "0";
++  steps.push({ t: "Merge", pk: "pot", tex: [`f=${fT}\\ (+\\,C)`],
++    why: "Take every term that shows up, once: a term in several lists is the same term of \\(f\\).", sum: `\\(f=${fT}\\)` });
++  steps.push({ t: "Check", pk: "pot", tex: nm.map((p, i) => `f_${V[i]}=${(() => { const d = t6sAdd(t6sD(w.f, V[i]), w.bad[i] || T6S_ZERO); return d.t.length ? t6sNice(d) : "0"; })()}=${p}\\ \\checkmark`),
++    why: "Always check: the gradient of \\(f\\) must give back every piece of \\(\\mathbf F\\).", sum: "\\(\\nabla f=\\mathbf F\\ \\checkmark\\)" });
++  return steps;
++}
++function tflPic(def, k, b, u) {
++  const w = def._w; if (!w) return "";
++  const pk = k < 0 ? "intro" : def.steps[Math.min(k, def.steps.length - 1)].pk, P = w.P, W = w.W, e = d => stEase(u, .15, d || .8);
++  let o = t6sFrame(P, W, "tfl-clip") + `<g clip-path="url(#tfl-clip)">`;
++  const sh = (bins, cp, cn, op) => op < .01 || !bins ? "" : `<g opacity="${q2(op)}">${[0, 1, 2, 3, 4, 5].map(i => (bins.p[i] ? `<path d="${bins.p[i]}" fill="${cp}" fill-opacity="${q2(.05 + .05 * i)}"/>` : "") + (bins.n[i] ? `<path d="${bins.n[i]}" fill="${cn}" fill-opacity="${q2(.04 + .04 * i)}"/>` : "")).join("")}</g>`;
++  if (pk === "div" || pk === "read") o += sh(w.shDiv, VZ.red, VZ.ink, pk === "div" ? e(1) : 0);
++  if (pk === "curl") o += sh(w.shCurl, VZ.gold, VZ.ink, e(1));
++  if (w.lev && (pk === "pot")) o += `<g opacity="${q2(.9 * e(1))}">${w.lev.map(d => `<path d="${d}" fill="none" stroke="${VZ.gold}" stroke-opacity=".7" stroke-width="1.4"/>`).join("")}</g>`;
++  // the arrows (they grow in on the first step)
++  const g = pk === "pieces" ? e(1.2) : 1;
++  w.arrows.forEach(([x, y, p, q]) => {
++    const L = Math.hypot(p, q); if (L < 1e-9 * (1 + w.m90)) { o += `<circle cx="${q2(P.X(x))}" cy="${q2(P.Y(y))}" r="1.8" fill="${VZ.grey}" opacity="${q2(.6 * g)}"/>`; return; }
++    const r = Math.min(1, L / (w.m90 || 1)), len = w.sp * (.28 + .5 * Math.sqrt(r)) * g, ex = x + p / L * len, ey = y + q / L * len;
++    o += `<g opacity="${q2((.35 + .5 * r) * Math.min(1, g * 1.5))}">${vzArrow(P.X(x - (ex - x) / 2), P.Y(y - (ey - y) / 2), P.X(x + (ex - x) / 2), P.Y(y + (ey - y) / 2), "I", 1.5)}</g>`;
++  });
++  o += `</g>`;
++  if (w.hole0 && (pk === "cons" || pk === "pieces" || pk === "intro" || pk === "read")) o += `<circle cx="${q2(P.X(0))}" cy="${q2(P.Y(0))}" r="7" fill="#fff" stroke="${VZ.red}" stroke-width="2"/>`;
++  let key = null, cap = "";
++  const sl = w.n === 3 ? " (slice z = 0)" : "";
++  if (pk === "div") { if (w.shDiv) key = [["fill", VZ.red, "div > 0: spreads out"], ["fill", VZ.ink, "div < 0: flows in"]]; cap = w.divZero ? "div F = 0: no spreading anywhere" : "where the flow spreads out or squeezes in" + sl; }
++  else if (pk === "curl") { if (w.shCurl) key = [["fill", VZ.gold, w.n === 3 ? "k-part > 0" : "spins counterclockwise"], ["fill", VZ.ink, w.n === 3 ? "k-part < 0" : "spins clockwise"]]; cap = w.cz[w.cz.length - 1] ? (w.n === 3 ? "no spin about the z-axis here" : "curl F = 0: no spin anywhere") : "the spin of the flow" + sl; }
++  else if (pk === "pot") { if (w.lev) key = [["line", VZ.ink, "F"], ["line", VZ.gold, "level curves of f"]]; cap = "F crosses the level curves of f at right angles"; }
++  else if (pk === "cons") cap = w.hole0 ? "F isn't defined at the origin (red ring)" : w.curlZero ? "curl 0: F is a gradient field" + sl : "curl ≠ 0: no potential" + sl;
++  else cap = w.n === 3 ? "F on the slice z = 0" : w.hole0 ? "the field F (undefined at the red ring)" : "the field F";
++  if (key) o += `<g opacity="${q2(e(1))}">${vzKey(key, 22, 412)}</g>`;
++  o += stNote(180, 446, cap, VZ.ink);
++  return o;
++}
++const TFL = {
++  id: "tool-field", title: "Curl and divergence of your own field", card: "Your field: curl, div, potential",
++  tagline: "Type F: see div, curl and, if it has one, its potential.",
++  blurb: "Divergence \\(P_x+Q_y+R_z\\) measures spreading; curl measures spin. A field is conservative when it is a gradient \\(\\nabla f\\): then its curl is \\(\\mathbf 0\\), and on a region with no holes curl \\(\\mathbf 0\\) is also enough. To find \\(f\\), integrate each piece in its own letter and merge the terms.",
++  hint: "Type [P, Q] or [P, Q, R] with commas, like [y, x + 2z, 2y].",
++  examples: TFL_EX, picDur: 2600,
++  check(src) { return t6sTry(() => tflParse(src), "Type a field like [P, Q] or [P, Q, R].").err || null; },
++  load(src) {
++    const r = t6sTry(() => { const w = tflWork(src); return { w, steps: tflSteps(w) }; }, "Type a field like [P, Q] or [P, Q, R].");
++    if (r.err) return r.err;
++    const w = r.v.w;
++    this._src = src; this._w = w; this.steps = r.v.steps; this._lt = null;
++    this._note = w.circ ? "Curl 0, but there's a hole at the origin: watch out." : w.curlZero && !w.potOk ? "Conservative, but f has no formula here." : !w.domOk && w.curlZero ? "F isn't defined everywhere: mind the gaps." : "";
++    this._noteKind = this._note ? "warn" : "";
++    this.problem = `<p class="t6s-ask">Find the divergence and curl of \\(\\mathbf F=\\left[${w.tex.join(",\\ ")}\\right]\\). Is it conservative? If so, find a potential.</p>` + t6sForm(this, "F =");
++    return null;
++  },
++  mount(given, rebuild) { t6sMount(this, given, rebuild); },
++  pic(k, b, u) { return tflPic(this, k, b, u); },
++};
++TFL.load(TFL_DEF);
++stAdd(TFL);
++/* @@E3-END */
+ /* ---- wave-6 spacer 1 ---- */
+ /* ---- wave-6 spacer 2 ---- */
+ /* ---- wave-6 spacer 3 ---- */

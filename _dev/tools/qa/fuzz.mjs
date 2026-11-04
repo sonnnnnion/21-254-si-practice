@@ -32,7 +32,7 @@ export default async ({ send, evaluate, sleep }) => {
             if (def.static) html += def.static(st);
             html += def.draw(st, it * .37, false);
             if (def.frame) { const f = def.frame(null, st, it * .37); if (typeof f === "string") html += f; }
-            const ro = def.readout(st); html += ro;
+            const ro = def.readout ? def.readout(st) : ""; html += ro;
             runs++;
             const txt = strip(html);
             BAD.forEach(re => { const m = txt.match(re); if (m) { const i = m.index; bad.add(re + " … " + txt.slice(Math.max(0, i - 40), i + 40).replace(/\\s+/g, " ")); } });

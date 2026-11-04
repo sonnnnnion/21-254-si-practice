@@ -1,0 +1,387 @@
+diff -ru base6/index.html e1/index.html
+--- base6/index.html	2026-11-03 19:38:41
++++ e1/index.html	2026-11-03 20:18:14
+@@ -21933,7 +21933,382 @@
+ /* ---- wave-6 spacer 5 ---- */
+ /* ---- wave-6 spacer 6 ---- */
+ /* ---- wave-6 spacer 7 ---- */
+-/* @@AGENT-E1 PLACEHOLDER (methods m-critical, m-curldiv, m-isgrad, m-merge, m-setup) @@ */
++/* ---- e1 (sixth wave): vector-calculus methods ---- */
++// contour lines of fn on [x0,x1]×[y0,y1] (marching squares), as one SVG path per level, in plane P's pixels; cached
++const M6_CC = {};
++function m6Contours(key, fn, x0, x1, y0, y1, n, levels, P) {
++  if (M6_CC[key]) return M6_CC[key];
++  const m = n, dx = (x1 - x0) / n, dy = (y1 - y0) / m, V = [];
++  for (let j = 0; j <= m; j++) { V.push([]); for (let i = 0; i <= n; i++) V[j].push(fn(x0 + i * dx, y0 + j * dy)); }
++  const out = levels.map(L => {
++    let d = "";
++    for (let j = 0; j < m; j++) for (let i = 0; i < n; i++) {
++      const c = [[i, j], [i + 1, j], [i + 1, j + 1], [i, j + 1]], pts = [];
++      for (let e = 0; e < 4; e++) {
++        const a = c[e], b = c[(e + 1) % 4], va = V[a[1]][a[0]] - L, vb = V[b[1]][b[0]] - L;
++        if (va * vb < 0) { const t = va / (va - vb); pts.push([P.X(x0 + (a[0] + (b[0] - a[0]) * t) * dx), P.Y(y0 + (a[1] + (b[1] - a[1]) * t) * dy)]); }
++      }
++      for (let s = 0; s + 1 < pts.length; s += 2) d += `M${q2(pts[s][0])} ${q2(pts[s][1])}L${q2(pts[s + 1][0])} ${q2(pts[s + 1][1])}`;
++    }
++    return [L, d];
++  });
++  return (M6_CC[key] = out);
++}
++
++stAdd({
++  id: "m-critical", title: "Find and classify critical points", card: "Critical points, step by step",
++  tagline: "Solve ∇f = 0, then let D decide: hill, pit, or pass.",
++  blurb: "Critical points are where the ground is flat: both partials are 0. Factor to split the equations into cases, list every point, then use the second partials to tell a hilltop from a pit from a mountain pass.",
++  problem: "Find and classify the critical points of \\(f(x,y)=x^2y-2x^2-y^2\\).",
++  picLive: true,
++  pic(k, b, u) {
++    const L = stLines(this, k, b, u), P = stPlane(180, 296, 46), f = (x, y) => x * x * y - 2 * x * x - y * y;
++    const lv = [-60, -45, -34, -25, -18, -12, -8, -6, -4, -2, -1, -.4, .4, 1, 3, 6, 10, 15, 21];
++    const cs = m6Contours("crit", f, -3.6, 3.6, -2, 4.4, 56, lv, P), e0 = k < 0 ? .6 : 1;
++    let o = P.axes(.2) + `<g opacity="${e0}" fill="none" stroke-linecap="round">` + cs.map(([l, d]) => `<path d="${d}" stroke="${l === -4 ? VZ.gold : VZ.grey}" stroke-width="${l === -4 ? 1.8 : 1}" opacity="${l === -4 ? .9 : .5}"/>`).join("") + `</g>`;
++    const pts = [{ p: [0, 0], ty: "max", col: VZ.red, fj: 1, ly: 26 }, { p: [2, 2], ty: "saddle", col: VZ.gold, fj: 2, ly: 26 }, { p: [-2, 2], ty: "saddle", col: VZ.gold, fj: 2, ly: 26 }];
++    pts.forEach((q, i) => {
++      const x = P.X(q.p[0]), y = P.Y(q.p[1]), fo = L(2, q.fj, .15, .8), cl = L(6, q.ty === "max" ? 2 : 3, .15, .8), lab = L(3, 0, .1 + .15 * i, .7);
++      if (fo > .01) o += `<g opacity="${q2(fo)}"><circle cx="${q2(x)}" cy="${q2(y)}" r="${q2(3 + 3 * fo)}" fill="${VZ.ink}" stroke="#fff" stroke-width="1.5"/></g>`;
++      if (lab > .01) o += `<g opacity="${q2(lab)}">${vzLabel(x, y - 15, `(${q.p[0]}, ${q.p[1]})`, VZ.ink, 15)}</g>`;
++      if (cl > .01) {
++        const r = 4 + 5 * cl, mk = q.ty === "max" ? `<circle cx="${q2(x)}" cy="${q2(y)}" r="${q2(r)}" fill="${q.col}" stroke="#fff" stroke-width="2"/>` : `<path d="M${q2(x)} ${q2(y - r - 1)}L${q2(x + r + 1)} ${q2(y)}L${q2(x)} ${q2(y + r + 1)}L${q2(x - r - 1)} ${q2(y)}Z" fill="${q.col}" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>`;
++        o += `<g opacity="${q2(Math.min(1, cl * 2))}">${mk}${vzLabel(x, y + q.ly, q.ty, q.ty === "max" ? VZ.deep : "#7A5C0F", 15)}</g>`;
++      }
++    });
++    if (k >= 6) o += `<g opacity="${q2(L(6, 2, .3, .6))}">${vzKey([["dot", VZ.red, "max"], ["dot", VZ.ink, "min"], ["dot", VZ.gold, "saddle"]], 16, 452)}</g>`;
++    const note = ["contour map of f: where is the ground flat?", "slope in x and in y", "flat ground: both slopes 0", "cases: one flat spot, then two", "three flat spots to test", "how f curves at each spot", "D, point by point", "hill, pit, or pass?"][Math.max(0, k + 1)];
++    return o + stNote(180, 424, note, VZ.ink);
++  },
++  steps: [
++    { t: "The two partials", tex: ["f_x=2xy-4x", "f_y=x^2-2y"],
++      why: "Differentiate in one variable at a time, treating the other as a constant.", sum: "\\(f_x=2xy-4x,\\ f_y=x^2-2y\\)" },
++    { t: "Set both equal to 0", tex: ["2xy-4x=0", "x^2-2y=0"],
++      why: "A critical point is flat in every direction, so \\(\\nabla f=\\mathbf 0\\). That is two equations in two unknowns.", sum: "\\(\\nabla f=\\mathbf 0\\)" },
++    { t: "Factor and split into cases", tex: ["2x(y-2)=0\\ \\Rightarrow\\ x=0\\ \\text{ or }\\ y=2", "x=0:\\ \\ -2y=0\\ \\Rightarrow\\ y=0\\ \\ \\text{gives }(0,0)", "y=2:\\ \\ x^2-4=0\\ \\Rightarrow\\ x=\\pm2\\ \\ \\text{gives }(2,2),\\ (-2,2)"],
++      why: "A product is 0 only if a factor is 0. Take each case into the other equation. Never divide by \\(x\\): that would lose the case \\(x=0\\).", sum: "cases \\(x=0\\) and \\(y=2\\)" },
++    { t: "List every critical point", tex: ["(0,0),\\qquad (2,2),\\qquad (-2,2)"],
++      why: "Three points, and every case is used up. Now each one needs a type.", sum: "\\((0,0),\\ (2,2),\\ (-2,2)\\)" },
++    { t: "Second partials", tex: ["f_{xx}=2y-4,\\qquad f_{yy}=-2,\\qquad f_{xy}=2x"],
++      why: "Differentiate each first partial again. \\(f_{xy}\\) is the same either way you take it.", sum: "\\(f_{xx}=2y-4,\\ f_{yy}=-2,\\ f_{xy}=2x\\)" },
++    { t: "D at each point", tex: ["D=f_{xx}f_{yy}-f_{xy}^{\\,2}", "\\begin{array}{c|ccc|c}(x,y)&f_{xx}&f_{yy}&f_{xy}&D\\\\\\hline(0,0)&-4&-2&0&8\\\\(2,2)&0&-2&4&-16\\\\(-2,2)&0&-2&-4&-16\\end{array}"],
++      why: "Plug each point into the second partials, then into \\(D\\). A table keeps it tidy.", sum: "\\(D=8,\\ -16,\\ -16\\)" },
++    { t: "Classify", tex: ["D>0,\\ f_{xx}>0:\\ \\text{local min}\\qquad D>0,\\ f_{xx}<0:\\ \\text{local max}", "D<0:\\ \\text{saddle}\\qquad D=0:\\ \\text{the test cannot tell}", "(0,0):\\ D=8>0,\\ f_{xx}=-4<0\\ \\Rightarrow\\ \\text{local max}", "(\\pm2,2):\\ D=-16<0\\ \\Rightarrow\\ \\text{saddles}"],
++      why: "\\(D>0\\) means the surface curves the same way in every direction (hill or pit; \\(f_{xx}\\) says which). \\(D<0\\) means up one way, down another: a pass.", sum: "max at \\((0,0)\\); saddles at \\((\\pm2,2)\\)" },
++  ],
++});
++
++
++stAdd({
++  id: "m-curldiv", title: "Curl and divergence, then what they mean", card: "Curl & divergence: read them",
++  tagline: "Compute both, then read spin and spread off the answers.",
++  blurb: "Divergence is a number: does the flow spread out of a point (positive), squeeze into it (negative), or neither? Curl is a vector: how fast a tiny paddle wheel would spin there, and about which axis. Each is one short calculation, and the answer says where the field behaves which way.",
++  problem: "For \\(\\mathbf F=[x^2-y^2,\\ z^2,\\ 0]\\), find \\(\\nabla\\cdot\\mathbf F\\) and \\(\\nabla\\times\\mathbf F\\). Where is \\(\\mathbf F\\) irrotational, where is it incompressible, and where is it a source?",
++  picLive: true,
++  pic(k, b, u) {
++    const L = stLines(this, k, b, u), P = stPlane(180, 236, 44), T = performance.now() / 1000, F = (x, y) => x * x - y * y;
++    let o = "";
++    if (k >= 5) o += `<g opacity="${q2(L(5, 0, .1, .8))}"><rect x="${P.X(0)}" y="40" width="${q2(344 - P.X(0))}" height="390" fill="${VZ.red}" fill-opacity=".07"/><rect x="16" y="40" width="${q2(P.X(0) - 16)}" height="390" fill="${VZ.ink}" fill-opacity=".06"/></g>`;
++    o += P.axes(.2);
++    if (k >= 4) o += `<g opacity="${q2(k === 4 ? L(4, 0, .1, .8) : 1)}"><line x1="${P.X(0)}" y1="40" x2="${P.X(0)}" y2="430" stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="5 5"/></g>`;
++    // the flow in the slice z = 0: F = [x² − y², 0], drawn with tame lengths (short where it is weak)
++    const fa = L(0, 0, .1, 1), dim = k === 0 ? 1 : .45;
++    if (fa > .01) {
++      o += `<g opacity="${q2(fa * dim)}">`;
++      for (const x of [-2.6, -1.3, 0, 1.3, 2.6]) for (const y of [-2.2, -1.1, 0, 1.1, 2.2]) {
++        const f = F(x, y), len = 24 * Math.tanh(Math.abs(f) / 2.2);
++        if (len > 3) { const s = Math.sign(f); o += vzArrow(P.X(x) - s * len / 2, P.Y(y), P.X(x) + s * len / 2, P.Y(y), "I", 1.8); }
++      }
++      o += `</g>`;
++    }
++    // blobs of fluid: they swell where div > 0, shrink where div < 0, and keep their size where div = 0
++    const blobs = k >= 4 ? [[-2.3, 0, -1], [2.3, 0, 1], [0, 0, 0]] : k === 1 ? [[-2.3, 0, -1], [2.3, 0, 1]] : [];
++    const bo = k === 1 ? L(1, 2, .1, .8) : k === 4 ? L(4, 0, .3, .8) : 1, sv = (T / 3.4) % 1, se = sv * sv * (3 - 2 * sv), bop = Math.min(1, sv / .1, (1 - sv) / .1);
++    blobs.forEach(([x, y, d]) => {
++      const col = d > 0 ? VZ.red : d < 0 ? VZ.ink : VZ.gold, r = 17 * (1 + .55 * d * se), cx = P.X(x), cy = P.Y(y);
++      o += `<g opacity="${q2(bo)}"><circle cx="${q2(cx)}" cy="${q2(cy)}" r="17" fill="none" stroke="${col}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".6"/><circle cx="${q2(cx)}" cy="${q2(cy)}" r="${q2(r)}" fill="${col}" fill-opacity="${q2(.28 * bop)}" stroke="${col}" stroke-width="2" stroke-opacity="${q2(bop)}"/></g>`;
++    });
++    // paddle wheels: they turn where the curl is not 0 (counterclockwise for 2y > 0), and stay still on the x-axis
++    if (k === 2 || k === 3) {
++      const wo = k === 2 ? L(2, 3, .1, .8) : 1;
++      o += `<g opacity="${q2(wo)}">`;
++      [1.6, 0, -1.6].forEach(y => {
++        const cx = P.X(0), cy = P.Y(y), th = 1.3 * y * T, still = y === 0;
++        o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="19" fill="${VZ.paper}" fill-opacity=".85" stroke="${still ? VZ.gold : VZ.deep}" stroke-width="1.6" ${still ? 'stroke-dasharray="4 3"' : ""}/>`;
++        for (let j = 0; j < 4; j++) { const a = th + j * Math.PI / 2, ex = cx + 15 * Math.cos(a), ey = cy - 15 * Math.sin(a); o += `<line x1="${q2(cx)}" y1="${q2(cy)}" x2="${q2(ex)}" y2="${q2(ey)}" stroke="${still ? VZ.grey : VZ.deep}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${q2(ex)}" cy="${q2(ey)}" r="${j === 0 ? 3.6 : 2.6}" fill="${j === 0 && !still ? VZ.red : still ? VZ.grey : VZ.deep}"/>`; }
++        o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="2.6" fill="${VZ.ink}"/>`;
++      });
++      o += `</g>`;
++    }
++    if (k === 3) o += `<g opacity="${q2(L(3, 1, .1, .8))}"><line x1="16" y1="${P.Y(0)}" x2="344" y2="${P.Y(0)}" stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="5 5"/></g>`;
++    if (k === 2 || k === 3) o += vzKey([["dot", VZ.deep, "spins"], ["dash", VZ.gold, "no spin"]], 16, 452);
++    else if (k === 1 || k >= 4) o += vzKey([["fill", VZ.red, "source"], ["fill", VZ.ink, "sink"], ["dash", VZ.gold, "neither"]].slice(0, k === 1 ? 2 : 3), 16, 452);
++    const note = ["the flow in the slice z = 0", "does the flow spread out or squeeze in?", "would a paddle wheel turn?", "no spin on the x-axis only", "steady only on the plane x = 0", "red side spreads, grey side squeezes"][Math.max(0, k)];
++    return o + stNote(180, 428, note, VZ.ink);
++  },
++  steps: [
++    { t: "Name the parts", tex: ["P=x^2-y^2,\\qquad Q=z^2,\\qquad R=0"],
++      why: "Write \\(\\mathbf F=[P,Q,R]\\) and label each component. Every partial below is built from these three.", sum: "\\(P=x^2-y^2,\\ Q=z^2,\\ R=0\\)" },
++    { t: "Divergence: three partials", tex: ["\\nabla\\cdot\\mathbf F=P_x+Q_y+R_z", "=\\tfrac{\\partial}{\\partial x}(x^2-y^2)+\\tfrac{\\partial}{\\partial y}(z^2)+\\tfrac{\\partial}{\\partial z}(0)", "=2x+0+0=2x"],
++      why: "Each component is differentiated with respect to its own variable, then the three are added. The result is a single number at each point.", sum: "\\(\\nabla\\cdot\\mathbf F=2x\\)" },
++    { t: "Curl: the 3×3 determinant", tex: ["\\nabla\\times\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\partial_x&\\partial_y&\\partial_z\\\\P&Q&R\\end{vmatrix}", "=\\mathbf i\\,(R_y-Q_z)-\\mathbf j\\,(R_x-P_z)+\\mathbf k\\,(Q_x-P_y)", "=\\mathbf i\\,(0-2z)-\\mathbf j\\,\\big(\\color{#C8102E}{0-0}\\big)+\\mathbf k\\,\\big(0-(-2y)\\big)", "=[-2z,\\ 0,\\ 2y]"],
++      why: "Expand along the top row. The middle term carries a minus sign. Here \\(R_x\\) and \\(P_z\\) are both 0, so the \\(\\mathbf j\\) part cancels.", sum: "\\(\\nabla\\times\\mathbf F=[-2z,\\,0,\\,2y]\\)" },
++    { t: "Irrotational where? Curl = 0", tex: ["[-2z,\\ 0,\\ 2y]=\\mathbf 0\\iff z=0\\ \\text{and}\\ y=0", "\\text{only on the }x\\text{-axis}"],
++      why: "A paddle wheel stays still only where all three components vanish. Everywhere else the curl is nonzero, and the wheel turns about the curl's direction.", sum: "irrotational only on the \\(x\\)-axis" },
++    { t: "Incompressible where? Div = 0", tex: ["\\nabla\\cdot\\mathbf F=2x=0\\iff x=0", "\\text{steady only on the plane }x=0"],
++      why: "Incompressible means \\(\\nabla\\cdot\\mathbf F=0\\): a blob of fluid keeps its volume. This field does that only on the plane \\(x=0\\).", sum: "divergence 0 only on \\(x=0\\)" },
++    { t: "Source or sink?", tex: ["\\nabla\\cdot\\mathbf F=2x>0\\iff x>0:\\ \\text{a source}", "x<0:\\ \\text{a sink (the flow squeezes in)}"],
++      why: "Positive divergence: more flows out of a point than in, so a blob swells. Negative: it shrinks.", sum: "source for \\(x>0\\), sink for \\(x<0\\)" },
++  ],
++});
++
++
++// term tiles for m-merge: a rounded tile with a term in it, centred at (cx, cy)
++const M6_TERM = { a: ["x<tspan baseline-shift=\"super\" font-size=\"12\">2</tspan>y", VZ.red], b: ["yz<tspan baseline-shift=\"super\" font-size=\"12\">2</tspan>", "#7A5C0F"], c: ["e<tspan baseline-shift=\"super\" font-size=\"12\">z</tspan>", VZ.ink], d: ["xy", "#7A5C0F"],
++  g: ["g(y, z)"], h: ["h(x, z)"], k: ["k(x, y)"], g2: ["g(y)"], h2: ["h(x)"] };
++function m6Tile(cx, cy, key, op, o = {}) {
++  if (op < .01) return "";
++  const [txt, col] = M6_TERM[key], unk = !col, c = col || VZ.grey, w = o.w || 78, h = 36, s = o.s || 1;
++  return `<g opacity="${q2(op)}" transform="translate(${q2(cx)} ${q2(cy)}) scale(${q2(s)})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="10" fill="${c}" fill-opacity="${unk ? .05 : .15}" stroke="${o.bad ? VZ.red : c}" stroke-width="${o.bad ? 2.6 : 1.6}" ${unk ? 'stroke-dasharray="4 4"' : ""}/>` +
++    `<text x="0" y="6" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="${unk ? 15 : 19}" font-style="${unk ? "normal" : "italic"}" fill="${unk ? VZ.grey : c}">${txt}</text></g>`;
++}
++const m6Sub = (n, sub, rest) => `${n}<tspan dy="4" font-size="12">${sub}</tspan><tspan dy="-4">${rest}</tspan>`;
++const m6Lerp = (a, b, e) => [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e];
++
++stAdd({
++  id: "m-merge", title: "A potential by integrating each piece", card: "Potential: integrate and merge",
++  tagline: "Integrate each component, then merge the repeated terms.",
++  blurb: "If \\(\\mathbf F=\\nabla f\\), then \\(\\int P\\,dx\\) gives every term of \\(f\\) that contains \\(x\\), up to a \"constant\" that may depend on \\(y\\) and \\(z\\). The same goes for \\(Q\\) and \\(y\\), and for \\(R\\) and \\(z\\). A term of \\(f\\) shows up in every list it belongs to, so write it once, and check.",
++  problem: "Find a potential \\(f\\) for \\(\\mathbf F=[2xy,\\ x^2+z^2,\\ 2yz+e^z]\\). Then see what goes wrong for \\(\\mathbf G=[2xy,\\ x^2+x]\\).",
++  picLive: true,
++  pic(k, b, u) {
++    const L = stLines(this, k, b, u), GR = "#2F7A4A";
++    const cols = [64, 180, 296], rowY = r => 112 + r * 50;
++    let o = "";
++    if (k <= 5) {
++      const hd = [["∫P dx", 0], ["∫Q dy", 1], ["∫R dz", 2]];
++      hd.forEach(([t, i]) => { o += `<g opacity="${q2(L(0, 0, .1 + .1 * i, .7) * (k >= 4 ? 1 - .6 * L(4, 0, 0, .8) : 1))}">${vzLabel(cols[i], 62, t, VZ.ink, 19)}<line x1="${cols[i] - 40}" y1="74" x2="${cols[i] + 40}" y2="74" stroke="${VZ.ink}" stroke-opacity=".25"/></g>`; });
++      // [key, column, row, appears with (step, line), merge line (or -1), target slot]
++      const slots = [[112, 322], [198, 322], [284, 322]];
++      const T = [["a", 0, 0, 1, 0, 0], ["g", 0, 1, 1, -1], ["a", 1, 0, 2, 0, 0], ["b", 1, 1, 2, 1, 1], ["h", 1, 2, 2, -1], ["b", 2, 0, 3, 1, 1], ["c", 2, 1, 3, 2, 2], ["k", 2, 2, 3, -1]];
++      const firstOf = {};
++      T.forEach(([key, c, r, st, ml, sl], i) => {
++        const show = L(st, 1, 0, .8), src = [cols[c], rowY(r)];
++        if (ml < 0) { o += m6Tile(src[0], src[1], key, show * (1 - L(4, 0, 0, .7)), { w: 82 }); return; }
++        const e = L(4, ml, 0, 1.1), p = m6Lerp(src, slots[sl], e), dup = firstOf[key] != null;
++        if (!dup) firstOf[key] = i;
++        o += m6Tile(p[0], p[1], key, show * (dup ? 1 - vzClamp((e - .75) / .25, 0, 1) : 1), { w: 78, s: 1 });
++      });
++      const fo = L(4, 3, 0, .8);
++      if (fo > .01) o += `<g opacity="${q2(fo)}">${vzLabel(54, 329, "f =", VZ.ink, 20)}${vzLabel(155, 329, "+", VZ.grey, 20)}${vzLabel(241, 329, "+", VZ.grey, 20)}</g>`;
++      if (k === 4) {                                       // which tiles are about to merge: a pair of dotted links
++        const l0 = L(4, 0, .0, .5) * (1 - L(4, 0, .6, .5));
++        if (l0 > .02) o += `<g opacity="${q2(l0)}"><path d="M${cols[0]} ${rowY(0) + 20}V${rowY(0) + 34}M${cols[1]} ${rowY(0) + 20}V${rowY(0) + 34}" stroke="${VZ.red}" stroke-width="2"/></g>`;
++      }
++      if (k === 5) [[m6Sub("f", "x", " = 2xy = P")], [m6Sub("f", "y", " = x² + z² = Q")], [m6Sub("f", "z", " = 2yz + eᶻ = R")]].forEach(([t], j) => { const e = L(5, j, .05, .6); if (e > .01) o += `<g opacity="${q2(e)}">${vzLabel(60, 368 + j * 23, t, VZ.ink, 16, "start")}${vzLabel(300, 368 + j * 23, "✓", GR, 18)}</g>`; });
++      if (k >= 1 && k <= 3) o += `<g opacity="${q2(L(k, 1, .2, .7))}">${vzKey([["dash", VZ.grey, "unknown \"constant\""]], 16, 452)}</g>`;
++      if (k >= 4) o += vzKey([["dash", VZ.grey, "unknown \"constant\""]], 16, 452).replace('class="vz-key"', `class="vz-key" opacity="${q2(1 - L(4, 0, 0, .6))}"`);
++      const note = ["three integrals, three lists", "∫P dx: every term with x", "∫Q dy: every term with y", "∫R dz: every term with z", "a term in two lists is written once", "the three lists merge into f", "∇f = F, so f is a potential"];
++      o += stNote(180, k === 5 ? 440 : 424, note[Math.max(0, k) + (k >= 5 ? 1 : 0) + (k === 4 && b >= 3 ? 1 : 0)] || "", VZ.ink);
++      return o;
++    }
++    // the failing field G = [2xy, x² + x]: xy has no partner and g(y) cannot make a term with x
++    const c2 = [96, 264], mx = 180, e = L(6, 2, 0, 1.1);
++    [["∫P dx", 0], ["∫Q dy", 1]].forEach(([t, i]) => { o += `<g opacity="${q2(L(6, i, 0, .6))}">${vzLabel(c2[i], 62, t, VZ.ink, 19)}<line x1="${c2[i] - 40}" y1="74" x2="${c2[i] + 40}" y2="74" stroke="${VZ.ink}" stroke-opacity=".25"/></g>`; });
++    o += m6Tile(c2[0], rowY(0), "a", L(6, 0, .3, .7) * (1 - vzClamp((e - .75) / .25, 0, 1)));
++    o += m6Tile(c2[0], rowY(1), "g2", L(6, 0, .3, .7) * (1 - .5 * e));
++    const pa = m6Lerp([c2[1], rowY(0)], [mx, rowY(0)], e);
++    o += m6Tile(pa[0], pa[1], "a", L(6, 1, .3, .7));
++    const bad = k >= 7 ? 1 : L(6, 2, 1, .6);
++    o += m6Tile(c2[1], rowY(1), "d", L(6, 1, .5, .7), { bad: bad > .5 });
++    o += m6Tile(c2[1], rowY(2), "h2", L(6, 1, .7, .7));
++    if (bad > .01) o += `<g opacity="${q2(bad)}">${vzLabel(c2[1], rowY(0) + 6, "no partner", VZ.red, 16)}</g>`;
++    if (k === 7) {
++      const q = L(7, 0, .1, .7), r = L(7, 1, .1, .7);
++      o += `<g opacity="${q2(q)}">${vzLabel(mx, 280, m6Sub("P", "y", " = 2x"), VZ.ink, 19)}${vzLabel(mx, 312, m6Sub("Q", "x", " = 2x + 1"), VZ.ink, 19)}</g><g opacity="${q2(r)}">${vzLabel(mx, 350, "not equal", VZ.red, 19)}</g>`;
++    }
++    o += stNote(180, 424, k === 7 ? "not conservative: no potential exists" : "xy has no partner, and g(y) can't make one", VZ.ink);
++    return o;
++  },
++  steps: [
++    { t: "Name P, Q, R; the plan", tex: ["P=2xy,\\qquad Q=x^2+z^2,\\qquad R=2yz+e^z", "\\mathbf F=\\nabla f\\iff f_x=P,\\ f_y=Q,\\ f_z=R"],
++      why: "We want an \\(f\\) whose three partials are \\(P\\), \\(Q\\), \\(R\\). Plan: integrate each component on its own, then combine what we find.", sum: "\\(f_x=P,\\ f_y=Q,\\ f_z=R\\)" },
++    { t: "Integrate P in x", tex: ["\\int 2xy\\,dx", "=x^2y+g(y,z)"],
++      why: "Integrating in \\(x\\) finds every term of \\(f\\) containing \\(x\\). The \"constant\" \\(g\\) can be anything that has no \\(x\\): it depends on \\(y\\) and \\(z\\).", sum: "\\(x^2y+g(y,z)\\)" },
++    { t: "Integrate Q in y", tex: ["\\int (x^2+z^2)\\,dy", "=x^2y+yz^2+h(x,z)"],
++      why: "Now treat \\(x\\) and \\(z\\) as constants. This time the \"constant\" \\(h\\) depends on \\(x\\) and \\(z\\).", sum: "\\(x^2y+yz^2+h(x,z)\\)" },
++    { t: "Integrate R in z", tex: ["\\int (2yz+e^z)\\,dz", "=yz^2+e^z+k(x,y)"],
++      why: "The same again with \\(z\\). The \\(e^z\\) term integrates to itself.", sum: "\\(yz^2+e^z+k(x,y)\\)" },
++    { t: "Merge the lists", tex: ["x^2y\\ \\text{is in lists 1 and 2: write it once}", "yz^2\\ \\text{is in lists 2 and 3: write it once}", "e^z\\ \\text{is only in list 3: keep it}", "f=x^2y+yz^2+e^z"],
++      why: "A term of \\(f\\) shows up in every list it belongs to, so a term found twice is one term, not two. The unknown \"constants\" are covered by the other lists, so they drop out.", sum: "\\(f=x^2y+yz^2+e^z\\)" },
++    { t: "Check ∇f = F", tex: ["f_x=2xy=P", "f_y=x^2+z^2=Q", "f_z=2yz+e^z=R"],
++      why: "Always differentiate your answer. All three match, so \\(f\\) is a potential.", sum: "\\(\\nabla f=\\mathbf F\\) ✓" },
++    { t: "When it fails: G = [2xy, x² + x]", tex: ["\\int 2xy\\,dx=x^2y+g(y)", "\\int (x^2+x)\\,dy=x^2y+xy+h(x)", "x^2y\\ \\text{merges; } xy\\ \\text{has no partner}"],
++      why: "The term \\(xy\\) appears only in list 2. List 1 could hide it only inside \\(g(y)\\), but \\(g\\) has no \\(x\\) and cannot make it. So the lists cannot be merged.", sum: "\\(xy\\) has no partner" },
++    { t: "So G has no potential", tex: ["P_y=2x,\\qquad Q_x=2x+1", "P_y\\ne Q_x\\ \\Rightarrow\\ \\mathbf G\\text{ is not conservative}"],
++      why: "The mismatch is the same fact the curl test sees: \\(P_y\\) and \\(Q_x\\) differ, so no \\(f\\) can have \\(f_{xy}=f_{yx}\\) for both.", sum: "\\(\\mathbf G\\) is not conservative" },
++  ],
++});
++
++
++stAdd({
++  id: "m-isgrad", title: "Is this field conservative?", card: "Conservative? The test",
++  tagline: "Compare P_y with Q_x, then check the region for holes.",
++  blurb: "If \\(\\mathbf F=\\nabla f\\) then \\(P_y=f_{xy}=f_{yx}=Q_x\\), so a field that fails \\(P_y=Q_x\\) is never conservative. The converse needs one more condition: the region must have no holes. Without it, \\(P_y=Q_x\\) can pass and the field can still circulate.",
++  problem: "Test \\(\\mathbf F=[3x^2y,\\ x^3+2y]\\) and \\(\\mathbf H=[xy,\\ x^2]\\). Then look at \\(\\mathbf K=\\dfrac{[-y,\\ x]}{x^2+y^2}\\): it passes the test, so is it conservative?",
++  picLive: true,
++  pic(k, b, u) {
++    const L = stLines(this, k, b, u), T = performance.now() / 1000;
++    let o = "";
++    const arrows = (P, f, nx, ny, op, tame) => {
++      let s = `<g opacity="${q2(op)}">`;
++      for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
++        const x = (i - (nx - 1) / 2) * tame[0], y = (j - (ny - 1) / 2) * tame[1], v = f(x, y), m = Math.hypot(v[0], v[1]);
++        if (m < 1e-6) continue; const len = tame[2] * Math.tanh(m / tame[3]);
++        if (len > 3) s += vzArrow(P.X(x) - v[0] / m * len / 2, P.Y(y) + v[1] / m * len / 2, P.X(x) + v[0] / m * len / 2, P.Y(y) - v[1] / m * len / 2, "I", 1.8);
++      }
++      return s + `</g>`;
++    };
++    const bars = (hp, hq, ok, op) => {                    // P_y and Q_x at one sample point, side by side: equal or not equal
++      let s = `<g opacity="${q2(op)}">`;
++      [[120, hp, VZ.red, "P", "y"], [240, hq, VZ.ink, "Q", "x"]].forEach(([cx, h, col, n, sb]) => {
++        s += `<rect x="${cx - 24}" y="${q2(396 - h)}" width="48" height="${q2(h)}" rx="5" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="1.8"/>` + vzLabel(cx, 418, m6Sub(n, sb, ""), col, 18);
++      });
++      return s + vzLabel(180, 372, ok ? "=" : "≠", ok ? "#2F7A4A" : VZ.red, 30) + `</g>`;
++    };
++    if (k <= 1) {
++      const P = stPlane(180, 190, 40), g = k === 0 ? (x, y) => [3 * x * x * y, x * x * x + 2 * y] : (x, y) => [x * y, x * x];
++      o += P.axes(.2) + arrows(P, g, 7, 5, k === 0 ? L(0, 0, .1, 1) : L(1, 0, .1, 1), [1, 1, 26, k === 0 ? 8 : 2.5]);
++      const e = k === 0 ? L(0, 2, .1, .9) : L(1, 2, .1, .9);
++      o += k === 0 ? bars(66, 66, true, e) : bars(22, 44, false, e);
++      return o + stNote(180, 448, k === 0 ? m6Sub("P", "y", "") + " and " + m6Sub("Q", "x", " agree: passes the test") : m6Sub("P", "y", "") + " and " + m6Sub("Q", "x", " differ: not conservative"), VZ.ink);
++    }
++    // K = [−y, x]/(x² + y²) circulates around the origin, which is missing from its domain
++    const P = stPlane(180, 215, 60), K = (x, y) => { const r2 = x * x + y * y; return [-y / r2, x / r2]; };
++    const hole = () => `<circle cx="180" cy="215" r="7" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="3 2"/>`;
++    if (k <= 4) {
++      o += P.axes(.18) + arrows(P, K, 5, 5, k === 2 ? L(2, 0, .1, 1) : .5, [1.1, 1.1, 24, .9]) + hole();
++      if (k >= 3) {
++        const e = k === 3 ? L(3, 2, .5, 4.6) : 1, th = 2 * Math.PI * e, R = 60;
++        const arc = th > .02 ? `<path d="M${P.X(1)} ${P.Y(0)}A${R} ${R} 0 ${th > Math.PI ? 1 : 0} 0 ${q2(180 + R * Math.cos(th))} ${q2(215 - R * Math.sin(th))}" fill="none" stroke="${VZ.red}" stroke-width="5" stroke-linecap="round"/>` : "";
++        o += `<g opacity="${q2(L(3, 0, .1, .8))}"><circle cx="180" cy="215" r="${R}" fill="none" stroke="${VZ.grey}" stroke-width="1.4" stroke-dasharray="4 4"/></g>` + arc;
++        if (k === 3 && L(3, 2, 0, .4) > .02) { const wx = 180 + R * Math.cos(th), wy = 215 - R * Math.sin(th), tx = -Math.sin(th), ty = -Math.cos(th); o += `<g opacity="${q2(L(3, 2, 0, .4))}">${vzArrow(wx, wy, wx + tx * 30, wy + ty * 30, "R", 2.6)}<circle cx="${q2(wx)}" cy="${q2(wy)}" r="5.5" fill="${VZ.red}" stroke="#fff" stroke-width="2"/></g>`; }
++        const gl = L(3, 2, .1, .5);
++        o += `<g opacity="${q2(gl)}"><rect x="50" y="368" width="260" height="10" rx="5" fill="${VZ.ink}" fill-opacity=".1"/><rect x="50" y="368" width="${q2(260 * e)}" height="10" rx="5" fill="${VZ.red}"/>${vzLabel(180, 400, "circulation so far", VZ.ink, 16)}</g>`;
++      }
++      const note = [m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), "walk once around the origin", "circulation is not 0: a hole fools the test"][k];
++      return o + stNote(180, 448, note, VZ.ink);
++    }
++    // k = 5: a loop can shrink to a point only if there is no hole
++    const cs = Math.cos(T * 1.1) * .5 + .5, wob = L(5, 0, .1, .8);
++    o += `<g opacity="${q2(wob)}">`;
++    [[96, "no hole", false], [264, "a hole", true]].forEach(([cx, nm, hl]) => {
++      const R = hl ? 26 + 30 * cs : 4 + 52 * cs;
++      o += `<ellipse cx="${cx}" cy="190" rx="70" ry="66" fill="${VZ.gold}" fill-opacity=".14" stroke="${VZ.gold}" stroke-width="1.6"/>` + (hl ? `<circle cx="${cx}" cy="190" r="22" fill="${VZ.paper}" stroke="${VZ.gold}" stroke-width="1.6" stroke-dasharray="4 3"/>` : "") + `<circle cx="${cx}" cy="190" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="3"/>` + vzLabel(cx, 292, nm, VZ.ink, 18);
++    });
++    o += `</g>`;
++    return o + `<g opacity="${q2(L(5, 1, .1, .8))}">${stNote(180, 440, "curl 0 and no holes: conservative", VZ.ink)}</g>`;
++  },
++  steps: [
++    { t: "Test F: compare P_y and Q_x", tex: ["P=3x^2y,\\qquad Q=x^3+2y", "P_y=3x^2,\\qquad Q_x=3x^2", "P_y=Q_x\\ \\text{ on all of the plane (no holes)}"],
++      why: "If \\(\\mathbf F=\\nabla f\\), mixed partials of \\(f\\) agree, so \\(P_y\\) must equal \\(Q_x\\). Here they do, and the plane has no holes, so \\(\\mathbf F\\) is conservative.", sum: "\\(P_y=Q_x\\): \\(\\mathbf F\\) conservative" },
++    { t: "A field that fails", tex: ["P=xy,\\qquad Q=x^2", "P_y=x,\\qquad Q_x=2x", "P_y\\ne Q_x\\ \\Rightarrow\\ \\mathbf H\\text{ is not conservative}"],
++      why: "One mismatch is enough: no potential \\(f\\) can exist. (There is nothing to check about holes in this direction.)", sum: "\\(P_y\\neq Q_x\\): \\(\\mathbf H\\) not conservative" },
++    { t: "The trap: K passes the test", tex: ["P=\\dfrac{-y}{x^2+y^2},\\qquad Q=\\dfrac{x}{x^2+y^2}", "P_y=\\dfrac{y^2-x^2}{(x^2+y^2)^2}=Q_x", "\\text{for every point except }(0,0)"],
++      why: "Differentiate with the quotient rule. The two partials agree everywhere \\(\\mathbf K\\) is defined. But \\(\\mathbf K\\) is not defined at the origin: the domain has a hole.", sum: "\\(P_y=Q_x\\) away from \\((0,0)\\)" },
++    { t: "Walk around the hole", tex: ["\\mathbf r(t)=[\\cos t,\\ \\sin t],\\qquad 0\\le t\\le2\\pi", "\\mathbf K(\\mathbf r(t))=[-\\sin t,\\ \\cos t],\\qquad \\mathbf r'(t)=[-\\sin t,\\ \\cos t]", "\\mathbf K\\cdot\\mathbf r'=\\sin^2t+\\cos^2t=1", "\\oint\\mathbf K\\cdot d\\mathbf r=\\int_0^{2\\pi}1\\,dt=2\\pi"],
++      why: "The field points along the circle the whole way round, so the circulation only grows.", sum: "\\(\\oint\\mathbf K\\cdot d\\mathbf r=2\\pi\\)" },
++    { t: "So K is not conservative", tex: ["\\oint\\mathbf K\\cdot d\\mathbf r=2\\pi\\ne0\\ \\Rightarrow\\ \\mathbf K\\text{ is not conservative}"],
++      why: "In a conservative field every closed loop gives 0. The test \\(P_y=Q_x\\) was fooled by the missing point.", sum: "\\(2\\pi\\neq0\\): \\(\\mathbf K\\) not conservative" },
++    { t: "The rule", tex: ["\\text{curl}=0\\ \\text{ on a region with no holes}\\ \\Rightarrow\\ \\mathbf F\\text{ conservative}", "\\text{2D: }P_y=Q_x\\qquad\\text{3D: }\\nabla\\times\\mathbf F=\\mathbf 0"],
++      why: "A loop in a region with no holes can shrink to a point, which forces the circulation to 0. With a hole it cannot. Always check both: the curl and the region.", sum: "curl \\(0\\) + no holes \\(\\Rightarrow\\) conservative" },
++  ],
++});
++
++
++stAdd({
++  id: "m-setup", title: "Which integral? Set it up", card: "Set up: ds, dr, or dA?",
++  tagline: "Decide ds, dr or dA, then parametrize and stop at the integral.",
++  blurb: "Three questions pick the integral. Is the thing spread along a curve, as a weight or an area (\\(ds\\))? Is it a field pushing along a curve (\\(d\\mathbf r\\))? Or is it spread over a flat region (\\(dA\\))? Then parametrize, plug in, and write one ordinary integral in \\(t\\). That is the set-up; evaluating it is a separate skill.",
++  problem: "Set up, but do not evaluate: (a) the area of the ribbon standing on the curve \\(y=x^2\\), \\(0\\le x\\le1\\), up to the surface \\(z=x+y\\); (b) the work done by \\(\\mathbf F=[y^2,\\ x]\\) along the straight segment from \\(P=(1,2)\\) to \\(Q=(4,-1)\\).",
++  picLive: true,
++  pic(k, b, u) {
++    const L = stLines(this, k, b, u), T = performance.now() / 1000;
++    let o = "";
++    if (k <= 0) {                                          // three kinds of "thing", three small pictures
++      const rows = [[92, "spread along a curve: ds"], [220, "a field along a curve: dr"], [350, "spread over a region: dA"]];
++      rows.forEach(([cy, txt], i) => {
++        const e = L(0, i, .1, .8);
++        o += `<g opacity="${q2(e)}">`;
++        if (i === 0) o += `<path d="M30 ${cy + 16}C70 ${cy + 40} 110 ${cy - 6} 150 ${cy + 14}L150 ${cy - 22}C110 ${cy - 42} 70 ${cy - 4} 30 ${cy - 20}Z" fill="${VZ.gold}" fill-opacity=".25" stroke="${VZ.gold}" stroke-width="1.4"/><path d="M30 ${cy + 16}C70 ${cy + 40} 110 ${cy - 6} 150 ${cy + 14}" fill="none" stroke="${VZ.red}" stroke-width="3" stroke-linecap="round"/>`;
++        if (i === 1) { o += `<line x1="30" y1="${cy + 18}" x2="150" y2="${cy - 14}" stroke="${VZ.red}" stroke-width="3" stroke-linecap="round"/>`; [0, 1, 2, 3].forEach(j => { const x = 46 + j * 32, y = cy + 14 - j * 8.6 - 22; o += vzArrow(x - 10, y + 2, x + 12, y - 2 - j * 1.5, "I", 1.8); }); }
++        if (i === 2) o += `<path d="M34 ${cy + 4}C30 ${cy - 30} 80 ${cy - 40} 120 ${cy - 26}C160 ${cy - 14} 158 ${cy + 24} 110 ${cy + 28}C70 ${cy + 34} 38 ${cy + 30} 34 ${cy + 4}Z" fill="${VZ.gold}" fill-opacity=".25" stroke="${VZ.gold}" stroke-width="1.6" stroke-dasharray="5 4"/>`;
++        o += stNote(172, cy + 5, txt, VZ.ink, "start") + `</g>`;
++      });
++      return o;
++    }
++    if (k <= 3) {                                          // (a) the ribbon on y = x² up to z = x + y
++      const c0 = vzCam(180, 350, 100, vzRad(-24), .5), cam = (x, y, z) => c0(1.7 * (x - .5), 1.7 * (y - .5), z * .95);
++      const cv = t => [t, t * t, 0], top = t => [t, t * t, t + t * t];
++      const N = 36, e = k === 1 ? L(1, 0, .2, .9) : 1, ee = k === 2 ? L(2, 0, .2, 1.1) : k > 2 ? 1 : 0, rise = k === 3 ? L(3, 0, .1, 1.3) : k > 3 ? 1 : 0, rise2 = k <= 1 ? (k === 1 ? L(1, 0, .6, 1.4) : 0) : 1;
++      o += vzAxes3(cam, 1.5, .25);
++      const rz = k === 1 ? rise2 : 1;                      // the ribbon rises from the curve
++      const pts = []; for (let i = 0; i <= N; i++) { const t = i / N; pts.push(cv(t)); }
++      const sc = q => { const c = cam(q[0], q[1], q[2]); return q2(c[0]) + " " + q2(c[1]); };
++      if (rz > .01) {
++        const bot = pts.map(sc), topp = pts.map(p => sc([p[0], p[1], (p[0] + p[1]) * rz])).reverse();
++        o += `<path d="M${bot.join("L")}L${topp.join("L")}Z" fill="${VZ.gold}" fill-opacity="${q2(.26 * rz)}" stroke="none"/>`;
++        for (let i = 0; i <= N; i += 3) { const p = pts[i]; o += vzPath3(cam, [p, [p[0], p[1], (p[0] + p[1]) * rz]], `stroke="${VZ.gold}" stroke-width="1" stroke-opacity=".55"`); }
++        o += vzPath3(cam, pts.map(p => [p[0], p[1], (p[0] + p[1]) * rz]), `stroke="${VZ.gold}" stroke-width="2"`);
++      }
++      o += vzPath3(cam, pts.slice(0, Math.max(2, Math.round(N * (k === 1 ? 1 : 1))) + 1), `stroke="${VZ.red}" stroke-width="3.4" stroke-linecap="round"`);
++      if (k >= 2) {                                        // the tangent r'(t) at t = .6, with its length as the "stretch"
++        const t = .6, p = cv(t), d = [1, 2 * t, 0], s = .32;
++        o += `<g opacity="${q2(L(2, 1, .1, .8))}">${vzArrow3(cam, p, [p[0] + d[0] * s, p[1] + d[1] * s, 0], "D", 3)}${vzLab3(cam, [p[0] + d[0] * s, p[1] + d[1] * s, 0], "r′(t)", VZ.deep, 26, 12, 16)}</g>`;
++      }
++      if (k === 3) { const q = [.8, .64, 0], h = (.8 + .64) * L(3, 0, .1, 1); o += `<g opacity="${q2(L(3, 0, .1, .8))}">${vzPath3(cam, [q, [q[0], q[1], h]], `stroke="${VZ.red}" stroke-width="3" stroke-linecap="round"`)}${vzLab3(cam, [q[0], q[1], h / 2], "f(r(t))", VZ.deep, 46, 4, 16)}</g>`; }
++      o += vzLab3(cam, [0, 0, 0], "start", VZ.ink, -22, 18, 14);
++      const note = ["a ribbon on a curve, up to the surface", "the curve: parametrize it", "the stretch factor is the speed |r′|", "height f(r(t)) times a bit of length"][k];
++      return o + stNote(180, 444, note, VZ.ink);
++    }
++    // (b) the force along the segment P → Q, F = [y², x]
++    const Pl = stPlane(52, 250, 62), Pp = [1, 2], Qp = [4, -1], F = (x, y) => [y * y, x];
++    o += Pl.axes(.18);
++    const fa = k === 4 ? L(4, 0, .1, 1) : .35;
++    o += `<g opacity="${q2(fa)}">`;
++    for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) { const x = .6 + i * .9, y = -1.6 + j * 1.1, v = F(x, y), m = Math.hypot(v[0], v[1]) || 1, len = 22 * Math.tanh(m / 2.2); if (len > 3) o += vzArrow(Pl.X(x) - v[0] / m * len / 2, Pl.Y(y) + v[1] / m * len / 2, Pl.X(x) + v[0] / m * len / 2, Pl.Y(y) - v[1] / m * len / 2, "I", 1.6); }
++    o += `</g>`;
++    const se = k === 4 ? L(4, 0, .3, 1) : k === 5 ? 1 : 1, g = k === 5 ? L(5, 0, .1, 1.1) : 1;
++    const E = [Pp[0] + (Qp[0] - Pp[0]) * se * g, Pp[1] + (Qp[1] - Pp[1]) * se * g];
++    o += `<g opacity="${q2(se)}">${Pl.arrow(Pp, [Qp[0], Qp[1]], "R", 3.2)}${Pl.dot(Pp, 5.5, VZ.red)}${Pl.dot(Qp, 5.5, VZ.red)}${vzLabel(Pl.X(1) - 10, Pl.Y(2) - 12, "P", VZ.deep, 19)}${vzLabel(Pl.X(4) + 4, Pl.Y(-1) + 24, "Q", VZ.deep, 19)}</g>`;
++    if (k >= 6) {                                          // a walker with F and r′ at each moment
++      const ph = (T / 3.6) % 1, tt = ph * ph * (3 - 2 * ph), op = Math.min(1, ph / .1, (1 - ph) / .1) * L(6, 0, .1, .8);
++      const x = 1 + 3 * tt, y = 2 - 3 * tt, f = F(x, y), m = Math.hypot(f[0], f[1]), len = 34 * Math.tanh(m / 3);
++      o += `<g opacity="${q2(op)}">${vzArrow(Pl.X(x), Pl.Y(y), Pl.X(x) + f[0] / m * len, Pl.Y(y) - f[1] / m * len, "D", 2.8)}<circle cx="${q2(Pl.X(x))}" cy="${q2(Pl.Y(y))}" r="6" fill="${VZ.red}" stroke="#fff" stroke-width="2"/></g>`;
++    }
++    const note = ["a force pushing along a path", "the segment: P + t(Q − P)", "F at the point, dotted with r′", "set up: an integral in t, nothing more"][k - 4];
++    return o + stNote(180, 444, note, VZ.ink);
++  },
++  steps: [
++    { t: "Which integral? Three questions", tex: ["\\text{weight along a curve:}\\ \\int_C f\\,ds=\\int f(\\mathbf r(t))\\,|\\mathbf r'(t)|\\,dt", "\\text{push along a curve:}\\ \\int_C\\mathbf F\\cdot d\\mathbf r=\\int\\mathbf F(\\mathbf r(t))\\cdot\\mathbf r'(t)\\,dt", "\\text{over a flat region:}\\ \\iint_D f\\,dA"],
++      why: "Ask what is being added up and where it lives. A number per unit length uses \\(ds\\); a force along a path uses \\(d\\mathbf r\\), which also remembers direction; a region uses \\(dA\\).", sum: "\\(ds\\): weight, \\(d\\mathbf r\\): push, \\(dA\\): region" },
++    { t: "(a) Read the problem: a ribbon", tex: ["\\text{ribbon of height } f(x,y)=x+y\\text{ standing on } C", "\\text{area}=\\int_C f\\,ds"],
++      why: "A ribbon standing on a curve has height \\(f\\) at each point and a bit of length \\(ds\\), so its area is height times length, added up along \\(C\\). That is a \\(ds\\) integral.", sum: "area \\(=\\int_C f\\,ds\\)" },
++    { t: "Parametrize the curve; find the speed", tex: ["\\mathbf r(t)=[t,\\ t^2],\\qquad 0\\le t\\le1", "\\mathbf r'(t)=[1,\\ 2t],\\qquad |\\mathbf r'(t)|=\\sqrt{1+4t^2}"],
++      why: "Use \\(x=t\\) as the parameter. \\(ds=|\\mathbf r'(t)|\\,dt\\): the speed turns a bit of \\(t\\) into a bit of length.", sum: "\\(\\mathbf r=[t,t^2],\\ |\\mathbf r'|=\\sqrt{1+4t^2}\\)" },
++    { t: "Plug in and stop", tex: ["f(\\mathbf r(t))=t+t^2", "\\int_C f\\,ds=\\int_0^1(t+t^2)\\sqrt{1+4t^2}\\,dt"],
++      why: "Replace \\(x\\) and \\(y\\) in \\(f\\) by \\(t\\) and \\(t^2\\), and multiply by the speed. This is the set-up: one ordinary integral in \\(t\\).", sum: "\\(\\int_0^1(t+t^2)\\sqrt{1+4t^2}\\,dt\\)" },
++    { t: "(b) Read the problem: work", tex: ["\\text{work of a force along a path}", "W=\\int_C\\mathbf F\\cdot d\\mathbf r"],
++      why: "A force along a path: only the part of \\(\\mathbf F\\) that points along the motion does work, which is exactly what the dot product with \\(d\\mathbf r\\) measures.", sum: "work \\(=\\int_C\\mathbf F\\cdot d\\mathbf r\\)" },
++    { t: "Parametrize the segment", tex: ["\\mathbf r(t)=P+t\\,(Q-P),\\qquad 0\\le t\\le1", "=[1,\\,2]+t\\,[3,\\,-3]=[1+3t,\\ 2-3t]", "\\mathbf r'(t)=[3,\\ -3]"],
++      why: "A straight segment: start at \\(P\\), move along \\(Q-P\\). \\(t=0\\) is \\(P\\) and \\(t=1\\) is \\(Q\\). The velocity is the constant \\(Q-P\\).", sum: "\\(\\mathbf r=[1+3t,\\,2-3t],\\ \\mathbf r'=[3,-3]\\)" },
++    { t: "Plug in, dot, and stop", tex: ["\\mathbf F(\\mathbf r(t))=[(2-3t)^2,\\ 1+3t]", "\\mathbf F\\cdot\\mathbf r'=3(2-3t)^2-3(1+3t)=27t^2-45t+9", "W=\\int_0^1(27t^2-45t+9)\\,dt"],
++      why: "Put \\(x=1+3t\\), \\(y=2-3t\\) into \\(\\mathbf F\\), then dot with \\(\\mathbf r'\\). One integral in \\(t\\) is left.", sum: "\\(W=\\int_0^1(27t^2-45t+9)\\,dt\\)" },
++    { t: "That is what \"set up\" means", tex: [{ html: "Decide the integral, parametrize, plug in, and write <b>one ordinary integral in \\(t\\)</b> with its limits. Doing that integral is a separate step." }],
++      why: "Most of the marks, and most of the thinking, are in the set-up. Evaluating comes after.", sum: "stop at the integral in \\(t\\)" },
++  ],
++});
++
+ /* ---- wave-6 spacer 1 ---- */
+ /* ---- wave-6 spacer 2 ---- */
+ /* ---- wave-6 spacer 3 ---- */

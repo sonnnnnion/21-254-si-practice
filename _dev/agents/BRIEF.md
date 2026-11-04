@@ -151,3 +151,34 @@ simple controls, things collapsed by default.
 - Check light AND dark theme if the page has one, and phone width 390 px. Run monkey.mjs (all pages, page errors) before
   you finish; methods: steps.mjs; pictures: chaos.mjs + flicker.mjs on ids you touched.
 - Be economical with usage: grep + offset reads, contact sheets, one tool run at a time.
+
+---
+# Sixth wave (agents e1–e4, from 2026-11-03): NEW vector-calculus content
+The class is now on vector calculus. The owner (an SI leader for the course) greenlit an ambitious set of additions and
+wants them at **the same polish as the best existing pictures and methods** (the home-page hero animations, `riemann`,
+`fields`, `m-potential`). Read the whole brief above first: the standing rules (short text, smooth motion, no
+overlaps, legends, correct math, careless-user robustness) all apply. Wave-4/5 "no new features" rules do NOT apply.
+- Starting copy and diff base: `~/Desktop/21-254/agents/base6/` (= live 36ea9ad + the new ids registered + placeholders).
+  Your copy `~/Desktop/21-254/agents/eN/`, already served at `http://127.0.0.1:835N/`. Scratch `/private/tmp/claude-501/agents/eN/`.
+  Patch: `cd ~/Desktop/21-254/agents && diff -ru base6 eN > eN.patch`. **Regenerate it after every verified piece** so the
+  patch on disk is always a working state.
+- **Where your code goes:** replace ONLY your line `/* @@AGENT-EN PLACEHOLDER (...) @@ */` (just before `const VZ_TAGLINE = {`)
+  with your `vzAdd({...})` / `stAdd({...})` blocks plus any helpers they need. Helper names must start with your prefix
+  (given in your prompt). CSS: put it on the lines just below `/* @@CSS-EN ... @@ */` (near the end of the main
+  stylesheet), or in a scoped `<style>` inside your own panel HTML (as `tool-det` does). Never edit the spacer lines.
+- Your ids are ALREADY registered in `VZ_GROUP_OF` (index order) and `VZ_SECTION_OF` ("Practice this" links). Do not
+  edit those, the shared helpers, or the runtime, except where your own prompt explicitly allows a small additive hook.
+- Examples are ours: never copy problems from past exams or from the owner's SI worksheets (functions used there, to
+  avoid: x³−3x+y²; √(x²+y²), x²−y², x²+y², xy as a matching set; [−2x−2y, −2x+6y]; [−sin y, −4y−x cos y];
+  [xy², x²y, xyz²]; [cos(xy²), sin(x²y), e^{xyz²}]; [eˣ²−y, y³+x, …]; [y, x, z²]; x²y+e^{x+y}). Text must not mention exams.
+- **Area / integral pictures carry no computed numbers on the picture itself** (words or nothing; numbers go in the
+  side readout). Equal numbers that ARE the point (path independence) may stay.
+- Text: `tagline` one short line, `tryIt` under ~70 characters, `blurb` (collapsed "The idea") 1–3 sentences. Method
+  steps: `t` a few words, `why` one or two short sentences. Don't intimidate students.
+- Colour meaning always gets a legend (`vzKey` and friends). Reuse the site palette `VZ` (red, deep, ink, grey, gold…).
+- Before finishing: for pictures `chaos.mjs` + `flicker.mjs` + a Play filmstrip (`film.mjs` + `sheet.mjs`) you have
+  LOOKED at; for methods `steps.mjs` + `methflicker.mjs`; for any page `monkey.mjs` once (page errors); phone width
+  390 px screenshots. Verify every formula and number with sympy (`~/anaconda3/bin/python3`).
+- 4 agents share this machine: one headless tool at a time, contact sheets instead of many single images.
+- Final report (your last message) under ~350 words: what you built (ids), what you verified and how, known limits,
+  anything you changed outside your placeholder (should be nothing unless your prompt allowed it).

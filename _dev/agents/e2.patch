@@ -1,0 +1,460 @@
+diff -ru base6/index.html e2/index.html
+--- base6/index.html	2026-11-03 19:38:41
++++ e2/index.html	2026-11-03 20:28:08
+@@ -21941,7 +21941,455 @@
+ /* ---- wave-6 spacer 5 ---- */
+ /* ---- wave-6 spacer 6 ---- */
+ /* ---- wave-6 spacer 7 ---- */
+-/* @@AGENT-E2 PLACEHOLDER (pictures crit3d, evt, probe, zoo) @@ */
++/* ---------- Critical points of a bumpy surface (crit3d) ---------- */
++// Three functions of our own. Each lists its critical points (checked with sympy), its gradient and its second derivatives.
++const VZ6_BUMPS = [[1.5, 1, .4, .8], [1.1, -1.2, -.7, .6], [-1.2, -.1, 1.3, .5]];   // [height, centre x, centre y, width²]
++function vzSixBump(x, y) {
++  let f = .06 * (x * x + y * y), gx = .12 * x, gy = .12 * y, hxx = .12, hxy = 0, hyy = .12;
++  VZ6_BUMPS.forEach(([A, cx, cy, w]) => {
++    const dx = x - cx, dy = y - cy, e = A * Math.exp(-(dx * dx + dy * dy) / w);
++    f += e; gx += e * -2 * dx / w; gy += e * -2 * dy / w;
++    hxx += e * (4 * dx * dx / (w * w) - 2 / w); hxy += e * 4 * dx * dy / (w * w); hyy += e * (4 * dy * dy / (w * w) - 2 / w);
++  });
++  return { f, g: [gx, gy], h: [hxx, hxy, hyy] };
++}
++const VZ6_CR = [
++  { name: "two hills, a pit and a bowl", R: 2.8, hk: 3,
++    at: (x, y) => vzSixBump(x, y),
++    crit: [[-2.2952698430, -1.3389075633], [-1.2398553964, -.7233630210], [-.1560285791, 1.3147617419], [-.1518937499, -.2676724401], [.2870996846, -1.2296788989], [1.0540123573, .3968904999], [2.4161514834, .9662680925]] },
++  { name: "x³ − 3xy², a monkey saddle", R: 1.5, hk: 1, note: "a monkey saddle: up, down, up, down, up, down",
++    at: (x, y) => ({ f: x * x * x - 3 * x * y * y, g: [3 * x * x - 3 * y * y, -6 * x * y], h: [6 * x, -6 * y, -6 * x] }),
++    crit: [[0, 0]] },
++  { name: "x⁴ + y⁴, a flat-bottomed bowl", R: 1.5, hk: 14, note: "a flat-bottomed bowl: really a minimum",
++    at: (x, y) => ({ f: x ** 4 + y ** 4, g: [4 * x ** 3, 4 * y ** 3], h: [12 * x * x, 0, 12 * y * y] }),
++    crit: [[0, 0]] },
++];
++const VZ6_TYPE = { max: ["a local maximum", VZ.red], min: ["a local minimum", VZ.ink], saddle: ["a saddle point", VZ.gold], tbd: ["a point where the test can't decide", VZ.grey] };
++// per function, worked out once: range, steepest slope, the marks, the contour map as a picture
++function vz6Info(i) {
++  vz6Info.c = vz6Info.c || {};
++  if (vz6Info.c[i]) return vz6Info.c[i];
++  const K = VZ6_CR[i], R = K.R, N = 56, I = {};
++  const F = Array.from({ length: N + 1 }, (_, j) => Array.from({ length: N + 1 }, (_, k) => K.at(-R + 2 * R * k / N, -R + 2 * R * j / N).f));
++  let lo = Infinity, hi = -Infinity, G = 0;
++  F.forEach(r => r.forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v); }));
++  for (let j = 0; j <= 30; j++) for (let k = 0; k <= 30; k++) G = Math.max(G, Math.hypot(...K.at(-R + 2 * R * k / 30, -R + 2 * R * j / 30).g));
++  I.lo = lo; I.hi = hi; I.G = G; I.G0 = G * .3; I.mid = (lo + hi) / 2; I.zs = 2.4 / (hi - lo); I.F = F;
++  I.marks = K.crit.map(([x, y]) => {
++    const a = K.at(x, y), D = a.h[0] * a.h[2] - a.h[1] * a.h[1];
++    return { x, y, nx: x / R, ny: y / R, f: a.f, type: Math.abs(D) < 1e-3 ? "tbd" : D < 0 ? "saddle" : a.h[0] > 0 ? "min" : "max" };
++  });
++  const W = 96, cv = document.createElement("canvas"); cv.width = cv.height = W;
++  const cx = cv.getContext("2d"), im = cx.createImageData(W, W);
++  for (let j = 0; j < W; j++) for (let k = 0; k < W; k++) {
++    const v = K.at(-R + 2 * R * (k + .5) / W, R - 2 * R * (j + .5) / W).f, c = VZ_RAMP((v - lo) / (hi - lo)), p = 4 * (j * W + k);
++    im.data[p] = c[0]; im.data[p + 1] = c[1]; im.data[p + 2] = c[2]; im.data[p + 3] = 255;
++  }
++  cx.putImageData(im, 0, 0); I.img = cv.toDataURL();
++  let d = "";   // 14 level curves on the map (map pixels: 126 per half-width)
++  for (let q = 1; q < 15; q++) d += vzContour(F, N, N, -R, -R, 2 * R / N, 2 * R / N, lo + (hi - lo) * q / 15).map(([a, b]) => `M${q2(150 + 126 * a[0] / R)} ${q2(250 - 126 * a[1] / R)}L${q2(150 + 126 * b[0] / R)} ${q2(250 - 126 * b[1] / R)}`).join("");
++  I.contours = d;
++  const E = 1.9, n = 18;   // the surface mesh (turned by the camera, never rebuilt)
++  I.surf = Array.from({ length: n + 1 }, (_, a) => Array.from({ length: n + 1 }, (_, b) => { const nx = -1 + 2 * a / n, ny = -1 + 2 * b / n; return [nx * E, ny * E, (K.at(nx * R, ny * R).f - I.mid) * I.zs]; }));
++  return (vz6Info.c[i] = I);
++}
++// the ball's way downhill from (u, v): follows −∇f, in steps of about the same length, until it settles (or reaches the rim)
++function vz6Path(i, u, v) {
++  const K = VZ6_CR[i], I = vz6Info(i), R = K.R, key = i + "|" + u.toFixed(4) + "," + v.toFixed(4);
++  if (vz6Path.k === key) return vz6Path.v;
++  const h = .025 * R / I.G * K.hk, pts = [[u, v]], cum = [0];
++  let x = u * R, y = v * R, out = false, px = u, py = v;
++  for (let n = 0; n < 2500; n++) {
++    const g = K.at(x, y).g, dx = -g[0] * h, dy = -g[1] * h;
++    if (Math.hypot(dx, dy) < 2e-5 * R) break;
++    x += dx; y += dy;
++    if (Math.abs(x) > .97 * R || Math.abs(y) > .97 * R) { const k = Math.min(1, .97 * R / Math.max(Math.abs(x), Math.abs(y))); x *= k; y *= k; out = true; }
++    if (out || Math.hypot(x / R - px, y / R - py) >= .004) { cum.push(cum[cum.length - 1] + Math.hypot(x / R - px, y / R - py)); pts.push([x / R, y / R]); px = x / R; py = y / R; }
++    if (out) break;
++  }
++  if (Math.hypot(x / R - px, y / R - py) > 1e-9) { cum.push(cum[cum.length - 1] + Math.hypot(x / R - px, y / R - py)); pts.push([x / R, y / R]); }
++  return (vz6Path.k = key, vz6Path.v = { pts, cum, L: cum[cum.length - 1], out });
++}
++// how far along the way the ball is at progress r (eased: it slows as it settles), and the track so far
++function vz6Along(P, r) {
++  const s = P.L * Math.sin(vzClamp(r, 0, 1) * Math.PI / 2);
++  let k = 1; while (k < P.cum.length - 1 && P.cum[k] < s) k++;
++  if (P.L < 1e-9) return { p: P.pts[0], upto: [P.pts[0]] };
++  const f = vzClamp((s - P.cum[k - 1]) / ((P.cum[k] - P.cum[k - 1]) || 1), 0, 1), a = P.pts[k - 1], b = P.pts[k], p = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
++  return { p, upto: P.pts.slice(0, k).concat([p]) };
++}
++vzAdd({
++  id: "crit3d", title: "Critical points of a bumpy surface", card: "Critical-point explorer",
++  tagline: "Where the ground is flat: tops, pits and saddles.",
++  blurb: "At a critical point \\(\\nabla f=\\mathbf 0\\): the arrow shrinks to nothing and the tangent plane lies flat. The second-derivative test \\(D=f_{xx}f_{yy}-f_{xy}^2\\) then sorts it into a maximum, a minimum or a saddle, or says nothing when \\(D=0\\).",
++  tryIt: "Drag the point onto a mark: the arrow vanishes.",
++  state: { fn: 0, u: .45, v: .5, roll: 0, yaw: -35 },
++  thumb: { roll: 0, u: .55, v: -.2 },
++  controls: [
++    { k: "roll", label: "roll a ball downhill", min: 0, max: 1, step: .005, play: .2, progress: true, fmt: v => v < .005 ? "at the start" : v > .995 ? "settled" : "rolling", aria: "the ball" },
++    { k: "yaw", label: "turn the surface", min: -80, max: 80, step: 1, unit: "°", digits: 0, noPlay: true },
++  ],
++  presets: [["Hills and pits", { fn: 0, roll: 0 }], ["Monkey saddle", { fn: 1, roll: 0 }], ["Flat-bottomed bowl", { fn: 2, roll: 0 }]],
++  variants: [{ fn: 0, u: .9, v: .9 }, { fn: 1, roll: .5 }, { fn: 2, u: 0, v: 0 }, { fn: 1, u: -.96, v: -.96, roll: 1 }, { fn: 0, roll: 1 }, { fn: 2, roll: .4, yaw: 70 }, { fn: 0, u: -.96, v: .96, yaw: -80 }],
++  defs: `<clipPath id="vz6-cm"><rect x="24" y="124" width="252" height="252" rx="8"/></clipPath>`,
++  cur(s) {                                                  // the point the picture is looking at: where you put it, or where the ball is
++    if (!(s.roll > .0005)) return [s.u, s.v];
++    return vz6Along(vz6Path(Math.round(s.fn), s.u, s.v), s.roll).p;
++  },
++  handles(s) { const c = this.cur(s); return [{ k: "pt", x: 150 + 126 * c[0], y: 250 - 126 * c[1] }]; },
++  dragTo(s, k, x, y, fine) {
++    let nu = vzClamp((x - 150) / 126, -.96, .96), nv = vzClamp((250 - y) / 126, -.96, .96);
++    if (!fine) {                                            // let go near a mark and it settles on it
++      const m = vz6Info(Math.round(s.fn)).marks.find(m => Math.hypot(m.nx - nu, m.ny - nv) < .1);
++      if (m) { nu = m.nx; nv = m.ny; }
++    }
++    s.u = nu; s.v = nv; s.roll = 0;
++  },
++  onStageClick(s, x, y) {
++    if (x < 24 || x > 276 || y < 124 || y > 376) return false;
++    vzTweenTo({ u: vzClamp((x - 150) / 126, -.96, .96), v: vzClamp((250 - y) / 126, -.96, .96), roll: 0 }, 300);
++    return true;
++  },
++  staticKey: s => Math.round(s.fn),
++  static(s) {
++    const i = Math.round(s.fn), K = VZ6_CR[i], I = vz6Info(i);
++    let o = `<rect x="18" y="112" width="264" height="276" rx="12" fill="#FFFFFF" fill-opacity=".55" stroke="${VZ.soft}"/>`;
++    o += `<g clip-path="url(#vz6-cm)"><image href="${I.img}" x="24" y="124" width="252" height="252" preserveAspectRatio="none" opacity=".8"/><path d="${I.contours}" fill="none" stroke="${VZ.ink}" stroke-opacity=".3" stroke-width="1"/></g>`;
++    o += `<rect x="24" y="124" width="252" height="252" rx="8" fill="none" stroke="${VZ.ink}" stroke-opacity=".18"/>`;
++    I.marks.forEach(m => { o += `<circle cx="${q2(150 + 126 * m.nx)}" cy="${q2(250 - 126 * m.ny)}" r="5.6" fill="${VZ6_TYPE[m.type][1]}" stroke="#fff" stroke-width="1.6"/>`; });
++    return o + vzNote(150, 104, "the contour map", "middle") + vzNote(448, 104, "the surface", "middle");
++  },
++  draw(s, t, thumb) {
++    const i = Math.round(s.fn), K = VZ6_CR[i], I = vz6Info(i), roll = s.roll || 0, E = 1.9;
++    const P = roll > .0005 ? vz6Path(i, s.u, s.v) : null, al = P ? vz6Along(P, roll) : null, c = al ? al.p : [s.u, s.v];
++    const x = c[0] * K.R, y = c[1] * K.R, A = K.at(x, y), gl = Math.hypot(A.g[0], A.g[1]);
++    const fade = P && P.out ? 1 - vzClamp((roll - .85) / .15, 0, 1) : 1;      // a ball that rolls off the rim fades out
++    const MX = n => 150 + 126 * n, MY = n => 250 - 126 * n, pt = p => q2(MX(p[0])) + " " + q2(MY(p[1]));
++    let o = "";
++    // ---- the map: the way the ball goes, the arrow ∇f, the point
++    if (P && P.L > 1e-6) {
++      o += `<path d="M${P.pts.map(pt).join("L")}" fill="none" stroke="${VZ.ink}" stroke-opacity=".25" stroke-width="1.6" stroke-dasharray="2 4" stroke-linecap="round"/>`;
++      o += `<path d="M${al.upto.map(pt).join("L")}" fill="none" stroke="${VZ.ink}" stroke-opacity=".7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="${q2(fade)}"/>`;
++    }
++    const L = 60 * Math.tanh(gl / I.G0), ux = gl > 1e-9 ? A.g[0] / gl : 0, uy = gl > 1e-9 ? -A.g[1] / gl : 0, X0 = MX(c[0]), Y0 = MY(c[1]);
++    if (!thumb) o += vzGrip(X0, Y0, VZ.red, VzView.hot === "pt");
++    o += `<g opacity="${q2(vzClamp((L - 3) / 7, 0, 1) * fade)}">${vzArrow(X0, Y0, X0 + ux * L, Y0 + uy * L, "R", 3.2)}</g>`;
++    if (L > 18) o += `<g opacity="${q2(vzClamp((L - 18) / 10, 0, 1) * fade)}">${vzLabel(X0 + ux * (L + 15), Y0 + uy * (L + 15) + 5, "∇f", VZ.red, 16)}</g>`;
++    o += `<circle cx="${q2(X0)}" cy="${q2(Y0)}" r="5.6" fill="${VZ.red}" stroke="#fff" stroke-width="1.7" opacity="${q2(fade)}"/>`;
++    // ---- the surface, with the marks, the point and its tangent plane in far-to-near order
++    const cam = vzCam(448, 262, 52, vzRad(s.yaw), .5), zw = f => (f - I.mid) * I.zs, items = [];
++    const qs = vzQuads(cam, I.surf, (a, b, z) => VZ_RAMP(z / 2.4 + .5));
++    qs.forEach(q => items.push({ dep: q.dep, svg: vzQuadSvg([q], { op: 1, mesh: .45 }) }));
++    I.marks.forEach(m => { const q = cam(m.nx * E, m.ny * E, zw(m.f)); items.push({ dep: q[2] - .35, svg: `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="5.6" fill="${VZ6_TYPE[m.type][1]}" stroke="#fff" stroke-width="1.6"/>` }); });
++    const xw = c[0] * E, yw = c[1] * E, z0 = zw(A.f), q0 = cam(xw, yw, z0), sc = I.zs * K.R / E;
++    const sx = A.g[0] * sc, sy = A.g[1] * sc, d = .55 / Math.max(1, Math.hypot(sx, sy) / 1.1);
++    const flat = 1 - vzClamp(gl / (I.G * .05), 0, 1);
++    items.push({ dep: q0[2] - .45, svg: `<g opacity="${q2(fade)}">` + vzPath3(cam, [[xw, yw, -1.3], [xw, yw, z0]], `stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="3 4"`) +
++      vzPath3(cam, [[xw - d, yw - d, z0 - d * sx - d * sy], [xw + d, yw - d, z0 + d * sx - d * sy], [xw + d, yw + d, z0 + d * sx + d * sy], [xw - d, yw + d, z0 - d * sx + d * sy], [xw - d, yw - d, z0 - d * sx - d * sy]],
++        `stroke="${flat > .5 ? VZ.deep : VZ.ink}" stroke-width="1.5" stroke-opacity=".7" fill="${VZ.ink}" fill-opacity="${q2(.3 - .1 * flat)}"`) +
++      `<circle cx="${q2(q0[0])}" cy="${q2(q0[1])}" r="5.6" fill="${VZ.red}" stroke="#fff" stroke-width="1.7"/></g>` });
++    items.sort((a, b) => b.dep - a.dep);
++    o += vzPath3(cam, [[-E, -E, -1.3], [E, -E, -1.3], [E, E, -1.3], [-E, E, -1.3], [-E, -E, -1.3]], `stroke="${VZ.grey}" stroke-width="1.1" opacity=".45"`);
++    o += items.map(q => q.svg).join("");
++    o += vzKey([["dot", VZ.red, "max"], ["dot", VZ.ink, "min"], ["dot", VZ.gold, "saddle"], ["dot", VZ.grey, "test can't tell"], ["fill", VZ.red, "higher"]]);
++    return o;
++  },
++  readout(s) {
++    const i = Math.round(s.fn), K = VZ6_CR[i], I = vz6Info(i), P = s.roll > .0005 ? vz6Path(i, s.u, s.v) : null, c = this.cur(s), x = c[0] * K.R, y = c[1] * K.R, A = K.at(x, y);
++    const m = I.marks.find(m => Math.hypot(m.nx - c[0], m.ny - c[1]) < .06);
++    let st;
++    if (m) {
++      const D = A.h[0] * A.h[2] - A.h[1] * A.h[1];
++      st = m.type === "tbd" ? ["warn", `∇f = 0 but D = 0: the test can't decide. ${K.note ? "(It is " + K.note + ".)" : ""}`]
++        : m.type === "saddle" ? ["ok", "∇f = 0 and D < 0: a saddle point."]
++        : m.type === "min" ? ["ok", "∇f = 0, D > 0 and f<sub>xx</sub> > 0: a local minimum."] : ["ok", "∇f = 0, D > 0 and f<sub>xx</sub> < 0: a local maximum."];
++    } else if (P && P.out && s.roll > .97) st = ["ok", "No pit here: the ball rolls off the edge."];
++    else st = ["ok", s.roll > .0005 ? "The ball follows −∇f, straight downhill." : "∇f points uphill; the plane tilts with it."];
++    return `<div class="vz-eq">f: ${K.name}</div>
++      <div class="vz-eq">at (${vzNum(x)}, ${vzNum(y)}): ∇f = [${vzNum(A.g[0])}, ${vzNum(A.g[1])}]</div>
++      <div class="vz-status ${st[0]}">${st[1]}</div>`;
++  },
++});
++
++/* ---------- Divergence and curl, point by point (probe) ---------- */
++// Four fields of our own whose divergence and curl change sign across the plane (each checked with sympy).
++const VZ6_BLUE = "#2F6DB5";
++const VZ6_FLD = [
++  { chip: "Mixed", fT: "[xy/2, x/2]", F: (x, y) => [x * y / 2, x / 2], div: (x, y) => y / 2, curl: x => (1 - x) / 2, ts: .6, map: 1, p: [-1.5, 1.7] },
++  { chip: "Swirl cells", fT: "[sin y, −sin x]", F: (x, y) => [Math.sin(y), -Math.sin(x)], div: () => 0, curl: (x, y) => -Math.cos(x) - Math.cos(y), ts: .6, map: 2, p: [.6, .4] },
++  { chip: "Speeding up", fT: "[x², 0]", F: x => [x * x, 0], div: x => 2 * x, curl: () => 0, ts: .2, map: 1, p: [1.6, .3] },
++  { chip: "Bending flow", fT: "[0, x²]", F: x => [0, x * x], div: () => 0, curl: x => 2 * x, ts: .2, map: 2, p: [1.4, .3] },
++];
++const VZ6_PP = vzPlane(300, 225, 90);
++// the map of div or curl as a soft picture over the whole stage: red where positive, blue where negative, white near 0
++function vz6Heat(fi, mp) {
++  vz6Heat.c = vz6Heat.c || {};
++  const key = fi + ":" + mp;
++  if (vz6Heat.c[key]) return vz6Heat.c[key];
++  const K = VZ6_FLD[fi], fn = mp === 1 ? K.div : K.curl, W = 120, H = 90, vals = new Float32Array(W * H);
++  let vm = 0;
++  for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) { const v = fn((i + .5) / W * 6.667 - 3.333, 2.5 - (j + .5) / H * 5); vals[j * W + i] = v; vm = Math.max(vm, Math.abs(v)); }
++  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
++  const cx = cv.getContext("2d"), im = cx.createImageData(W, H);
++  for (let k = 0; k < W * H; k++) {
++    const v = vm > 1e-9 ? vals[k] / vm : 0, c = v >= 0 ? [200, 16, 46] : [47, 109, 181];
++    im.data[4 * k] = c[0]; im.data[4 * k + 1] = c[1]; im.data[4 * k + 2] = c[2]; im.data[4 * k + 3] = Math.round(255 * .58 * Math.pow(Math.abs(v), .8));
++  }
++  cx.putImageData(im, 0, 0);
++  return (vz6Heat.c[key] = { url: cv.toDataURL(), vm });
++}
++// a ring of fluid, carried by the flow for flow-time tau (a fourth-order step, so it stays round when it should)
++function vz6Ring(K, px, py, tau, N = 24, R0 = .42) {
++  const m = Math.max(1, Math.ceil(tau / .05)), h = tau / m, f = (x, y) => { const v = K.F(x, y); return [v[0] * K.ts, v[1] * K.ts]; }, out = [];
++  for (let k = 0; k < N; k++) {
++    let x = px + R0 * Math.cos(2 * Math.PI * k / N), y = py + R0 * Math.sin(2 * Math.PI * k / N);
++    for (let i = 0; i < m; i++) {
++      const a = f(x, y), b = f(x + h / 2 * a[0], y + h / 2 * a[1]), c = f(x + h / 2 * b[0], y + h / 2 * b[1]), d = f(x + h * c[0], y + h * c[1]);
++      x += h / 6 * (a[0] + 2 * b[0] + 2 * c[0] + d[0]); y += h / 6 * (a[1] + 2 * b[1] + 2 * c[1] + d[1]);
++    }
++    out.push([x, y]);
++  }
++  const cx = out.reduce((a, p) => a + p[0], 0) / N - px, cy = out.reduce((a, p) => a + p[1], 0) / N - py;   // the ring stays round the probe: only how it deforms is shown
++  return out.map(p => [p[0] - cx, p[1] - cy]);
++}
++const vz6Wheel = (R = 20) => [0, 1, 2, 3].map(i => { const a = i * Math.PI / 2, x = R * Math.cos(a), y = -R * Math.sin(a); return `<line x1="0" y1="0" x2="${q2(x)}" y2="${q2(y)}" stroke="${VZ.ink}" stroke-width="3" stroke-linecap="round"/><rect x="${q2(x - 4)}" y="${q2(y - 4)}" width="8" height="8" rx="2" fill="${i ? VZ.gold : VZ.red}" transform="rotate(${q2(-a * 180 / Math.PI)} ${q2(x)} ${q2(y)})"/>`; }).join("");
++const vz6Loop = t => {                                        // one cycle: the ring fades in, is carried, fades out
++  const p = (t % 3.6) / 3.6;
++  return { a: vzEase(vzClamp(p / .14, 0, 1)) * (1 - vzEase(vzClamp((p - .84) / .16, 0, 1))), tau: 1.3 * vzEase(vzClamp((p - .12) / .7, 0, 1)) };
++};
++vzAdd({
++  id: "probe", title: "Divergence and curl, point by point", card: "Div & curl probe",
++  tagline: "A paddle wheel and a ring of fluid, anywhere.",
++  blurb: "Divergence says whether fluid spreads out of a tiny ring around the point (\\(\\operatorname{div}\\mathbf F>0\\)) or squeezes in (\\(<0\\)); curl says how fast a tiny paddle wheel turns (\\(\\operatorname{curl}\\mathbf F>0\\): counterclockwise). In these fields both change sign from place to place.",
++  tryIt: "Drag the probe across the map: the signs flip.",
++  state: { fn: 0, map: 1, px: -1.5, py: 1.7 },
++  thumb: { fn: 0, map: 1, px: -1.5, py: 1.7 },
++  animate: true,
++  controls: [],
++  presets: VZ6_FLD.map(K => [K.chip, { fn: VZ6_FLD.indexOf(K), map: K.map, px: K.p[0], py: K.p[1] }]),
++  variants: [{ fn: 1, map: 0 }, { fn: 2, map: 1, px: -3, py: -1.7 }, { fn: 3, map: 2, px: 3, py: 1.9 }, { fn: 0, map: 2, px: 0, py: 0 }, { fn: 1, map: 1, px: 0, py: 0 }],
++  reset() { this.wa = 0; this.lastT = null; },
++  panelTop() { return `<div><div class="vz-ptop-k">Background map</div><div class="vz-chips" id="vz6Map">${["none", "divergence", "curl"].map((n, i) => `<button type="button" class="vz-chip" data-vm="${i}">${n}</button>`).join("")}</div></div>`; },
++  sync(s, panel) { panel && panel.querySelectorAll("[data-vm]").forEach(b => b.classList.toggle("on", +b.dataset.vm === Math.round(s.map))); },
++  onClick(el, s) { const b = el.closest("[data-vm]"); if (!b) return false; s.map = +b.dataset.vm; return true; },
++  handles(s) { return [{ k: "probe", x: VZ6_PP.X(s.px), y: VZ6_PP.Y(s.py) }]; },
++  dragTo(s, k, x, y, fine) {
++    const q = v => fine ? v : Math.round(v * 20) / 20;
++    s.px = vzClamp(q((x - 300) / 90), -3, 3); s.py = vzClamp(q((225 - y) / 90), -1.7, 1.9);
++  },
++  staticKey: s => Math.round(s.fn) + ":" + Math.round(s.map),
++  static(s) {
++    const fi = Math.round(s.fn), mp = Math.round(s.map), K = VZ6_FLD[fi], P = VZ6_PP;
++    let o = "";
++    if (mp) { const H = vz6Heat(fi, mp); o += `<image href="${H.url}" x="0" y="0" width="600" height="450" preserveAspectRatio="none"/>`; if (H.vm < 1e-9) o += vzNote(300, 38, `${mp === 1 ? "div" : "curl"} is 0 everywhere here: nothing to colour`, "middle", VZ.grey); }
++    o += P.axes(.14);
++    let mx = 0; const pts = [];
++    for (let i = -4; i <= 4; i++) for (let j = 0; j < 6; j++) { const x = i * .75, y = -1.875 + j * .75, v = K.F(x, y), L = Math.hypot(v[0], v[1]); mx = Math.max(mx, L); pts.push([x, y, v, L]); }
++    pts.forEach(([x, y, v, L]) => {
++      if (L < 1e-3 * (mx || 1)) { o += P.dot([x, y], 2, VZ.grey); return; }
++      const len = .2 + .25 * Math.sqrt(L / mx), e = [x + v[0] / L * len, y + v[1] / L * len];
++      o += `<g opacity="${q2(.4 + .45 * Math.sqrt(L / mx))}">${P.arrow([x, y], e, "I", 1.6)}</g>`;
++    });
++    return o;
++  },
++  draw(s, t, thumb) {
++    const mp = Math.round(s.map), items = mp ? [["fill", VZ.red, (mp === 1 ? "div" : "curl") + " > 0"], ["fill", VZ6_BLUE, (mp === 1 ? "div" : "curl") + " < 0"], ["fill", "#C9CFD6", "0"]] : [["line", VZ.ink, "the field"]];
++    return vzKey(items.concat([["dot", VZ.red, "ring of fluid"], ["fill", VZ.gold, "paddle wheel"]]));
++  },
++  frame(g, s, t) {
++    const K = VZ6_FLD[Math.round(s.fn)], P = VZ6_PP, X = P.X(s.px), Y = P.Y(s.py), lp = vz6Loop(g ? t : 1.5);
++    const ringD = pts => "M" + pts.map(p => q2(P.X(p[0])) + " " + q2(P.Y(p[1]))).join("L") + "Z";
++    if (!g) {                                                  // a still for the card
++      const pts = vz6Ring(K, s.px, s.py, lp.tau);
++      return `<path d="${ringD(pts)}" fill="${VZ.red}" fill-opacity=".14" stroke="${VZ.red}" stroke-width="2.4" stroke-linejoin="round"/>` + pts.filter((_, k) => k % 2 === 0).map(p => `<circle cx="${q2(P.X(p[0]))}" cy="${q2(P.Y(p[1]))}" r="3" fill="${VZ.deep}"/>`).join("") +
++        `<g transform="translate(${q2(X)} ${q2(Y)}) rotate(-25)"><circle r="26" fill="#fff" fill-opacity=".85" stroke="${VZ.ink}" stroke-opacity=".2"/>${vz6Wheel()}<circle r="3.5" fill="${VZ.ink}"/></g>`;
++    }
++    if (!g._pr) {
++      g.innerHTML = `<circle class="gr" r="31" fill="${VZ.red}" fill-opacity=".05" stroke="${VZ.red}" stroke-dasharray="3 3" stroke-width="1.2" stroke-opacity=".4"/><g class="rg"><path class="rf" fill="${VZ.red}" fill-opacity=".14" stroke="${VZ.red}" stroke-width="2.4" stroke-linejoin="round"/>` +
++        Array.from({ length: 12 }, () => `<circle r="3" fill="${VZ.deep}"/>`).join("") + `</g><g class="wh"><circle r="26" fill="#fff" fill-opacity=".85" stroke="${VZ.ink}" stroke-opacity=".2"/>${vz6Wheel()}<circle r="3.5" fill="${VZ.ink}"/></g>`;
++      g._pr = { gr: g.querySelector(".gr"), rg: g.querySelector(".rg"), rf: g.querySelector(".rf"), dots: Array.from(g.querySelectorAll(".rg circle")), wh: g.querySelector(".wh") };
++    }
++    const E = g._pr, dt = Math.min(.05, this.lastT == null ? 0 : Math.max(0, t - this.lastT)); this.lastT = t;
++    this.wa = (this.wa || 0) + K.curl(s.px, s.py) * K.ts * dt;      // the wheel turns at a rate proportional to curl (counterclockwise when positive)
++    const pts = vz6Ring(K, s.px, s.py, lp.tau);
++    E.rf.setAttribute("d", ringD(pts)); E.rg.setAttribute("opacity", q2(lp.a));
++    E.dots.forEach((c, k) => { const p = pts[2 * k]; c.setAttribute("cx", q2(P.X(p[0]))); c.setAttribute("cy", q2(P.Y(p[1]))); });
++    E.wh.setAttribute("transform", `translate(${q2(X)} ${q2(Y)}) rotate(${q2(-this.wa * 180 / Math.PI)})`);
++    const hot = VzView.hot === "probe";
++    E.gr.setAttribute("cx", q2(X)); E.gr.setAttribute("cy", q2(Y)); E.gr.setAttribute("r", hot ? 34 : 31); E.gr.setAttribute("stroke-opacity", hot ? .8 : .4);
++  },
++  readout(s) {
++    const K = VZ6_FLD[Math.round(s.fn)], d = K.div(s.px, s.py), c = K.curl(s.px, s.py);
++    const a = Math.abs(d) < .02 ? "div ≈ 0: the ring keeps its size." : d > 0 ? "div > 0: the ring swells." : "div < 0: the ring shrinks.";
++    const b = Math.abs(c) < .02 ? "curl ≈ 0: the wheel stays still." : c > 0 ? "curl > 0: the wheel turns counterclockwise." : "curl < 0: the wheel turns clockwise.";
++    return `<div class="vz-eq"><b>F</b> = ${K.fT}</div>
++      <div class="vz-eq">at (${vzNum(s.px, 1)}, ${vzNum(s.py, 1)}): div = <b>${vzNum(d)}</b>, curl = <b>${vzNum(c)}</b></div>
++      <div class="vz-status ok">${a} ${b}</div>`;
++  },
++});
++
++/* ---------- Telling vector fields apart (zoo) ---------- */
++const VZ6_ZOO = [
++  { chip: "source", name: "source", fT: "[x, y]", F: (x, y) => [x, y], d: "2", c: "0", cons: 1, irr: 1, inc: 0, kf: .5, why: "A gradient field (of (x² + y²)/2), but it spreads out." },
++  { chip: "sink", name: "sink", fT: "[−x, −y]", F: (x, y) => [-x, -y], d: "−2", c: "0", cons: 1, irr: 1, inc: 0, kf: .5, why: "A gradient field (of −(x² + y²)/2), but it squeezes in." },
++  { chip: "rotation", name: "rotation", fT: "[−y, x]", F: (x, y) => [-y, x], d: "0", c: "2", cons: 0, irr: 0, inc: 1, kf: .5, why: "Pure spin: curl ≠ 0, so it has no potential." },
++  { chip: "shear", name: "shear", fT: "[y, 0]", F: (x, y) => [y, 0], d: "0", c: "−1", cons: 0, irr: 0, inc: 1, kf: .7, why: "Layers slide past each other: it spins, but doesn't spread." },
++  { chip: "saddle", name: "saddle", fT: "[x, −y]", F: (x, y) => [x, -y], d: "0", c: "0", cons: 1, irr: 1, inc: 1, kf: .5, why: "A gradient field (of (x² − y²)/2): no spin, no spread." },
++  { chip: "uniform", name: "uniform", fT: "[1, ½]", F: () => [1, .5], d: "0", c: "0", cons: 1, irr: 1, inc: 1, kf: .9, why: "The same arrow everywhere: no spin, no spread." },
++  { chip: "swirl with a hole", name: "swirl", fT: "[−y, x] / (x² + y²)", F: (x, y) => { const r = x * x + y * y; return [-y / r, x / r]; }, d: "0", c: "0", cons: 0, irr: 1, inc: 1, kf: 1, hole: 1, why: "Curl 0 away from the hole, yet one lap round it adds up to 2π: not conservative." },
++  { chip: "spiral", name: "spiral", fT: "[x − y, x + y]", F: (x, y) => [x - y, x + y], d: "2", c: "2", cons: 0, irr: 0, inc: 0, kf: .35, why: "Spins and spreads at once: div and curl are both 2." },
++];
++// where each field sits in the 2 × 2 grid (rows: curl 0 / not; columns: div 0 / not) and which line of its cell
++VZ6_ZOO.forEach(K => { K.cell = (K.c !== "0" ? 2 : 0) + (K.d !== "0" ? 1 : 0); });
++VZ6_ZOO.forEach((K, i) => { K.slot = VZ6_ZOO.filter((q, j) => j < i && q.cell === K.cell).length; });
++const VZ6_ZG = [-1.75, -1.25, -.75, -.25, .25, .75, 1.25, 1.75];
++const VZ6_ZP = vzPlane(175, 201, 74);
++const vz6Spot = i => { const K = VZ6_ZOO[i], x = 378 + 108 * (K.cell % 2), y = 86 + 108 * (K.cell >> 1); return { x, y, ex: x + 50, ey: y + 30 + 26 * K.slot }; };
++const vz6Lerp = (a, b, e) => a + (b - a) * e;
++// a badge that is on (coloured, ticked) or off (grey, crossed), or part way between while the field morphs
++function vz6Badge(x, y, name, col, w) {
++  const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)), g = rgb(VZ.grey), c = rgb(col), mix = (a, b, t) => "rgb(" + a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",") + ")";
++  const bw = 150, tx = x - bw / 2 + 14;
++  return `<rect x="${q2(x - bw / 2)}" y="${q2(y - 11.5)}" width="${bw}" height="23" rx="11.5" fill="${mix([255, 255, 255], c, w)}" stroke="${mix(g, c, w)}" stroke-width="1.3"/>` +
++    `<g font-family="'Manrope', sans-serif" font-size="14" font-weight="700" text-anchor="start" fill="${mix(g, [255, 255, 255], w)}">` +
++    `<text x="${q2(tx - 2)}" y="${q2(y + 4.6)}" opacity="${q2(1 - w)}">✗</text><text x="${q2(tx - 2)}" y="${q2(y + 4.6)}" opacity="${q2(w)}">✓</text><text x="${q2(tx + 14)}" y="${q2(y + 4.6)}">${name}</text></g>`;
++}
++vzAdd({
++  id: "zoo", title: "Telling vector fields apart", card: "Field zoo",
++  tagline: "Spin and spread sort every field into four boxes.",
++  blurb: "Curl asks whether a field spins, divergence whether it spreads out. A field with curl 0 is irrotational, one with div 0 is incompressible. A gradient field \\(\\nabla f\\) is conservative; on the whole plane that is the same as curl 0, but the swirl has a hole at the origin, and a lap round the hole adds up to \\(2\\pi\\).",
++  tryIt: "Pick the swirl: no curl, no div, yet not conservative.",
++  state: { fn: 0, m: 1 },
++  thumb: { fn: 6, m: 1 },
++  controls: [],
++  variants: [{ fn: 1 }, { fn: 2 }, { fn: 3 }, { fn: 4 }, { fn: 5 }, { fn: 6 }, { fn: 7 }, { fn: 6, m: .4 }, { fn: 3, m: 0 }],
++  reset() { this._from = null; },
++  panelTop() { return `<div class="vz-chips" id="vz6Zoo">${VZ6_ZOO.map((K, i) => `<button type="button" class="vz-chip" data-zf="${i}">${escapeHtml(K.chip)}</button>`).join("")}</div>`; },
++  sync(s, panel) { panel && panel.querySelectorAll("[data-zf]").forEach(b => b.classList.toggle("on", +b.dataset.zf === Math.round(s.fn))); },
++  onClick(el, s) {
++    const b = el.closest("[data-zf]"); if (!b) return false;
++    const to = +b.dataset.zf;
++    if (to === Math.round(s.fn) && s.m >= 1) return true;
++    this._from = this.snap(s, true);                       // wherever the picture is now (maybe mid-morph) is where the next morph starts
++    s.fn = to; s.m = 0; vzTweenTo({ m: 1 }, 900);
++    return true;
++  },
++  vecs(i) {                                                 // the field's arrows on the 8 × 8 grid, scaled so the typical one has length about 1
++    this._V = this._V || {};
++    return this._V[i] || (this._V[i] = VZ6_ZG.flatMap(y => VZ6_ZG.map(x => { const K = VZ6_ZOO[i], v = K.F(x, y); return [v[0] * K.kf, v[1] * K.kf]; })));
++  },
++  snap(s, now) {                                            // what is on show: the arrows, badges, marker position and hole, part way between two fields
++    const i = Math.round(s.fn), K = VZ6_ZOO[i], B = { i, vec: this.vecs(i), w: [K.cons, K.irr, K.inc], sp: vz6Spot(i), hole: K.hole ? 1 : 0 }, F = this._from;
++    if (!F) return B;
++    const e = vzEase(vzClamp(s.m, 0, 1));
++    if (e >= 1) return B;
++    return { i, j: F.i, e, vec: B.vec.map((v, k) => [vz6Lerp(F.vec[k][0], v[0], e), vz6Lerp(F.vec[k][1], v[1], e)]), w: B.w.map((w, k) => vz6Lerp(F.w[k], w, e)),
++      sp: { x: vz6Lerp(F.sp.x, B.sp.x, e), y: vz6Lerp(F.sp.y, B.sp.y, e), ex: vz6Lerp(F.sp.ex, B.sp.ex, e), ey: vz6Lerp(F.sp.ey, B.sp.ey, e) }, hole: vz6Lerp(F.hole, B.hole, e) };
++  },
++  draw(s, t, thumb) {
++    const D = this.snap(s), P = VZ6_ZP, K = VZ6_ZOO[D.i];
++    let o = `<rect x="14" y="40" width="322" height="322" rx="12" fill="#FFFFFF" fill-opacity=".55" stroke="${VZ.soft}"/>`;
++    o += `<path d="M26 201H324M175 52V350" stroke="${VZ.ink}" stroke-width="1.1" opacity=".16" fill="none"/>`;
++    VZ6_ZG.forEach((y, j) => VZ6_ZG.forEach((x, i) => {
++      const v = D.vec[j * 8 + i], L = Math.hypot(v[0], v[1]), len = 30 * Math.tanh(L), ux = L > 1e-9 ? v[0] / L : 0, uy = L > 1e-9 ? v[1] / L : 0, cx = P.X(x), cy = P.Y(y);
++      if (len < 4) { o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="${q2(1.2 + len / 4 * .9)}" fill="${VZ.ink}" opacity=".5"/>`; return; }
++      o += `<g opacity="${q2(.5 + .4 * Math.tanh(L))}">${vzArrow(cx - ux * len / 2, cy + uy * len / 2, cx + ux * len / 2, cy - uy * len / 2, "I", 1.9)}</g>`;
++    }));
++    if (D.hole > .01) o += `<g opacity="${q2(D.hole)}"><circle cx="${P.X(0)}" cy="${P.Y(0)}" r="8" fill="${VZ.paper}" stroke="${VZ.grey}" stroke-width="1.6"/>` + `</g>`;
++    // the name of the field (the old one fades out as the new one comes in), and why the swirl is special
++    const e = D.e == null ? 1 : D.e;
++    if (D.j != null && e < 1) o += `<g opacity="${q2(1 - vzEase(vzClamp(e * 1.6, 0, 1)))}">${vzLabel(175, 31, VZ6_ZOO[D.j].name, VZ.ink, 18)}</g>`;
++    o += `<g opacity="${q2(D.j != null && e < 1 ? vzEase(vzClamp((e - .35) * 1.6, 0, 1)) : 1)}">${vzLabel(175, 31, K.name, VZ.deep, 18)}</g>`;
++    if (D.hole > .01) o += `<g opacity="${q2(D.hole)}">${vzNote(175, 384, "one lap round the hole is not 0", "middle", VZ.deep)}</g>`;
++    // the grid: where this field sits
++    const cells = [["curl = 0", "div = 0"], ["curl = 0", "div ≠ 0"], ["curl ≠ 0", "div = 0"], ["curl ≠ 0", "div ≠ 0"]], hd = "font-family=\"'Manrope', sans-serif\" font-size=\"17\" font-weight=\"700\" fill=\"" + VZ.ink + "\"";
++    o += `<text x="428" y="76" text-anchor="middle" ${hd}>div = 0</text><text x="536" y="76" text-anchor="middle" ${hd}>div ≠ 0</text>`;
++    o += `<text transform="translate(366 136) rotate(-90)" text-anchor="middle" ${hd}>curl = 0</text><text transform="translate(366 244) rotate(-90)" text-anchor="middle" ${hd}>curl ≠ 0</text>`;
++    for (let c = 0; c < 4; c++) o += `<rect x="${378 + 108 * (c % 2)}" y="${86 + 108 * (c >> 1)}" width="100" height="100" rx="10" fill="#FFFFFF" fill-opacity=".6" stroke="${VZ.soft}"/>`;
++    o += `<rect x="${q2(D.sp.x)}" y="${q2(D.sp.y)}" width="100" height="100" rx="10" fill="${VZ.red}" fill-opacity=".08" stroke="${VZ.red}" stroke-opacity=".55" stroke-width="1.8"/>`;
++    o += `<rect x="${q2(D.sp.x + 6)}" y="${q2(D.sp.ey - 12)}" width="88" height="24" rx="12" fill="${VZ.red}" fill-opacity=".16"/>`;
++    VZ6_ZOO.forEach((Q, i) => {
++      const p = vz6Spot(i);
++      o += `<circle cx="${p.x + 17}" cy="${p.ey}" r="4.5" fill="${i === D.i ? VZ.red : VZ.grey}"/>` +
++        `<text x="${p.x + 28}" y="${p.ey + 4.5}" font-family="'Manrope', sans-serif" font-size="14" font-weight="${i === D.i ? 700 : 500}" fill="${VZ.ink}">${Q.name}</text>`;
++    });
++    // the three badges
++    o += vz6Badge(482, 330, "conservative", VZ.red, D.w[0]) + vz6Badge(482, 362, "irrotational", "#8F7020", D.w[1]) + vz6Badge(482, 394, "incompressible", VZ.ink, D.w[2]);
++    return o;
++  },
++  readout(s) {
++    const K = VZ6_ZOO[Math.round(s.fn)], away = K.hole ? " (away from the hole)" : "";
++    return `<div class="vz-eq"><b>F</b> = ${K.fT}</div>
++      <div class="vz-eq">div = <b>${K.d}</b>, curl = <b>${K.c}</b>${away}</div>
++      <div class="vz-status ${K.hole ? "warn" : "ok"}">${K.why}</div>`;
++  },
++});
++
++/* ---------- Why closed and bounded? (evt) ---------- */
++// f(x, y) = x − y²/2 on a region D. Closed square: the highest point (1, 0) and the lowest points (−1, ±1) are reached.
++// Right edge left out (x < 1): the highest point would sit on the missing edge. Strip x ≥ −1: f keeps growing.
++const VZ6_EVT = [
++  { chip: "closed and bounded", D: "−1 ≤ x ≤ 1, −1 ≤ y ≤ 1", f: "x − y²/2 on a closed square", ok: "Closed and bounded: the highest and lowest values are both reached." },
++  { chip: "an edge left out", D: "−1 ≤ x < 1, −1 ≤ y ≤ 1", f: "x − y²/2, right edge left out", ok: "Values get as close to the top as you like, but never reach it: no max." },
++  { chip: "unbounded", D: "x ≥ −1, −1 ≤ y ≤ 1", f: "x − y²/2 on a strip that runs on", ok: "The region never ends and f keeps growing: no max." },
++];
++vzAdd({
++  id: "evt", title: "Why closed and bounded?", card: "Extreme Value Theorem",
++  tagline: "A continuous f reaches its highest and lowest values only if D is closed and bounded.",
++  blurb: "The Extreme Value Theorem: a continuous \\(f\\) on a closed, bounded region \\(D\\) has a maximum and a minimum there. Leave an edge out and the maximum can sit on the missing edge; let the region run on forever and \\(f\\) can keep growing. Either way the maximum is gone.",
++  tryIt: "Press Play in each case: does the point reach the top?",
++  state: { c: 0, w0: 1, w1: 0, w2: 0, climb: 0, yaw: 40 },
++  thumb: { climb: .6 },
++  controls: [
++    { k: "climb", label: "climb toward the highest value", min: 0, max: 1, step: .005, play: .2, progress: true, fmt: v => v < .005 ? "at the start" : v > .995 ? "done" : "climbing", aria: "the climb" },
++    { k: "yaw", label: "turn the view", min: -80, max: 80, step: 1, unit: "°", digits: 0, noPlay: true },
++  ],
++  variants: [{ c: 1, w0: 0, w1: 1, climb: 1 }, { c: 2, w0: 0, w2: 1, climb: 1, yaw: 60 }, { c: 2, w0: 0, w2: .5, w1: .2, climb: .5 }, { c: 0, climb: 1, yaw: -80 }],
++  panelTop() { return `<div class="vz-chips" id="vz6Evt">${VZ6_EVT.map((K, i) => `<button type="button" class="vz-chip" data-ec="${i}">${K.chip}</button>`).join("")}</div>`; },
++  sync(s, panel) { panel && panel.querySelectorAll("[data-ec]").forEach(b => b.classList.toggle("on", +b.dataset.ec === Math.round(s.c))); },
++  onClick(el, s) {
++    const b = el.closest("[data-ec]"); if (!b) return false;
++    const c = +b.dataset.ec; s.c = c;
++    vzTweenTo({ w0: c === 0 ? 1 : 0, w1: c === 1 ? 1 : 0, w2: c === 2 ? 1 : 0, climb: 0 }, 800);
++    return true;
++  },
++  draw(s, t, thumb) {
++    const w = [s.w0, s.w1, s.w2].map(v => vzClamp(v, 0, 1)), xr = 1 + 2 * w[2], xc = (xr - 1) / 2, S = 84 - 26 * w[2], zk = 1.0 - .35 * w[2], lo = -1.5, hi = xr;
++    const cam = vzCam(300, 236, S, vzRad(s.yaw), .5), f = (x, y) => x - y * y / 2, P = (x, y, z) => cam(x - xc, y, z * zk);
++    const nx = 18, ny = 12, grid = [];
++    for (let i = 0; i <= nx; i++) { const row = []; for (let j = 0; j <= ny; j++) { const x = -1 + (xr + 1) * i / nx, y = -1 + 2 * j / ny; row.push([x - xc, y, f(x, y) * zk]); } grid.push(row); }
++    const zf = -1.55, floor = [[-1, -1], [xr, -1], [xr, 1], [-1, 1], [-1, -1]].map(([x, y]) => [x - xc, y, zf * zk]);
++    let o = vzPath3(cam, floor, `stroke="${VZ.grey}" stroke-width="1.3" opacity=".6" fill="${VZ.ink}" fill-opacity=".04"`);
++    const qs = vzQuads(cam, grid, (i, j, z) => VZ_RAMP((z / zk - lo) / (hi - lo)));
++    o += vzQuadSvg(qs, { op: 1, mesh: .4 });
++    // the edge x = 1: solid when it belongs to D, dashed (and open) when it was left out
++    const edge = []; for (let j = 0; j <= 24; j++) { const y = -1 + 2 * j / 24; edge.push([1, y, f(1, y)]); }
++    const ed = "M" + edge.map(p => { const q = P(...p); return q2(q[0]) + " " + q2(q[1]); }).join("L");
++    o += `<path d="${ed}" fill="none" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="5 4" opacity="${q2(.8 * w[1])}"/>`;
++    // the climbing point moves along y = 0
++    const e = vzEase(vzClamp(s.climb, 0, 1)), xp = w[1] > .5 ? -1 + 1.94 * e : -1 + (xr + 1) * e * (w[2] > .5 ? 1 : 1);
++    const xpt = -1 + (2 + 2 * w[2]) * e * (1 - .03 * w[1]) , trail = []; for (let i = 0; i <= 30; i++) { const x = -1 + (xpt + 1) * i / 30; trail.push(P(x, 0, x)); }
++    o += `<path d="M${trail.map(q => q2(q[0]) + " " + q2(q[1])).join("L")}" fill="none" stroke="${VZ.ink}" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>`;
++    const pq = P(xpt, 0, xpt);
++    o += `<circle cx="${q2(pq[0])}" cy="${q2(pq[1])}" r="6" fill="${VZ.deep}" stroke="#fff" stroke-width="1.7"/>`;
++    // the lowest points (both reached in every case)
++    [[-1, 1], [-1, -1]].forEach(([x, y]) => { const q = P(x, y, f(x, y)); o += `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="5.6" fill="${VZ.ink}" stroke="#fff" stroke-width="1.6"/>`; });
++    const m1 = P(-1, 1, f(-1, 1)), m2 = P(-1, -1, f(-1, -1)), lq = m1[1] > m2[1] ? m1 : m2; o += vzLabel(lq[0] - 22, lq[1] - 10, "min", VZ.ink, 16);
++    // the highest point: reached (gold dot), or only approached (an open ring on the missing edge)
++    const hq = P(1, 0, 1);
++    if (w[0] > .01) o += `<g opacity="${q2(w[0])}"><circle cx="${q2(hq[0])}" cy="${q2(hq[1])}" r="6.6" fill="${VZ.gold}" stroke="#fff" stroke-width="1.7"/>${vzLabel(hq[0] + 4, hq[1] - 14, "max", "#7A5C0F", 16)}</g>`;
++    if (w[1] > .01) o += `<g opacity="${q2(w[1])}"><circle cx="${q2(hq[0])}" cy="${q2(hq[1])}" r="7" fill="#fff" stroke="${VZ.gold}" stroke-width="2.4"/>${vzLabel(hq[0] + 4, hq[1] - 15, "not in D", "#7A5C0F", 16)}</g>`;
++    if (w[2] > .01) { const a = P(xr, 0, xr), b = P(xr + .5, 0, xr + .5); o += `<g opacity="${q2(w[2])}">${vzArrow(a[0], a[1], a[0] + (b[0] - a[0]) * 1.3, a[1] + (b[1] - a[1]) * 1.3, "O", 2.6)}${vzLabel(a[0] + (b[0] - a[0]) * 1.3 + 4, a[1] + (b[1] - a[1]) * 1.3 - 12, "keeps growing", "#7A5C0F", 16)}</g>`; }
++    o += vzNote(300, 38, "the surface z = f(x, y) over the region D", "middle");
++    o += vzKey([["fill", VZ.red, "higher"], ["dot", VZ.gold, "highest value"], ["dot", VZ.ink, "lowest value"], ["dot", VZ.deep, "climbing point"]]);
++    return o;
++  },
++  readout(s) {
++    const K = VZ6_EVT[Math.round(s.c)];
++    return `<div class="vz-eq">f = ${K.f}</div><div class="vz-eq">D: ${K.D}</div><div class="vz-status ${Math.round(s.c) ? "warn" : "ok"}">${K.ok}</div>`;
++  },
++});
++
+ /* ---- wave-6 spacer 1 ---- */
+ /* ---- wave-6 spacer 2 ---- */
+ /* ---- wave-6 spacer 3 ---- */

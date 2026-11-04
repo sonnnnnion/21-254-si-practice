@@ -107,3 +107,37 @@ half the step and garbled the heading → clicks now queue (this._q, run from fr
 - Walkthrough spec renderer shows ⟨ ⟩ for vectors (index.html ~23883 etc.): needs a vector-vs-point check.
 - Method step changes still use the WAAPI fade; Back inside a method step removes pieces instantly.
 - Phone Visualize index is long (two cards per row); student feedback first.
+
+## Wave 6 (started 2026-11-03 evening): new vector-calculus content, owner greenlit "all"
+Owner asked (from their Week 9 SI key): more methods + visualizations for critical points, telling fields apart,
+irrotational / incompressible. No Lagrange multipliers (not in the course). Weekly usage at start: 11%.
+- base6 = live 36ea9ad + ids registered in VZ_GROUP_OF / VZ_SECTION_OF + placeholders (make_base6.py).
+- e1 (8351) methods: m-critical, m-curldiv, m-isgrad, m-merge, m-setup
+- e2 (8352) pictures: crit3d, evt, probe, zoo
+- e3 (8353, opus) method-style tools with a symbolic engine: tool-crit, tool-field (+ one additive hook in renderSteps)
+- e4 (8354) fieldmatch practice sets (match formulas to plots, then irrotational/incompressible), 8–10 new problems in
+  sections 07/08, a "Match the field" card on the Section 8 page
+- Merge: `_dev/agents/merge6.sh` (applies e1..e4, strips scaffolding with strip6.py). Then lead QA, screenshots, publish.
+- Unfilled ids are harmless (index lists only defined pictures) but strip6 reports unfilled placeholders.
+- e4 DONE (patch 780 lines). Lead checked try/match/feedback/classify/done at 1440 + 390: works, math matches.
+  Lead fix at merge: the assigned-formula badge sits on the plot's top-right corner, touching the next plot's letter
+  badge ("2 B" reads as one label): inset it into the cell.
+- e2 DONE, e1 DONE. Lead reviewed screenshots of every picture state and every method step. Small fixes collected in
+  `_dev/agents/lead_fixes6.py` (run by merge6.sh after the patches): m-merge "no partner" label, m-setup wording,
+  m-critical legend, evt tagline ("only if" was wrong), zoo label size, fieldmatch badge inset.
+- Waiting on e3 (tool-crit, tool-field). Then: merge6.sh, serve merged on 8400, QA (monkey, steps, chaos, fuzz),
+  sympy fuzz of the e3 engine, screenshots, publish (owner already greenlit).
+- Owner (2026-11-03 night): fieldmatch round 2 → exam-style square plots (I)–(IV) with ticks/axes, and three strategies
+  (test points in each quadrant, |∇f| constant?, see the surface z = f as a last resort). Sent to e4; badge fix moved to e4.
+- 2026-11-03 late: published. iCloud had offloaded the whole Desktop folder (disk 100% full), so the final merge was
+  rebuilt and committed from a clean clone outside iCloud: `~/dev-21254/site` (patches + scripts in `_dev/agents`).
+  Extra lead fixes at the end: m-isgrad swirl arrows readable far out; the old "extrema" concept sketch recoloured to the
+  site key (max red, min ink, saddle gold). QA on the final build: monkey 84 pages 0 errors, steps/methflicker clean on
+  the 7 new methods/tools, chaos 0, fuzz 0 of 53, problems_audit 105 problems (the 10 new ones use generic concept panels).
+  Local QA servers need a deep accept queue (`serve.py`, request_queue_size 128): python's default 5 drops some of the
+  10 parallel data fetches and sections show "0 problems" (a test-server artifact; the live site is fine).
+
+## Next week (ideas, not started, wave 6)
+- Bespoke concept sketches for the 10 new problems (they reuse generic ones).
+- fieldmatch / crit3d / zoo text is small at 390 px (the 600×450 stage scales to ~0.6); a phone layout for the stage.
+- tool-crit numeric search is limited to |x|, |y| ≤ 4; tool-field's hole check knows only a hole at the origin.

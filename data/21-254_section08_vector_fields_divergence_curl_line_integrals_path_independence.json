@@ -482,6 +482,230 @@
     "Forgetting that a closed curve has the same start and end point."
    ],
    "similarProblemPrompt": "Write your own true/false statement involving path independence, then try to prove it or find a counterexample."
+  },
+  {
+   "id": "vecfieldline-011",
+   "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+   "title": "Irrotational or Incompressible? Three Fields",
+   "difficulty": "Warm-up",
+   "estimatedMinutes": 10,
+   "skills": [
+    "Compute curl and divergence",
+    "Decide irrotational and incompressible",
+    "Give a reason for each answer"
+   ],
+   "examFlavor": "Yes/no decisions from curl and divergence for three planar fields",
+   "problemLatex": "For each field, say whether it is irrotational (curl \\(=0\\) everywhere) and whether it is incompressible (divergence \\(=0\\) everywhere). Show the quantity that decides it.\n\n(a) \\(\\mathbf F=[x^3,\\ y^3]\\)\n\n(b) \\(\\mathbf G=\\left[xy,\\ -\\tfrac12y^2\\right]\\)\n\n(c) \\(\\mathbf H=[2x+y,\\ x-2y]\\)",
+   "thinkFirst": "For \\([P,Q]\\): curl is \\(\\dfrac{\\partial Q}{\\partial x}-\\dfrac{\\partial P}{\\partial y}\\) and divergence is \\(\\dfrac{\\partial P}{\\partial x}+\\dfrac{\\partial Q}{\\partial y}\\). A field can be both, one, or neither.",
+   "hints": [
+    "Compute both numbers for each field before answering anything.",
+    "A condition must hold at every point. A quantity that is zero only at one point does not count.",
+    "Two zeros in a row is fine: a field can be irrotational and incompressible."
+   ],
+   "setupLatex": "\\[\\text{curl}=\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y},\\qquad \\text{div}=\\frac{\\partial P}{\\partial x}+\\frac{\\partial Q}{\\partial y}.\\]",
+   "solutionSteps": [
+    {
+     "label": "Field F",
+     "latex": "\\[\\text{curl}\\,\\mathbf F=0-0=0,\\qquad \\text{div}\\,\\mathbf F=3x^2+3y^2.\\]\nThe curl is \\(0\\), so \\(\\mathbf F\\) is irrotational. The divergence is not \\(0\\) (except at the origin), so it is not incompressible."
+    },
+    {
+     "label": "Field G",
+     "latex": "\\[\\text{curl}\\,\\mathbf G=\\frac{\\partial}{\\partial x}\\!\\left(-\\tfrac12y^2\\right)-\\frac{\\partial}{\\partial y}(xy)=0-x=-x,\\]\n\\[\\text{div}\\,\\mathbf G=y+(-y)=0.\\]\nThe curl is not \\(0\\) (it is \\(-x\\)), so \\(\\mathbf G\\) is not irrotational. The divergence is \\(0\\), so it is incompressible."
+    },
+    {
+     "label": "Field H",
+     "latex": "\\[\\text{curl}\\,\\mathbf H=1-1=0,\\qquad \\text{div}\\,\\mathbf H=2+(-2)=0.\\]\nBoth are \\(0\\), so \\(\\mathbf H\\) is irrotational and incompressible."
+    }
+   ],
+   "finalAnswerLatex": "(a) Irrotational, not incompressible. (b) Not irrotational, incompressible. (c) Both.",
+   "commonMistakes": [
+    "Mixing up the two: curl asks about spin, divergence asks about spreading out.",
+    "Writing the curl as \\(P_x-Q_y\\) or \\(Q_y-P_x\\) instead of \\(Q_x-P_y\\).",
+    "Calling a field incompressible because the divergence is zero at one point."
+   ],
+   "similarProblemPrompt": "Is \\(\\mathbf K=[y^2,\\ x^2]\\) irrotational? Incompressible?"
+  },
+  {
+   "id": "vecfieldline-012",
+   "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+   "title": "Where Is the Field a Source or a Sink?",
+   "difficulty": "Core",
+   "estimatedMinutes": 10,
+   "skills": [
+    "Compute divergence",
+    "Interpret positive and negative divergence",
+    "Find where a field is a source or a sink"
+   ],
+   "examFlavor": "Reading source and sink regions from the sign of the divergence",
+   "problemLatex": "Let \\(\\mathbf F(x,y)=[x^3-4x,\\ y]\\).\n\n(a) Compute \\(\\operatorname{div}\\mathbf F\\).\n\n(b) Find where \\(\\mathbf F\\) is a source (divergence positive) and where it is a sink (divergence negative).\n\n(c) Is the point \\((0,3)\\) a source or a sink? What about \\((2,-1)\\)?",
+   "thinkFirst": "Positive divergence means more flow leaves a tiny neighborhood than enters: a source. Negative means more enters than leaves: a sink.",
+   "hints": [
+    "Differentiate the first component with respect to \\(x\\) and the second with respect to \\(y\\), then add.",
+    "Factor your answer. Where does each factor change sign?",
+    "For (c), only \\(x\\) matters, so look at the first coordinate."
+   ],
+   "setupLatex": "\\[\\operatorname{div}\\mathbf F=\\frac{\\partial}{\\partial x}(x^3-4x)+\\frac{\\partial}{\\partial y}(y).\\]",
+   "solutionSteps": [
+    {
+     "label": "Divergence",
+     "latex": "\\[\\operatorname{div}\\mathbf F=(3x^2-4)+1=3x^2-3=3(x-1)(x+1).\\]"
+    },
+    {
+     "label": "Sign",
+     "latex": "\\(\\operatorname{div}\\mathbf F>0\\) when \\(|x|>1\\): a source. \\(\\operatorname{div}\\mathbf F<0\\) when \\(|x|<1\\): a sink. On the lines \\(x=\\pm1\\) the divergence is \\(0\\), so it is neither."
+    },
+    {
+     "label": "The two points",
+     "latex": "At \\((0,3)\\): \\(\\operatorname{div}\\mathbf F=-3<0\\), so a sink.\n\nAt \\((2,-1)\\): \\(\\operatorname{div}\\mathbf F=3(4)-3=9>0\\), so a source."
+    }
+   ],
+   "finalAnswerLatex": "\\(\\operatorname{div}\\mathbf F=3x^2-3\\). Source where \\(|x|>1\\), sink where \\(|x|<1\\). \\((0,3)\\) is a sink and \\((2,-1)\\) is a source.",
+   "commonMistakes": [
+    "Judging source or sink from the sign of a component instead of the sign of the divergence.",
+    "Forgetting the \\(+1\\) from \\(\\partial(y)/\\partial y\\), which changes the boundary from \\(|x|=\\tfrac{2}{\\sqrt3}\\) to \\(|x|=1\\).",
+    "Looking at \\(y\\): this divergence does not depend on \\(y\\) at all."
+   ],
+   "similarProblemPrompt": "Where is \\(\\mathbf G=[xy,\\ -y^2]\\) a source and where a sink?"
+  },
+  {
+   "id": "vecfieldline-013",
+   "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+   "title": "A Three-Dimensional Potential by Merging Pieces",
+   "difficulty": "Core",
+   "estimatedMinutes": 14,
+   "skills": [
+    "Check that a 3-D field has zero curl",
+    "Integrate each component separately",
+    "Merge the pieces into one potential function"
+   ],
+   "examFlavor": "Building a three-dimensional potential function by integrating each component and merging the results",
+   "problemLatex": "Let \\(\\mathbf F=[\\,2xy+z^3,\\ x^2+z^2,\\ 2yz+3xz^2\\,]\\).\n\n(a) Show that \\(\\operatorname{curl}\\mathbf F=\\mathbf 0\\).\n\n(b) Find a potential function \\(f\\) with \\(\\nabla f=\\mathbf F\\), by integrating each component and merging the results.\n\n(c) Use \\(f\\) to evaluate \\(\\int_C\\mathbf F\\cdot d\\mathbf r\\) for any path \\(C\\) from \\((0,0,0)\\) to \\((1,2,1)\\).",
+   "thinkFirst": "Integrate \\(P\\) in \\(x\\), \\(Q\\) in \\(y\\), \\(R\\) in \\(z\\). Each answer is only part of \\(f\\). Collect every different term once.",
+   "hints": [
+    "The curl of \\([P,Q,R]\\) is \\([R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y]\\).",
+    "Write \\(\\int P\\,dx\\), \\(\\int Q\\,dy\\), \\(\\int R\\,dz\\) side by side (ignore the \\(+C\\)'s).",
+    "Each piece misses the terms that do not contain its own variable. The true \\(f\\) contains all the terms that appeared.",
+    "Check by taking \\(\\nabla f\\)."
+   ],
+   "setupLatex": "\\[\\operatorname{curl}\\mathbf F=[\\,R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y\\,].\\]",
+   "solutionSteps": [
+    {
+     "label": "Part (a)",
+     "latex": "\\[R_y-Q_z=2z-2z=0,\\quad P_z-R_x=3z^2-3z^2=0,\\quad Q_x-P_y=2x-2x=0.\\]\nSo \\(\\operatorname{curl}\\mathbf F=\\mathbf 0\\)."
+    },
+    {
+     "label": "Integrate each component",
+     "latex": "\\[\\int(2xy+z^3)\\,dx=x^2y+xz^3,\\]\n\\[\\int(x^2+z^2)\\,dy=x^2y+yz^2,\\]\n\\[\\int(2yz+3xz^2)\\,dz=yz^2+xz^3.\\]"
+    },
+    {
+     "label": "Merge",
+     "latex": "The distinct terms are \\(x^2y,\\ xz^3,\\ yz^2\\). Each appears in two of the pieces, and the pieces agree on it. So\n\\[f(x,y,z)=x^2y+xz^3+yz^2+C.\\]\nCheck: \\(\\nabla f=[2xy+z^3,\\ x^2+z^2,\\ 3xz^2+2yz]=\\mathbf F\\)."
+    },
+    {
+     "label": "Part (c)",
+     "latex": "Since \\(\\mathbf F=\\nabla f\\), the integral depends only on the endpoints:\n\\[\\int_C\\mathbf F\\cdot d\\mathbf r=f(1,2,1)-f(0,0,0)=(2+1+2)-0=5.\\]"
+    }
+   ],
+   "finalAnswerLatex": "\\(f(x,y,z)=x^2y+xz^3+yz^2+C\\), and \\(\\int_C\\mathbf F\\cdot d\\mathbf r=5\\).",
+   "commonMistakes": [
+    "Adding up the three integrals instead of merging. A term that appears in two pieces must be counted once.",
+    "Writing \\(+C\\) after each piece and treating them as three different constants in \\(f\\).",
+    "Skipping the final check of \\(\\nabla f\\)."
+   ],
+   "similarProblemPrompt": "Find a potential for \\(\\mathbf G=[\\,y+z,\\ x+z,\\ x+y\\,]\\) by merging pieces."
+  },
+  {
+   "id": "vecfieldline-014",
+   "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+   "title": "Zero Curl, but a Hole in the Domain",
+   "difficulty": "Conceptual",
+   "estimatedMinutes": 14,
+   "skills": [
+    "Compute curl away from a hole",
+    "Compute circulation around a circle",
+    "Explain why zero curl is not enough"
+   ],
+   "examFlavor": "A field with zero curl everywhere it is defined but nonzero circulation around its hole",
+   "problemLatex": "Let \\(\\mathbf F=\\dfrac{[\\,y,\\ -x\\,]}{x^2+y^2}\\), defined for \\((x,y)\\ne(0,0)\\).\n\n(a) Show that the curl of \\(\\mathbf F\\) is \\(0\\) at every point where \\(\\mathbf F\\) is defined.\n\n(b) Compute \\(\\oint_C\\mathbf F\\cdot d\\mathbf r\\) for the circle \\(x^2+y^2=4\\), traveled counterclockwise.\n\n(c) Does (b) contradict the rule \"curl \\(=0\\) means the field is a gradient\"? Explain.\n\n(d) What is \\(\\oint\\mathbf F\\cdot d\\mathbf r\\) around the counterclockwise circle of radius \\(1\\) centered at \\((3,0)\\)?",
+   "thinkFirst": "Zero curl is a local fact, checked point by point. A circle that goes around a hole in the domain can still see a nonzero circulation.",
+   "hints": [
+    "Write \\(P=\\dfrac{y}{x^2+y^2}\\) and \\(Q=\\dfrac{-x}{x^2+y^2}\\), then find \\(\\dfrac{\\partial Q}{\\partial x}\\) and \\(\\dfrac{\\partial P}{\\partial y}\\) with the quotient rule.",
+    "Parametrize \\(\\mathbf r(t)=[2\\cos t,\\ 2\\sin t]\\), \\(0\\le t\\le2\\pi\\), and simplify \\(\\mathbf F(\\mathbf r(t))\\cdot\\mathbf r'(t)\\).",
+    "Where is the rule about zero curl allowed to be used? Think about holes in the domain.",
+    "For (d): does that circle go around the origin?"
+   ],
+   "setupLatex": "\\[\\frac{\\partial Q}{\\partial x}=\\frac{-(x^2+y^2)+2x^2}{(x^2+y^2)^2},\\qquad \\frac{\\partial P}{\\partial y}=\\frac{(x^2+y^2)-2y^2}{(x^2+y^2)^2}.\\]",
+   "solutionSteps": [
+    {
+     "label": "Part (a)",
+     "latex": "\\[\\frac{\\partial Q}{\\partial x}=\\frac{x^2-y^2}{(x^2+y^2)^2},\\qquad \\frac{\\partial P}{\\partial y}=\\frac{x^2-y^2}{(x^2+y^2)^2}.\\]\nTheir difference is \\(0\\) wherever \\((x,y)\\ne(0,0)\\)."
+    },
+    {
+     "label": "Part (b)",
+     "latex": "On the circle, \\(\\mathbf F(\\mathbf r(t))=\\dfrac{[2\\sin t,\\ -2\\cos t]}{4}\\) and \\(\\mathbf r'(t)=[-2\\sin t,\\ 2\\cos t]\\). So\n\\[\\mathbf F\\cdot\\mathbf r'=\\frac{-4\\sin^2t-4\\cos^2t}{4}=-1,\\qquad \\oint_C\\mathbf F\\cdot d\\mathbf r=\\int_0^{2\\pi}(-1)\\,dt=-2\\pi.\\]"
+    },
+    {
+     "label": "Part (c)",
+     "latex": "No contradiction. The rule needs a domain with no holes. Here the domain is the plane with the origin removed, and the circle goes around that hole. A gradient field would have circulation \\(0\\) around every closed curve, so \\(\\mathbf F\\) is not a gradient on this domain."
+    },
+    {
+     "label": "Part (d)",
+     "latex": "This circle does not enclose the origin, so the region inside it lies in the domain and the curl there is \\(0\\). The circulation is \\(0\\)."
+    }
+   ],
+   "finalAnswerLatex": "(a) Curl \\(=0\\) wherever defined. (b) \\(-2\\pi\\). (c) No contradiction: the domain has a hole at the origin, so \\(\\mathbf F\\) is not a gradient there. (d) \\(0\\).",
+   "commonMistakes": [
+    "Concluding that the field is conservative because the curl is \\(0\\), without checking the domain.",
+    "Saying the circulation must be \\(0\\) because the curl is \\(0\\) inside the circle, when the curl is not defined at the origin.",
+    "Losing the sign: this field turns clockwise, so the counterclockwise circulation is negative."
+   ],
+   "similarProblemPrompt": "Compute the circulation of \\(\\left[-y,\\ x\\right]/(x^2+y^2)\\) around \\(x^2+y^2=9\\), counterclockwise."
+  },
+  {
+   "id": "vecfieldline-015",
+   "unit": "Vector Fields, Divergence, Curl, Line Integrals, and Path Independence",
+   "title": "Set Up, Don't Evaluate: Work and Ribbon Area",
+   "difficulty": "Core",
+   "estimatedMinutes": 12,
+   "skills": [
+    "Write a work integral as an integral in t",
+    "Set up the area of a ribbon over a curve",
+    "Stop at a correct one-variable integral"
+   ],
+   "examFlavor": "Set-up only: a work integral along a helix and the area of a ribbon standing on a curve",
+   "problemLatex": "Set up each as a single-variable definite integral. Do not evaluate.\n\n(a) The work done by \\(\\mathbf F=[\\,z,\\ x^2,\\ y\\,]\\) along the helix \\(\\mathbf r(t)=[\\cos t,\\ \\sin t,\\ t]\\), \\(0\\le t\\le2\\pi\\).\n\n(b) The area of a vertical ribbon that stands on the parabola \\(y=x^2\\), from \\((0,0)\\) to \\((1,1)\\), with height \\(h(x,y)=3+x\\) above each point.",
+   "thinkFirst": "Both are line integrals done by the same steps: parametrize, put the parametrization into the function, multiply by the right small piece of the curve, and write the limits.",
+   "hints": [
+    "(a): the small piece is \\(d\\mathbf r=\\mathbf r'(t)\\,dt\\), and the integrand is a dot product.",
+    "(b): the ribbon's area is the integral of the height times arc length, so use \\(\\|\\mathbf r'(t)\\|\\,dt\\).",
+    "For (b), parametrize the parabola with \\(x=t\\)."
+   ],
+   "setupLatex": "(a) \\(\\displaystyle\\int_C\\mathbf F\\cdot d\\mathbf r=\\int_a^b\\mathbf F(\\mathbf r(t))\\cdot\\mathbf r'(t)\\,dt\\). (b) \\(\\displaystyle\\text{area}=\\int_C h\\,ds=\\int_a^b h(\\mathbf r(t))\\,\\|\\mathbf r'(t)\\|\\,dt\\).",
+   "solutionSteps": [
+    {
+     "label": "(a) Put in the curve",
+     "latex": "\\[\\mathbf F(\\mathbf r(t))=[\\,t,\\ \\cos^2t,\\ \\sin t\\,],\\qquad \\mathbf r'(t)=[-\\sin t,\\ \\cos t,\\ 1].\\]"
+    },
+    {
+     "label": "(a) Dot product",
+     "latex": "\\[\\mathbf F\\cdot\\mathbf r'=-t\\sin t+\\cos^3t+\\sin t,\\]\nso\n\\[\\text{work}=\\int_0^{2\\pi}\\left(-t\\sin t+\\cos^3t+\\sin t\\right)dt.\\]"
+    },
+    {
+     "label": "(b) Parametrize the curve",
+     "latex": "Take \\(\\mathbf r(t)=[t,\\ t^2]\\), \\(0\\le t\\le1\\). Then \\(\\mathbf r'(t)=[1,\\ 2t]\\) and \\(\\|\\mathbf r'(t)\\|=\\sqrt{1+4t^2}\\). The height is \\(h=3+t\\)."
+    },
+    {
+     "label": "(b) The integral",
+     "latex": "\\[\\text{area}=\\int_0^1(3+t)\\sqrt{1+4t^2}\\,dt.\\]"
+    }
+   ],
+   "finalAnswerLatex": "(a) \\(\\displaystyle\\int_0^{2\\pi}\\left(-t\\sin t+\\cos^3t+\\sin t\\right)dt\\). (b) \\(\\displaystyle\\int_0^1(3+t)\\sqrt{1+4t^2}\\,dt\\).",
+   "commonMistakes": [
+    "Forgetting \\(\\mathbf r'(t)\\) in the work integral, or taking a dot product with the wrong vector.",
+    "Leaving out \\(\\|\\mathbf r'(t)\\|\\) in (b): that factor turns \\(dt\\) into arc length.",
+    "Writing limits in \\(x\\) after substituting \\(x=t\\), or using the original variables inside the integrand."
+   ],
+   "similarProblemPrompt": "Set up the work of \\([\\,y,\\ z,\\ x\\,]\\) along \\(\\mathbf r(t)=[t,\\ t^2,\\ t^3]\\), \\(0\\le t\\le1\\)."
   }
  ]
 }
