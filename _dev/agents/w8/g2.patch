@@ -1,6 +1,6 @@
 diff -ru base8/index.html g2/index.html
 --- base8/index.html	2026-11-04 01:26:00
-+++ g2/index.html	2026-11-04 11:39:13
++++ g2/index.html	2026-11-04 16:16:37
 @@ -4428,6 +4428,9 @@
    /* ---- wave-8 css spacer 4 ---- */
    /* ---- wave-8 css spacer 5 ---- */
@@ -122,7 +122,7 @@ diff -ru base8/index.html g2/index.html
  
  
  stAdd({
-@@ -25649,7 +25568,988 @@
+@@ -25649,7 +25568,996 @@
  /* ---- wave-8 spacer G23 ---- */
  /* ---- wave-8 spacer G24 ---- */
  /* ---- wave-8 spacer G25 ---- */
@@ -167,7 +167,8 @@ diff -ru base8/index.html g2/index.html
 +  let o = "";
 +  for (let x = Math.ceil(x0); x <= x1; x++) o += vzPath3(cam, [[x, y0, 0], [x, y1, 0]], `stroke="${VZ.ink}" stroke-opacity="${x === 0 ? .4 : .09}" stroke-width="${x === 0 ? 1.2 : 1}"`);
 +  for (let y = Math.ceil(y0); y <= y1; y++) o += vzPath3(cam, [[x0, y, 0], [x1, y, 0]], `stroke="${VZ.ink}" stroke-opacity="${y === 0 ? .4 : .09}" stroke-width="${y === 0 ? 1.2 : 1}"`);
-+  if (names !== false) o += g2Lab(cam, [x1 + .25, 0, 0], "x", VZ.grey, 0, 5, 15) + g2Lab(cam, [0, y1 + .3, 0], "y", VZ.grey, 0, 5, 15);
++  const nx = names && names.x, ny = names && names.y;       // optional: {x: [dx, dy, anchor]} puts that name beside the axis tip instead
++  if (names !== false) o += (nx ? g2Lab(cam, [x1, 0, 0], "x", VZ.grey, nx[0], nx[1], 15, nx[2]) : g2Lab(cam, [x1 + .25, 0, 0], "x", VZ.grey, 0, 5, 15)) + (ny ? g2Lab(cam, [0, y1, 0], "y", VZ.grey, ny[0], ny[1], 15, ny[2]) : g2Lab(cam, [0, y1 + .3, 0], "y", VZ.grey, 0, 5, 15));
 +  return o;
 +}
 +function g2Cyl(cam, R, z0, z1) {                           // a see-through cylinder x² + y² = R²: rims and the two side edges
@@ -338,9 +339,9 @@ diff -ru base8/index.html g2/index.html
 +    r: s => s <= 1 ? [2 * s, 0, 0] : [2 * Math.cos((s - 1) * Math.PI / 2), 2 * Math.sin((s - 1) * Math.PI / 2), 0], f: s => s <= 1 ? 2 * s : 2 * Math.cos((s - 1) * Math.PI / 2), a: 0, b: 2, fmax: 2, hs: .8, n: 100, ticks: 6, rpS: .45,
 +    cam: g2Cam(74, -30, .72, [1.05, 1.05, .5], 228), pieces: [[0, 1], [1, 2]],
 +    floor: cam => g2FloorGrid(cam, 0, 3, 0, 3),
-+    lab2: (cam, k) => g2Lab(cam, [1, 0, 0], "C₁", VZ.ink, 0, 24, 15) + (k <= 1 ? g2Lab(cam, [.52, 1.93, 0], "C₂", VZ.ink, 12, -6, 15, "start") : ""),
++    lab2: (cam, k) => g2Lab(cam, [.3, 0, 0], "C₁", VZ.ink, 0, 24, 15) + (k <= 1 ? g2Lab(cam, [.52, 1.93, 0], "C₂", VZ.ink, 12, -6, 15, "start") : ""),
 +    pts: [[[0, 0, 0], "(0, 0)", -10, 18], [[2, 0, 0], "(2, 0)", 10, 20], [[0, 2, 0], "(0, 2)", -10, 4]],
-+    dsAt: [[.42, .1, 0, 22, 0, 18], [1.45, .12, 14, 8, 10, -4]], revLab: [0, 0],
++    dsAt: [[.42, .1, 0, 36, 0, 18], [1.45, .12, 14, 8, 10, -4]], revLab: [0, 0],
 +    plan: { draw: [0, 0], ds: [[1, 0, 0, 0], [2, 0, 0, 1]], rise: [[1, 0], [2, 0]], sweep: [[1, 1], [2, 1]] },
 +    key: G2_LI_KEY2,
 +    intro: "C: a segment, then a quarter circle",
@@ -401,7 +402,7 @@ diff -ru base8/index.html g2/index.html
 +  if (eF > .01) S.tF.forEach(f => { const p = S.r(S.a + span * f); o += `<g opacity="${q2(.9 * eF)}">${vzArrow3(cam, p, g2Add(p, F3(p), S.fS), "I", 2)}</g>`; });
 +  // one point of C, riding along: r′(t), F there, and the shadow of F on the direction of travel
 +  const kM0 = P.rp ? P.rp[0] : 99, kM1 = P.dot ? P.dot[0] : -1;
-+  let tm = null, opm = 1;
++  let tm = null, opm = 1, rl = null;
 +  if (k >= kM0 && k <= kM1) { const f = (T / S.per) % 1; tm = S.a + span * f; opm = S.closed ? 1 : Math.min(1, f / .06, (1 - f) / .06); }
 +  else if (inSweep && sw > .003 && sw < .997) { tm = tFront; opm = Math.min(1, sw / .06, (1 - sw) / .06); }
 +  if (tm != null) {
@@ -411,6 +412,7 @@ diff -ru base8/index.html g2/index.html
 +    if (k >= P.F[0]) g += vzArrow3(cam, p, tipF, "I", 2.8);
 +    if (k >= P.dot[0]) { const e = k === P.dot[0] ? eD : 1; g += `<g opacity="${q2(e)}">${vzPath3(cam, [tipF, foot], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="3 3"`)}${vzPath3(cam, [p, foot], `stroke="${c >= 0 ? G2_HELP : G2_HURT}" stroke-width="6" stroke-linecap="round"`)}</g>`; }
 +    g += `<g opacity="${q2(eR)}">${vzArrow3(cam, p, g2Add(p, v, S.rpS), "O", 2.8)}${g2Lab(cam, g2Add(p, v, S.rpS * 1.25), "r′(t)", G2_GOLD, 0, 5, 14)}</g>`;
++    const q = cam(...g2Add(p, v, S.rpS * 1.25)); rl = [q[0], q[1], eR * opm];
 +    g += vzDot3(cam, p, 5, VZ.deep);
 +    o += `<g opacity="${q2(opm)}">${g}</g>`;
 +  }
@@ -422,7 +424,12 @@ diff -ru base8/index.html g2/index.html
 +    if (S.mark != null) o += `<g opacity="${q2(L(P.sweep[0], P.sweep[1], 0, .5))}"><path d="M${q2(128 + 200 * (z + S.mark / R))} 384l-5-7h10z" fill="${VZ.gold}"/>${vzNote(128 + 200 * (z + S.mark / R) + 6, 372, "f(end) − f(start)", "end", G2_GOLD)}</g>`;
 +  }
 +  if (S.over) o += S.over(cam, k, L);
-+  S.pts.forEach(([p, html, dx, dy]) => { o += vzDot3(cam, p, 4.5, VZ.ink) + g2Lab(cam, p, html, VZ.ink, dx, dy, 14, dx < -4 ? "end" : dx > 4 ? "start" : "middle"); });
++  S.pts.forEach(([p, html, dx, dy]) => {
++    const an = dx < -4 ? "end" : dx > 4 ? "start" : "middle", q = cam(...p), hw = 3.6 * html.length;
++    let op = 1;
++    if (rl) { const cx = q[0] + dx + (an === "start" ? hw : an === "end" ? -hw : 0), cy = q[1] + dy - 5, e = Math.max(Math.abs(cx - rl[0]) / (hw + 24), Math.abs(cy - rl[1]) / 20); op = 1 - rl[2] * (1 - Math.min(1, Math.max(0, (e - 1) / .5))); }
++    o += vzDot3(cam, p, 4.5, VZ.ink) + `<g opacity="${q2(op)}">${g2Lab(cam, p, html, VZ.ink, dx, dy, 14, an)}</g>`;
++  });
 +  if (k >= 0) o += vzKey(S.key(k), 16, 452);
 +  return o + stNote(180, 424, k < 0 ? S.intro : S.notes[k] || "", VZ.ink);
 +}
@@ -456,7 +463,7 @@ diff -ru base8/index.html g2/index.html
 +  { chip: "Circle, counterclockwise",
 +    problem: "Find the work done by \\(\\mathbf F=[y^2,\\ x]\\) once around the unit circle \\(x^2+y^2=1\\), counterclockwise.",
 +    r: t => [Math.cos(t), Math.sin(t), 0], F: p => [p[1] * p[1], p[0]], a: 0, b: 2 * Math.PI, per: 7, closed: true,
-+    cam: g2Flat(G2_P2), floor: cam => g2FloorGrid(cam, -1.6, 1.6, -1.6, 1.6),
++    cam: g2Flat(G2_P2), floor: cam => g2FloorGrid(cam, -1.6, 1.6, -1.6, 1.6, { x: [-2, -7, "end"] }),
 +    grid: g2GridPts(-1.5, 1.5, -1.5, 1.5, .5), gL: .3, Fmax: 2.7, tF: [0, 1, 2, 3, 4, 5, 6, 7].map(i => (i + .5) / 8), fS: .4, rpS: .42, chev: [.125, .375, .625, .875],
 +    pts: [[[1, 0, 0], "start, end", 10, 22]],
 +    plan: { draw: [0, 0], rp: [1, 0], F: [2, 0], dot: [3, 1], sweep: [4, 0, "u"] }, key: g2WkKey(3),
@@ -505,7 +512,7 @@ diff -ru base8/index.html g2/index.html
 +  { chip: "Check first: F = ∇f",
 +    problem: "Find the work done by \\(\\mathbf F=[y^2+1,\\ 2xy]\\) along the parabola \\(y=x^2\\) from \\((0,0)\\) to \\((1,1)\\).",
 +    r: t => [t, t * t, 0], F: p => [p[1] * p[1] + 1, 2 * p[0] * p[1]], a: 0, b: 1, per: 4.5, mark: 2,
-+    cam: g2Flat(G2_P4), floor: cam => g2FloorGrid(cam, 0, 1.4, 0, 1.4),
++    cam: g2Flat(G2_P4), floor: cam => g2FloorGrid(cam, 0, 1.4, 0, 1.4, { x: [-2, -7, "end"], y: [8, 5, "start"] }),
 +    grid: g2GridPts(0, 1.25, 0, 1.25, .25), gL: .17, Fmax: 3.5, tF: [.2, .45, .7, .92], fS: .11, rpS: .2, chev: [.55],
 +    under: (cam, k, L) => {                              // level curves of f = x(y² + 1): x = c / (y² + 1)
 +      const e = k > 1 ? 1 : k === 1 ? L(1, 2, .2, 1) : 0; if (e < .01) return "";
@@ -738,7 +745,7 @@ diff -ru base8/index.html g2/index.html
 +  const ph = (q, a, d) => !q ? 0 : q[2] === "u" ? (k > q[0] ? 1 : k < q[0] ? 0 : stEase(u, a + .6, d)) : L(q[0], q[1], a, d);
 +  const V = S.dir === "v", pt = (s, w) => V ? [s, w] : [w, s];   // s runs along the sweep, w across it
 +  const [s0, s1] = S.range, eIn = ph(pl.inner, .1, .8), eOut = ph(pl.outer, .1, .8), fill = ph(pl.fill, .3, 3);
-+  let o = g2FloorGrid(cam, S.box[0], S.box[1], S.box[2], S.box[3]);
++  let o = g2FloorGrid(cam, S.box[0], S.box[1], S.box[2], S.box[3], S.names);
 +  const poly = pts => `M${pts.map(p => q2(P.X(p[0])) + " " + q2(P.Y(p[1]))).join("L")}Z`;
 +  o += `<path d="${poly(S.outline)}" fill="${VZ.ink}" fill-opacity=".07"/>`;
 +  // the strips already added (writing the integral: the sweep runs once and leaves D filled strip by strip)
@@ -770,7 +777,7 @@ diff -ru base8/index.html g2/index.html
 +    const A = pt(sv, S.lo(sv)), B = pt(sv, S.hi(sv)), e = k === pl.inner[0] ? eIn : k === pl.fill[0] ? Math.min(1, fill / .06, (1 - fill) / .06) : 1;
 +    o += `<g opacity="${q2(e)}">${P.path([pt(sv, S.box[V ? 2 : 0]), pt(sv, S.box[V ? 3 : 1])], `stroke="${VZ.ink}" stroke-width="1.3" stroke-dasharray="4 4" opacity=".7"`)}${P.path([A, B], `stroke="${VZ.red}" stroke-width="4.5" stroke-linecap="round"`)}` +
 +      `<circle cx="${q2(P.X(A[0]))}" cy="${q2(P.Y(A[1]))}" r="6" fill="#fff" stroke="${VZ.red}" stroke-width="2.4"/><circle cx="${q2(P.X(B[0]))}" cy="${q2(P.Y(B[1]))}" r="6" fill="${VZ.red}" stroke="#fff" stroke-width="1.6"/>` +
-+      (k === pl.inner[0] ? (S.encL ? vzLabel(P.X(A[0]) - 12, P.Y(A[1]) + 5, "enters", VZ.red, 13.5, "end") + vzLabel(P.X(B[0]) - 12, P.Y(B[1]) + 5, "leaves", VZ.red, 13.5, "end") : vzLabel(P.X(A[0]) + (V ? 0 : 2), P.Y(A[1]) + (V ? 22 : -12), "enters", VZ.red, 13.5, V ? "middle" : "start") + vzLabel(P.X(B[0]) + (V ? 0 : -2), P.Y(B[1]) + (V ? -12 : -12), "leaves", VZ.red, 13.5, V ? "middle" : "end")) : "") +
++      (k === pl.inner[0] ? (S.encL ? vzLabel(P.X(A[0]) - 12, P.Y(A[1]) + 5, "enters", VZ.red, 13.5, "end") + vzLabel(P.X(B[0]) - 12, P.Y(B[1]) + 5, "leaves", VZ.red, 13.5, "end") : vzLabel(P.X(A[0]) + (V ? 0 : 2), P.Y(A[1]) + (V ? 22 : -12), "enters", VZ.red, 13.5, V ? "middle" : "start") + vzLabel(P.X(B[0]) + (V ? 0 : -2), P.Y(B[1]) + (V ? -12 : 21), "leaves", VZ.red, 13.5, V ? "middle" : "end")) : "") +
 +      (eOut > .01 ? `<circle cx="${q2(P.X(V ? sv : 0))}" cy="${q2(P.Y(V ? 0 : sv))}" r="5" fill="${VZ.gold}" stroke="#fff" stroke-width="1.5"/>` : "") + `</g>`;
 +  }
 +  // where the boundary curves meet
@@ -804,7 +811,7 @@ diff -ru base8/index.html g2/index.html
 +    ] },
 +  { chip: "Type II: sideways sweep",
 +    problem: "Set up and evaluate \\(\\iint_D (y+3)\\,dA\\), where \\(D\\) is bounded by the parabola \\(x=y^2\\) and the line \\(x=3-2y\\).",
-+    P: vzPlane(62, 212, 30), box: [-.5, 9.6, -3.6, 1.7], dir: "h", range: [-3, 1], lo: y => y * y, hi: y => 3 - 2 * y,
++    P: vzPlane(62, 212, 30), box: [-.5, 9.6, -3.6, 1.7], names: { x: [-2, -7, "end"] }, dir: "h", range: [-3, 1], lo: y => y * y, hi: y => 3 - 2 * y,
 +    outline: g2Pts(y => [y * y, y], -3, 1).concat(g2Pts(y => [3 - 2 * y, y], 1, -3, 4)),
 +    edges: [[g2Pts(y => [y * y, y], -3.05, 1.3), "in", "x = y²", 3.2, -1.9, "end"], [g2Pts(y => [3 - 2 * y, y], -3.25, 1.6, 4), "in", "x = 3 − 2y", 5.3, -.75, "start"]],
 +    ghost: { K: 1, lines: [[.5, -Math.sqrt(.5), Math.sqrt(.5), VZ.ink], [6, -Math.sqrt(6), -1.5, VZ.grey]], lx: 6.5, ly: .8 },
@@ -826,7 +833,7 @@ diff -ru base8/index.html g2/index.html
 +    ] },
 +  { chip: "Triangle from vertices",
 +    problem: "Set up and evaluate \\(\\iint_D x\\,dA\\), where \\(D\\) is the triangle with vertices \\((0,0)\\), \\((3,1)\\) and \\((0,2)\\).",
-+    P: vzPlane(56, 309, 80), box: [-.5, 3.6, -.5, 2.6], dir: "v", range: [0, 3], lo: x => x / 3, hi: x => 2 - x / 3,
++    P: vzPlane(56, 309, 80), box: [-.5, 3.6, -.5, 2.6], names: { x: [-2, -7, "end"] }, dir: "v", range: [0, 3], lo: x => x / 3, hi: x => 2 - x / 3,
 +    outline: [[0, 0], [3, 1], [0, 2]], encL: true,   // labels beside the sweep line, inside D, clear of the edge names
 +    edges: [[[[0, 0], [3, 1]], "in", "y = x/3", 1.9, .3, "start"], [[[0, 2], [3, 1]], "in", "y = 2 − x/3", 1.75, 1.72, "start"], [[[0, 0], [0, 2]], "out", "", 0, 0]],
 +    meets: [[[0, 0], "(0, 0)", -10, -6], [[3, 1], "(3, 1)", 12, 4], [[0, 2], "(0, 2)", -10, 4]], outLab: ["x = 0", "x = 3"],
@@ -951,7 +958,7 @@ diff -ru base8/index.html g2/index.html
 +        `<g>${vzNote(286, 400, "θ", "middle", VZ.ink)}${vzNote(226, 345, "z", "end", VZ.ink)}${vzNote(236, 398, "0", "middle", VZ.grey)}${vzNote(336, 398, "π/2", "middle", VZ.grey)}${vzNote(228, 306, "3", "end", VZ.grey)}${vzNote(286, 290, "the (θ, z) rectangle", "middle", G2_GOLD)}</g>`;
 +    },
 +    tan: [[(s, t) => { const a = s * Math.PI / 2; return [-2 * Math.sin(a) * .45, 2 * Math.cos(a) * .45, 0]; }, g2SubT("r", "θ"), 6, 4], [() => [0, 0, .9], g2SubT("r", "z"), 10, 0]],
-+    pAt: [.35, .4], labA: [12, 4], labS: [-14, -4], dsTxt: "dS = 2 dθ dz",
++    pAt: [.35, .4], labA: [12, 4], labS: [18, 4], dsTxt: "dS = 2 dθ dz",
 +    plan: { stretch: [1, 2], f: 2, int: 3 },
 +    intro: "S: a quarter of a cylinder",
 +    notes: ["the (θ, z) rectangle wraps onto the cylinder", "the two tangents span the patch: dS = 2 dθ dz", "f = xz: darker is larger", "add f dS over the rectangle"],
@@ -982,7 +989,7 @@ diff -ru base8/index.html g2/index.html
 +function g2GcPic(def, k, b, u) {
 +  const S = def.sits[g2Sit[def.id]], L = stLines(def, k, b, u), P = S.P, cam = g2Flat(P), T = performance.now() / 1000;
 +  const at = (K, j, a, d) => K == null ? 0 : L(K, j, a, d);
-+  let o = g2FloorGrid(cam, S.box[0], S.box[1], S.box[2], S.box[3]);
++  let o = g2FloorGrid(cam, S.box[0], S.box[1], S.box[2], S.box[3], S.names);
 +  const poly = pts => `M${pts.map(p => q2(P.X(p[0])) + " " + q2(P.Y(p[1]))).join("L")}Z`;
 +  // D: shaded once there is a region to talk about; stronger while Green's theorem is used on it
 +  const eD = S.dFrom ? at(S.dFrom[0], S.dFrom[1], .1, .8) : 1, eU = at(S.use[0], S.use[1], .2, .9);
@@ -1022,10 +1029,11 @@ diff -ru base8/index.html g2/index.html
 +}
 +const g2Tri = (A, B, C) => f => { const s = f * 3, i = Math.min(2, Math.floor(s)), w = s - i, p = [A, B, C, A]; return [p[i][0] + (p[i + 1][0] - p[i][0]) * w, p[i][1] + (p[i + 1][1] - p[i][1]) * w]; };
 +const G2_GC_TRI = [[0, 0], [3, 0], [0, 3]];
++const G2_GC_NM = { x: [-2, -7, "end"], y: [8, 5, "start"] };   // axis names beside the tips: inside the stage, clear of the checklist
 +const G2_GC = [
 +  { chip: "All three OK",
 +    problem: "Find \\(\\oint_C xy\\,dx+(x^2+3x)\\,dy\\), where \\(C\\) is the triangle with corners \\((0,0)\\), \\((3,0)\\), \\((0,3)\\), counterclockwise.",
-+    P: vzPlane(70, 372, 80), box: [-.5, 3.5, -.4, 3.2], path: g2Tri([0, 0], [3, 0], [0, 3]), closed: true, chev: [.17, .5, .83], region: G2_GC_TRI,
++    P: vzPlane(70, 372, 80), box: [-.5, 3.5, -.4, 3.2], names: G2_GC_NM, path: g2Tri([0, 0], [3, 0], [0, 3]), closed: true, chev: [.17, .5, .83], region: G2_GC_TRI,
 +    pts: [[[0, 0], "(0, 0)", -8, 18], [[3, 0], "(3, 0)", 0, 20], [[0, 3], "(0, 3)", -10, 4]], cLab: [1.75, 1.75],
 +    side: [1, 0, .9, .9, "D on the left"], chk: [[0, 0, true], [1, 0, true], [2, 0, true]], use: [3, 0],
 +    intro: "C: a triangle, counterclockwise",
@@ -1044,7 +1052,7 @@ diff -ru base8/index.html g2/index.html
 +    ] },
 +  { chip: "Clockwise",
 +    problem: "Find \\(\\oint_C xy\\,dx+(x^2+3x)\\,dy\\), where \\(C\\) is the triangle with corners \\((0,0)\\), \\((0,3)\\), \\((3,0)\\), in that order.",
-+    P: vzPlane(70, 372, 80), box: [-.5, 3.5, -.4, 3.2], path: g2Tri([0, 0], [0, 3], [3, 0]), closed: true, chev: [.17, .5, .83], region: G2_GC_TRI,
++    P: vzPlane(70, 372, 80), box: [-.5, 3.5, -.4, 3.2], names: G2_GC_NM, path: g2Tri([0, 0], [0, 3], [3, 0]), closed: true, chev: [.17, .5, .83], region: G2_GC_TRI,
 +    pts: [[[0, 0], "(0, 0)", -8, 18], [[3, 0], "(3, 0)", 0, 20], [[0, 3], "(0, 3)", -10, 4]], cLab: [1.75, 1.75],
 +    side: [1, 0, .9, .9, "D on the right", VZ.red], chk: [[0, 0, true], [1, 0, false, [2, 1], "fixed: flip the sign"], [3, 0, true]], use: [4, 0],
 +    intro: "C: the same triangle, the other way round",
@@ -1063,7 +1071,7 @@ diff -ru base8/index.html g2/index.html
 +    ] },
 +  { chip: "Not closed",
 +    problem: "Find \\(\\int_C (x^2-y)\\,dx+(x+e^{y^2})\\,dy\\), where \\(C\\) is the upper half of the circle \\(x^2+y^2=4\\), from \\((2,0)\\) to \\((-2,0)\\).",
-+    P: vzPlane(180, 330, 66), box: [-2.6, 2.6, -.6, 2.6], path: f => [2 * Math.cos(Math.PI * f), 2 * Math.sin(Math.PI * f)], closed: false, chev: [.25, .5, .75],
++    P: vzPlane(180, 330, 66), box: [-2.6, 2.6, -.6, 2.6], names: G2_GC_NM, path: f => [2 * Math.cos(Math.PI * f), 2 * Math.sin(Math.PI * f)], closed: false, chev: [.25, .5, .75],
 +    region: g2Pts(f => [2 * Math.cos(Math.PI * f), 2 * Math.sin(Math.PI * f)], 0, 1), dFrom: [1, 1],
 +    seg: { K: 1, j: 0, pts: [[-2, 0], [2, 0]], mid: [.35, 0], dir: [1, 0], lab: [0, -.32], sub: [4, 0] },
 +    pts: [[[2, 0], "(2, 0)", 8, 20], [[-2, 0], "(−2, 0)", -8, 20]], cLab: [1.75, 1.6],
