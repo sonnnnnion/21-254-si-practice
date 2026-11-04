@@ -1,0 +1,747 @@
+diff -ru base8/index.html g3/index.html
+--- base8/index.html	2026-11-04 01:26:00
++++ g3/index.html	2026-11-04 04:19:45
+@@ -4434,6 +4434,11 @@
+   /* ---- wave-8 css spacer 4 ---- */
+   /* ---- wave-8 css spacer 5 ---- */
+   /* @@CSS-G3 (your CSS goes on the lines just below this one) @@ */
++  .g3-sit { display: flex; flex-wrap: wrap; gap: 5px; margin: 2px 0 8px; }
++  .g3-sit .vz-chip { font-size: 12px; padding: 3px 10px; }
++  .g3-sit .vz-chip.on { border-color: var(--red); color: var(--red-deep); background: var(--surface); }
++  .st-given.small .g3-sit { margin-bottom: 4px; }
++  @media (max-width: 980px) { .st-board.g3-tall .st-pic { height: 390px; } }
+   /* ---- wave-8 css spacer 1 ---- */
+   /* ---- wave-8 css spacer 2 ---- */
+   /* ---- wave-8 css spacer 3 ---- */
+@@ -12650,14 +12655,14 @@
+   "Surfaces and flux": ["surface", "orient", "flux", "stokes", "divthm"],
+   // the topic pictures lead; the tools and the (long) list of methods come after them
+   "Check your own work": ["tool-rref", "tool-det", "tool-eigen", "tool-vec", "tool-crit", "tool-field"],
+-  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-param", "m-tangent", "m-chain", "m-dirderiv", "m-tanplane", "m-critical", "m-extrema", "m-curldiv", "m-isgrad", "m-merge", "m-setup", "m-lineint", "m-work", "m-wire", "m-potential", "m-square", "m-dblint", "m-switch", "m-polar", "m-green", "m-paramsurf", "m-surfarea", "m-surfint", "m-flux", "m-stokes", "m-dome", "m-cylinder"],
++  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-param", "m-tangent", "m-sketch", "m-chain", "m-dirderiv", "m-tanplane", "m-critical", "m-extrema", "m-curldiv", "m-isgrad", "m-merge", "m-setup", "m-lineint", "m-work", "m-wire", "m-potential", "m-square", "m-dblint", "m-switch", "m-polar", "m-green", "m-paramsurf", "m-surfarea", "m-surfint", "m-flux", "m-stokes", "m-dome", "m-cylinder"],
+ };
+ const VZ_GROUPS = Object.keys(VZ_GROUP_OF);
+ const VZ_ORDER = VZ_GROUPS.flatMap(g => VZ_GROUP_OF[g]);
+ // "Practice this": the Practice Lab section that matches each picture (a few pictures sit in a different section from the
+ // rest of their group). A picture with no entry here and no group entry below simply shows no link.
+ const VZ_SECTION_OF = {
+-  "m-chain": 7, "m-dblint": 9, "m-surfint": 10, "m-param": 7, "m-tangent": 7, "m-tanplane": 7, "m-lineint": 8, "m-work": 8, "m-polar": 9, "m-paramsurf": 10, "m-stokes": 10,
++  "m-chain": 7, "m-dblint": 9, "m-surfint": 10, "m-param": 7, "m-tangent": 7, "m-sketch": 7, "m-tanplane": 7, "m-lineint": 8, "m-work": 8, "m-polar": 9, "m-paramsurf": 10, "m-stokes": 10,
+   compose: 1, transpose: 1, "m-matmul": 1,
+   systems: 2, gauss: 2, "m-gauss": 2, "tool-rref": 2,
+   span: 3, independence: 3, coords: 3, subspace: 3, vectors: 1, nullcol: 3, ranknull: 3, "m-nullcol": 3, "m-subspace": 3, "m-span": 3,
+@@ -19619,55 +19624,6 @@
+   },
+ });
+ 
+-stAdd({
+-  id: "m-extrema", title: "Absolute max and min on a closed region", card: "Absolute extrema",
+-  tagline: "Inside, along each edge, at each corner: then compare.",
+-  blurb: "On a closed, bounded region the absolute max and min exist, and they can only be in three kinds of places. Check them all, then compare.",
+-  problem: "Find the absolute maximum and minimum of \\(f(x,y)=x^2+y^2-2x-2y\\) on the closed triangle with corners \\((0,0)\\), \\((4,0)\\) and \\((0,4)\\).",
+-  picLive: true,
+-  pic(k, b, u) {
+-    const P = vzPlane(50, 392, 72), L = stLines(this, k, b, u), f = (x, y) => x * x + y * y - 2 * x - 2 * y;
+-    let o = `<defs><clipPath id="stTri"><path d="M${P.X(0)} ${P.Y(0)}L${P.X(4)} ${P.Y(0)}L${P.X(0)} ${P.Y(4)}Z"/></clipPath></defs>`;
+-    o += `<path d="M${P.X(0)} ${P.Y(0)}L${P.X(4)} ${P.Y(0)}L${P.X(0)} ${P.Y(4)}Z" fill="${VZ.red}" fill-opacity=".06"/>`;
+-    // the level curves (centred on the critical point) only come in once step 2 has found that point
+-    const lv = L(1, 1, .1, 1);                               // with the line that finds (1, 1)
+-    if (lv > 0) o += `<g clip-path="url(#stTri)" opacity="${q2(lv)}">${[.5, 1, 1.5, 2, 2.5, 3, 3.5, 4].map(r => `<circle cx="${P.X(1)}" cy="${P.Y(1)}" r="${r * 72}" fill="none" stroke="${VZ.gold}" stroke-opacity=".55"/>`).join("")}</g>`;
+-    const edge = (a, c, on) => `<line x1="${P.X(a[0])}" y1="${P.Y(a[1])}" x2="${P.X(c[0])}" y2="${P.Y(c[1])}" stroke="${on ? VZ.red : VZ.ink}" stroke-width="${on ? 4 : 1.8}" stroke-opacity="${on ? .8 : .6}" stroke-linecap="round"/>`;
+-    o += edge([0, 0], [4, 0], k === 2) + edge([0, 0], [0, 4], k === 3) + edge([4, 0], [0, 4], k === 4);
+-        const cands = [[1, 1, 1, 1], [1, 0, 2, 1], [0, 1, 3, 0], [2, 2, 4, 2], [0, 0, 5, 0], [4, 0, 5, 0], [0, 4, 5, 0]];   // x, y, the step that finds it, the line that says so
+-    const fl = L(6, 1, .1, .9);                                                       // the last line names the max and the min: colours blend in then
+-    cands.forEach(([x, y, st, ln]) => {
+-      if (k < st) return;
+-      const v = f(x, y), ev = L(st, ln, .15, .8), txt = String(v).replace("-", "−");    // each value comes in with the line that finds it
+-      if (ev < .01) return;
+-      const fc = v === 8 ? VZ.red : v === -2 ? VZ.green : VZ.grey, big = v === 8 || v === -2, lx = P.X(x) + (x === 4 ? 8 : 14), ly = P.Y(y) + (x === 4 ? -14 : y === 0 ? -12 : y === 4 ? 4 : -10);   // (4, 0): label up and right, clear of the slanted edge
+-      o += `<g opacity="${q2(ev)}"><circle cx="${P.X(x)}" cy="${P.Y(y)}" r="6" fill="${VZ.deep}" stroke="#fff" stroke-width="1.6"/>`;
+-      if (fl > .01) o += `<circle cx="${P.X(x)}" cy="${P.Y(y)}" r="${q2(big ? 6 + 3 * fl : 6)}" fill="${fc}" stroke="#fff" stroke-width="1.6" opacity="${q2(fl)}"/>`;
+-      o += `<g opacity="${q2(1 - fl)}">${vzLabel(lx, ly, txt, VZ.deep, 15, "start")}</g>` + (fl > .01 ? `<g opacity="${q2(fl)}">${vzLabel(lx, ly, txt, fc, 15, "start")}</g>` : "") + `</g>`;
+-    });
+-    // the corners, named from the start (they are part of the problem)
+-    o += vzLabel(P.X(0) - 8, P.Y(0) + 18, "(0, 0)", VZ.grey, 12, "end") + vzLabel(P.X(4) + 6, P.Y(0) + 24, "(4, 0)", VZ.grey, 12, "end") + vzLabel(P.X(0) + 2, P.Y(4) - 16, "(0, 4)", VZ.grey, 12);
+-    if (k === 1) { const f1 = L(1, 1, 0, .4); return o + `<g opacity="${q2(1 - f1)}">${stNote(194, 440, "inside: where is ∇f = 0?", VZ.ink)}</g><g opacity="${q2(f1)}">${stNote(194, 440, "level curves of f: circles around (1, 1)", VZ.ink)}</g>`; }
+-    o += stNote(194, 440, ["the closed triangle T", "level curves of f: circles around (1, 1)", "along the bottom edge, f = x² − 2x", "along the left edge, f = y² − 2y", "along the slanted edge, f = 2(x − 2)²", "the three corners", "max 8 (red), min −2 (green)"][Math.max(0, Math.min(6, k))], VZ.ink);
+-    return o;
+-  },
+-  steps: [
+-    { t: "Why a max and a min exist", tex: ["f(x,y)=x^2+y^2-2x-2y", "T:\\quad x\\ge0,\\quad y\\ge0,\\quad x+y\\le4"],
+-      why: "\\(f\\) is continuous and the triangle is closed and bounded, so both exist. They can only be inside, on an edge, or at a corner.", sum: "closed, bounded: max and min exist" },
+-    { t: "Inside: solve ∇f = 0", tex: ["f_x=2x-2=0,\\qquad f_y=2y-2=0", "(1,1)\\ \\text{is inside } T:\\qquad f(1,1)=-2"],
+-      why: "An interior max or min must be a critical point. Keep the ones that are inside the region.", sum: "\\(f(1,1)=-2\\)" },
+-    { t: "Bottom edge: y = 0", tex: ["f(x,0)=x^2-2x,\\qquad 0\\le x\\le4", "2x-2=0\\ \\Rightarrow\\ x=1:\\qquad f(1,0)=-1"],
+-      why: "On an edge, \\(f\\) is a function of one variable. Find its critical points the Calculus I way.", sum: "\\(f(1,0)=-1\\)" },
+-    { t: "Left edge: x = 0", tex: ["f(0,y)=y^2-2y\\ \\Rightarrow\\ y=1:\\qquad f(0,1)=-1"],
+-      why: "The same as the bottom edge, with \\(x\\) and \\(y\\) swapped.", sum: "\\(f(0,1)=-1\\)" },
+-    { t: "Slanted edge: x + y = 4", tex: ["y=4-x:\\quad f=x^2+(4-x)^2-2x-2(4-x)", "=2x^2-8x+8=2(x-2)^2", "x=2:\\qquad f(2,2)=0"],
+-      why: "Use the edge's equation to get down to one variable, then look for critical points as before.", sum: "\\(f(2,2)=0\\)" },
+-    { t: "Corners", tex: ["f(0,0)=0,\\qquad f(4,0)=8,\\qquad f(0,4)=8"],
+-      why: "A one-variable max or min can sit at the end of its interval, so every corner is a candidate too.", sum: "corners: \\(0,\\ 8,\\ 8\\)" },
+-    { t: "Compare every candidate", tex: ["\\begin{array}{ccccccc}(1,1)&(1,0)&(0,1)&(2,2)&(0,0)&(4,0)&(0,4)\\\\\\hline -2&-1&-1&0&0&8&8\\end{array}", "\\text{max } 8 \\text{ at } (4,0),(0,4);\\qquad \\text{min } {-2} \\text{ at } (1,1)"],
+-      why: "The biggest value on the list is the absolute max, the smallest the absolute min. No second-derivative test needed.", sum: "max \\(8\\), min \\(-2\\)" },
+-  ],
+-});
+ 
+ stAdd({
+   id: "m-cylinder", title: "Volume with cylindrical coordinates", card: "Triple integral: cylindrical",
+@@ -25655,7 +25611,657 @@
+ /* ---- wave-8 spacer G33 ---- */
+ /* ---- wave-8 spacer G34 ---- */
+ /* ---- wave-8 spacer G35 ---- */
+-/* @@AGENT-G3 PLACEHOLDER (m-tanplane, and the m-extrema rework) @@ */
++/* @@AGENT-G3 (m-tanplane, and the m-extrema rework) @@ */
++/* ---------- g3: shared "situation" chips for a method (one complete worked example per chip) ---------- */
++function g3Chips(def, given, rebuild, st, sits, label) {
++  const row = document.createElement("div"); row.className = "g3-sit"; row.setAttribute("role", "group"); row.setAttribute("aria-label", label);
++  row.innerHTML = sits.map((s, i) => `<button type="button" class="vz-chip${i === st.cur ? " on" : ""}" data-g3s="${i}" aria-pressed="${i === st.cur}">${escapeHtml(s.chip)}</button>`).join("");
++  const kick = given.querySelector(".st-kicker"); if (kick) kick.after(row); else given.prepend(row);
++  const bd = given.closest(".st-board"); if (bd) bd.classList.add("g3-tall");   // phones: a taller picture, so its labels stay readable
++  row.addEventListener("click", e => {
++    const bt = e.target.closest("[data-g3s]"); if (!bt || +bt.dataset.g3s === st.cur) return;
++    st.cur = +bt.dataset.g3s; g3Use(def, sits[st.cur]); st.fresh = true; rebuild();
++  });
++  if (st.fresh) { st.fresh = false; const bd = document.getElementById("stBoard"); if (bd && bd.animate) bd.animate([{ opacity: .4 }, { opacity: 1 }], { duration: 420, easing: "ease-out" }); }
++}
++const g3sub = (a, i, rest = "\u200a") => `${a}<tspan font-size="11" dy="3">${i}</tspan><tspan dy="-3">${rest}</tspan>`;   // a subscript in SVG text: f<sub>x</sub>
++function g3Use(def, S) { def.problem = S.problem; def.steps = S.steps; def._lt = null; def._f0 = null; }
++
++/* ---------- m-extrema (g3): absolute max and min on a closed region; four kinds of region ---------- */
++const G3X = { cur: 0 };
++const G3X_SITS = [
++  { chip: "Triangle", P: vzPlane(80, 256, 50), box: [-.3, 4.3, -.3, 4.3], lv: [-1.8, -1.5, -1, -.4, .4, 1.4, 2.6, 4, 5.6, 7.4],
++    f: (x, y) => x * x + y * y - 2 * x - 2 * y, reg: [[0, 0], [4, 0], [0, 4]],
++    edges: [
++      { ks: [1], pt: t => [t, 0], t0: 0, t1: 4, tn: "x", tl: ["0", "4"], g: t => t * t - 2 * t, gb: 0, crit: [{ t: 1, b: 1 }], ends: 1, lab: [2, 0, "y = 0", 0, 20, "middle"] },
++      { ks: [2], pt: t => [0, t], t0: 0, t1: 4, tn: "y", tl: ["0", "4"], g: t => t * t - 2 * t, gb: 0, crit: [{ t: 1, b: 1 }], ends: 1, lab: [0, 2.2, "x = 0", -10, 4, "end"] },
++      { ks: [3], pt: t => [t, 4 - t], t0: 0, t1: 4, tn: "x", tl: ["0", "4"], g: t => 2 * (t - 2) * (t - 2), gb: 0, crit: [{ t: 2, b: 2 }], ends: 1, lab: [2.2, 1.8, "x + y = 4", 12, -4, "start"] },
++    ],
++    corners: [[0, 0, "(0, 0)", -8, 18, "end"], [4, 0, "(4, 0)", 8, -6, "start"], [0, 4, "(0, 4)", 0, -14, "middle"]],
++    cands: [
++      { n: "(1, 1)", v: -2, vs: "−2", pts: [[1, 1]], k: 0, b: 1, wl: [[12, 5, "start"]] },
++      { n: "(1, 0)", v: -1, vs: "−1", pts: [[1, 0]], k: 1, b: 1 },
++      { n: "(0, 1)", v: -1, vs: "−1", pts: [[0, 1]], k: 2, b: 1 },
++      { n: "(2, 2)", v: 0, vs: "0", pts: [[2, 2]], k: 3, b: 2 },
++      { n: "(0, 0)", v: 0, vs: "0", pts: [[0, 0]], k: 4, b: 0 },
++      { n: "(4, 0)", v: 8, vs: "8", pts: [[4, 0]], k: 4, b: 0, wl: [[10, -10, "start"]] },
++      { n: "(0, 4)", v: 8, vs: "8", pts: [[0, 4]], k: 4, b: 0, wl: [[12, 5, "start"]] },
++    ],
++    notes: ["the closed triangle T", "level curves of f: circles around (1, 1)", "along the bottom edge, f = x² − 2x", "along the left edge, f = y² − 2y", "along the slanted edge, f = 2(x − 2)²", "the three corners", "biggest f is the max, smallest the min"],
++    problem: "Find the absolute maximum and minimum of \\(f(x,y)=x^2+y^2-2x-2y\\) on the closed triangle \\(T\\) with corners \\((0,0)\\), \\((4,0)\\) and \\((0,4)\\).",
++    steps: [
++      { t: "Inside: solve ∇f = 0", tex: ["f_x=2x-2=0,\\qquad f_y=2y-2=0", "(1,1)\\ \\text{is inside } T:\\qquad f(1,1)=-2"],
++        why: "Inside, a max or min can only be at a critical point. Keep the ones inside the region and drop any outside it.", sum: "\\(f(1,1)=-2\\)" },
++      { t: "Bottom edge: y = 0", tex: ["f(x,0)=x^2-2x,\\qquad 0\\le x\\le4", "2x-2=0\\ \\Rightarrow\\ x=1:\\qquad f(1,0)=-1"],
++        why: "On an edge, \\(f\\) is a function of one variable. Find its critical points the Calculus I way.", sum: "\\(f(1,0)=-1\\)" },
++      { t: "Left edge: x = 0", tex: ["f(0,y)=y^2-2y,\\qquad 0\\le y\\le4", "2y-2=0\\ \\Rightarrow\\ y=1:\\qquad f(0,1)=-1"],
++        why: "The same as the bottom edge, with \\(x\\) and \\(y\\) swapped.", sum: "\\(f(0,1)=-1\\)" },
++      { t: "Slanted edge: x + y = 4", tex: ["y=4-x:\\quad f=x^2+(4-x)^2-2x-2(4-x)", "=2x^2-8x+8=2(x-2)^2", "x=2:\\qquad f(2,2)=0"],
++        why: "Use the edge's equation to get down to one variable, then look for critical points as before.", sum: "\\(f(2,2)=0\\)" },
++      { t: "Corners", tex: ["f(0,0)=0,\\qquad f(4,0)=8,\\qquad f(0,4)=8"],
++        why: "The ends of each edge are candidates too: a one-variable max or min can sit at the end of its interval.", sum: "corners: \\(0,\\ 8,\\ 8\\)" },
++      { t: "Compare every candidate", tex: ["\\begin{array}{ccccccc}(1,1)&(1,0)&(0,1)&(2,2)&(0,0)&(4,0)&(0,4)\\\\\\hline -2&-1&-1&0&0&8&8\\end{array}", "\\text{max } 8 \\text{ at } (4,0),(0,4);\\qquad \\text{min } {-2} \\text{ at } (1,1)"],
++        why: "\\(f\\) is continuous and \\(T\\) is closed and bounded, so the max and min exist and are on this list. No second-derivative test needed.", sum: "max \\(8\\), min \\(-2\\)" },
++    ] },
++  { chip: "Rectangle", P: vzPlane(84, 212, 64), box: [-.25, 3.25, -.25, 2.25], lv: [-1.9, -1.6, -1, -.3, .6, 1.6, 2.8, 4.2, 5.8, 7.4],
++    f: (x, y) => x * x - 2 * x * y + 2 * y * y - 2 * x, reg: [[0, 0], [3, 0], [3, 2], [0, 2]],
++    edges: [
++      { ks: [1], pt: t => [t, 0], t0: 0, t1: 3, tn: "x", tl: ["0", "3"], g: t => t * t - 2 * t, gb: 0, crit: [{ t: 1, b: 1 }], ends: 1, lab: [1.5, 0, "y = 0", 0, 20, "middle"] },
++      { ks: [2], pt: t => [3, t], t0: 0, t1: 2, tn: "y", tl: ["0", "2"], g: t => 2 * t * t - 6 * t + 3, gb: 0, crit: [{ t: 1.5, b: 1 }], ends: 1, lab: [3, .8, "x = 3", 10, 4, "start"] },
++      { ks: [3], pt: t => [t, 2], t0: 0, t1: 3, tn: "x", tl: ["0", "3"], g: t => t * t - 6 * t + 8, gb: 0, crit: [{ t: 3, b: 1, corner: 1 }], ends: 1, lab: [1.5, 2, "y = 2", 0, -12, "middle"] },
++      { ks: [4], pt: t => [0, t], t0: 0, t1: 2, tn: "y", tl: ["0", "2"], g: t => 2 * t * t, gb: 0, crit: [{ t: 0, b: 1, corner: 1 }], ends: 1, lab: [0, 1, "x = 0", -10, 4, "end"] },
++    ],
++    corners: [[0, 0, "(0, 0)", -8, 18, "end"], [3, 0, "(3, 0)", 8, 18, "start"], [3, 2, "(3, 2)", 8, -8, "start"], [0, 2, "(0, 2)", -8, -8, "end"]],
++    cands: [
++      { n: "(2, 1)", v: -2, vs: "−2", pts: [[2, 1]], k: 0, b: 1, wl: [[0, 24, "middle"]] },
++      { n: "(1, 0)", v: -1, vs: "−1", pts: [[1, 0]], k: 1, b: 1 },
++      { n: "(3, 3/2)", v: -1.5, vs: "−3/2", pts: [[3, 1.5]], k: 2, b: 1 },
++      { n: "(0, 0)", v: 0, vs: "0", pts: [[0, 0]], k: 5, b: 0 },
++      { n: "(3, 0)", v: 3, vs: "3", pts: [[3, 0]], k: 5, b: 0 },
++      { n: "(3, 2)", v: -1, vs: "−1", pts: [[3, 2]], k: 5, b: 0 },
++      { n: "(0, 2)", v: 8, vs: "8", pts: [[0, 2]], k: 5, b: 0, wl: [[12, 18, "start"]] },
++    ],
++    notes: ["the closed rectangle R", "level curves of f: ellipses around (2, 1)", "along the bottom edge, f = x² − 2x", "along the right edge, f = 2y² − 6y + 3", "top edge: its flat spot is a corner", "left edge: its flat spot is a corner", "the four corners", "biggest f is the max, smallest the min"],
++    problem: "Find the absolute maximum and minimum of \\(f(x,y)=x^2-2xy+2y^2-2x\\) on the rectangle \\(R:\\ 0\\le x\\le3,\\ 0\\le y\\le2\\).",
++    steps: [
++      { t: "Inside: solve ∇f = 0", tex: ["f_x=2x-2y-2=0,\\qquad f_y=-2x+4y=0", "x=2y\\ \\Rightarrow\\ y=1:\\quad (2,1)\\ \\text{inside}:\\quad f(2,1)=-2"],
++        why: "Inside, a max or min can only be at a critical point. Keep the ones inside \\(R\\) and drop any outside it.", sum: "\\(f(2,1)=-2\\)" },
++      { t: "Bottom edge: y = 0", tex: ["f(x,0)=x^2-2x,\\qquad 0\\le x\\le3", "2x-2=0\\ \\Rightarrow\\ x=1:\\qquad f(1,0)=-1"],
++        why: "Put \\(y=0\\) in: one variable left. Find its critical points the Calculus I way.", sum: "\\(f(1,0)=-1\\)" },
++      { t: "Right edge: x = 3", tex: ["f(3,y)=2y^2-6y+3,\\qquad 0\\le y\\le2", "4y-6=0\\ \\Rightarrow\\ y=\\tfrac32:\\qquad f(3,\\tfrac32)=-\\tfrac32"],
++        why: "Now \\(x\\) is fixed and \\(y\\) moves.", sum: "\\(f(3,\\tfrac32)=-\\tfrac32\\)" },
++      { t: "Top edge: y = 2", tex: ["f(x,2)=x^2-6x+8,\\qquad 0\\le x\\le3", "2x-6=0\\ \\Rightarrow\\ x=3:\\ \\text{a corner, checked below}"],
++        why: "This edge's only flat spot is at its end, which is a corner. Nothing new to add.", sum: "only a corner" },
++      { t: "Left edge: x = 0", tex: ["f(0,y)=2y^2,\\qquad 0\\le y\\le2", "4y=0\\ \\Rightarrow\\ y=0:\\ \\text{a corner again}"],
++        why: "Same story: the flat spot is a corner.", sum: "only a corner" },
++      { t: "Corners", tex: ["f(0,0)=0,\\quad f(3,0)=3,\\quad f(3,2)=-1,\\quad f(0,2)=8"],
++        why: "The ends of each edge are candidates too: a one-variable max or min can sit at the end of its interval.", sum: "corners: \\(0,\\ 3,\\ -1,\\ 8\\)" },
++      { t: "Compare every candidate", tex: ["\\begin{array}{ccccccc}(2,1)&(1,0)&(3,\\frac32)&(0,0)&(3,0)&(3,2)&(0,2)\\\\\\hline -2&-1&-\\frac32&0&3&-1&8\\end{array}", "\\text{max } 8 \\text{ at } (0,2);\\qquad \\text{min } {-2} \\text{ at } (2,1)"],
++        why: "\\(f\\) is continuous and \\(R\\) is closed and bounded, so the max and min exist and are on this list.", sum: "max \\(8\\), min \\(-2\\)" },
++    ] },
++  { chip: "Disk", P: vzPlane(180, 150, 50), box: [-2.2, 2.2, -2.2, 2.2], lv: [-.8, -.4, .2, 1, 2, 3, 4.2, 5.5, 7, 8.5],
++    f: (x, y) => x * x + 2 * y * y - 2 * x, reg: Array.from({ length: 72 }, (_, i) => [2 * Math.cos(i * Math.PI / 36), 2 * Math.sin(i * Math.PI / 36)]),
++    edges: [
++      { ks: [1, 2], pt: t => [2 * Math.cos(t), 2 * Math.sin(t)], t0: 0, t1: 2 * Math.PI, tn: "t", tl: ["0", "2π"], g: t => 8 - 4 * Math.cos(t) ** 2 - 4 * Math.cos(t), gb: 1, ck: 2,
++        crit: [{ t: 0, b: 1 }, { t: Math.PI, b: 1 }, { t: 2 * Math.PI, b: 1 }, { t: 2 * Math.PI / 3, b: 2 }, { t: 4 * Math.PI / 3, b: 2 }], lab: [1.414, 1.414, "x² + y² = 4", 8, -6, "start"] },
++    ],
++    corners: [],
++    cands: [
++      { n: "(1, 0)", v: -1, vs: "−1", pts: [[1, 0]], k: 0, b: 1, wl: [[0, 24, "middle"]] },
++      { n: "(2, 0)", v: 0, vs: "0", pts: [[2, 0]], k: 2, b: 3 },
++      { n: "(−2, 0)", v: 8, vs: "8", pts: [[-2, 0]], k: 2, b: 3 },
++      { n: "(−1, ±√3)", v: 9, vs: "9", pts: [[-1, Math.sqrt(3)], [-1, -Math.sqrt(3)]], k: 2, b: 3, wl: [[-12, -6, "end"], [-12, 18, "end"]] },
++    ],
++    notes: ["the closed disk x² + y² ≤ 4", "level curves of f: ellipses around (1, 0)", "once around the circle: f as a function of t", "the flat spots of f(r(t)) are the candidates", "biggest f is the max, smallest the min"],
++    problem: "Find the absolute maximum and minimum of \\(f(x,y)=x^2+2y^2-2x\\) on the closed disk \\(x^2+y^2\\le4\\).",
++    steps: [
++      { t: "Inside: solve ∇f = 0", tex: ["f_x=2x-2=0,\\qquad f_y=4y=0", "(1,0):\\ 1^2+0^2<4,\\ \\text{inside}:\\qquad f(1,0)=-1"],
++        why: "Inside, a max or min can only be at a critical point. Keep the ones inside the disk and drop any outside it.", sum: "\\(f(1,0)=-1\\)" },
++      { t: "Parametrize the circle", tex: ["\\mathbf r(t)=[2\\cos t,\\ 2\\sin t],\\qquad 0\\le t\\le2\\pi", "f(\\mathbf r(t))=4\\cos^2t+8\\sin^2t-4\\cos t", "=8-4\\cos^2t-4\\cos t"],
++        why: "Along the boundary, \\(f\\) is now a function of \\(t\\) alone. (Or put \\(y^2=4-x^2\\): \\(f=8-2x-x^2\\) on \\(-2\\le x\\le2\\), and keep the endpoints \\(x=\\pm2\\).)", sum: "\\(f=8-4\\cos^2t-4\\cos t\\)" },
++      { t: "Critical points in t", tex: ["\\tfrac{d}{dt}:\\ \\ 8\\cos t\\sin t+4\\sin t=4\\sin t\\,(2\\cos t+1)=0", "\\sin t=0:\\ \\ t=0,\\ \\pi\\ \\Rightarrow\\ (2,0),\\ (-2,0)", "\\cos t=-\\tfrac12:\\ \\ t=\\tfrac{2\\pi}3,\\ \\tfrac{4\\pi}3\\ \\Rightarrow\\ (-1,\\pm\\sqrt3)", "f(2,0)=0,\\quad f(-2,0)=8,\\quad f(-1,\\pm\\sqrt3)=9"],
++        why: "Set the \\(t\\)-derivative to 0 and factor. Each \\(t\\) is a point on the circle.", sum: "\\(0,\\ 8,\\ 9\\) on the circle" },
++      { t: "Compare every candidate", tex: ["\\begin{array}{cccc}(1,0)&(2,0)&(-2,0)&(-1,\\pm\\sqrt3)\\\\\\hline -1&0&8&9\\end{array}", "\\text{max } 9 \\text{ at } (-1,\\pm\\sqrt3);\\qquad \\text{min } {-1} \\text{ at } (1,0)"],
++        why: "\\(f\\) is continuous and the disk is closed and bounded, so the max and min exist and are on this list. A circle has no corners.", sum: "max \\(9\\), min \\(-1\\)" },
++    ] },
++  { chip: "Between curves", P: vzPlane(180, 250, 50), box: [-2.25, 2.25, -.25, 4.25], lv: [-.8, -.4, .2, 1, 2, 3.2, 4.6, 6.2, 8, 10],
++    f: (x, y) => x * x + y * y - 2 * y, reg: Array.from({ length: 41 }, (_, i) => { const x = -2 + i / 10; return [x, x * x]; }),
++    edges: [
++      { ks: [1], pt: t => [t, 4], t0: -2, t1: 2, tn: "x", tl: ["−2", "2"], g: t => t * t + 8, gb: 0, crit: [{ t: 0, b: 1 }], ends: 1, lab: [0, 4, "y = 4", 0, -12, "middle"] },
++      { ks: [2], pt: t => [t, t * t], t0: -2, t1: 2, tn: "x", tl: ["−2", "2"], g: t => t ** 4 - t * t, gb: 0, crit: [{ t: 0, b: 1 }, { t: -Math.SQRT1_2, b: 1 }, { t: Math.SQRT1_2, b: 1 }], tw: 8, ends: 1, lab: [1.6, 2.56, "y = x²", 12, 4, "start"] },
++    ],
++    corners: [[-2, 4, "(−2, 4)", -8, -8, "end"], [2, 4, "(2, 4)", 8, -8, "start"]],
++    cands: [
++      { n: "(0, 1)", v: -1, vs: "−1", pts: [[0, 1]], k: 0, b: 1, wl: [[12, 5, "start"]] },
++      { n: "(0, 4)", v: 8, vs: "8", pts: [[0, 4]], k: 1, b: 1 },
++      { n: "(0, 0)", v: 0, vs: "0", pts: [[0, 0]], k: 2, b: 2 },
++      { n: "(±1/√2, 1/2)", v: -.25, vs: "−1/4", pts: [[-Math.SQRT1_2, .5], [Math.SQRT1_2, .5]], k: 2, b: 2 },
++      { n: "(±2, 4)", v: 12, vs: "12", pts: [[-2, 4], [2, 4]], k: 3, b: 0, wl: [[-8, 18, "end"], [8, 18, "start"]] },
++    ],
++    notes: ["the region between y = x² and y = 4", "level curves of f: circles around (0, 1)", "along the top edge, f = x² + 8", "along the curve y = x², f = x⁴ − x²", "the two corners", "biggest f is the max, smallest the min"],
++    problem: "Find the absolute maximum and minimum of \\(f(x,y)=x^2+y^2-2y\\) on the closed region between \\(y=x^2\\) and \\(y=4\\).",
++    steps: [
++      { t: "Inside: solve ∇f = 0", tex: ["f_x=2x=0,\\qquad f_y=2y-2=0", "(0,1):\\ \\ 0^2<1<4,\\ \\text{inside}:\\qquad f(0,1)=-1"],
++        why: "Inside, a max or min can only be at a critical point. Keep the ones inside the region and drop any outside it.", sum: "\\(f(0,1)=-1\\)" },
++      { t: "Top edge: y = 4", tex: ["f(x,4)=x^2+8,\\qquad -2\\le x\\le2", "2x=0\\ \\Rightarrow\\ x=0:\\qquad f(0,4)=8"],
++        why: "The top edge runs from \\(x=-2\\) to \\(2\\), where it meets the curve. One variable: \\(x\\).", sum: "\\(f(0,4)=8\\)" },
++      { t: "Curved edge: y = x²", tex: ["f(x,x^2)=x^2+x^4-2x^2=x^4-x^2,\\qquad -2\\le x\\le2", "4x^3-2x=2x(2x^2-1)=0\\ \\Rightarrow\\ x=0,\\ \\pm\\tfrac1{\\sqrt2}", "f(0,0)=0,\\qquad f(\\pm\\tfrac1{\\sqrt2},\\tfrac12)=-\\tfrac14"],
++        why: "An edge on a curve works the same way: put \\(y=x^2\\) in, and \\(f\\) is a function of \\(x\\) alone.", sum: "\\(0\\) and \\(-\\tfrac14\\)" },
++      { t: "Corners", tex: ["\\text{the edges meet at }(\\pm2,4):\\qquad f(\\pm2,4)=12"],
++        why: "Where two edges meet, both one-variable problems end: those points are candidates too.", sum: "corners: \\(12\\)" },
++      { t: "Compare every candidate", tex: ["\\begin{array}{ccccc}(0,1)&(0,4)&(0,0)&(\\pm\\frac1{\\sqrt2},\\frac12)&(\\pm2,4)\\\\\\hline -1&8&0&-\\frac14&12\\end{array}", "\\text{max } 12 \\text{ at } (\\pm2,4);\\qquad \\text{min } {-1} \\text{ at } (0,1)"],
++        why: "\\(f\\) is continuous and the region is closed and bounded, so the max and min exist and are on this list.", sum: "max \\(12\\), min \\(-1\\)" },
++    ] },
++];
++function g3xPic(def, k, b, u) {
++  const i0 = G3X.cur, S = G3X_SITS[i0], P = S.P, L = stLines(def, k, b, u), F = stFirstL(def, k, b, u), K = S.steps.length - 1, cid = "g3xc" + i0;
++  const pth = pts => pts.map((p, i) => (i ? "L" : "M") + q2(P.X(p[0])) + " " + q2(P.Y(p[1]))).join("");
++  const reg = pth(S.reg) + "Z";
++  let o = `<defs><clipPath id="${cid}"><path d="${reg}"/></clipPath></defs><path d="${reg}" fill="${VZ.red}" fill-opacity=".05"/>`;
++  // the level curves of f come in with step 1 (where is the bottom of the bowl?), then step back
++  const lv = k < 0 ? 0 : k === 0 ? .7 * L(0, 0, .2, .9) : .4;
++  if (lv > .01) o += `<g clip-path="url(#${cid})" fill="none" stroke="${VZ.gold}" stroke-width="1.15" opacity="${q2(lv)}">` + m6Contours("g3x" + i0, S.f, S.box[0], S.box[1], S.box[2], S.box[3], 64, S.lv, P).map(([, d]) => `<path d="${d}"/>`).join("") + `</g>`;
++  const samp = (e, a, c, n = 64) => { const pts = []; for (let i = 0; i <= n; i++) pts.push(e.pt(a + (c - a) * i / n)); return pts; };
++  const E = S.edges.find(e => e.ks.includes(k));
++  S.edges.forEach(e => {
++    const on = e === E, d = pth(samp(e, e.t0, e.t1));
++    if (on) o += `<path d="${d}" fill="none" stroke="${VZ.red}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".14"/>`;
++    o += `<path d="${d}" fill="none" stroke="${on ? VZ.red : VZ.ink}" stroke-width="${on ? 3.2 : 1.8}" stroke-opacity="${on ? .9 : .6}" stroke-linecap="round" stroke-linejoin="round"/>`;
++  });
++  const cw = k === K ? 1 - L(K, 1, .1, .8) : 1;          // the corner names make way for "max" / "min" at the end
++  if (cw > .01) o += `<g opacity="${q2(cw)}">` + S.corners.map(([x, y, t, dx, dy, an]) => vzLabel(P.X(x) + dx, P.Y(y) + dy, t, VZ.grey, 12, an)).join("") + `</g>`;
++  if (E) { const [x, y, t, dx, dy, an] = E.lab; o += `<g opacity="${q2(F(E.ks[0], 0, .5))}">${vzLabel(P.X(x) + dx, P.Y(y) + dy, t, VZ.red, 14, an)}</g>`; }
++  // the candidates: each one arrives with the line that finds it; at the end the winners are marked
++  const vmax = Math.max(...S.cands.map(c => c.v)), vmin = Math.min(...S.cands.map(c => c.v));
++  const win = k === K ? L(K, 1, .1, .8) : 0, rank = k === K ? L(K, 0, .2, 1.3) : 0;
++  const colOf = c => c.v === vmax ? VZ.red : c.v === vmin ? VZ.ink : VZ.grey;
++  S.cands.forEach(c => {
++    const ap = L(c.k, c.b, .25, .6); if (ap < .01) return;
++    const big = c.v === vmax || c.v === vmin, ring = k === c.k && b === c.b ? stEase(stLineT(def, k, b, u), .25, .9) : 0;
++    c.pts.forEach((p, j) => {
++      const X = P.X(p[0]), Y = P.Y(p[1]);
++      if (ring > 0 && ring < 1) o += `<circle cx="${q2(X)}" cy="${q2(Y)}" r="${q2(6 + 20 * ring)}" fill="none" stroke="${VZ.deep}" stroke-width="1.6" opacity="${q2(.7 * Math.sin(Math.PI * ring))}"/>`;
++      o += `<g opacity="${q2(ap)}"><circle cx="${q2(X)}" cy="${q2(Y)}" r="5" fill="${VZ.deep}" stroke="#fff" stroke-width="1.6" opacity="${q2(1 - win)}"/>`;
++      if (win > .01) o += `<circle cx="${q2(X)}" cy="${q2(Y)}" r="${q2(big ? 5 + 3 * win : 5 - 1.2 * win)}" fill="${colOf(c)}" stroke="#fff" stroke-width="1.8" opacity="${q2(big ? win : .75 * win)}"/>`;
++      if (win > .01 && big && c.wl) { const [dx, dy, an] = c.wl[j] || c.wl[0]; o += `<g opacity="${q2(win)}">${vzLabel(X + dx, Y + dy, c.v === vmax ? "max" : "min", c.v === vmax ? VZ.deep : VZ.ink, 15, an)}</g>`; }
++      o += `</g>`;
++    });
++  });
++  // the edge as a one-variable function: the graph of f along it is drawn while a dot walks the edge
++  if (E) {
++    const gx0 = 30, gx1 = 196, gy0 = 300, gy1 = 396, k0 = E.ks[0], ck = E.ck != null ? E.ck : k0;
++    let lo = Infinity, hi = -Infinity; for (let i = 0; i <= 96; i++) { const v = E.g(E.t0 + (E.t1 - E.t0) * i / 96); lo = Math.min(lo, v); hi = Math.max(hi, v); }
++    const pad = (hi - lo) * .1 || 1; lo -= pad; hi += pad;
++    const GX = t => gx0 + (gx1 - gx0) * (t - E.t0) / (E.t1 - E.t0), GY = v => gy1 - (gy1 - gy0) * (v - lo) / (hi - lo);
++    const fr = k > k0 ? 1 : F(k0, 0, .5), p = k > k0 ? 1 : L(k0, E.gb, .3, 2);
++    o += `<g opacity="${q2(fr)}"><line x1="${gx0}" y1="${gy1 + 7}" x2="${gx1}" y2="${gy1 + 7}" stroke="${VZ.ink}" stroke-width="1.1" stroke-opacity=".5"/><line x1="${gx0}" y1="${gy0 - 4}" x2="${gx0}" y2="${gy1 + 7}" stroke="${VZ.ink}" stroke-width="1.1" stroke-opacity=".5"/>` +
++      vzNote(gx0, gy1 + 24, E.tl[0], "middle", VZ.grey) + vzNote(gx1, gy1 + 24, E.tl[1], "middle", VZ.grey) + vzLabel(gx1 + 12, gy1 + 12, E.tn, VZ.grey, 15) + vzLabel(gx0 - 10, gy0 + 6, "f", VZ.red, 15) + `</g>`;
++    if (p > .005) {
++      const n = Math.max(2, Math.round(96 * p)); let d = "";
++      for (let i = 0; i <= n; i++) { const t = E.t0 + (E.t1 - E.t0) * p * i / n; d += (i ? "L" : "M") + q2(GX(t)) + " " + q2(GY(E.g(t))); }
++      o += `<path d="${d}" fill="none" stroke="${VZ.red}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`;
++      const to = Math.min(1, p / .05, (1 - p) / .05);
++      if (to > .01) { const t = E.t0 + (E.t1 - E.t0) * p, q = E.pt(t); o += `<g opacity="${q2(to)}"><circle cx="${q2(P.X(q[0]))}" cy="${q2(P.Y(q[1]))}" r="6" fill="${VZ.red}" stroke="#fff" stroke-width="2"/><circle cx="${q2(GX(t))}" cy="${q2(GY(E.g(t)))}" r="5" fill="${VZ.red}" stroke="#fff" stroke-width="1.8"/></g>`; }
++    }
++    if (E.ends && p >= 1) { const eo = k > k0 ? 1 : L(k0, E.gb, 2.3, .5); [E.t0, E.t1].forEach(t => { o += `<circle cx="${q2(GX(t))}" cy="${q2(GY(E.g(t)))}" r="4" fill="${VZ.paper}" stroke="${VZ.grey}" stroke-width="1.6" opacity="${q2(eo)}"/>`; }); }
++    E.crit.forEach(c => {
++      const co = L(ck, c.b, .2, .6); if (co < .01) return;
++      const X = GX(c.t), Y = GY(E.g(c.t)), tw = E.tw || 13;
++      o += `<g opacity="${q2(co)}"><line x1="${q2(X - tw)}" y1="${q2(Y)}" x2="${q2(X + tw)}" y2="${q2(Y)}" stroke="${VZ.deep}" stroke-width="2" stroke-linecap="round"/>` +
++        (c.corner ? `<circle cx="${q2(X)}" cy="${q2(Y)}" r="5" fill="${VZ.paper}" stroke="${VZ.deep}" stroke-width="2"/>${vzNote(X + (c.t > (E.t0 + E.t1) / 2 ? -4 : 4), Y - 14, "a corner", c.t > (E.t0 + E.t1) / 2 ? "end" : "start", VZ.deep)}` : `<circle cx="${q2(X)}" cy="${q2(Y)}" r="4.6" fill="${VZ.deep}" stroke="#fff" stroke-width="1.5"/>`) + `</g>`;
++    });
++  }
++  // the candidate list: rows come in as they are found; then they sort themselves, biggest f on top
++  const C = S.cands, n = C.length, rh = Math.min(19, 120 / n), ord = C.map((_, i) => i).sort((a, c) => C[c].v - C[a].v), rk = C.map((_, i) => ord.indexOf(i));
++  const lx = 222 + (114 - 222) * rank, ly0 = 304, ho = L(C[0].k, C[0].b, .25, .6);
++  if (ho > .01) o += `<g opacity="${q2(ho)}">${vzNote(lx, 284, "candidates", "start", VZ.grey)}${vzNote(lx + 132, 284, "f", "end", VZ.grey)}<line x1="${q2(lx)}" y1="291" x2="${q2(lx + 132)}" y2="291" stroke="${VZ.ink}" stroke-opacity=".25"/></g>`;
++  C.forEach((c, i) => {
++    const ap = L(c.k, c.b, .25, .6); if (ap < .01) return;
++    const y = ly0 + rh * (i + (rk[i] - i) * rank), big = c.v === vmax || c.v === vmin, fin = big ? (c.v === vmax ? VZ.deep : VZ.ink) : VZ.grey;
++    const row = (col, wt) => `<text x="${q2(lx + 14)}" y="${q2(y)}" font-family="'Manrope', sans-serif" font-size="12.5" font-weight="${wt}" fill="${col}">${c.n}</text>` +
++      `<text x="${q2(lx + 132)}" y="${q2(y)}" text-anchor="end" font-family="'Manrope', sans-serif" font-size="12.5" font-weight="${wt}" fill="${col}" style="font-variant-numeric:tabular-nums">${c.vs}</text>`;
++    o += `<g opacity="${q2(ap)}"><circle cx="${q2(lx + 4)}" cy="${q2(y - 4.5)}" r="3.6" fill="${VZ.deep}" opacity="${q2(1 - win)}"/>` + (win > .01 ? `<circle cx="${q2(lx + 4)}" cy="${q2(y - 4.5)}" r="3.6" fill="${colOf(c)}" opacity="${q2(win)}"/>` : "") +
++      `<g opacity="${q2(1 - win)}">${row(VZ.ink, 500)}</g>` + (win > .01 ? `<g opacity="${q2(win)}">${row(fin, big ? 700 : 500)}</g>` : "") + `</g>`;   // the winners' colours blend in, no snap
++  });
++  if (win > .01) o += `<g opacity="${q2(win)}">${vzNote(lx - 8, ly0, "max", "end", VZ.deep)}${vzNote(lx - 8, ly0 + rh * (n - 1), "min", "end", VZ.ink)}</g>`;
++  const key = k === K ? [["dot", VZ.red, "max"], ["dot", VZ.ink, "min"], ["dot", VZ.grey, "the rest"]] : E ? [["line", VZ.red, "this edge, and f along it"]] : k === 0 ? [["line", VZ.gold, "level curves of f"]] : null;
++  if (key) o += vzKey(key, 16, 22);
++  return o + stNote(180, 448, S.notes[Math.max(0, Math.min(S.notes.length - 1, k + 1))], VZ.ink);
++}
++stAdd({
++  id: "m-extrema", title: "Absolute max and min on a closed region", card: "Absolute extrema",
++  tagline: "Inside, along each edge, at each corner: then compare.",
++  blurb: "On a closed bounded region: (1) critical points inside (drop any outside \\(D\\)), (2) each boundary piece becomes a 1-variable problem, so find its critical points and endpoints, (3) list every candidate, compare \\(f\\), and the biggest and smallest win.",
++  problem: G3X_SITS[0].problem, steps: G3X_SITS[0].steps,
++  picLive: true, picDur: 3600,
++  mount(given, rebuild) { g3Chips(this, given, rebuild, G3X, G3X_SITS, "Kind of region"); },
++  pic(k, b, u) { return g3xPic(this, k, b, u); },
++});
++
++/* ---------- m-tanplane (g3): tangent plane and linear approximation; four situations ---------- */
++const g3n = v => { const m = Math.hypot(...v) || 1; return v.map(x => x / m); };
++const g3add = (p, v, t) => p.map((c, i) => c + v[i] * t);
++const G3T = { cur: 0 };
++function g3Cam(cx, cy, s, az, el, o, zs = 1) {           // zs: heights drawn squashed or stretched (an affine change keeps every tangent a tangent)
++  const c0 = vzCam(0, 0, s, vzRad(az), el), f = (x, y, z) => { const q = c0(x - o[0], y - o[1], (z - o[2]) * zs); return [cx + q[0], cy + q[1], q[2]]; };
++  f.view = c0.view; return f;
++}
++// a shaded surface from its (u, v) grid, drawn back to front so the near side covers the far side
++function g3Surf(S) {
++  if (S._surf) return S._surf;
++  const cam = S.cam, [u0, u1, nu, v0, v1, nv] = S.grid, R = S.r, V = cam.view, Ln = Math.hypot(V[0], V[1], V[2] + .8), l = [V[0] / Ln, V[1] / Ln, (V[2] + .8) / Ln], qs = [];
++  for (let i = 0; i < nu; i++) for (let j = 0; j < nv; j++) {
++    const a = u0 + (u1 - u0) * i / nu, c = u0 + (u1 - u0) * (i + 1) / nu, d = v0 + (v1 - v0) * j / nv, e = v0 + (v1 - v0) * (j + 1) / nv;
++    const P4 = [R(a, d), R(c, d), R(c, e), R(a, e)], A = P4[0], B = P4[1], D = P4[3], C = P4[2];
++    const p = [B[0] - A[0] + C[0] - D[0], B[1] - A[1] + C[1] - D[1], B[2] - A[2] + C[2] - D[2]], q = [D[0] - A[0] + C[0] - B[0], D[1] - A[1] + C[1] - B[1], D[2] - A[2] + C[2] - B[2]];
++    const n = [p[1] * q[2] - p[2] * q[1], p[2] * q[0] - p[0] * q[2], p[0] * q[1] - p[1] * q[0]], nn = Math.hypot(...n) || 1, br = Math.abs((n[0] * l[0] + n[1] * l[1] + n[2] * l[2]) / nn);
++    const sc = P4.map(P => cam(...P)), dep = sc.reduce((s, x) => s + x[2], 0) / 4, g = Math.round(205 + 42 * br), col = `rgb(${g - 6},${g},${Math.min(255, g + 5)})`;
++    qs.push([dep, `<path d="M${sc.map(x => q2(x[0]) + " " + q2(x[1])).join("L")}Z" fill="${col}" stroke="#8C99A5" stroke-opacity=".45" stroke-width=".7" stroke-linejoin="round"/>`]);
++  }
++  qs.sort((x, y) => y[0] - x[0]);
++  return (S._surf = qs.map(x => x[1]).join(""));
++}
++const G3T_SITS = [
++  { chip: "Graph z = f(x, y)", cam: g3Cam(180, 240, 42, -120, .5, [0, 0, 2.6], .5), ax: [3.3, 2.6, 7.3],
++    r: (r, t) => [Math.sqrt(6) * r * Math.cos(t), Math.sqrt(3) * r * Math.sin(t), 6 * (1 - r * r)], grid: [0, 1, 8, 0, 2 * Math.PI, 32],
++    p0: [1, 1, 3], plab: ["(1, 1, 3)", -12, -10, "end"],
++    s1: { at: [1, 1], pts: Array.from({ length: 31 }, (_, i) => { const x = -.3 + 2.3 * i / 30; return [x, 1, 4 - x * x]; }), d: [1, 0, -2], len: 1.05, key: "x-slope", lab: "slope −2", lo: [-14, 6, "end"] },
++    s2: { at: [2, 1], pts: Array.from({ length: 31 }, (_, i) => { const y = -.5 + 2.08 * i / 30; return [1, y, 5 - 2 * y * y]; }), d: [0, 1, -4], len: 1.05, key: "y-slope", lab: "slope −4", lo: [10, 6, "start"] },
++    pl: { at: [3, 1], a: g3n([2, -1, 0]), b: g3n([1, 2, -10]), h: [1.1, .9], lab: "z = 9 − 2x − 4y", lp: [-1, -1], lo: [6, -6, "start"] },   // a: level in the plane, b: straight downhill
++    notes: ["the surface z = 6 − x² − 2y²", "the point on the surface above (1, 1)", "hold y = 1: the x-slice and its tangent line", "hold x = 1: the y-slice and its tangent line", "the plane through both tangent lines"],
++    problem: "Find the tangent plane to the surface \\(z=6-x^2-2y^2\\) at the point above \\((1,1)\\).",
++    steps: [
++      { t: "The height at the point", tex: ["f(x,y)=6-x^2-2y^2", "f(1,1)=6-1-2=3:\\qquad \\text{the point }(1,1,3)"],
++        why: "The plane has to touch the surface, so it goes through \\((a,b,f(a,b))\\).", sum: "the point \\((1,1,3)\\)" },
++      { t: "The slope in x", tex: ["f_x=-2x", "f_x(1,1)=-2"],
++        why: "Hold \\(y=1\\) and walk in \\(x\\): the surface's slice has slope \\(f_x\\). The plane must match it.", sum: "\\(f_x(1,1)=-2\\)" },
++      { t: "The slope in y", tex: ["f_y=-4y", "f_y(1,1)=-4"],
++        why: "Hold \\(x=1\\) and walk in \\(y\\): slope \\(f_y\\). Two tangent lines through one point pin down one plane.", sum: "\\(f_y(1,1)=-4\\)" },
++      { t: "Write the plane", tex: ["z=f(a,b)+f_x(a,b)(x-a)+f_y(a,b)(y-b)", "z=3-2(x-1)-4(y-1)", "z=9-2x-4y"],
++        why: "At \\((a,b)\\) the plane matches the height and both slopes, so near \\((a,b)\\) it hugs the surface.", sum: "\\(z=9-2x-4y\\)" },
++    ] },
++  { chip: "Level surface F = c", cam: g3Cam(180, 222, 50, -120, .45, [0, 0, 0]), ax: [3.4, 2.5, 2.6],
++    r: (p, t) => [Math.sqrt(6) * Math.sin(p) * Math.cos(t), Math.sqrt(3) * Math.sin(p) * Math.sin(t), Math.SQRT2 * Math.cos(p)], grid: [0, Math.PI, 14, 0, 2 * Math.PI, 30],
++    p0: [1, 1, 1], plab: ["(1, 1, 1)", -12, 18, "end"],
++    s1: { at: [1, 0], pts: Array.from({ length: 31 }, (_, i) => { const s = Math.PI / 3 - .8 + 1.6 * i / 30; return [2 * Math.cos(s), 1, 2 / Math.sqrt(3) * Math.sin(s)]; }), d: [-3, 0, 1], len: 1, key: "y = 1", lab: "", lo: [0, 0, "start"] },
++    s2: { at: [1, 0], pts: Array.from({ length: 31 }, (_, i) => { const s = .886 - .75 + 1.5 * i / 30; return [1, Math.sqrt(2.5) * Math.cos(s), Math.sqrt(5 / 3) * Math.sin(s)]; }), d: [0, -3, 2], len: 1, key: "x = 1", lab: "", lo: [0, 0, "start"] },
++    nv: { at: [1, 1], v: [.4, .8, 1.2], lab: "∇F = [2, 4, 6]", lo: [8, -6, "start"] },
++    pl: { at: [2, 1], a: g3n([-3, 0, 1]), b: g3n([0, -3, 2]), h: [.95, .95], lab: "x + 2y + 3z = 6", lp: [.95, .95], lo: [-10, 14, "end"] },
++    notes: ["the level surface x² + 2y² + 3z² = 6", "the point (1, 1, 1) is on it", "∇F is square to every curve on the surface", "the plane through P, square to ∇F"],
++    problem: "Find the tangent plane to the surface \\(x^2+2y^2+3z^2=6\\) at the point \\((1,1,1)\\).",
++    steps: [
++      { t: "Call it F = c", tex: ["F(x,y,z)=x^2+2y^2+3z^2=6", "F(1,1,1)=1+2+3=6\\ \\checkmark"],
++        why: "The surface is a level surface of \\(F\\). Check the point really is on it.", sum: "\\(F=6\\), point on it" },
++      { t: "∇F is the normal", tex: ["\\nabla F=[2x,\\ 4y,\\ 6z]", "\\nabla F(1,1,1)=[2,\\ 4,\\ 6]"],
++        why: "\\(\\nabla F\\) is perpendicular to the level surface: square to every curve on it through the point, so it is a normal to the plane.", sum: "\\(\\mathbf n=[2,4,6]\\)" },
++      { t: "Point and normal give the plane", tex: ["2(x-1)+4(y-1)+6(z-1)=0", "x+2y+3z=6"],
++        why: "A plane is all \\([x,y,z]\\) with \\(\\mathbf n\\cdot([x,y,z]-P)=0\\). Divide by 2 to tidy up.", sum: "\\(x+2y+3z=6\\)" },
++    ] },
++  { chip: "Estimate a value", cam: g3Cam(180, 232, 125, 60, .5, [3.25, 2.75, 3.05], 1.6), ax: null, labTill: 3,   // seen from the low side, so the plane tilts away and shows its face
++    r: (x, y) => [x, y, Math.sqrt(2 * x + y)], grid: [2.4, 4.1, 9, 1.9, 3.6, 9],
++    p0: [3, 3, 3], plab: ["(3, 3, 3)", -12, -12, "end"],
++    s1: { at: [1, 1], pts: Array.from({ length: 31 }, (_, i) => { const x = 1.5 + 3 * i / 30; return [x, 3, Math.sqrt(2 * x + 3)]; }), d: [1, 0, 1 / 3], len: .55, key: "x-slope", lab: "slope 1/3", lo: [8, -8, "start"] },
++    s2: { at: [1, 1], pts: Array.from({ length: 31 }, (_, i) => { const y = 1.5 + 3 * i / 30; return [3, y, Math.sqrt(6 + y)]; }), d: [0, 1, 1 / 6], len: .55, key: "y-slope", lab: "slope 1/6", lo: [-8, -8, "end"] },
++    pl: { at: [2, 0], a: [1, 0, 1 / 3], b: [0, 1, 1 / 6], h: [.75, .72], lab: "", lp: [1, 1], lo: [0, 0, "start"] },
++    walk: { at: [3, 0], dx: .5, dy: -.5, fx: 1 / 3, fy: 1 / 6, f: Math.sqrt(9.5) },
++    notes: ["the surface z = √(2x + y)", "an easy point nearby: (3, 3), height 3", "both slopes at (3, 3)", "the tangent plane: L(x, y)", "the plane's height L is almost the true f"],
++    problem: "Use the linear approximation of \\(f(x,y)=\\sqrt{2x+y}\\) at \\((3,3)\\) to estimate \\(f(3.5,\\ 2.5)\\).",
++    steps: [
++      { t: "A nearby easy point", tex: ["(3.5,\\ 2.5)\\ \\text{is near }(3,3):\\qquad f(3,3)=\\sqrt9=3"],
++        why: "Pick a point close by where \\(f\\) is easy to work out exactly.", sum: "\\(f(3,3)=3\\)" },
++      { t: "Both slopes there", tex: ["f_x=\\dfrac{1}{\\sqrt{2x+y}},\\qquad f_y=\\dfrac{1}{2\\sqrt{2x+y}}", "f_x(3,3)=\\tfrac13,\\qquad f_y(3,3)=\\tfrac16"],
++        why: "The chain rule: the inside \\(2x+y\\) has \\(x\\)-derivative 2 and \\(y\\)-derivative 1.", sum: "\\(f_x=\\tfrac13,\\ f_y=\\tfrac16\\)" },
++      { t: "The tangent plane L", tex: ["L(x,y)=3+\\tfrac13(x-3)+\\tfrac16(y-3)"],
++        why: "This is the tangent plane at \\((3,3)\\). Near that point the plane and the surface almost agree.", sum: "\\(L=3+\\tfrac13(x-3)+\\tfrac16(y-3)\\)" },
++      { t: "Plug in the nearby point", tex: ["L(3.5,\\ 2.5)=3+\\tfrac13(0.5)+\\tfrac16(-0.5)", "=3+\\tfrac16-\\tfrac1{12}=\\tfrac{37}{12}\\approx3.083", "\\sqrt{9.5}\\approx3.082:\\ \\ \\text{very close}"],
++        why: "Walk from \\((3,3)\\) on the plane: \\(f_x\\,\\Delta x+f_y\\,\\Delta y\\) is how much the height changes.", sum: "\\(f(3.5,2.5)\\approx\\tfrac{37}{12}\\)" },
++    ] },
++  { chip: "Parametric r(u, v)", cam: g3Cam(180, 226, 80, 160, .7, [0, 0, 1]), ax: null,
++    r: (u, v) => [u * Math.cos(v), u * Math.sin(v), u * u], grid: [0, 1.4, 7, 0, 2 * Math.PI, 32],
++    p0: [0, -1, 1], plab: ["P = (0, −1, 1)", 14, 4, "start"],
++    s1: { at: [1, 0], pts: Array.from({ length: 31 }, (_, i) => { const u = .3 + 1.1 * i / 30; return [0, -u, u * u]; }), d: [0, -1, 2], len: .9, key: "u-curve", lab: "r<tspan baseline-shift=\"sub\" font-size=\"11\">u</tspan>", lo: [8, 2, "start"], arrow: 1 },
++    s2: { at: [1, 1], pts: Array.from({ length: 31 }, (_, i) => { const v = 1.5 * Math.PI - .9 + 1.8 * i / 30; return [Math.cos(v), Math.sin(v), 1]; }), d: [1, 0, 0], len: .9, key: "v-curve", lab: "r<tspan baseline-shift=\"sub\" font-size=\"11\">v</tspan>", lo: [-6, -8, "end"], arrow: 1 },
++    nv: { at: [2, 0], v: [0, 1.3, .65], lab: "n = [0, 2, 1]", lo: [-8, 18, "end"] },
++    pl: { at: [3, 1], a: [0, -1, 2], b: [1, 0, 0], h: [.3, .6], lab: "2y + z = −1", lp: [-1, -1], lo: [8, 14, "start"] },
++    notes: ["r(u, v) = [u cos v, u sin v, u²]: a bowl", "P sits at u = 1, v = 3π/2", "the u-curve and v-curve through P, and their tangents", "n = " + g3sub("r", "u", " × r") + g3sub("r", "v", " is square to both"), "the plane through P with normal n"],
++    problem: "Find the tangent plane to the surface \\(\\mathbf r(u,v)=[u\\cos v,\\ u\\sin v,\\ u^2]\\), \\(u\\ge0\\), \\(0\\le v\\le2\\pi\\), at the point \\(P=(0,-1,1)\\).",
++    steps: [
++      { t: "Find (u₀, v₀) from the point", tex: ["u\\cos v=0,\\qquad u\\sin v=-1,\\qquad u^2=1", "u=1\\ \\ (u\\ge0),\\qquad \\sin v=-1:\\ \\ v=\\tfrac{3\\pi}2"],
++        why: "Set \\(\\mathbf r(u,v)\\) equal to \\(P\\) and solve for the parameters.", sum: "\\(u_0=1,\\ v_0=\\tfrac{3\\pi}2\\)" },
++      { t: "The two tangent vectors", tex: ["\\mathbf r_u=[\\cos v,\\ \\sin v,\\ 2u]=[0,\\ -1,\\ 2]", "\\mathbf r_v=[-u\\sin v,\\ u\\cos v,\\ 0]=[1,\\ 0,\\ 0]"],
++        why: "Hold \\(v\\) and move \\(u\\): a curve on the surface with tangent \\(\\mathbf r_u\\). Hold \\(u\\): tangent \\(\\mathbf r_v\\). Both lie in the plane.", sum: "\\(\\mathbf r_u=[0,-1,2],\\ \\mathbf r_v=[1,0,0]\\)" },
++      { t: "Normal: cross the tangents", tex: ["\\mathbf n=\\mathbf r_u\\times\\mathbf r_v=[(-1)(0)-(2)(0),\\ (2)(1)-(0)(0),\\ (0)(0)-(-1)(1)]=[0,\\ 2,\\ 1]"],
++        why: "The cross product is square to both tangents, so it is square to the plane.", sum: "\\(\\mathbf n=[0,2,1]\\)" },
++      { t: "Write the plane", tex: ["\\mathbf n\\cdot([x,y,z]-P)=0", "0(x-0)+2(y+1)+1(z-1)=0", "2y+z=-1"],
++        why: "Point \\(P\\) and normal \\(\\mathbf n\\) are all a plane needs.", sum: "\\(2y+z=-1\\)" },
++    ] },
++];
++function g3tPic(def, k, b, u) {
++  const S = G3T_SITS[G3T.cur], cam = S.cam, L = stLines(def, k, b, u), at = (a, s = .15, d = .9) => a ? L(a[0], a[1], s, d) : 0;
++  const P2 = p => { const q = cam(...p); return q2(q[0]) + " " + q2(q[1]); };
++  let o = "";
++  if (S.ax) [[S.ax[0], 0, 0, "x"], [0, S.ax[1], 0, "y"], [0, 0, S.ax[2], "z"]].forEach(([x, y, z, nm]) => {
++    o += `<path d="M${P2([0, 0, 0])}L${P2([x, y, z])}" stroke="${VZ.ink}" stroke-width="1.1" opacity=".35" fill="none"/>` + vzLab3(cam, [x * 1.07, y * 1.07, z * 1.04], nm, VZ.grey, 0, 5, 15);
++  });
++  o += g3Surf(S);
++  const p0 = S.p0, pl = S.pl, ep = at(pl.at, .1, 1.3);
++  // the plane: spanned by the two slope directions, fading in once both are known
++  if (ep > .01) {
++    const c = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([s, t]) => g3add(g3add(p0, pl.a, s * pl.h[0]), pl.b, t * pl.h[1]));   // (for a graph, a and b are [1, 0, f_x] and [0, 1, f_y]: the patch sits over a square around (a, b))
++    let gr = ""; [-.5, 0, .5].forEach(s => { gr += `M${P2(g3add(g3add(p0, pl.a, s * pl.h[0]), pl.b, -pl.h[1]))}L${P2(g3add(g3add(p0, pl.a, s * pl.h[0]), pl.b, pl.h[1]))}M${P2(g3add(g3add(p0, pl.b, s * pl.h[1]), pl.a, -pl.h[0]))}L${P2(g3add(g3add(p0, pl.b, s * pl.h[1]), pl.a, pl.h[0]))}`; });
++    o += `<g opacity="${q2(ep)}"><path d="M${c.map(P2).join("L")}Z" fill="${VZ.gold}" fill-opacity=".3" stroke="${VZ.gold}" stroke-width="1.6" stroke-linejoin="round"/><path d="${gr}" stroke="#8A6A12" stroke-opacity=".3" stroke-width=".8" fill="none"/></g>`;
++    if (pl.lab) { const q = cam(...g3add(g3add(p0, pl.a, pl.lp[0] * pl.h[0]), pl.b, pl.lp[1] * pl.h[1])); o += `<g opacity="${q2(at(pl.at, .9, .6))}">${vzLabel(q[0] + pl.lo[0], q[1] + pl.lo[1], pl.lab, "#7A5C0F", 14, pl.lo[2])}</g>`; }
++  }
++  // the two slices through the point, drawn as if by pen, then their tangent lines grow out of the point
++  const dimS = S.labTill != null && k >= S.labTill ? .35 : 1;   // estimating: the slope lines step back behind the walk
++  [[S.s1, VZ.red, "R"], [S.s2, VZ.ink, "I"]].forEach(([s, col, mk]) => {
++    const e = at(s.at, .1, 1), g = at(s.at, .7, .8); if (e < .01) return;
++    if (dimS < 1) o += `<g opacity="${dimS}">`;
++    o += `<path d="M${s.pts.map(P2).join("L")}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - e)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-opacity=".75" stroke-linecap="round"/>`;
++    if (g > .01) {
++      const d = g3n(s.d), A = g3add(p0, d, s.arrow ? 0 : -s.len * g), B = g3add(p0, d, s.len * g), a = cam(...A), c = cam(...B);
++      o += `<line x1="${q2(a[0])}" y1="${q2(a[1])}" x2="${q2(c[0])}" y2="${q2(c[1])}" stroke="${VZ.paper}" stroke-width="6.5" stroke-linecap="round" opacity=".85"/>` +
++        (s.arrow ? vzArrow(a[0], a[1], c[0], c[1], mk, 3) : `<line x1="${q2(a[0])}" y1="${q2(a[1])}" x2="${q2(c[0])}" y2="${q2(c[1])}" stroke="${col}" stroke-width="3" stroke-linecap="round"/>`);
++      if (s.lab && g > .6 && !(S.labTill != null && k >= S.labTill)) o += `<g opacity="${q2((g - .6) / .4)}">${vzLabel(c[0] + s.lo[0], c[1] + s.lo[1], s.lab, col === VZ.ink ? VZ.ink : VZ.deep, 14, s.lo[2])}</g>`;
++    }
++    if (dimS < 1) o += `</g>`;
++  });
++  // the normal (a level surface's ∇F, or r_u × r_v), with a right-angle mark against both tangents
++  if (S.nv) {
++    const e = at(S.nv.at, .15, 1);
++    if (e > .01) {
++      const v = S.nv.v, a = cam(...p0), c = cam(...g3add(p0, v, e)), n = g3n(v), t1 = g3n(S.s1.d), t2 = g3n(S.s2.d), m = .16;
++      const sq = t => `M${P2(g3add(p0, n, m))}L${P2(g3add(g3add(p0, n, m), t, m))}L${P2(g3add(p0, t, m))}`;
++      o += `<line x1="${q2(a[0])}" y1="${q2(a[1])}" x2="${q2(c[0])}" y2="${q2(c[1])}" stroke="${VZ.paper}" stroke-width="7" stroke-linecap="round" opacity=".85"/>` + vzArrow(a[0], a[1], c[0], c[1], "D", 3.2);
++      if (e > .7) o += `<g opacity="${q2((e - .7) / .3)}"><path d="${sq(t1)}${sq(t2)}" fill="none" stroke="${VZ.deep}" stroke-width="1.3"/>${vzLabel(c[0] + S.nv.lo[0], c[1] + S.nv.lo[1], S.nv.lab, VZ.deep, 14, S.nv.lo[2])}</g>`;
++    }
++  }
++  // estimating a value: walk on the plane, Δx along the x-slope, then Δy along the y-slope
++  if (S.walk) {
++    const w = S.walk, e1 = at(w.at, .2, .9), e2 = at(w.at, 1.1, .9), e3 = L(w.at[0], 2, .2, .6);
++    const A = [p0[0] + w.dx * e1, p0[1], p0[2] + w.fx * w.dx * e1], B = [A[0], A[1] + w.dy * e2, A[2] + w.fy * w.dy * e2];
++    if (e1 > .01) o += vzArrow(...cam(...p0).slice(0, 2), ...cam(...A).slice(0, 2), "R", 3);
++    if (e2 > .01) o += vzArrow(...cam(...A).slice(0, 2), ...cam(...B).slice(0, 2), "I", 3);
++    // each step's name sits off its arrow, on the side away from the other arrow
++    const side = (U, W, away, t, col, e) => { const a = cam(...U), c = cam(...W), r = cam(...away), dx = c[0] - a[0], dy = c[1] - a[1], l = Math.hypot(dx, dy) || 1; let nx = -dy / l, ny = dx / l; const mx = (a[0] + c[0]) / 2, my = (a[1] + c[1]) / 2; if ((r[0] - mx) * nx + (r[1] - my) * ny > 0) { nx = -nx; ny = -ny; } return `<g opacity="${q2(e)}">${vzLabel(mx + nx * 22, my + ny * 22 + 5, t, col, 14, nx > .35 ? "start" : nx < -.35 ? "end" : "middle")}</g>`; };
++    if (e1 > .6) o += side(p0, A, B, "Δx = 0.5", VZ.deep, Math.min(1, (e1 - .6) / .4));
++    if (e2 > .6) o += side(A, B, p0, "Δy = −0.5", VZ.ink, Math.min(1, (e2 - .6) / .4));
++    if (e3 > .01) { const c = cam(...B), bx = 180, by = 392;   // the comparison: one tidy two-line label below the plane, with a leader to the point
++      o += `<g opacity="${q2(e3)}"><path d="M${q2(c[0])} ${q2(c[1] + 9)}L${bx} ${by - 22}" stroke="${VZ.grey}" stroke-width="1" stroke-dasharray="3 3" fill="none"/><circle cx="${bx - 96}" cy="${by - 5}" r="5" fill="${VZ.gold}"/>${vzLabel(bx - 86, by, "plane: L(3.5, 2.5) ≈ 3.083", "#7A5C0F", 15, "start")}<circle cx="${bx - 96}" cy="${by + 17}" r="6" fill="none" stroke="${VZ.ink}" stroke-width="1.6"/>${vzLabel(bx - 86, by + 22, "true: f(3.5, 2.5) ≈ 3.082", VZ.ink, 15, "start")}</g>`; }
++    if (e2 > .01) { const q = cam(...B), r = cam(B[0], B[1], w.f), e = vzClamp((e2 - .8) / .2, 0, 1); if (e > .01) o += `<g opacity="${q2(e)}"><circle cx="${q2(r[0])}" cy="${q2(r[1])}" r="8" fill="none" stroke="${VZ.ink}" stroke-width="1.6"/><circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="5" fill="${VZ.gold}" stroke="#fff" stroke-width="1.4"/></g>`; }
++  }
++  const q = cam(...p0);
++  o += `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="5.5" fill="${VZ.deep}" stroke="#fff" stroke-width="1.8"/>`;
++  let pdx = S.plab[1], pdy = S.plab[2], pan = S.plab[3];
++  if (S.walk) {                                            // the point's name goes in the gap between the two slope lines, away from the walk
++    const a = cam(...p0), d1 = cam(...g3add(p0, g3n(S.s1.d), .3)), d2 = cam(...g3add(p0, g3n(S.s2.d), .3)), u1 = g3n([d1[0] - a[0], d1[1] - a[1]]), u2 = g3n([d2[0] - a[0], d2[1] - a[1]]), w = g3n([-u1[0] + u2[0], -u1[1] + u2[1]]);
++    pdx = w[0] * 30; pdy = w[1] * 30 + 5; pan = w[0] > .3 ? "start" : w[0] < -.3 ? "end" : "middle";
++  }
++  o += `<g opacity="${q2(k < 0 ? 0 : L(0, 0, .2, .6))}">${vzLabel(q[0] + pdx, q[1] + pdy, S.plab[0], VZ.ink, 14, pan)}</g>`;
++  const key = [];
++  if (k >= S.s1.at[0]) key.push(["line", VZ.red, S.s1.key]);
++  if (k >= S.s2.at[0]) key.push(["line", VZ.ink, S.s2.key]);
++  if (S.nv && k >= S.nv.at[0]) key.push(["line", VZ.deep, "normal"]);
++  if (k >= pl.at[0]) key.push(["fill", VZ.gold, "plane"]);
++  if (S.walk && k >= S.walk.at[0]) key.splice(0, key.length, ["line", VZ.red, "Δx step"], ["line", VZ.ink, "Δy step"], ["dot", VZ.gold, "L, on the plane"]);
++  if (key.length) o += vzKey(key, 16, 22);
++  return o + stNote(180, 448, S.notes[Math.max(0, Math.min(S.notes.length - 1, k + 1))], VZ.ink);
++}
++stAdd({
++  id: "m-tanplane", title: "Tangent plane and linear approximation", card: "Tangent plane, step by step",
++  tagline: "Match the height and both slopes: that's the plane.",
++  blurb: "At \\((a,b)\\) the tangent plane is \\(z=f(a,b)+f_x(a,b)(x-a)+f_y(a,b)(y-b)\\); it's the flat surface that matches the height and both slopes, so near \\((a,b)\\) it approximates \\(f\\).",
++  problem: G3T_SITS[0].problem, steps: G3T_SITS[0].steps,
++  picLive: true, picDur: 3600,
++  mount(given, rebuild) { g3Chips(this, given, rebuild, G3T, G3T_SITS, "Kind of surface"); },
++  pic(k, b, u) { return g3tPic(this, k, b, u); },
++});
++
++/* ---------- m-chain (g3): partial derivatives and the chain rule; three situations ---------- */
++const G3C = { cur: 0 };
++const G3C_F = (x, y) => x * x * Math.exp(y) + 3 * x * y;
++const G3C_SITS = [
++  { chip: "Partials, mixed partials", kind: "part", cam: g3Cam(180, 236, 95, -35, .42, [.8, 0, 3.4], .22),   // looking nearly along y, so the slice y = 0 shows in profile
++    r: (x, y) => [x, y, G3C_F(x, y)], grid: [-.2, 1.8, 10, -.6, .6, 8],
++    notes: ["the surface z = x²eʸ + 3xy", "hold y = 0: a curve in x; its slope is " + g3sub("f", "x"), "hold x = 1: a curve in y; its slope is " + g3sub("f", "y"), "slide along the slice: its slope changes at rate " + g3sub("f", "xx"), "move the slice in y: its slope " + g3sub("f", "x", " changes at rate ") + g3sub("f", "xy")],
++    problem: "For \\(f(x,y)=x^2e^y+3xy\\), find all the first and second partial derivatives, and check that \\(f_{xy}=f_{yx}\\).",
++    steps: [
++      { t: "Hold y constant: ∂f/∂x", tex: ["f(x,y)=x^2e^y+3xy", "f_x=2xe^y+3y"],
++        why: "Treat \\(y\\) as a number: \\(e^y\\) is just a constant factor, and \\(3y\\) is the coefficient of \\(x\\).", sum: "\\(f_x=2xe^y+3y\\)" },
++      { t: "Hold x constant: ∂f/∂y", tex: ["f_y=x^2e^y+3x"],
++        why: "Now \\(x\\) is the number: \\(x^2\\) is a constant factor in front of \\(e^y\\).", sum: "\\(f_y=x^2e^y+3x\\)" },
++      { t: "Second partials", tex: ["f_{xx}=(f_x)_x=2e^y,\\qquad f_{yy}=(f_y)_y=x^2e^y"],
++        why: "Differentiate a first partial again, in the same variable.", sum: "\\(f_{xx}=2e^y,\\ f_{yy}=x^2e^y\\)" },
++      { t: "Mixed partials agree", tex: ["f_{xy}=(f_x)_y=2xe^y+3", "f_{yx}=(f_y)_x=2xe^y+3", "f_{xy}=f_{yx}\\ \\checkmark\\quad\\text{(Clairaut)}"],
++        why: "Take \\(f_x\\) in \\(y\\), and \\(f_y\\) in \\(x\\). For nice functions the two orders always agree (Clairaut's theorem): a free check on your work.", sum: "\\(f_{xy}=f_{yx}=2xe^y+3\\)" },
++    ] },
++  { chip: "Chain rule dz/dt", kind: "tree", bot: ["t"], lhs: "dz/dt", z: "z = x²y + y²",
++    e: [["∂z/∂x = 2xy", "∂z/∂y = x² + 2y"], [["dx/dt = −sin t"], ["dy/dt = cos t"]]],
++    prod: ["(2xy)(−sin t)", "(x² + 2y)(cos t)"], val: "= 1 at t = 0",
++    notes: ["z depends on x and y; each depends on t", "the tree: two paths from z down to t", "path 1: z → x → t, one product", "path 2: z → y → t, one product", "add one product per path"],
++    problem: "Let \\(z=x^2y+y^2\\) with \\(x=\\cos t\\) and \\(y=\\sin t\\). Find \\(\\dfrac{dz}{dt}\\), and its value at \\(t=0\\).",
++    steps: [
++      { t: "Draw the tree", tex: ["z=x^2y+y^2,\\qquad x=\\cos t,\\quad y=\\sin t"],
++        why: "\\(z\\) depends on \\(x\\) and \\(y\\); each of them depends on \\(t\\). Every path from \\(z\\) down to \\(t\\) gives one term.", sum: "two paths to \\(t\\)" },
++      { t: "Path through x", tex: ["\\dfrac{\\partial z}{\\partial x}\\,\\dfrac{dx}{dt}=(2xy)(-\\sin t)"],
++        why: "Multiply the derivatives along the path's two edges.", sum: "\\((2xy)(-\\sin t)\\)" },
++      { t: "Path through y", tex: ["\\dfrac{\\partial z}{\\partial y}\\,\\dfrac{dy}{dt}=(x^2+2y)(\\cos t)"],
++        why: "Same again along the other path.", sum: "\\((x^2+2y)(\\cos t)\\)" },
++      { t: "Add the paths", tex: ["\\dfrac{dz}{dt}=\\dfrac{\\partial z}{\\partial x}\\dfrac{dx}{dt}+\\dfrac{\\partial z}{\\partial y}\\dfrac{dy}{dt}=-2xy\\sin t+(x^2+2y)\\cos t", "t=0:\\ \\ x=1,\\ y=0:\\qquad \\dfrac{dz}{dt}=0+(1)(1)=1"],
++        why: "One product per path, added. To get a number, put in \\(x\\) and \\(y\\) at that \\(t\\) too.", sum: "\\(\\tfrac{dz}{dt}=1\\) at \\(t=0\\)" },
++    ] },
++  { chip: "Two parameters ∂z/∂s", kind: "tree", bot: ["s", "t"], lhs: "∂z/∂s", z: "z = xy + y²",
++    e: [["∂z/∂x = y", "∂z/∂y = x + 2y"], [["∂x/∂s = t", "∂x/∂t"], ["∂y/∂s = 1", "∂y/∂t"]]],
++    prod: ["(y)(t)", "(x + 2y)(1)"], val: "= 5 at (s, t) = (2, 1)",
++    notes: ["x and y each depend on s and t", "for ∂z/∂s, only the paths that end at s", "path 1: z → x → s", "path 2: z → y → s", "add one product per path"],
++    problem: "Let \\(z=xy+y^2\\) with \\(x=st\\) and \\(y=s-t^2\\). Find \\(\\dfrac{\\partial z}{\\partial s}\\) at \\((s,t)=(2,1)\\).",
++    steps: [
++      { t: "Draw the tree", tex: ["z=xy+y^2,\\qquad x=st,\\quad y=s-t^2"],
++        why: "Each of \\(x\\) and \\(y\\) depends on both \\(s\\) and \\(t\\). For \\(\\partial z/\\partial s\\), follow only the paths that end at \\(s\\).", sum: "two paths to \\(s\\)" },
++      { t: "Path through x", tex: ["\\dfrac{\\partial z}{\\partial x}\\,\\dfrac{\\partial x}{\\partial s}=(y)(t)"],
++        why: "Hold \\(t\\) fixed when you take \\(\\partial x/\\partial s\\): \\(x=st\\) gives \\(t\\).", sum: "\\((y)(t)\\)" },
++      { t: "Path through y", tex: ["\\dfrac{\\partial z}{\\partial y}\\,\\dfrac{\\partial y}{\\partial s}=(x+2y)(1)"],
++        why: "\\(y=s-t^2\\), so \\(\\partial y/\\partial s=1\\).", sum: "\\((x+2y)(1)\\)" },
++      { t: "Add the paths", tex: ["\\dfrac{\\partial z}{\\partial s}=yt+x+2y", "(s,t)=(2,1):\\ \\ x=2,\\ y=1:\\qquad \\dfrac{\\partial z}{\\partial s}=1+2+2=5"],
++        why: "Add the two products, then put in \\(x\\) and \\(y\\) at the given \\((s,t)\\).", sum: "\\(\\tfrac{\\partial z}{\\partial s}=5\\)" },
++    ] },
++];
++function g3cPart(S, def, k, b, u) {
++  const cam = S.cam, L = stLines(def, k, b, u), T = performance.now() / 1000, f = G3C_F, fx = (x, y) => 2 * x * Math.exp(y) + 3 * y, fy = (x, y) => x * x * Math.exp(y) + 3 * x;
++  const P2 = p => { const q = cam(...p); return q2(q[0]) + " " + q2(q[1]); };
++  let o = g3Surf(S);
++  // which slice, and where on it: steps 3 and 4 set it moving (along the slice, then the slice itself)
++  const sw = Math.sin(T * 1.3), xa = k === 2 ? 1 + .55 * sw : 1, yb = k === 3 ? .45 * sw : 0;
++  const red = k === 1 ? 1 : k >= 0 ? L(Math.max(0, Math.min(k, 3)), 0, .1, 1) : 0, ink = k === 1 ? L(1, 0, .1, 1) : k > 1 ? 1 : 0, ro = k === 1 ? .35 : 1, io = k > 1 ? .3 : 1;   // the other slice stays, drawn faint
++  const pen = (pts, col, e, w, op = 1) => e > .01 ? `<path opacity="${op}" d="M${pts.map(P2).join("L")}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - Math.min(1, e))}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>` : "";
++  const xs = Array.from({ length: 41 }, (_, i) => { const x = -.2 + 2 * i / 40; return [x, yb, f(x, yb)]; }), ys = Array.from({ length: 41 }, (_, i) => { const y = -.6 + 1.2 * i / 40; return [1, y, f(1, y)]; });
++  o += pen(ys, VZ.ink, ink, 2.6, io) + pen(xs, VZ.red, red, 2.6, ro);
++  const tan = (p, d, col, e, len) => { if (e < .01) return ""; const n = g3n(d), a = cam(...g3add(p, n, -len * e)), c = cam(...g3add(p, n, len * e)); return `<line x1="${q2(a[0])}" y1="${q2(a[1])}" x2="${q2(c[0])}" y2="${q2(c[1])}" stroke="${VZ.paper}" stroke-width="6.5" stroke-linecap="round" opacity=".85"/><line x1="${q2(a[0])}" y1="${q2(a[1])}" x2="${q2(c[0])}" y2="${q2(c[1])}" stroke="${col}" stroke-width="3" stroke-linecap="round"/>`; };
++  const pr = [xa, yb, f(xa, yb)], tr = k === 1 ? 0 : k >= 0 ? L(Math.max(0, Math.min(k, 3)), 0, .6, .8) : 0, ti = k === 1 ? L(1, 0, .6, .8) : 0;
++  o += tan([1, 0, f(1, 0)], [0, 1, fy(1, 0)], VZ.ink, ti, .5) + tan(pr, [1, 0, fx(xa, yb)], VZ.red, tr, .55);
++  const q = cam(...pr), q1 = cam(1, 0, f(1, 0));
++  o += `<circle cx="${q2(k === 1 ? q1[0] : q[0])}" cy="${q2(k === 1 ? q1[1] : q[1])}" r="5.5" fill="${VZ.deep}" stroke="#fff" stroke-width="1.8"/>`;
++  const lab = ["slope f<tspan font-size=\"11\" dy=\"3\">x</tspan><tspan dy=\"-3\"> = 2</tspan>", "slope f<tspan font-size=\"11\" dy=\"3\">y</tspan><tspan dy=\"-3\"> = 4</tspan>", "slope f<tspan font-size=\"11\" dy=\"3\">x</tspan><tspan dy=\"-3\"> = 2x: it grows</tspan>", "f<tspan font-size=\"11\" dy=\"3\">xy</tspan><tspan dy=\"-3\"> = f</tspan><tspan font-size=\"11\" dy=\"3\">yx</tspan><tspan dy=\"-3\"> = 5 at (1, 0)</tspan>"][k];
++  if (lab) o += `<g opacity="${q2(L(k, k === 3 ? 2 : 0, .9, .6))}">${vzLabel(k === 3 ? 180 : k === 2 ? 344 : (k === 1 ? q1[0] : q[0]) + 14, k === 3 ? 96 : k === 2 ? 380 : (k === 1 ? q1[1] : q[1]) + 30, lab, k === 1 ? VZ.ink : VZ.deep, 15, k === 3 ? "middle" : k === 2 ? "end" : "start")}</g>`;
++  const key = k < 0 ? null : k === 1 ? [["line", VZ.red, "slice y = 0"], ["line", VZ.ink, "slice x = 1"]] : [["line", VZ.red, k === 3 ? "slice, y moving" : "slice y = 0"]];
++  if (key) o += vzKey(key, 16, 22);
++  return o + stNote(180, 448, S.notes[Math.max(0, Math.min(S.notes.length - 1, k + 1))], VZ.ink);
++}
++function g3cTree(S, def, k, b, u) {
++  // big enough to read on a phone: edge labels at 16–17 px of a 360-wide frame
++  const L = stLines(def, k, b, u), two = S.bot.length === 2, Z = [180, 62], X = [112, 168], Y = [248, 168];
++  const bots = two ? [[[62, 272], [150, 272]], [[210, 272], [298, 272]]] : [[[180, 272]], [[180, 272]]];
++  const grow = k < 0 ? 0 : L(0, 0, .1, 1.2), pc = [VZ.red, VZ.ink], on = j => k === j + 1 ? L(k, 0, .1, .6) : k === 3 ? 1 : 0;
++  let o = "";
++  const edge = (A, B, col, w, op, e, dash) => e > .01 ? `<line x1="${A[0]}" y1="${A[1]}" x2="${q2(A[0] + (B[0] - A[0]) * e)}" y2="${q2(A[1] + (B[1] - A[1]) * e)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" opacity="${q2(op)}"${dash ? ' stroke-dasharray="4 5"' : ""}/>` : "";
++  [X, Y].forEach((M, j) => {
++    const lit = on(j), e1 = Math.min(1, grow * 2), e2 = vzClamp(grow * 2 - 1, 0, 1);
++    o += edge(Z, M, VZ.grey, 2, .55, e1) + (lit > .01 ? `<g opacity="${q2(lit)}">${edge(Z, M, pc[j], 4.6, 1, 1)}</g>` : "");
++    bots[j].forEach((B, i) => {
++      const used = i === 0;                                 // only the paths that end at the first bottom variable count
++      o += edge(M, B, VZ.grey, 2, used ? .55 : .3, e2, !used) + (used && lit > .01 ? `<g opacity="${q2(lit)}">${edge(M, B, pc[j], 4.6, 1, 1)}</g>` : "");
++    });
++  });
++  const node = (P, t, op, col) => op > .01 ? `<g opacity="${q2(op)}"><circle cx="${P[0]}" cy="${P[1]}" r="20" fill="${VZ.paper}" stroke="${col || VZ.ink}" stroke-width="1.8"/>${vzLabel(P[0], P[1] + 7, t, col || VZ.ink, 21)}</g>` : "";
++  o += node(Z, "z", 1) + node(X, "x", Math.min(1, grow * 2.5)) + node(Y, "y", Math.min(1, grow * 2.5));
++  bots.forEach((bb, j) => bb.forEach((B, i) => { if (two || j === 0) o += node(B, S.bot[i], vzClamp(grow * 2 - 1.2, 0, 1) * (i === 0 ? 1 : .5), i === 0 ? VZ.ink : VZ.grey); }));
++  // the derivative on each edge that counts, beside its midpoint (the unused ones stay unlabelled)
++  const el = vzClamp(grow * 1.6 - .6, 0, 1);
++  if (el > .01) {
++    o += `<g opacity="${q2(el)}">` + vzLabel((Z[0] + X[0]) / 2 - 10, (Z[1] + X[1]) / 2, S.e[0][0], VZ.ink, 16, "end") + vzLabel((Z[0] + Y[0]) / 2 + 10, (Z[1] + Y[1]) / 2, S.e[0][1], VZ.ink, 16, "start");
++    [X, Y].forEach((M, j) => { const B = bots[j][0], mx = (M[0] + B[0]) / 2, my = (M[1] + B[1]) / 2 + 6, left = two || j === 0; o += vzLabel(mx + (left ? -10 : 10), my, S.e[1][j][0], VZ.ink, 16, left ? "end" : "start"); });
++    o += `</g>`;
++  }
++  o += `<g opacity="${q2(k < 0 ? 0 : L(0, 0, .2, .6))}">${vzLabel(Z[0] + 30, Z[1] + 6, S.z, VZ.grey, 16, "start")}</g>`;
++  // the sum: each path's product slides down from its path into its slot
++  const sy = 362, slot = [104, 262], so = k < 0 ? 0 : L(0, 0, .8, .6);
++  if (so > .01) o += `<g opacity="${q2(so)}">${vzLabel(18, 326, S.lhs + " =", VZ.ink, 17, "start")}${vzLabel(slot[0], sy, "▢", VZ.faint, 17)}${vzLabel(183, sy, "+", VZ.ink, 17)}${vzLabel(slot[1], sy, "▢", VZ.faint, 17)}</g>`;
++  S.prod.forEach((t, j) => {
++    const e = L(j + 1, 0, .7, 1.1); if (e < .01) return;
++    const B = bots[j][0], fx = ((j === 0 ? X : Y)[0] + B[0]) / 2, fy = 232, x = fx + (slot[j] - fx) * e, y = fy + (sy - fy) * e;
++    o += `<rect x="${q2(slot[j] - 60)}" y="${sy - 20}" width="120" height="28" rx="6" fill="${VZ.paper}" opacity="${q2(e)}"/>${vzLabel(x, y, t, j === 0 ? VZ.deep : VZ.ink, 17)}`;
++  });
++  const fin = L(3, 1, .2, .7);
++  if (fin > .01) o += `<g opacity="${q2(fin)}">${vzLabel(180, 402, S.val, VZ.deep, 18)}</g>`;
++  if (k >= 1) o += vzKey([["line", VZ.red, "path through x"], ["line", VZ.ink, "path through y"]].slice(0, k >= 2 ? 2 : 1), 16, 22);
++  return o + stNote(180, 448, S.notes[Math.max(0, Math.min(S.notes.length - 1, k + 1))], VZ.ink);
++}
++stAdd({
++  id: "m-chain", title: "Partial derivatives and the chain rule", card: "Partials & the chain rule",
++  tagline: "Hold the others still; for a chain, one product per path.",
++  blurb: "Treat the other variables as constants for a partial; for a chain, draw the tree from \\(z\\) down through \\(x\\) and \\(y\\) to \\(t\\) (or \\(s\\) and \\(t\\)), and add one product of derivatives per path.",
++  problem: G3C_SITS[0].problem, steps: G3C_SITS[0].steps,
++  picLive: true, picDur: 3600,
++  mount(given, rebuild) { g3Chips(this, given, rebuild, G3C, G3C_SITS, "Kind of problem"); },
++  pic(k, b, u) { const S = G3C_SITS[G3C.cur]; return S.kind === "part" ? g3cPart(S, this, k, b, u) : g3cTree(S, this, k, b, u); },
++});
++/* ---------- m-sketch (g3): sketch z = f(x, y) from level curves and traces; three situations ---------- */
++const G3S = { cur: 0 };
++const g3Ell = (a, c, n = 72) => Array.from({ length: n + 1 }, (_, i) => [a * Math.cos(2 * Math.PI * i / n), c * Math.sin(2 * Math.PI * i / n)]);
++const g3Seg = (f, a, c, n = 40) => Array.from({ length: n + 1 }, (_, i) => f(a + (c - a) * i / n));
++function g3HypE(c) {                                      // the level set x² − 4y² = c inside the oval x²/4 + y² ≤ 1, where x = 2ρ cos θ, y = ρ sin θ and f = 4ρ² cos 2θ
++  const pt = th => { const r = c === 0 ? 1 : Math.sqrt(c / (4 * Math.cos(2 * th))); return [2 * r * Math.cos(th), r * Math.sin(th)]; };
++  if (c === 0) return [1, -1].map(s => g3Seg(t => [1.4142 * t, s * .7071 * t], -1, 1));
++  const a = Math.acos(c / 4) / 2, lo = c > 0 ? -a : a, hi = c > 0 ? a : Math.PI - a, e = 1e-4;
++  return [0, Math.PI].map(sh => g3Seg(th => pt(th + sh), lo + e, hi - e, 48));
++}
++const G3S_NEG = "#5B7A99";                                  // c < 0 levels: blue-grey
++const G3S_SITS = [
++  { chip: "Bowl", P: vzPlane(180, 100, 56), win: [-2.25, 2.25, -1.2, 1.2], lv: [1, 2, 3, 4], zf: 0, top: 4.4,
++    lc: c => [g3Ell(Math.sqrt(c), Math.sqrt(c) / 2)], ll: c => [Math.sqrt(c), 0, 3, 15, "start"],
++    cam: g3Cam(180, 298, 54, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), r * Math.sin(t), 4 * r * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
++    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
++    box: [2.2, 1.1], surfAt: [4, 0],
++    notes: ["z = x² + 4y²: what does it look like?", "the map: level curves f = c, seen from above", "each level curve floats at its height c", "the wall x = 0 cuts out a parabola", "the wall y = 0 cuts out a wider one", "join them: a bowl"],
++    problem: "Sketch the surface \\(z=x^2+4y^2\\) from its level curves and traces.",
++    steps: [
++      { t: "Level curves: set f = c", tex: ["x^2+4y^2=c", "c=1,2,3,4:\\ \\ \\text{ellipses, twice as wide as tall}"],
++        why: "A level curve is where the surface has height \\(c\\). Draw a few, each labelled by its \\(c\\): that's the map.", sum: "ellipses" },
++      { t: "Lift each to height c", tex: ["f=c\\ \\Rightarrow\\ \\text{that curve sits at } z=c"],
++        why: "Think of the map as a stack: every level curve floats at its own height.", sum: "stacked at \\(z=c\\)" },
++      { t: "Trace in the wall x = 0", tex: ["x=0:\\qquad z=4y^2"],
++        why: "Cut with the wall \\(x=0\\): the surface meets it in a parabola. That's one side profile.", sum: "\\(z=4y^2\\)" },
++      { t: "Trace in the wall y = 0", tex: ["y=0:\\qquad z=x^2"],
++        why: "The other wall gives a wider parabola.", sum: "\\(z=x^2\\)" },
++      { t: "Stack them: the surface", tex: ["\\text{stacked ellipses}+\\text{parabola walls}", "=\\ \\text{a bowl}"],
++        why: "The traces hold the stacked levels together. Join them and the surface appears: an elliptic paraboloid.", sum: "a bowl" },
++    ] },
++  { chip: "Saddle", P: vzPlane(180, 100, 56), win: [-2.25, 2.25, -1.2, 1.2], lv: [-2, -1, 0, 1, 2], zf: -4.4, top: 4.4, oval: 1,
++    lc: c => g3HypE(c), col: c => c > 0 ? VZ.gold : c < 0 ? G3S_NEG : "#6B4E0C", wd: c => c === 0 ? 3 : 2,   // c = 0: dark and thick, apart from the red and ink traces
++    labs: [[1, [1.581, -.612], [1.62, -1.0], "start"], [-1, [-1.225, .791], [-1.42, 1.02], "end"], [0, [1.414, .707], [1.56, 1.02], "start"]],   // one label per family, outside the oval, with a short leader
++    cam: g3Cam(180, 284, 50, -120, .5, [0, 0, 0], .3), r: (p, t) => [2 * p * Math.cos(t), p * Math.sin(t), 4 * p * p * Math.cos(2 * t)], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
++    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, -4 * y * y], -1, 1) }, { at: [3, 0], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, x * x], -2, 2) }],
++    box: [2.2, 1.1], surfAt: [4, 0],
++    notes: ["z = x² − 4y² over an oval: what does it look like?", "the map: hyperbolas, and two crossing lines at c = 0", "each level curve floats at its height c", "the wall x = 0: a parabola opening down", "the wall y = 0: a parabola opening up", "join them: a saddle"],
++    problem: "Sketch the surface \\(z=x^2-4y^2\\) over the oval \\(\\tfrac{x^2}4+y^2\\le1\\) from its level curves and traces.",
++    steps: [
++      { t: "Level curves: set f = c", tex: ["x^2-4y^2=c", "c>0:\\ \\text{hyperbolas opening left and right}", "c<0:\\ \\text{hyperbolas opening up and down}", "c=0:\\ \\text{the two lines } y=\\pm\\tfrac x2"],
++        why: "The sign of \\(c\\) decides which way each hyperbola opens.", sum: "hyperbolas" },
++      { t: "Lift each to height c", tex: ["f=c\\ \\Rightarrow\\ \\text{that curve sits at } z=c"],
++        why: "The \\(c>0\\) curves float above the floor level 0, the \\(c<0\\) ones sink below it.", sum: "stacked at \\(z=c\\)" },
++      { t: "Trace in the wall x = 0", tex: ["x=0:\\qquad z=-4y^2\\quad\\text{(opens down)}"],
++        why: "Along the \\(y\\)-direction the surface falls away.", sum: "\\(z=-4y^2\\)" },
++      { t: "Trace in the wall y = 0", tex: ["y=0:\\qquad z=x^2\\quad\\text{(opens up)}"],
++        why: "Along the \\(x\\)-direction it rises: the two profiles face opposite ways.", sum: "\\(z=x^2\\)" },
++      { t: "Stack them: the surface", tex: ["\\text{up along } x,\\ \\text{down along } y", "=\\ \\text{a saddle}"],
++        why: "Opposite-facing parabolas and hyperbola levels: a hyperbolic paraboloid, shaped like a saddle.", sum: "a saddle" },
++    ] },
++  { chip: "Cone vs bowl", P: vzPlane(180, 100, 27), win: [-3, 3, -3, 3], lv: [1, 2, 3, 4], zf: 0, top: 4.4,
++    lc: c => [g3Ell(c / 2, c / 2)], ll: c => [c / 2 * .7071, c / 2 * .7071, 0, 5, "middle"],   // each number on its own circle, along the 45° ray
++    cam: g3Cam(180, 314, 50, -120, .5, [0, 0, 2], .5), r: (r, t) => [2 * r * Math.cos(t), 2 * r * Math.sin(t), 4 * r], grid: [0, 1, 6, 0, 2 * Math.PI, 32],
++    tr: [{ at: [2, 0], col: VZ.red, key: "x = 0", pts: g3Seg(y => [0, y, 2 * Math.abs(y)], -2, 2) }, { at: [2, 1], col: VZ.ink, key: "y = 0", pts: g3Seg(x => [x, 0, 2 * Math.abs(x)], -2, 2) }],
++    box: [2.1, 2.1], surfAt: [3, 0], cmp: { at: [4, 0], lc: c => g3Ell(Math.sqrt(2 * c), Math.sqrt(2 * c)) },
++    notes: ["z = 2√(x² + y²): what does it look like?", "the map: circles, evenly spaced", "each level curve floats at its height c", "both walls: straight lines making a V", "join them: a cone", "the bowl's circles crowd together: it gets steeper"],
++    problem: "Sketch \\(z=2\\sqrt{x^2+y^2}\\) from its level curves and traces. Then compare its level curves with those of the bowl \\(z=\\tfrac12(x^2+y^2)\\).",
++    steps: [
++      { t: "Level curves: set f = c", tex: ["2\\sqrt{x^2+y^2}=c\\ \\Rightarrow\\ x^2+y^2=\\left(\\tfrac c2\\right)^2", "c=1,2,3,4:\\ \\ \\text{circles of radius } 0.5,\\ 1,\\ 1.5,\\ 2"],
++        why: "Equal steps in height give equally spaced circles.", sum: "evenly spaced circles" },
++      { t: "Lift each to height c", tex: ["f=c\\ \\Rightarrow\\ \\text{that curve sits at } z=c"],
++        why: "Each circle floats at its own height, one unit above the last.", sum: "stacked at \\(z=c\\)" },
++      { t: "Traces in both walls", tex: ["x=0:\\qquad z=2|y|", "y=0:\\qquad z=2|x|"],
++        why: "Straight lines making a V: the sides are straight, so the surface is a cone.", sum: "V shapes" },
++      { t: "Stack them: the surface", tex: ["\\text{stacked circles}+\\text{V-shaped walls}", "=\\ \\text{a cone}"],
++        why: "Join the levels along the traces.", sum: "a cone" },
++      { t: "Spacing means steepness", tex: ["\\text{bowl } z=\\tfrac12(x^2+y^2):\\ \\ r=\\sqrt{2c}\\approx1.41,\\ 2,\\ 2.45,\\ 2.83", "\\text{cone: equal gaps, one steady slope}", "\\text{bowl: the gaps shrink, so it gets steeper}"],
++        why: "Level curves close together mean the height changes fast: steep ground. Wide gaps mean gentle ground.", sum: "close curves = steep" },
++    ] },
++];
++function g3sPic(def, k, b, u) {
++  const S = G3S_SITS[G3S.cur], P = S.P, cam = S.cam, L = stLines(def, k, b, u), n = S.lv.length, cid = "g3sm" + G3S.cur;
++  const P3 = p => { const q = cam(...p); return q2(q[0]) + " " + q2(q[1]); }, M2 = pts => pts.map((p, i) => (i ? "L" : "M") + q2(P.X(p[0])) + " " + q2(P.Y(p[1]))).join("");
++  const F = stFirstL(def, k, b, u), draw = i => F(0, .2 + .45 * i, .7);   // step 1: the levels come in one at a time, on the step's own clock
++  const lift = i => k > 1 ? 1 : k < 1 ? 0 : L(1, 0, .2 + .35 * i, .9);
++  const [x0, x1, y0, y1] = S.win;
++  // the map, from above
++  let o = `<defs><clipPath id="${cid}"><rect x="${q2(P.X(x0))}" y="${q2(P.Y(y1))}" width="${q2(P.X(x1) - P.X(x0))}" height="${q2(P.Y(y0) - P.Y(y1))}"/></clipPath></defs>`;
++  o += `<rect x="${q2(P.X(x0))}" y="${q2(P.Y(y1))}" width="${q2(P.X(x1) - P.X(x0))}" height="${q2(P.Y(y0) - P.Y(y1))}" rx="6" fill="#fff" fill-opacity=".55" stroke="${VZ.ink}" stroke-opacity=".25"/>`;
++  o += `<g clip-path="url(#${cid})"><path d="M${q2(P.X(x0))} ${q2(P.Y(0))}H${q2(P.X(x1))}M${q2(P.X(0))} ${q2(P.Y(y0))}V${q2(P.Y(y1))}" stroke="${VZ.ink}" stroke-opacity=".25" fill="none"/>`;
++  if (S.cmp) { const e = L(S.cmp.at[0], S.cmp.at[1], .2, 1.2); if (e > .01) o += `<g opacity="${q2(e)}">` + S.lv.map(c => `<path d="${M2(S.cmp.lc(c))}" fill="none" stroke="${VZ.ink}" stroke-width="1.5" stroke-dasharray="4 3"/>`).join("") + `</g>`; }
++  S.lv.forEach((c, i) => { const e = draw(i); if (e > .01) S.lc(c).forEach(pts => { o += `<path d="${M2(pts)}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - e)}" fill="none" stroke="${S.col ? S.col(c) : VZ.gold}" stroke-width="${S.wd ? S.wd(c) : 2}"/>`; }); });
++  o += `</g>` + vzLabel(P.X(x1) + 8, P.Y(0) + 5, "x", VZ.grey, 14, "start") + vzLabel(P.X(0), P.Y(y1) - 7, "y", VZ.grey, 14);
++  if (S.oval) o += `<ellipse cx="${q2(P.X(0))}" cy="${q2(P.Y(0))}" rx="${q2(2 * P.u)}" ry="${q2(P.u)}" fill="none" stroke="${VZ.ink}" stroke-opacity=".35" stroke-dasharray="3 3"/>`;
++  if (S.labs) S.labs.forEach(([c, a, t, an]) => { const e = draw(S.lv.indexOf(c)); if (e > .3) o += `<g opacity="${q2(Math.min(1, (e - .3) / .4))}"><line x1="${q2(P.X(a[0]))}" y1="${q2(P.Y(a[1]))}" x2="${q2(P.X(t[0]) + (an === "end" ? 4 : -4))}" y2="${q2(P.Y(t[1]) - 4)}" stroke="${S.col(c)}" stroke-width="1.2"/>${vzLabel(P.X(t[0]), P.Y(t[1]), "c = " + String(c).replace("-", "−"), S.col(c) === VZ.gold ? "#7A5C0F" : S.col(c), 15, an)}</g>`; });
++  else S.lv.forEach((c, i) => { const e = draw(i); if (e > .3) { const [x, y, dx, dy, an] = S.ll(c); o += `<g opacity="${q2(Math.min(1, (e - .3) / .4))}">${vzLabel(P.X(x) + dx, P.Y(y) + dy, String(c).replace("-", "−"), "#7A5C0F", 15, an)}</g>`; } });
++  // the 3-D stack below: floor, surface, walls, the lifted levels, then the traces on top with halos
++  const [bx, by] = S.box, zf = S.zf, zt = S.top;
++  o += `<path d="M${[[-bx, -by, zf], [bx, -by, zf], [bx, by, zf], [-bx, by, zf]].map(P3).join("L")}Z" fill="${VZ.gold}" fill-opacity=".07" stroke="${VZ.ink}" stroke-opacity=".2"/>`;
++  const sf = L(S.surfAt[0], S.surfAt[1], .2, 1.4);
++  if (S.oval && k >= 1) o += `<g opacity="${q2(k === 1 ? L(1, 0, 1.6, .8) * .6 : .6)}">${vzPath3(cam, g3Seg(t => [2 * Math.cos(t), Math.sin(t), 4 * Math.cos(2 * t)], 0, 2 * Math.PI, 72), `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="4 3"`)}</g>`;   // the rim: where the levels end
++  if (sf > .01) o += `<g opacity="${q2(.75 * sf)}">${g3Surf(S)}</g>`;
++  S.tr.forEach((t, j) => {
++    const e = L(t.at[0], t.at[1], .1, .6); if (e < .01) return;
++    const W = j === 0 ? [[0, -by, zf], [0, by, zf], [0, by, zt], [0, -by, zt]] : [[-bx, 0, zf], [bx, 0, zf], [bx, 0, zt], [-bx, 0, zt]];
++    o += `<path d="M${W.map(P3).join("L")}Z" fill="${t.col}" fill-opacity="${q2(.06 * e)}" stroke="${t.col}" stroke-opacity="${q2(.3 * e)}" stroke-dasharray="4 4"/>`;
++  });
++  S.lv.forEach((c, i) => {
++    const e = draw(i); if (e < .01) return;
++    const z = zf + (c - zf) * lift(i);
++    S.lc(c).forEach(pts => { o += `<path d="M${pts.map(p => P3([p[0], p[1], z])).join("L")}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - e)}" fill="none" stroke="${S.col ? S.col(c) : VZ.gold}" stroke-width="${S.wd ? S.wd(c) + .2 : 2.2}" stroke-linejoin="round"/>`; });
++  });
++  S.tr.forEach(t => {
++    const e = L(t.at[0], t.at[1], .3, 1.1); if (e < .01) return;
++    const d = "M" + t.pts.map(P3).join("L");
++    o += `<path d="${d}" fill="none" stroke="${VZ.paper}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - e)}" opacity=".9"/><path d="${d}" fill="none" stroke="${t.col}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - e)}"/>`;
++  });
++  const key = k < 0 ? [] : [["line", VZ.gold, k >= 1 ? "levels" : "level curves f = c"]];
++  S.tr.forEach(t => { if (k > t.at[0] || (k === t.at[0] && b >= t.at[1])) key.push(["line", t.col, t.key]); });
++  if (S.cmp && k >= S.cmp.at[0]) key.splice(0, key.length, ["line", VZ.gold, "cone"], ["dash", VZ.ink, "bowl"]);
++  else if (k >= S.surfAt[0]) key.push(["fill", VZ.grey, "surface"]);
++  if (S.oval && k >= 0) {                                 // the saddle: levels split by sign, in two rows
++    const r2 = [["line", G3S_NEG, "c < 0 (up/down)"]]; S.tr.forEach(t => { if (k > t.at[0] || (k === t.at[0] && b >= t.at[1])) r2.push(["line", t.col, t.key]); });
++    o += vzKey([["line", VZ.gold, "c > 0 (left/right)"], ["line", "#6B4E0C", "c = 0"]].concat(k >= S.surfAt[0] ? [["fill", VZ.grey, "surface"]] : []), 16, 404) + vzKey(r2, 16, 426);
++  } else if (key.length) o += vzKey(key, 16, 426);
++  return o + stNote(180, 450, S.notes[Math.max(0, Math.min(S.notes.length - 1, k + 1))], VZ.ink);
++}
++stAdd({
++  id: "m-sketch", title: "Sketch a surface z = f(x, y) from traces and level curves", card: "Sketch a surface",
++  tagline: "Slice it: level curves give the map, traces the profile.",
++  blurb: "You don't need 3-D software: slice it. The level curves \\(f=c\\) give the map, and the traces \\(x=0\\) and \\(y=0\\) give the profile. Stack them and the surface appears.",
++  problem: G3S_SITS[0].problem, steps: G3S_SITS[0].steps,
++  picLive: true, picDur: 3800,
++  mount(given, rebuild) { g3Chips(this, given, rebuild, G3S, G3S_SITS, "Kind of surface"); },
++  pic(k, b, u) { return g3sPic(this, k, b, u); },
++});
+ /* ---- wave-8 spacer G41 ---- */
+ /* ---- wave-8 spacer G42 ---- */
+ /* ---- wave-8 spacer G43 ---- */

@@ -1,0 +1,504 @@
+diff -ru base8/index.html g4/index.html
+--- base8/index.html	2026-11-04 01:26:00
++++ g4/index.html	2026-11-04 04:21:18
+@@ -4440,6 +4440,9 @@
+   /* ---- wave-8 css spacer 4 ---- */
+   /* ---- wave-8 css spacer 5 ---- */
+   /* @@CSS-G4 (your CSS goes on the lines just below this one) @@ */
++  .g4-chips { margin: 0 0 8px; }
++  .g4-ask p { margin: 0; }
++  .st-given.small .g4-chips { margin-bottom: 4px; }
+   /* ---- wave-8 css spacer 1 ---- */
+   /* ---- wave-8 css spacer 2 ---- */
+   /* ---- wave-8 css spacer 3 ---- */
+@@ -12650,14 +12653,14 @@
+   "Surfaces and flux": ["surface", "orient", "flux", "stokes", "divthm"],
+   // the topic pictures lead; the tools and the (long) list of methods come after them
+   "Check your own work": ["tool-rref", "tool-det", "tool-eigen", "tool-vec", "tool-crit", "tool-field"],
+-  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-param", "m-tangent", "m-chain", "m-dirderiv", "m-tanplane", "m-critical", "m-extrema", "m-curldiv", "m-isgrad", "m-merge", "m-setup", "m-lineint", "m-work", "m-wire", "m-potential", "m-square", "m-dblint", "m-switch", "m-polar", "m-green", "m-paramsurf", "m-surfarea", "m-surfint", "m-flux", "m-stokes", "m-dome", "m-cylinder"],
++  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-param", "m-tangent", "m-chain", "m-dirderiv", "m-tanplane", "m-critical", "m-extrema", "m-curldiv", "m-isgrad", "m-merge", "m-setup", "m-lineint", "m-work", "m-wire", "m-potential", "m-square", "m-dblint", "m-switch", "m-polar", "m-green", "m-paramsurf", "m-surfarea", "m-surfint", "m-flux", "m-stokes", "m-divthm", "m-dome", "m-cylinder"],
+ };
+ const VZ_GROUPS = Object.keys(VZ_GROUP_OF);
+ const VZ_ORDER = VZ_GROUPS.flatMap(g => VZ_GROUP_OF[g]);
+ // "Practice this": the Practice Lab section that matches each picture (a few pictures sit in a different section from the
+ // rest of their group). A picture with no entry here and no group entry below simply shows no link.
+ const VZ_SECTION_OF = {
+-  "m-chain": 7, "m-dblint": 9, "m-surfint": 10, "m-param": 7, "m-tangent": 7, "m-tanplane": 7, "m-lineint": 8, "m-work": 8, "m-polar": 9, "m-paramsurf": 10, "m-stokes": 10,
++  "m-chain": 7, "m-dblint": 9, "m-surfint": 10, "m-param": 7, "m-tangent": 7, "m-tanplane": 7, "m-lineint": 8, "m-work": 8, "m-polar": 9, "m-paramsurf": 10, "m-stokes": 10, "m-divthm": 10,
+   compose: 1, transpose: 1, "m-matmul": 1,
+   systems: 2, gauss: 2, "m-gauss": 2, "tool-rref": 2,
+   span: 3, independence: 3, coords: 3, subspace: 3, vectors: 1, nullcol: 3, ranknull: 3, "m-nullcol": 3, "m-subspace": 3, "m-span": 3,
+@@ -25661,7 +25664,472 @@
+ /* ---- wave-8 spacer G43 ---- */
+ /* ---- wave-8 spacer G44 ---- */
+ /* ---- wave-8 spacer G45 ---- */
+-/* @@AGENT-G4 PLACEHOLDER (m-polar, m-paramsurf, m-stokes) @@ */
++/* @@AGENT-G4 (wave 8): m-polar, m-paramsurf, m-stokes (Lectures 29–34). Helpers g4… / G4_… are used only here. */
++// Situations: chips above the problem. Each chip is its own complete worked example (problem, steps, picture);
++// the choice stays on the method while the page is open.
++function g4Sits(def, sits) {
++  def._sits = sits;
++  def._pick = i => {
++    def._si = i; const s = sits[i];
++    def.problem = `<div class="t6s-chips g4-chips" role="group" aria-label="Pick a situation">${sits.map((x, j) => `<button type="button" class="vz-chip${j === i ? " on" : ""}" data-g4s="${j}" aria-pressed="${j === i}">${escapeHtml(x.chip)}</button>`).join("")}</div><div class="g4-ask">${s.problem}</div>`;
++    def.steps = s.steps; def._lt = null;
++  };
++  def._pick(0);
++  def.mount = (given, rebuild) => given.querySelectorAll("[data-g4s]").forEach(btn => btn.addEventListener("click", () => {
++    const j = +btn.dataset.g4s; if (j === def._si) return;
++    def._pick(j); rebuild();
++    const bd = document.getElementById("stBoard"); if (bd && bd.animate) bd.animate([{ opacity: .4 }, { opacity: 1 }], { duration: 420, easing: "ease-out" });
++  }));
++  return def;
++}
++const G4_GOLD = "#7A5C0F";
++const g4R = s => `<tspan font-weight="700">r</tspan><tspan baseline-shift="sub" font-size="10">${s}</tspan>`;
++const g4Add = (p, d, t) => p.map((x, i) => x + d[i] * t);
++const g4Cross = (a, c) => [a[1] * c[2] - a[2] * c[1], a[2] * c[0] - a[0] * c[2], a[0] * c[1] - a[1] * c[0]];
++const g4Unit = a => { const l = Math.hypot(...a) || 1; return a.map(x => x / l); };
++const g4Dot = (x, y, col) => `<circle cx="${q2(x)}" cy="${q2(y)}" r="4.5" fill="${col || VZ.deep}" stroke="#fff" stroke-width="1.5"/>`;
++// a label just past the tip B of a screen arrow A → B
++const g4Tip = (A, B, html, col, gap = 15, size = 15) => { const dx = B[0] - A[0], dy = B[1] - A[1], l = Math.hypot(dx, dy) || 1; return vzLabel(B[0] + dx / l * gap, B[1] + dy / l * gap + 5, html, col, size); };
++
++/* ---------- m-polar: a double integral in polar coordinates (Lecture 29) ----------
++   The region, the polar grid, one cell r Δr Δθ, a ray that reads the r bounds, the ray sweeping out the θ bounds. */
++const G4_CELLCAP = "one cell: Δr by r Δθ, so dA = r dr dθ", G4_ADDCAP = "add the cells along each ray, then sweep the rays";
++const G4_POLAR = [
++  { chip: "A disk", problem: "Evaluate \\(\\displaystyle\\iint_D(1+x^2+y^2)\\,dA\\), where \\(D\\) is the disk \\(x^2+y^2\\le4\\).",
++    g: { P: [180, 196, 64], rin: () => 0, rout: () => 2, t0: 0, t1: 2 * Math.PI, ray: vzRad(35), cell: [1.2, 1.55, vzRad(112), vzRad(127)], gR: 2.5, Dl: [-1.1, -1.05],
++      inLab: "r = 0", outLab: "r = 2", t0Lab: ["θ = 0", 2.42, -.32, "middle"] },
++    cap: ["a disk centred at 0: polar fits", G4_CELLCAP, "along a ray: in at r = 0, out at r = 2", "sweep the ray once round: θ from 0 to 2π", G4_ADDCAP],
++    steps: [
++      { t: "Spot the shape", tex: ["D:\\ x^2+y^2\\le4", { html: "A disk centred at the origin, radius 2." }], why: "A disk, and \\(x^2+y^2\\) inside \\(f\\): both say polar coordinates.", sum: "a disk: use polar" },
++      { t: "Switch to polar", tex: ["x=r\\cos\\theta,\\quad y=r\\sin\\theta,\\quad dA=r\\,dr\\,d\\theta", "1+x^2+y^2=1+r^2"], why: "A polar cell is \\(\\Delta r\\) long and \\(r\\,\\Delta\\theta\\) wide, so \\(dA=r\\,dr\\,d\\theta\\). Never drop that extra \\(r\\).", sum: "\\(f=1+r^2,\\ dA=r\\,dr\\,d\\theta\\)" },
++      { t: "Read r along a ray", tex: ["0\\le r\\le2"], why: "Walk out from the origin along any ray: you are in \\(D\\) from \\(r=0\\) until you leave at the circle \\(r=2\\).", sum: "\\(0\\le r\\le2\\)" },
++      { t: "Read θ: sweep the ray", tex: ["0\\le\\theta\\le2\\pi"], why: "Turn the ray until it has covered all of \\(D\\). A whole disk takes one full turn.", sum: "\\(0\\le\\theta\\le2\\pi\\)" },
++      { t: "Set up and integrate", tex: ["\\int_0^{2\\pi}\\!\\!\\int_0^2(1+r^2)\\,r\\,dr\\,d\\theta", "\\int_0^2(r+r^3)\\,dr=2+4=6", "\\int_0^{2\\pi}6\\,d\\theta=12\\pi"], why: "Do the inner \\(dr\\) integral first, along one ray. Nothing depends on \\(\\theta\\), so the outer one just multiplies by \\(2\\pi\\).", sum: "\\(=12\\pi\\)" },
++    ] },
++  { chip: "A ring", problem: "Evaluate \\(\\displaystyle\\iint_D x^2\\,dA\\), where \\(D\\) is the ring \\(1\\le x^2+y^2\\le4\\).",
++    g: { P: [180, 196, 64], rin: () => 1, rout: () => 2, t0: 0, t1: 2 * Math.PI, ray: vzRad(35), cell: [1.3, 1.65, vzRad(112), vzRad(127)], gR: 2.5, Dl: [-1.06, -1.06],
++      inLab: "r = 1", outLab: "r = 2", t0Lab: ["θ = 0", 2.42, -.32, "middle"] },
++    cap: ["a ring centred at 0: polar fits", G4_CELLCAP, "along a ray: in at r = 1, out at r = 2", "sweep the ray once round: θ from 0 to 2π", G4_ADDCAP],
++    steps: [
++      { t: "Spot the shape", tex: ["D:\\ 1\\le x^2+y^2\\le4", { html: "A ring between the circles of radius 1 and 2." }], why: "Two circles centred at the origin: in polar they are just \\(r=1\\) and \\(r=2\\).", sum: "a ring: use polar" },
++      { t: "Switch to polar", tex: ["x=r\\cos\\theta,\\quad y=r\\sin\\theta,\\quad dA=r\\,dr\\,d\\theta", "x^2=r^2\\cos^2\\theta"], why: "Write \\(f\\) in \\(r\\) and \\(\\theta\\). A polar cell has area about \\(r\\,\\Delta r\\,\\Delta\\theta\\): keep the extra \\(r\\).", sum: "\\(f=r^2\\cos^2\\theta\\)" },
++      { t: "Read r along a ray", tex: ["1\\le r\\le2"], why: "Along a ray you enter \\(D\\) at the inner circle and leave at the outer one. The hole is not part of \\(D\\).", sum: "\\(1\\le r\\le2\\)" },
++      { t: "Read θ: sweep the ray", tex: ["0\\le\\theta\\le2\\pi"], why: "The ring goes all the way round, so the ray makes one full turn.", sum: "\\(0\\le\\theta\\le2\\pi\\)" },
++      { t: "Set up and integrate", tex: ["\\int_0^{2\\pi}\\!\\!\\int_1^2 r^2\\cos^2\\theta\\;r\\,dr\\,d\\theta", "=\\int_0^{2\\pi}\\cos^2\\theta\\,d\\theta\\cdot\\int_1^2r^3\\,dr", "=\\pi\\cdot\\tfrac{15}4=\\tfrac{15\\pi}4"], why: "The bounds are numbers and \\(f\\) is an \\(r\\) part times a \\(\\theta\\) part, so the integral splits in two. \\(\\int_1^2r^3\\,dr=\\frac{16-1}4\\).", sum: "\\(=\\frac{15\\pi}4\\)" },
++    ] },
++  { chip: "A wedge", problem: "Evaluate \\(\\displaystyle\\iint_D y\\,dA\\), where \\(D\\) is the part of the disk \\(x^2+y^2\\le4\\) with \\(x\\ge0\\) and \\(y\\ge x\\).",
++    g: { P: [92, 350, 118], rin: () => 0, rout: () => 2, t0: Math.PI / 4, t1: Math.PI / 2, ray: 3 * Math.PI / 8, cell: [1.15, 1.5, vzRad(52), vzRad(61)], gR: 2.35, gT: [0, Math.PI / 2], Dl: [.32, 1.62],
++      inLab: "r = 0", outLab: "r = 2", t0Lab: ["θ = π/4", 1.62, 1.5, "start"], t1Lab: ["θ = π/2", 0, 2.24, "middle"], line: "y = x" },
++    cap: ["a slice of a disk: polar fits", G4_CELLCAP, "along a ray: in at r = 0, out at r = 2", "sweep from θ = π/4 up to θ = π/2", G4_ADDCAP],
++    steps: [
++      { t: "Spot the shape", tex: ["x^2+y^2\\le4,\\quad x\\ge0,\\quad y\\ge x", { html: "A slice of the disk, between the line \\(y=x\\) and the \\(y\\)-axis." }], why: "Straight edges through the origin are rays, so they become simple \\(\\theta\\) bounds.", sum: "a wedge: use polar" },
++      { t: "Switch to polar", tex: ["x=r\\cos\\theta,\\quad y=r\\sin\\theta,\\quad dA=r\\,dr\\,d\\theta", "y=r\\sin\\theta"], why: "Write \\(f\\) in polar. A polar cell has area about \\(r\\,\\Delta r\\,\\Delta\\theta\\): keep the extra \\(r\\).", sum: "\\(f=r\\sin\\theta\\)" },
++      { t: "Read r along a ray", tex: ["0\\le r\\le2"], why: "Every ray in the wedge starts at the origin and leaves \\(D\\) at the circle \\(r=2\\).", sum: "\\(0\\le r\\le2\\)" },
++      { t: "Read θ: sweep the ray", tex: ["y=x\\ \\Rightarrow\\ \\tan\\theta=1\\ \\Rightarrow\\ \\theta=\\tfrac\\pi4", "\\tfrac\\pi4\\le\\theta\\le\\tfrac\\pi2"], why: "Turn the ray from the line \\(y=x\\) up to the positive \\(y\\)-axis, where \\(\\theta=\\frac\\pi2\\).", sum: "\\(\\frac\\pi4\\le\\theta\\le\\frac\\pi2\\)" },
++      { t: "Set up and integrate", tex: ["\\int_{\\pi/4}^{\\pi/2}\\!\\!\\int_0^2 r\\sin\\theta\\;r\\,dr\\,d\\theta", "=\\int_{\\pi/4}^{\\pi/2}\\sin\\theta\\,d\\theta\\cdot\\int_0^2r^2\\,dr", "=\\tfrac{\\sqrt2}2\\cdot\\tfrac83=\\tfrac{4\\sqrt2}3"], why: "Number bounds and a product again, so it splits. \\(\\big[-\\cos\\theta\\big]_{\\pi/4}^{\\pi/2}=\\frac{\\sqrt2}2\\).", sum: "\\(=\\frac{4\\sqrt2}3\\)" },
++    ] },
++  { chip: "Off-centre circle (harder)", problem: "Evaluate \\(\\displaystyle\\iint_D x\\,dA\\), where \\(D\\) is the disk \\(x^2+y^2\\le2x\\).",
++    g: { P: [62, 214, 128], rin: () => 0, rout: t => 2 * Math.cos(t), t0: -Math.PI / 2, t1: Math.PI / 2, ray: vzRad(30), cell: [.6, .85, vzRad(48), vzRad(60)], gR: 2.2, gT: [-Math.PI / 2, Math.PI / 2], Dl: [1.45, -.5],
++      inLab: "r = 0", outLab: "r = 2 cos θ", t0Lab: ["θ = −π/2", .1, -1.32, "start"], t1Lab: ["θ = π/2", .1, 1.26, "start"], centre: true },
++    cap: ["a disk through 0, centred at (1, 0)", G4_CELLCAP, "along a ray: in at r = 0, out at r = 2 cos θ", "sweep from θ = −π/2 up to θ = π/2", G4_ADDCAP, "a unit disk, centred at x = 1"],
++    steps: [
++      { t: "Spot the shape", tex: ["x^2-2x+y^2\\le0\\ \\Rightarrow\\ (x-1)^2+y^2\\le1", { html: "A disk of radius 1 centred at \\((1,0)\\): it touches the origin." }], why: "Complete the square to see the shape. It is a circle, but not centred at the origin.", sum: "a disk centred at \\((1,0)\\)" },
++      { t: "Switch to polar", tex: ["x=r\\cos\\theta,\\quad y=r\\sin\\theta,\\quad dA=r\\,dr\\,d\\theta", "r^2\\le2r\\cos\\theta\\ \\Rightarrow\\ r\\le2\\cos\\theta"], why: "Put polar into the inequality itself: \\(x^2+y^2=r^2\\), \\(2x=2r\\cos\\theta\\), then divide by \\(r\\). And \\(f=x=r\\cos\\theta\\).", sum: "\\(r\\le2\\cos\\theta\\)" },
++      { t: "Read r along a ray", tex: ["0\\le r\\le2\\cos\\theta"], why: "Every ray starts in \\(D\\) at the origin and leaves at the circle \\(r=2\\cos\\theta\\). The far end depends on \\(\\theta\\).", sum: "\\(0\\le r\\le2\\cos\\theta\\)" },
++      { t: "Read θ: sweep the ray", tex: ["-\\tfrac\\pi2\\le\\theta\\le\\tfrac\\pi2"], why: "\\(D\\) lies right of the \\(y\\)-axis, so the ray turns from straight down to straight up. There \\(\\cos\\theta\\ge0\\), as \\(r\\) needs.", sum: "\\(-\\frac\\pi2\\le\\theta\\le\\frac\\pi2\\)" },
++      { t: "Set up and integrate", tex: ["\\int_{-\\pi/2}^{\\pi/2}\\!\\int_0^{2\\cos\\theta} r\\cos\\theta\\;r\\,dr\\,d\\theta", "=\\int_{-\\pi/2}^{\\pi/2}\\tfrac83\\cos^4\\theta\\,d\\theta", "=\\tfrac83\\cdot\\tfrac{3\\pi}8=\\pi"], why: "The inner bound has \\(\\theta\\) in it, so \\(dr\\) must come first: \\(\\big[\\frac{r^3}3\\big]_0^{2\\cos\\theta}\\cos\\theta=\\frac83\\cos^4\\theta\\). Then use \\(\\cos^2\\theta=\\frac{1+\\cos2\\theta}2\\) twice.", sum: "\\(=\\pi\\)" },
++      { t: "Sense check", tex: ["\\text{area of }D=\\pi,\\quad\\text{centre at }x=1", "\\iint_D x\\,dA=\\pi\\cdot1=\\pi\\ \\checkmark"], why: "Over a disk, \\(x\\) averages out to the centre's \\(x\\). So the integral is the area times 1.", sum: "it matches" },
++    ] },
++];
++function g4PolarPic(def, k, b, u) {
++  const s = def._sits[def._si], g = s.g, P = vzPlane(g.P[0], g.P[1], g.P[2]), L = stLines(def, k, b, u), PI = Math.PI;
++  const XY = (r, t) => [P.X(r * Math.cos(t)), P.Y(r * Math.sin(t))], pt = (r, t) => { const q = XY(r, t); return q2(q[0]) + " " + q2(q[1]); };
++  const full = g.t1 - g.t0 > 6.2, ro = t => Math.max(0, g.rout(t));
++  const curve = (ta, tb, f) => { const n = Math.max(2, Math.ceil(Math.abs(tb - ta) / .04)), A = []; for (let i = 0; i <= n; i++) { const t = ta + (tb - ta) * i / n; A.push(pt(f(t), t)); } return A; };
++  const sector = (ta, tb, ri, rr) => "M" + curve(ta, tb, rr).join("L") + "L" + curve(ta, tb, ri).reverse().join("L") + "Z";
++  const lab = (l, col, op) => l ? `<g opacity="${q2(op)}">${vzLabel(P.X(l[1]), P.Y(l[2]) + 5, l[0], col || G4_GOLD, 14, l[3])}</g>` : "";
++  let o = `<defs><clipPath id="g4pc"><rect x="0" y="0" width="360" height="394"/></clipPath></defs>`;
++  o += `<g clip-path="url(#g4pc)">${P.axes(.28)}</g>` + stNote(352, P.cy - 8, "x", VZ.grey, "end") + stNote(P.cx + 9, 18, "y", VZ.grey, "start");
++  // the polar grid: circles r = constant and rays θ = constant (from step 2 on)
++  if (k >= 1) {
++    const e = L(1, 0, .1, .9) * (k > 1 ? .7 : 1), gT = g.gT || [0, 2 * PI]; let h = "";
++    for (let r = .5; r <= g.gR + 1e-9; r += .5) h += `<path d="M${curve(gT[0], gT[1], () => r).join("L")}"/>`;
++    for (let t = gT[0]; t <= gT[1] + 1e-9; t += PI / 12) h += `<path d="M${pt(0, t)}L${pt(g.gR, t)}"/>`;
++    o += `<g clip-path="url(#g4pc)" stroke="${VZ.ink}" stroke-width="1" fill="none" opacity="${q2(.24 * e)}">${h}</g>`;
++  }
++  // the region D
++  const D = sector(g.t0, g.t1, g.rin, ro);
++  o += `<path d="${D}" fill="${VZ.red}" fill-opacity=".13"/>`;
++  if (full) { o += `<path d="M${curve(0, 2 * PI, ro).join("L")}Z" fill="none" stroke="${VZ.red}" stroke-width="2.2"/>`; if (g.rin(0) > 0) o += `<path d="M${curve(0, 2 * PI, g.rin).join("L")}Z" fill="none" stroke="${VZ.red}" stroke-width="2.2"/>`; }
++  else o += `<path d="${D}" fill="none" stroke="${VZ.red}" stroke-width="2.2" stroke-linejoin="round"/>`;
++  o += vzLabel(P.X(g.Dl[0]), P.Y(g.Dl[1]) + 6, "D", VZ.red, 18);
++  // step 1: what makes it polar (the line y = x of the wedge, the centre of the off-centre disk)
++  if (k === 0 && g.line) o += `<g opacity="${q2(L(0, 1, .1, .7))}"><path d="M${pt(0, PI / 4)}L${pt(2.3, PI / 4)}" stroke="${VZ.grey}" stroke-width="1.4" stroke-dasharray="5 4"/>${lab([g.line, 1.68, 1.58, "start"], VZ.grey, 1)}</g>`;
++  if ((k === 0 || k === 5) && g.centre) { const e = k === 0 ? L(0, 1, .1, .7) : 1; o += `<g opacity="${q2(e)}">${g4Dot(P.X(1), P.Y(0), VZ.red)}${vzLabel(P.X(1), P.Y(0) + 22, "centre (1, 0)", VZ.red, 14)}</g>`; }
++  // step 2: one polar cell, with its two sides named
++  if (k === 1) {
++    const [r0, r1, a0, a1] = g.cell, e = L(1, 0, .3, .6), e2 = L(1, 0, .6, .5);
++    o += `<g opacity="${q2(e)}"><path d="${sector(a0, a1, () => r0, () => r1)}" fill="${VZ.gold}" fill-opacity=".6" stroke="${G4_GOLD}" stroke-width="1.3"/></g>`;
++    const A = XY((r0 + r1) / 2, a0), B = XY(r1 + .22, (a0 + a1) / 2);
++    o += `<g opacity="${q2(e2)}">${vzLabel(A[0] + Math.sin(a0) * 17, A[1] + Math.cos(a0) * 17 + 5, "Δr", G4_GOLD, 14)}${vzLabel(B[0], B[1] + 5, "r Δθ", G4_GOLD, 14)}</g>`;
++  }
++  // a ray at angle t: dashed out to the grid's edge, solid gold where it is inside D (from r_in, a fraction a of the way out)
++  const rayAt = (t, a) => {
++    const ri = g.rin(t), rr = ro(t), rm = ri + (rr - ri) * a;
++    return `<path d="M${pt(0, t)}L${pt(g.gR, t)}" stroke="${G4_GOLD}" stroke-width="1.3" stroke-dasharray="4 4" opacity=".7" clip-path="url(#g4pc)"/>` + (a > .005 && rr > ri ? `<path d="M${pt(ri, t)}L${pt(rm, t)}" stroke="${VZ.gold}" stroke-width="4.5" stroke-linecap="round"/>` : "");
++  };
++  // step 3: walk out along one ray: where it enters D, where it leaves
++  if (k === 2) {
++    const t = g.ray, e = L(2, 0, .1, .6), a = L(2, 0, .5, 1.4), A = XY(g.rin(t), t), B = XY(ro(t), t), d = [Math.sin(t), Math.cos(t)], f = [Math.cos(t), -Math.sin(t)];
++    o += `<g opacity="${q2(e)}">${rayAt(t, a)}${g4Dot(A[0], A[1])}${vzLabel(A[0] + d[0] * 20, A[1] + d[1] * 20 + 5, g.inLab, G4_GOLD, 14)}</g>`;
++    const eb = L(2, 0, 1.75, .5);
++    if (eb > .01) o += `<g opacity="${q2(eb)}">${g4Dot(B[0], B[1])}${vzLabel(B[0] + f[0] * 26, B[1] + f[1] * 26 + 5, g.outLab, G4_GOLD, 14)}</g>`;
++  }
++  // step 4: sweep the ray across D: where it starts and where it stops are the θ bounds
++  if (k === 3) {
++    const jl = def.steps[3].tex.length - 1, a = L(3, jl, .2, 2.4), tc = g.t0 + (g.t1 - g.t0) * a;
++    if (a > .003) o += `<path d="${sector(g.t0, tc, g.rin, ro)}" fill="${VZ.gold}" fill-opacity=".3"/>`;
++    o += rayAt(tc, 1) + lab(g.t0Lab, G4_GOLD, L(3, 0, .1, .5)) + lab(g.t1Lab, G4_GOLD, vzClamp((a - .85) / .15, 0, 1));
++    if (full && a > .02) { const R = 2.32, arc = curve(0, tc, () => R), A = XY(R, tc - .1), B = XY(R, tc); o += `<path d="M${arc.join("L")}" fill="none" stroke="${G4_GOLD}" stroke-width="1.6"/>` + vzArrow(A[0], A[1], B[0], B[1], "O", 1.8); }
++  }
++  // step 5: the inner dr integral fills one thin strip along a ray; the outer dθ integral sweeps it across
++  if (k === 4) {
++    const a1 = L(4, 0, .1, 1), a2 = L(4, def.steps[4].tex.length - 1, .1, 2.4), w = vzClamp((g.t1 - g.t0) * .05, .08, .16), tS = g.t0 + w / 2 + .02, tc = g.t0 + (g.t1 - g.t0) * a2, ts = Math.max(tS, Math.min(tc, g.t1 - w / 2));
++    if (a2 > .003) o += `<path d="${sector(g.t0, tc, g.rin, ro)}" fill="${VZ.gold}" fill-opacity=".32"/>`;
++    if (a1 > .003 && a2 < .999) o += `<path d="${sector(ts - w / 2, ts + w / 2, g.rin, t => g.rin(t) + (ro(t) - g.rin(t)) * a1)}" fill="${VZ.gold}" fill-opacity=".75" stroke="${G4_GOLD}" stroke-width="1" opacity="${q2(1 - vzClamp((a2 - .9) / .1, 0, 1))}"/>`;
++  }
++  if (k >= 5) o += `<path d="${D}" fill="${VZ.gold}" fill-opacity=".32"/>`;
++  const key = [["fill", VZ.red, "the region D"]];
++  if (k === 1) key.push(["fill", VZ.gold, "one polar cell"]);
++  if (k >= 2 && k <= 4) key.push(["line", VZ.gold, "a ray at angle θ"]);
++  return o + vzKey(key, 16, 420) + stNote(180, 447, s.cap[Math.max(0, k)] || "", VZ.ink);
++}
++stAdd(g4Sits({
++  id: "m-polar", title: "A double integral in polar coordinates", card: "Double integrals in polar",
++  tagline: "Disk, ring or wedge? Switch to r and θ, then read the bounds off the picture.",
++  blurb: "When the region is a disk, ring or wedge (or \\(f\\) has \\(x^2+y^2\\)), switch: \\(x=r\\cos\\theta\\), \\(y=r\\sin\\theta\\), \\(dA=r\\,dr\\,d\\theta\\). Walk out along a ray to read the \\(r\\) bounds; sweep the ray across the region to read the \\(\\theta\\) bounds.",
++  picLive: true,
++  pic(k, b, u) { return g4PolarPic(this, k, b, u); },
++}, G4_POLAR));
++
++/* ---------- m-paramsurf: parametrize a surface (Lecture 31) ----------
++   The (u, v) rectangle and its grid; the same grid lines on the surface; r_u, r_v and r_u × r_v at one point. */
++const G4_GRIDCAP = "each grid line of the rectangle lands on S";
++const g4TanCap = (a, c) => `${g4R(a)} runs along a red line, ${g4R(c)} along a dark one`;
++const g4CrossCap = (a, c) => `${g4R(a)} × ${g4R(c)} is square to both: a normal`;
++const G4_SURF = [
++  { chip: "A plane piece", problem: "Parametrize the piece of the plane through \\(P(1,0,1)\\) spanned by \\(\\mathbf a=[2,0,-1]\\) and \\(\\mathbf b=[0,1,1]\\), with \\(0\\le u,v\\le1\\), and find a normal vector.",
++    g: { S: (a, c) => [1 + 2 * a, c, 1 - a + c], ur: [0, 1], vr: [0, 1], NU: 6, NV: 6, ru: () => [2, 0, -1], rv: () => [0, 1, 1], pt: [.5, .5], nu: "u", nv: "v", bl: ["0", "1", "0", "1"],
++      c: [2, .5, 1], sc: 88, az: 50, el: .45, CX: 196, CY: 278, ts: .55, nl: 1.2, axes: 0, many: [[.15, .15], [.85, .15], [.15, .85], [.85, .85]] },
++    cap: ["start at P, then move along a and b", G4_GRIDCAP, g4TanCap("u", "v"), g4CrossCap("u", "v"), "the same normal everywhere: it is flat"],
++    steps: [
++      { t: "Pick the recipe", tex: ["\\text{a plane:}\\quad \\mathbf r(u,v)=P+u\\,\\mathbf a+v\\,\\mathbf b"], why: "Start at a point of the plane and add any amounts of two directions that lie in it.", sum: "point \\(+\\,u\\,\\mathbf a+v\\,\\mathbf b\\)" },
++      { t: "Write r(u, v) and its rectangle", tex: ["\\mathbf r(u,v)=[1+2u,\\ v,\\ 1-u+v]", "0\\le u\\le1,\\quad 0\\le v\\le1"], why: "Add the components. The rectangle of \\((u,v)\\) values is what you integrate over later.", sum: "\\(\\mathbf r=[1+2u,\\,v,\\,1-u+v]\\)" },
++      { t: "Tangent vectors", tex: ["\\mathbf r_u=[2,\\ 0,\\ -1]", "\\mathbf r_v=[0,\\ 1,\\ 1]"], why: "Differentiate in \\(u\\) holding \\(v\\), then in \\(v\\) holding \\(u\\). For a plane they are just \\(\\mathbf a\\) and \\(\\mathbf b\\).", sum: "\\(\\mathbf r_u=\\mathbf a,\\ \\mathbf r_v=\\mathbf b\\)" },
++      { t: "The normal: cross the tangents", tex: ["\\mathbf r_u\\times\\mathbf r_v=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\2&0&-1\\\\0&1&1\\end{vmatrix}=[1,\\ -2,\\ 2]"], why: "The cross product is square to both tangent vectors, so it is normal to the surface.", sum: "\\(\\mathbf N=[1,-2,2]\\)" },
++      { t: "Check it", tex: ["\\mathbf N\\cdot\\mathbf a=2-2=0,\\qquad\\mathbf N\\cdot\\mathbf b=-2+2=0", "\\text{the plane: } x-2y+2z=3"], why: "Both dot products are 0, as they must be. The normal also gives the plane's equation through \\(P\\).", sum: "\\(x-2y+2z=3\\)" },
++    ] },
++  { chip: "A graph z = g(x, y)", problem: "Parametrize the roof \\(z=2-x^2\\) over the rectangle \\(-1\\le x\\le1,\\ 0\\le y\\le2\\), and find an upward normal.",
++    g: { S: (a, c) => [a, c, 2 - a * a], ur: [-1, 1], vr: [0, 2], NU: 8, NV: 6, ru: a => [1, 0, -2 * a], rv: () => [0, 1, 0], pt: [.5, 1], nu: "x", nv: "y", bl: ["−1", "1", "0", "2"],
++      c: [0, 1, 1], sc: 84, az: -20, el: .45, CX: 196, CY: 290, ts: .7, nl: 1, axes: 0, many: [[-.75, .35], [0, .35], [.75, 1.65], [-.75, 1.65], [0, 1.65], [.75, .35]] },
++    cap: ["a graph: x and y are the parameters", G4_GRIDCAP, g4TanCap("x", "y"), g4CrossCap("x", "y"), "every normal points up"],
++    steps: [
++      { t: "Pick the recipe", tex: ["z=g(x,y):\\quad\\text{use } x \\text{ and } y \\text{ as the parameters}"], why: "A graph already tells you the height above each point \\((x,y)\\).", sum: "parameters \\(x,y\\)" },
++      { t: "Write r(x, y) and its rectangle", tex: ["\\mathbf r(x,y)=[x,\\ y,\\ 2-x^2]", "-1\\le x\\le1,\\quad 0\\le y\\le2"], why: "The parameter rectangle is the surface's shadow on the \\(xy\\)-plane.", sum: "\\(\\mathbf r=[x,\\,y,\\,2-x^2]\\)" },
++      { t: "Tangent vectors", tex: ["\\mathbf r_x=[1,\\ 0,\\ -2x]", "\\mathbf r_y=[0,\\ 1,\\ 0]"], why: "Hold \\(y\\) and differentiate in \\(x\\), then the other way round. Along a \\(y\\)-line the roof is level.", sum: "\\(\\mathbf r_x=[1,0,-2x],\\ \\mathbf r_y=[0,1,0]\\)" },
++      { t: "The normal: cross the tangents", tex: ["\\mathbf r_x\\times\\mathbf r_y=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\1&0&-2x\\\\0&1&0\\end{vmatrix}=[2x,\\ 0,\\ 1]"], why: "For every graph this comes out as \\([-g_x,\\,-g_y,\\,1]\\): worth remembering.", sum: "\\(\\mathbf N=[2x,0,1]\\)" },
++      { t: "Which way it points", tex: ["z\\text{-part}=1>0:\\ \\ \\text{it points up}", "\\text{at }(\\tfrac12,1):\\quad \\mathbf N=[1,\\ 0,\\ 1]"], why: "The \\(z\\)-part is always \\(+1\\), so this normal points up everywhere, as asked.", sum: "upward ✓" },
++    ] },
++  { chip: "A cylinder (θ, z)", problem: "Parametrize the cylinder \\(x^2+y^2=4\\) for \\(0\\le z\\le3\\), and find an outward normal.",
++    g: { S: (a, c) => [2 * Math.cos(a), 2 * Math.sin(a), c], ur: [0, 2 * Math.PI], vr: [0, 3], NU: 16, NV: 5, ru: a => [-2 * Math.sin(a), 2 * Math.cos(a), 0], rv: () => [0, 0, 1], pt: [Math.PI / 4, 1.5], nu: "θ", nv: "z", bl: ["0", "2π", "0", "3"],
++      c: [0, 0, 1.5], sc: 58, az: -180, el: .42, CX: 190, CY: 282, ts: .55, nl: 1.1, axes: 0, hl: [.1, .3], many: [[Math.PI / 6, .5], [Math.PI / 2, .5], [5 * Math.PI / 6, .5], [Math.PI / 6, 2.5], [Math.PI / 2, 2.5], [5 * Math.PI / 6, 2.5]] },
++    cap: ["a circle at every height: θ and z", G4_GRIDCAP, g4TanCap("θ", "z"), g4CrossCap("θ", "z"), "every normal points away from the axis"],
++    steps: [
++      { t: "Pick the recipe", tex: ["x=2\\cos\\theta,\\quad y=2\\sin\\theta,\\quad z=z"], why: "Each slice at height \\(z\\) is a circle of radius 2. So the parameters are the angle \\(\\theta\\) round it and the height \\(z\\).", sum: "parameters \\(\\theta,z\\)" },
++      { t: "Write r(θ, z) and its rectangle", tex: ["\\mathbf r(\\theta,z)=[2\\cos\\theta,\\ 2\\sin\\theta,\\ z]", "0\\le\\theta\\le2\\pi,\\quad 0\\le z\\le3"], why: "The rectangle wraps round: its edges \\(\\theta=0\\) and \\(\\theta=2\\pi\\) land on the same line.", sum: "\\(\\mathbf r=[2\\cos\\theta,\\,2\\sin\\theta,\\,z]\\)" },
++      { t: "Tangent vectors", tex: ["\\mathbf r_\\theta=[-2\\sin\\theta,\\ 2\\cos\\theta,\\ 0]", "\\mathbf r_z=[0,\\ 0,\\ 1]"], why: "\\(\\mathbf r_\\theta\\) runs round a circle, \\(\\mathbf r_z\\) straight up.", sum: "\\(\\mathbf r_\\theta,\\ \\mathbf r_z\\)" },
++      { t: "The normal: cross the tangents", tex: ["\\mathbf r_\\theta\\times\\mathbf r_z=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\-2\\sin\\theta&2\\cos\\theta&0\\\\0&0&1\\end{vmatrix}=[2\\cos\\theta,\\ 2\\sin\\theta,\\ 0]"], why: "Expand along the last row: only the 1 survives.", sum: "\\(\\mathbf N=[2\\cos\\theta,2\\sin\\theta,0]\\)" },
++      { t: "Which way it points", tex: ["\\mathbf N=[x,\\ y,\\ 0]", { html: "It points straight out from the \\(z\\)-axis: outward." }], why: "Compare with the point \\([x,y,z]\\) itself: \\(\\mathbf N\\) is its level part, which points away from the axis.", sum: "outward ✓" },
++    ] },
++  { chip: "A sphere (φ, θ)", problem: "Parametrize the sphere \\(x^2+y^2+z^2=4\\), and find an outward normal.",
++    g: { S: (a, c) => [2 * Math.sin(a) * Math.cos(c), 2 * Math.sin(a) * Math.sin(c), 2 * Math.cos(a)], ur: [0, Math.PI], vr: [0, 2 * Math.PI], NU: 9, NV: 16, ru: (a, c) => [2 * Math.cos(a) * Math.cos(c), 2 * Math.cos(a) * Math.sin(c), -2 * Math.sin(a)], rv: (a, c) => [-2 * Math.sin(a) * Math.sin(c), 2 * Math.sin(a) * Math.cos(c), 0], pt: [Math.PI / 4, Math.PI / 3], nu: "φ", nv: "θ", bl: ["0", "π", "0", "2π"],
++      c: [0, 0, 0], sc: 64, az: -180, el: .42, CX: 190, CY: 276, ts: .42, nl: 1.45, axes: 0, hl: [.2, .1], many: [[Math.PI / 4, Math.PI / 2], [Math.PI / 2, Math.PI / 6], [Math.PI / 2, Math.PI / 2], [Math.PI / 2, 5 * Math.PI / 6], [2 * Math.PI / 3, Math.PI / 3], [Math.PI / 4, 5 * Math.PI / 6]] },
++    cap: ["φ down from the north pole, θ round the axis", G4_GRIDCAP, g4TanCap("φ", "θ"), g4CrossCap("φ", "θ"), "every normal points out from the centre"],
++    steps: [
++      { t: "Pick the recipe", tex: ["x=2\\sin\\varphi\\cos\\theta,\\quad y=2\\sin\\varphi\\sin\\theta,\\quad z=2\\cos\\varphi"], why: "Spherical coordinates with \\(\\rho=2\\) fixed: \\(\\varphi\\) is measured down from the north pole, \\(\\theta\\) round the \\(z\\)-axis.", sum: "parameters \\(\\varphi,\\theta\\)" },
++      { t: "Write r(φ, θ) and its rectangle", tex: ["\\mathbf r(\\varphi,\\theta)=[2\\sin\\varphi\\cos\\theta,\\ 2\\sin\\varphi\\sin\\theta,\\ 2\\cos\\varphi]", "0\\le\\varphi\\le\\pi,\\quad 0\\le\\theta\\le2\\pi"], why: "\\(\\varphi\\) runs pole to pole, \\(\\theta\\) once round. The edges \\(\\varphi=0\\) and \\(\\varphi=\\pi\\) squeeze to the two poles.", sum: "\\(0\\le\\varphi\\le\\pi,\\ 0\\le\\theta\\le2\\pi\\)" },
++      { t: "Tangent vectors", tex: ["\\mathbf r_\\varphi=[2\\cos\\varphi\\cos\\theta,\\ 2\\cos\\varphi\\sin\\theta,\\ -2\\sin\\varphi]", "\\mathbf r_\\theta=[-2\\sin\\varphi\\sin\\theta,\\ 2\\sin\\varphi\\cos\\theta,\\ 0]"], why: "\\(\\mathbf r_\\varphi\\) runs south along a meridian, \\(\\mathbf r_\\theta\\) east along a circle of latitude.", sum: "\\(\\mathbf r_\\varphi,\\ \\mathbf r_\\theta\\)" },
++      { t: "The normal: cross the tangents", tex: ["\\mathbf r_\\varphi\\times\\mathbf r_\\theta=[4\\sin^2\\!\\varphi\\cos\\theta,\\ 4\\sin^2\\!\\varphi\\sin\\theta,\\ 4\\sin\\varphi\\cos\\varphi]", "=2\\sin\\varphi\\;\\mathbf r(\\varphi,\\theta)"], why: "Expand the determinant, then pull out \\(2\\sin\\varphi\\): what is left is the point itself.", sum: "\\(\\mathbf N=2\\sin\\varphi\\,\\mathbf r\\)" },
++      { t: "Which way it points", tex: ["2\\sin\\varphi\\ge0:\\quad \\mathbf N\\text{ points outward}", "|\\mathbf N|=2\\sin\\varphi\\cdot2=4\\sin\\varphi"], why: "A positive multiple of the position vector points away from the centre. Its length \\(4\\sin\\varphi\\) is what \\(dS\\) uses.", sum: "outward ✓" },
++    ] },
++  { chip: "A cone", problem: "Parametrize the cone \\(z=2\\sqrt{x^2+y^2}\\) for \\(0\\le z\\le4\\), and find a normal vector.",
++    g: { S: (a, c) => [a * Math.cos(c), a * Math.sin(c), 2 * a], ur: [0, 2], vr: [0, 2 * Math.PI], NU: 5, NV: 16, ru: (a, c) => [Math.cos(c), Math.sin(c), 2], rv: (a, c) => [-a * Math.sin(c), a * Math.cos(c), 0], pt: [1.4, Math.PI / 6], nu: "u", nv: "θ", bl: ["0", "2", "0", "2π"],
++      c: [0, 0, 2], sc: 52, az: -180, el: .5, CX: 190, CY: 288, ts: .62, nl: 1.1, axes: 0, hl: [.3, .1], many: [[1.6, Math.PI / 6], [1.6, Math.PI / 2], [1.6, 5 * Math.PI / 6], [.8, Math.PI / 3], [.8, 2 * Math.PI / 3]] },
++    cap: ["polar in x and y; the height is 2u", G4_GRIDCAP, g4TanCap("u", "θ"), g4CrossCap("u", "θ"), "these normals point up, in toward the axis"],
++    steps: [
++      { t: "Pick the recipe", tex: ["x=u\\cos\\theta,\\quad y=u\\sin\\theta", "\\sqrt{x^2+y^2}=u,\\ \\text{so } z=2u"], why: "Polar coordinates in \\(x,y\\), with \\(u\\) the distance from the axis. Then the height is just \\(2u\\).", sum: "parameters \\(u,\\theta\\)" },
++      { t: "Write r(u, θ) and its rectangle", tex: ["\\mathbf r(u,\\theta)=[u\\cos\\theta,\\ u\\sin\\theta,\\ 2u]", "0\\le u\\le2,\\quad 0\\le\\theta\\le2\\pi"], why: "\\(z\\le4\\) means \\(2u\\le4\\), so \\(u\\le2\\). The edge \\(u=0\\) squeezes to the tip.", sum: "\\(\\mathbf r=[u\\cos\\theta,\\,u\\sin\\theta,\\,2u]\\)" },
++      { t: "Tangent vectors", tex: ["\\mathbf r_u=[\\cos\\theta,\\ \\sin\\theta,\\ 2]", "\\mathbf r_\\theta=[-u\\sin\\theta,\\ u\\cos\\theta,\\ 0]"], why: "\\(\\mathbf r_u\\) runs up the side, away from the tip; \\(\\mathbf r_\\theta\\) runs round a circle.", sum: "\\(\\mathbf r_u,\\ \\mathbf r_\\theta\\)" },
++      { t: "The normal: cross the tangents", tex: ["\\mathbf r_u\\times\\mathbf r_\\theta=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\cos\\theta&\\sin\\theta&2\\\\-u\\sin\\theta&u\\cos\\theta&0\\end{vmatrix}", "=[-2u\\cos\\theta,\\ -2u\\sin\\theta,\\ u]"], why: "Use \\(\\cos^2\\theta+\\sin^2\\theta=1\\) in the \\(\\mathbf k\\) part.", sum: "\\(\\mathbf N=[-2u\\cos\\theta,-2u\\sin\\theta,u]\\)" },
++      { t: "Which way it points", tex: ["z\\text{-part } u\\ge0:\\ \\text{up, and in toward the axis}", "\\text{outward instead: } \\mathbf r_\\theta\\times\\mathbf r_u=-\\mathbf N"], why: "Read the direction off the signs. Swapping the order of the cross product flips the normal.", sum: "up and in; swap for out" },
++    ] },
++];
++function g4SurfPic(def, k, b, u) {
++  const s = def._sits[def._si], g = s.g, L = stLines(def, k, b, u), T = performance.now() / 1000;
++  const c0 = vzCam(0, 0, g.sc, vzRad(g.az + 4 * Math.sin(T / 3.6)), g.el), cam = (x, y, z) => { const q = c0(x - g.c[0], y - g.c[1], z - g.c[2]); return [g.CX + q[0], g.CY + q[1], q[2]]; };
++  const P2 = q => q2(q[0]) + " " + q2(q[1]), [U0, U1] = g.ur, [V0, V1] = g.vr, NU = g.NU, NV = g.NV, view = c0.view;
++  const S = (i, j) => g.S(U0 + (U1 - U0) * i / NU, V0 + (V1 - V0) * j / NV);
++  let o = "";
++  // the surface in patches, far ones first; from step 2 its grid lines land, row by row (red: v fixed, dark: u fixed)
++  const eG = k >= 2 ? 1 : k === 1 ? L(1, 0, .2, .9) : 0, quads = [];
++  for (let i = 0; i < NU; i++) for (let j = 0; j < NV; j++) {
++    const Q = [S(i, j), S(i + 1, j), S(i + 1, j + 1), S(i, j + 1)], C = Q.map(p => cam(...p));
++    const n = g4Cross(Q[1].map((x, m) => x - Q[0][m]), Q[2].map((x, m) => x - Q[0][m])), nl = Math.hypot(...n), sh = nl > 1e-9 ? Math.abs(n[0] * view[0] + n[1] * view[1] + n[2] * view[2]) / nl : .5;
++    quads.push({ d: C.reduce((a, q) => a + q[2], 0) / 4, C, sh, i });
++  }
++  quads.sort((A, B) => B.d - A.d).forEach(q => {
++    const d = `M${q.C.map(P2).join("L")}Z`, w = vzClamp((eG * (NU + 3) - q.i) / 3, 0, 1);
++    o += `<path d="${d}" fill="${VZ.paper}" fill-opacity=".92" stroke="${VZ.paper}" stroke-width=".6"/><path d="${d}" fill="${VZ.red}" fill-opacity="${q2(.07 + .16 * q.sh)}"/>`;
++    if (w > .01) o += `<g opacity="${q2(.7 * w)}" fill="none" stroke-width="1.1"><path d="M${P2(q.C[0])}L${P2(q.C[1])}M${P2(q.C[3])}L${P2(q.C[2])}" stroke="${VZ.red}"/><path d="M${P2(q.C[0])}L${P2(q.C[3])}M${P2(q.C[1])}L${P2(q.C[2])}" stroke="${VZ.ink}"/></g>`;
++  });
++  const [ua, va] = g.pt, p0 = g.S(ua, va), s0 = cam(...p0), hl = g.hl || [.25, .25];
++  // the two grid lines through the chosen point, bold (step 3 on)
++  if (k >= 2) {
++    const e = L(2, 0, .05, .5), cu = [], cv = [];
++    for (let m = -12; m <= 12; m++) { cu.push(g.S(vzClamp(ua + (U1 - U0) * hl[0] * m / 12, U0, U1), va)); cv.push(g.S(ua, vzClamp(va + (V1 - V0) * hl[1] * m / 12, V0, V1))); }
++    o += `<g opacity="${q2(e)}" stroke-width="2.6" stroke-linecap="round">${vzPath3(cam, cu, `stroke="${VZ.red}"`)}${vzPath3(cam, cv, `stroke="${VZ.ink}"`)}</g>`;
++  }
++  // many normals at once (step 5): which way they all point
++  if (k >= 4) {
++    const e = L(4, 0, .2, .8);
++    g.many.forEach(([a, c]) => { const p = g.S(a, c), n = g4Unit(g4Cross(g.ru(a, c), g.rv(a, c))); if (e > .01) o += `<g opacity=".85">${vzArrow3(cam, p, g4Add(p, n, g.nl * .7 * e), "O", 2)}</g>`; });
++  }
++  // r_u and r_v at the point (step 3), then r_u × r_v (step 4)
++  if (k >= 2) {
++    const ru = g.ru(ua, va), rv = g.rv(ua, va), eA = L(2, 0, .2, .8), eB = L(2, 1, .2, .8), A = g4Add(p0, ru, g.ts * eA), B = g4Add(p0, rv, g.ts * eB);
++    const q5 = k >= 4 ? L(4, 0, .1, .6) : 0, dim = q2(1 - .75 * q5), lab = x => q2(x * (1 - q5));   // step 5: the tangents step back and their names go, so the many normals read cleanly
++    if (eA > .01) o += `<g opacity="${dim}">${vzArrow3(cam, p0, A, "R", 2.8)}</g><g opacity="${lab(vzClamp((eA - .6) / .4, 0, 1))}">${g4Tip(s0, cam(...A), g4R(g.nu), VZ.red)}</g>`;
++    if (eB > .01) o += `<g opacity="${dim}">${vzArrow3(cam, p0, B, "I", 2.8)}</g><g opacity="${lab(vzClamp((eB - .6) / .4, 0, 1))}">${g4Tip(s0, cam(...B), g4R(g.nv), VZ.ink)}</g>`;
++    if (k >= 3) {
++      const eN = L(3, def.steps[3].tex.length - 1, .2, 1), tip = g4Add(p0, g4Unit(g4Cross(ru, rv)), g.nl * eN), en = vzClamp((eN - .6) / .4, 0, 1);
++      if (eN > .01) o += vzArrow3(cam, p0, tip, "O", 3.2) + `<g opacity="${lab(en)}">${g4Tip(s0, cam(...tip), `${g4R(g.nu)} × ${g4R(g.nv)}`, G4_GOLD, 22)}</g>` + (q5 > .01 ? `<g opacity="${q2(q5)}">${g4Tip(s0, cam(...tip), '<tspan font-weight="700">N</tspan>', G4_GOLD, 16, 17)}</g>` : "");
++    }
++  }
++  if (k >= 1) o += g4Dot(s0[0], s0[1], VZ.deep);
++  // the (u, v) rectangle, top left (step 2 on), with the chosen point, and a dashed hop to where r sends it
++  if (k >= 1) {
++    const e = L(1, 0, .05, .6), x0 = 40, y0 = 30, W = 112, H = 80, X = a => x0 + W * (a - U0) / (U1 - U0), Y = c => y0 + H - H * (c - V0) / (V1 - V0);
++    let r = `<rect x="${x0}" y="${y0}" width="${W}" height="${H}" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-opacity=".55"/>`;
++    for (let i = 1; i < NU; i++) { const x = q2(X(U0 + (U1 - U0) * i / NU)); r += `<line x1="${x}" y1="${y0}" x2="${x}" y2="${y0 + H}" stroke="${VZ.ink}" stroke-opacity=".4"/>`; }
++    for (let j = 1; j < NV; j++) { const y = q2(Y(V0 + (V1 - V0) * j / NV)); r += `<line x1="${x0}" y1="${y}" x2="${x0 + W}" y2="${y}" stroke="${VZ.red}" stroke-opacity=".45"/>`; }
++    const px = X(ua), py = Y(va);
++    if (k >= 2) r += `<g opacity="${q2(L(2, 0, .05, .5))}"><line x1="${q2(px)}" y1="${y0}" x2="${q2(px)}" y2="${y0 + H}" stroke="${VZ.ink}" stroke-width="2.4"/><line x1="${x0}" y1="${q2(py)}" x2="${x0 + W}" y2="${q2(py)}" stroke="${VZ.red}" stroke-width="2.4"/></g>`;
++    r += g4Dot(px, py, VZ.deep);
++    const eb = L(1, 1, .1, .6);
++    r += `<g opacity="${q2(eb)}">${stNote(x0, y0 + H + 15, g.bl[0], VZ.grey)}${stNote(x0 + W, y0 + H + 15, g.bl[1], VZ.grey)}${stNote(x0 - 5, y0 + H + 4, g.bl[2], VZ.grey, "end")}${stNote(x0 - 5, y0 + 9, g.bl[3], VZ.grey, "end")}</g>`;
++    r += vzLabel(x0 + W / 2, y0 + H + 17, g.nu, VZ.ink, 15) + vzLabel(x0 - 14, y0 + H / 2 + 5, g.nv, VZ.ink, 15);
++    if (k === 1) {
++      const eh = L(1, 0, .5, .6), mx = (px + s0[0]) / 2 + 30, my = (py + s0[1]) / 2;
++      r += `<g opacity="${q2(eh)}"><path d="M${q2(px)} ${q2(py)}Q${q2(mx)} ${q2(my - 30)} ${q2(s0[0])} ${q2(s0[1] - 6)}" fill="none" stroke="${VZ.deep}" stroke-width="1.3" stroke-dasharray="4 4"/>${vzLabel(mx + 8, my - 10, `<tspan font-weight="700">r</tspan>(${g.nu}, ${g.nv})`, VZ.deep, 15, "start")}</g>`;
++    }
++    o += `<g opacity="${q2(e)}">${r}</g>`;
++  }
++  const key = k >= 1 ? [["line", VZ.red, `${g.nv} fixed`], ["line", VZ.ink, `${g.nu} fixed`]] : [];
++  if (k >= 3) key.push(["line", VZ.gold, "normal"]);
++  return o + (key.length ? vzKey(key, 16, 420) : "") + stNote(180, 447, s.cap[Math.max(0, k)] || "", VZ.ink);
++}
++stAdd(g4Sits({
++  id: "m-paramsurf", title: "Parametrize a surface", card: "Parametrize a surface",
++  tagline: "Each shape has a recipe; crossing the two tangents gives the normal.",
++  blurb: "Write the surface as \\(\\mathbf r(u,v)\\) with two parameters; each standard shape has its recipe. The grid of the \\((u,v)\\) rectangle lands on the surface, \\(\\mathbf r_u\\) and \\(\\mathbf r_v\\) run along its lines, and \\(\\mathbf r_u\\times\\mathbf r_v\\) is a normal.",
++  picLive: true,
++  pic(k, b, u) { return g4SurfPic(this, k, b, u); },
++}, G4_SURF));
++
++/* ---------- m-stokes: circulation with Stokes' theorem (Lecture 34) ----------
++   C (the cylinder cut by a tilted plane) with its direction, the flat piece S of the plane, N by the right-hand rule,
++   curl F arrows through S, then the patches of S added up. */
++stAdd({
++  id: "m-stokes", title: "Circulation with Stokes' theorem", card: "Stokes' theorem, step by step",
++  tagline: "Swap the loop for the curl, over the easiest surface with that edge.",
++  blurb: "\\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_S\\operatorname{curl}\\mathbf F\\cdot d\\mathbf S\\) for any surface \\(S\\) with edge \\(C\\). Pick the easiest \\(S\\) (often a flat piece), orient it with the right-hand rule, and integrate \\(\\operatorname{curl}\\mathbf F\\cdot\\mathbf N\\) over its parameter region.",
++  problem: "Use Stokes' theorem to find \\(\\oint_C\\mathbf F\\cdot d\\mathbf r\\) for \\(\\mathbf F=[-y-z,\\ x,\\ xz]\\), where \\(C\\) is where the cylinder \\(x^2+y^2=4\\) meets the plane \\(z=3+y\\), counterclockwise seen from above.",
++  picLive: true,
++  pic(k, b, u) {
++    const T = performance.now() / 1000, L = stLines(this, k, b, u), PI = Math.PI;
++    const c0 = vzCam(0, 0, 48, vzRad(-50 + 4 * Math.sin(T / 3.6)), .45), cam = (x, y, z) => { const q = c0(x, y, z - 2.7); return [180 + q[0], 222 + q[1], q[2]]; };
++    const P2 = q => q2(q[0]) + " " + q2(q[1]), C = t => [2 * Math.cos(t), 2 * Math.sin(t), 3 + 2 * Math.sin(t)];
++    const ring = z => { const p = []; for (let j = 0; j <= 64; j++) { const a = j * PI / 32; p.push([2 * Math.cos(a), 2 * Math.sin(a), z]); } return p; };
++    // the cylinder, faint: only where C comes from
++    let cy = ""; for (let j = 0; j < 16; j++) { const a = j * PI / 8; cy += vzPath3(cam, [[2 * Math.cos(a), 2 * Math.sin(a), 0], [2 * Math.cos(a), 2 * Math.sin(a), 5.6]], ""); }
++    let o = `<g stroke="${VZ.grey}" stroke-width="1" opacity=".28" fill="none">${cy}${vzPath3(cam, ring(0), "")}${vzPath3(cam, ring(5.6), "")}</g>`;
++    // S's shadow D on the floor: S is parametrized over it (step 2 on)
++    if (k >= 1) { const e = L(1, 1, .2, .8); o += `<g opacity="${q2(e)}">${vzPath3(cam, ring(0), `fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="1.4" stroke-dasharray="5 4"`)}${vzLab3(cam, [.4, -1.2, 0], "D", G4_GOLD, 0, 6, 16)}</g>`; }
++    // S, the flat piece of the plane inside C, in polar patches: shaded by curl F · N in step 4, turning gold ring by ring in step 5
++    if (k >= 1) {
++      const eS = L(1, 0, .2, .9), fill = k > 4 ? 1 : k === 4 ? L(4, 2, .1, 2.4) : 0, sh = k > 3 ? 1 : k === 3 ? L(3, 1, .2, 1) : 0, pt = (r, a) => [r * Math.cos(a), r * Math.sin(a), 3 + r * Math.sin(a)];
++      let h = "";
++      for (let i = 0; i < 5; i++) for (let j = 0; j < 24; j++) {
++        const r0 = .4 * i, r1 = .4 * (i + 1), a0 = j * PI / 12, a1 = a0 + PI / 12, d = `M${[pt(r0, a0), pt(r1, a0), pt(r1, a1), pt(r0, a1)].map(p => P2(cam(...p))).join("L")}Z`;
++        const v = ((r0 + r1) / 2 * Math.sin(a0 + PI / 24) + 2) / 4, gf = vzClamp(fill * 5 - i, 0, 1);   // v: where 6 + y sits between its least and its most
++        h += `<path d="${d}" fill="${VZ.red}" fill-opacity="${q2(.13 + sh * (.3 * v - .07))}" stroke="#fff" stroke-opacity=".5" stroke-width=".6"/>` + (gf > .01 ? `<path d="${d}" fill="${VZ.gold}" fill-opacity="${q2(.45 * gf)}"/>` : "");
++      }
++      o += `<g opacity="${q2(eS)}">${h}</g>` + `<g opacity="${q2(L(1, 0, .4, .6))}">${vzLab3(cam, [-1.5, -.6, 2.4], "S", VZ.deep, 0, 6, 18)}</g>`;
++    }
++    // curl F, as arrows through S (dimmer while N or the sum is the point)
++    const eC = k === 5 ? 0 : L(0, 1, .2, 1) * (k === 2 || k === 4 ? .4 : 1);
++    if (eC > .01) o += `<g opacity="${q2(.85 * eC)}">` + [[1.2, 0], [-1.2, 0], [0, 1.2], [.9, .9], [.9, -.9], [-.9, -.9], [-.6, .3]].map(([x, y]) => { const p = [x, y, 3 + y], c = [0, -4 - y, 2]; return vzArrow3(cam, g4Add(p, c, -.08), g4Add(p, c, .1), "I", 1.8); }).join("") + "</g>";
++    // C, counterclockwise from above, with three arrowheads riding round it
++    const cp = []; for (let j = 0; j <= 96; j++) cp.push(C(j * PI / 48));
++    o += vzPath3(cam, cp, `stroke="${VZ.red}" stroke-width="2.8"`);
++    for (let i = 0; i < 3; i++) { const a = i * 2 * PI / 3 + .35 * T, A = cam(...C(a)), B = cam(...C(a + .2)); o += vzArrow(A[0], A[1], B[0], B[1], "R", 3); }
++    o += vzLab3(cam, C(-1), "C", VZ.red, 16, 12, 18);
++    // N by the right-hand rule (step 3 on), with the curled fingers going the way C goes
++    if (k >= 2) {
++      const p = [0, 0, 3], n = [0, -Math.SQRT1_2, Math.SQRT1_2], e = L(2, 0, .2, .8), tip = g4Add(p, n, 1.9 * e);
++      if (e > .01) { const A = cam(...p), B = cam(...tip), F = cam(...g4Add(p, n, 1.9)); o += vzArrow3(cam, p, tip, "O", 3.2) + `<g opacity="${q2(vzClamp((e - .6) / .4, 0, 1))}"><line x1="${q2(F[0])}" y1="${q2(F[1])}" x2="${q2(F[0] - 34)}" y2="${q2(F[1] - 30)}" stroke="${G4_GOLD}" stroke-width="1" opacity=".7"/>${vzLabel(F[0] - 36, F[1] - 34, "N = [0, −1, 1]", G4_GOLD, 15, "end")}</g>`; }
++      if (k === 2) {
++        const eR = L(2, 1, .2, 1.4), e1 = [1, 0, 0], e2 = [0, Math.SQRT1_2, Math.SQRT1_2], arc = [], n2 = 40;
++        for (let i = 0; i <= n2; i++) { const t = -.3 + 1.7 * PI * eR * i / n2; arc.push(g4Add(g4Add(p, e1, .8 * Math.cos(t)), e2, .8 * Math.sin(t))); }
++        if (eR > .02) { const A = cam(...arc[n2 - 1]), B = cam(...arc[n2]); o += vzPath3(cam, arc, `stroke="${VZ.deep}" stroke-width="2"`) + vzArrow(A[0], A[1], B[0], B[1], "D", 2); }
++      }
++    }
++    // step 6: the direct way, one walk round C with F at the walker
++    if (k === 5) {
++      const eT = L(5, 1, .1, 3.2), tr = [], t1 = 2 * PI * eT;
++      for (let i = 0; i <= 64; i++) tr.push(C(t1 * i / 64));
++      if (eT > .005) o += vzPath3(cam, tr, `stroke="${VZ.gold}" stroke-width="5" stroke-linecap="round" opacity=".75"`);
++      const p = C(t1), f = [-p[1] - p[2], p[0], p[0] * p[2]], A = cam(...p), B = cam(...g4Add(p, f, .13));
++      o += vzArrow(A[0], A[1], B[0], B[1], "I", 2.4) + g4Dot(A[0], A[1], VZ.red);
++    }
++    const key = [["line", VZ.red, "C"]];
++    if (k >= 1) key.push(["fill", VZ.red, "S"]);
++    key.push(["line", VZ.ink, k === 5 ? "F" : "curl F"]);
++    if (k >= 2) key.push(["line", VZ.gold, "N"]);
++    return o + vzKey(key, 16, 420) + stNote(180, 447, ["C, and curl F (dark arrows) on the way", "S: the flat piece of the plane inside C", "fingers along C: the thumb gives N", "darker S: more curl F · N (the high side)", "add up curl F · N over all of S", "the direct way: F · r′(t) all round C"][Math.max(0, k)], VZ.ink);
++  },
++  steps: [
++    { t: "Compute curl F", tex: ["\\operatorname{curl}\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\partial_x&\\partial_y&\\partial_z\\\\-y-z&x&xz\\end{vmatrix}", "=[\\,0-0,\\ \\ -1-z,\\ \\ 1-(-1)\\,]=[0,\\ -1-z,\\ 2]"], why: "Stokes trades the loop for the curl, so find the curl first.", sum: "\\(\\operatorname{curl}\\mathbf F=[0,-1-z,2]\\)" },
++    { t: "Choose S: the flat piece", tex: ["S:\\ \\text{the part of } z=3+y \\text{ inside the cylinder}", "\\mathbf r(x,y)=[x,\\ y,\\ 3+y],\\quad (x,y)\\in D:\\ x^2+y^2\\le4"], why: "Any surface with edge \\(C\\) gives the same answer. The flat piece of the plane is the easiest; its shadow \\(D\\) is a disk.", sum: "\\(S\\): flat, over the disk \\(D\\)" },
++    { t: "Orient S: right-hand rule", tex: ["\\mathbf N=\\mathbf r_x\\times\\mathbf r_y=[1,0,0]\\times[0,1,1]=[0,\\ -1,\\ 1]", { html: "Its \\(z\\)-part is \\(+1\\): it points up, which matches counterclockwise from above." }], why: "Curl the fingers of your right hand along \\(C\\): your thumb shows which way \\(\\mathbf N\\) must point.", sum: "\\(\\mathbf N=[0,-1,1]\\), up ✓" },
++    { t: "curl F · N on S", tex: ["\\operatorname{curl}\\mathbf F\\cdot\\mathbf N=0+(1+z)+2=3+z", "\\text{on } S,\\ z=3+y:\\quad 3+z=6+y"], why: "Dot with \\(\\mathbf N\\), then put in \\(z=3+y\\), so that everything lives on \\(D\\).", sum: "\\(6+y\\)" },
++    { t: "Integrate over D", tex: ["\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_D(6+y)\\,dA", "=\\int_0^{2\\pi}\\!\\!\\int_0^2(6+r\\sin\\theta)\\,r\\,dr\\,d\\theta", "=6\\cdot4\\pi+0=24\\pi"], why: "\\(d\\mathbf S=\\mathbf N\\,dA\\) already holds the tilt, so integrate over the flat disk \\(D\\). The \\(y\\) part cancels: \\(D\\) is symmetric.", sum: "\\(=24\\pi\\)" },
++    { t: "Check: walk round C directly", tex: ["\\mathbf r(t)=[2\\cos t,\\ 2\\sin t,\\ 3+2\\sin t],\\quad 0\\le t\\le2\\pi", "\\int_0^{2\\pi}\\big(16\\cos^2t+8\\sin^2t+8\\sin t\\cos^2t+6\\sin t\\big)\\,dt=24\\pi"], why: "The same answer, with more work: that is why Stokes helps. The last two terms integrate to 0.", sum: "\\(24\\pi\\) ✓" },
++  ],
++});
++/* ---------- m-divthm: flux out of a closed surface, by the divergence theorem (Lecture 35) ----------
++   The closed surface with an outward normal on each piece, the solid inside, a vertical stick from the bottom
++   surface to the top one (the inner z bounds), its shadow D (the outer bounds), then the inside-out sum. */
++const G4_THM = "\\iint_S\\mathbf F\\cdot d\\mathbf S=\\iiint_T\\operatorname{div}\\mathbf F\\,dV";
++const G4_DIV = [
++  { chip: "A box (6 faces)", problem: "Find the outward flux of \\(\\mathbf F=[x^2+yz,\\ 3y-z^2,\\ xz]\\) through the surface of the box \\(0\\le x\\le1,\\ 0\\le y\\le2,\\ 0\\le z\\le3\\).",
++    g: { kind: "box", lo: [0, 0, 0], hi: [1, 2, 3], c: [.5, 1, 1.5], sc: 76, az: -35, el: .42, CX: 176, CY: 214, foot: [.5, 1], zb: () => 0, zt: () => 3, labB: "z = 0", labT: "z = 3", nl: 1.05, nw: 3 },
++    cap: ["six faces, an outward normal on each", "div F = 3x + 3 at every point inside", "a stick: z from the bottom face to the top", "the stick's foot covers D, a rectangle", "inside-out: a stick, then a wall, then the box"],
++    steps: [
++      { t: "A closed surface: use the theorem", tex: [G4_THM, { html: "The box has 6 faces: 6 flux integrals the direct way, 1 triple integral this way." }], why: "\\(S\\) is the whole boundary of the solid box \\(T\\), with normals pointing out. That is exactly when the divergence theorem applies.", sum: "flux \\(=\\iiint_T\\operatorname{div}\\mathbf F\\,dV\\)" },
++      { t: "Compute div F", tex: ["\\operatorname{div}\\mathbf F=\\tfrac{\\partial}{\\partial x}(x^2+yz)+\\tfrac{\\partial}{\\partial y}(3y-z^2)+\\tfrac{\\partial}{\\partial z}(xz)", "=2x+3+x=3x+3"], why: "Differentiate each component in its own variable and add. The \\(yz\\) and \\(z^2\\) parts drop out.", sum: "\\(\\operatorname{div}\\mathbf F=3x+3\\)" },
++      { t: "Inner bounds: a vertical stick", tex: ["0\\le z\\le3"], why: "Stand at a point of the floor and go straight up: you enter \\(T\\) at the bottom face \\(z=0\\) and leave at the top face \\(z=3\\).", sum: "\\(0\\le z\\le3\\)" },
++      { t: "Outer bounds: the shadow D", tex: ["D:\\ 0\\le x\\le1,\\quad 0\\le y\\le2"], why: "The stick's foot covers the box's shadow on the floor: a rectangle.", sum: "\\(0\\le x\\le1,\\ 0\\le y\\le2\\)" },
++      { t: "Integrate inside-out", tex: ["\\int_0^3(3x+3)\\,dz=9x+9", "\\int_0^2(9x+9)\\,dy=18x+18", "\\int_0^1(18x+18)\\,dx=9+18=27"], why: "Innermost first: up the stick, then across a wall, then through the whole box.", sum: "flux \\(=27\\)" },
++    ] },
++  { chip: "Bowl and lid, over a disk", problem: "Find the outward flux of \\(\\mathbf F=[xz,\\ yz,\\ x+y]\\) through the surface of the solid between the bowl \\(z=x^2+y^2\\) and the lid \\(z=4\\).",
++    g: { kind: "bowl", c: [0, 0, 2], sc: 46, az: -55, el: .42, CX: 180, CY: 224, foot: [1, -.6], zb: (x, y) => x * x + y * y, zt: () => 4, labB: "z = x² + y²", labT: "z = 4", nl: .7 },
++    cap: ["two pieces: the bowl and the lid", "div F = 2z at every point inside", "a stick: from the bowl up to the lid", "the stick's foot covers D, a disk", "inside-out: the stick, then ring by ring"],
++    steps: [
++      { t: "A closed surface: use the theorem", tex: [G4_THM, { html: "\\(S\\) has two pieces, the bowl and the flat lid: two flux integrals the direct way." }], why: "The bowl and the lid together close off the solid \\(T\\). Outward means down through the bowl and up through the lid.", sum: "flux \\(=\\iiint_T\\operatorname{div}\\mathbf F\\,dV\\)" },
++      { t: "Compute div F", tex: ["\\operatorname{div}\\mathbf F=z+z+0=2z"], why: "\\(\\frac{\\partial}{\\partial z}(x+y)=0\\): the third component adds nothing.", sum: "\\(\\operatorname{div}\\mathbf F=2z\\)" },
++      { t: "Inner bounds: a vertical stick", tex: ["x^2+y^2\\le z\\le4"], why: "Go straight up from a point of the floor: you enter \\(T\\) through the bowl and leave through the lid. Bottom surface below, top surface above.", sum: "\\(x^2+y^2\\le z\\le4\\)" },
++      { t: "Outer bounds: the shadow D", tex: ["\\text{bowl meets lid: } x^2+y^2=4", "D:\\ x^2+y^2\\le4,\\ \\text{ so } 0\\le r\\le2,\\ 0\\le\\theta\\le2\\pi"], why: "\\(D\\) is the shadow of \\(T\\) on the floor. It is a disk, so the last double integral is easiest in polar.", sum: "\\(D\\): the disk of radius 2" },
++      { t: "Integrate inside-out", tex: ["\\int_{x^2+y^2}^{4}2z\\,dz=16-(x^2+y^2)^2=16-r^4", "\\int_0^{2\\pi}\\!\\!\\int_0^2(16-r^4)\\,r\\,dr\\,d\\theta=2\\pi\\left(32-\\tfrac{32}3\\right)", "=\\tfrac{128\\pi}3"], why: "Up the stick first: \\(\\big[z^2\\big]\\) from the bowl to the lid. Then the disk, in polar, with its extra \\(r\\).", sum: "flux \\(=\\frac{128\\pi}3\\)" },
++    ] },
++  { chip: "Sense check: div F = 0", problem: "Find the outward flux of \\(\\mathbf F=[2x,\\ -y,\\ -z]\\) through the surface of the cube \\(0\\le x,y,z\\le1\\).",
++    g: { kind: "box", cube: true, lo: [0, 0, 0], hi: [1, 1, 1], c: [.5, .5, .5], sc: 172, az: -130, el: .45, CX: 180, CY: 214, nl: .34, nw: 2.6, F: (x, y, z) => [2 * x, -y, -z], Fpts: [[[1, .5, .5], [1, 0, 0]], [[1, .2, .8], [1, 0, 0]], [[.5, 1, .5], [0, 1, 0]], [[.2, 1, .8], [0, 1, 0]], [[.5, .5, 1], [0, 0, 1]], [[.8, .2, 1], [0, 0, 1]]],
++      col: { x1: "out", y1: "in", z1: "in", x0: "none", y0: "none", z0: "none" } },
++    cap: ["F (dark) flows through the faces", "div F = 0: no sources or sinks inside", "so the net flux is 0", "out through x = 1, in through y = 1 and z = 1"],
++    steps: [
++      { t: "A closed surface: use the theorem", tex: [G4_THM, { html: "\\(\\mathbf F\\) is not zero: it pushes out through some faces and in through others." }], why: "A closed surface with outward normals: the theorem applies.", sum: "flux \\(=\\iiint_T\\operatorname{div}\\mathbf F\\,dV\\)" },
++      { t: "Compute div F", tex: ["\\operatorname{div}\\mathbf F=2-1-1=0"], why: "No point inside is a source or a sink.", sum: "\\(\\operatorname{div}\\mathbf F=0\\)" },
++      { t: "So the net flux is 0", tex: ["\\iint_S\\mathbf F\\cdot d\\mathbf S=\\iiint_T0\\,dV=0"], why: "No bounds needed: integrating 0 gives 0, whatever the solid.", sum: "net flux \\(0\\)" },
++      { t: "Sense check, face by face", tex: ["x=1:\\ \\ \\mathbf F\\cdot\\mathbf n=2\\ \\Rightarrow\\ +2", "y=1:\\ -1,\\qquad z=1:\\ -1", "x=0,\\ y=0,\\ z=0:\\ \\ \\mathbf F\\cdot\\mathbf n=0", "2-1-1=0\\ \\checkmark"], why: "Each face has area 1 and \\(\\mathbf F\\cdot\\mathbf n\\) is constant on it. What flows in through two faces flows out through the third.", sum: "it matches" },
++    ] },
++];
++function g4DivPic(def, k, b, u) {
++  const s = def._sits[def._si], g = s.g, L = stLines(def, k, b, u), T = performance.now() / 1000, PI = Math.PI, last = def.steps.length - 1;
++  const c0 = vzCam(0, 0, g.sc, vzRad(g.az + 4 * Math.sin(T / 3.6)), g.el), cam = (x, y, z) => { const q = c0(x - g.c[0], y - g.c[1], z - g.c[2]); return [g.CX + q[0], g.CY + q[1], q[2]]; };
++  const P2 = q => q2(q[0]) + " " + q2(q[1]), view = c0.view, front = n => n[0] * view[0] + n[1] * view[1] + n[2] * view[2] > 0;
++  const poly = (pts, attrs) => `<path d="M${pts.map(p => P2(cam(...p))).join("L")}Z" ${attrs}/>`;
++  const halo = (A, B, w) => `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="#fff" stroke-width="${w}" stroke-linecap="round" opacity=".85"/>`;
++  const arrow = (p, d, len, key, w) => { const A = cam(...p), B = cam(...g4Add(p, d, len)); return halo(A, B, w + 3) + vzArrow(A[0], A[1], B[0], B[1], key, w); };
++  const eN = k === 0 ? L(0, 0, .2, .9) : 1, nOp = k === 0 ? 1 : .4, tint = .08 + (k >= 1 ? .07 * (k === 1 ? L(1, 0, .2, .8) : 1) : 0);
++  const faceCol = (id) => { if (!g.col || k !== last) return null; const e = L(last, g.col[id] === "out" ? 0 : g.col[id] === "in" ? 1 : 2, .1, .6); return e > .01 ? [g.col[id] === "out" ? VZ.red : g.col[id] === "in" ? VZ.ink : VZ.grey, e] : null; };
++  let o = "", pieces = [], normals = [];
++  if (g.kind === "box") {
++    const [a0, b0, z0] = g.lo, [a1, b1, z1] = g.hi;
++    pieces = [
++      { P: [[a1, b0, z0], [a1, b1, z0], [a1, b1, z1], [a1, b0, z1]], n: [1, 0, 0], id: "x1" }, { P: [[a0, b0, z0], [a0, b0, z1], [a0, b1, z1], [a0, b1, z0]], n: [-1, 0, 0], id: "x0" },
++      { P: [[a0, b1, z0], [a0, b1, z1], [a1, b1, z1], [a1, b1, z0]], n: [0, 1, 0], id: "y1" }, { P: [[a0, b0, z0], [a1, b0, z0], [a1, b0, z1], [a0, b0, z1]], n: [0, -1, 0], id: "y0" },
++      { P: [[a0, b0, z1], [a1, b0, z1], [a1, b1, z1], [a0, b1, z1]], n: [0, 0, 1], id: "z1" }, { P: [[a0, b0, z0], [a0, b1, z0], [a1, b1, z0], [a1, b0, z0]], n: [0, 0, -1], id: "z0" }];
++    pieces.forEach(f => { f.c = [0, 1, 2].map(i => f.P.reduce((a, p) => a + p[i], 0) / 4); f.d = cam(...f.c)[2]; normals.push({ p: f.c, n: f.n }); });
++  } else {
++    const pt = (r, a) => [r * Math.cos(a), r * Math.sin(a), r * r];
++    for (let i = 0; i < 6; i++) for (let j = 0; j < 24; j++) {
++      const r0 = i / 3, r1 = (i + 1) / 3, a0 = j * PI / 12, a1 = a0 + PI / 12, P = [pt(r0, a0), pt(r1, a0), pt(r1, a1), pt(r0, a1)], c = pt((r0 + r1) / 2, a0 + PI / 24);
++      pieces.push({ P, d: cam(...c)[2], ring: i, edge: "#fff" });
++    }
++    const lid = []; for (let j = 0; j < 48; j++) lid.push([2 * Math.cos(j * PI / 24), 2 * Math.sin(j * PI / 24), 4]);
++    pieces.push({ P: lid, d: -1e9, lid: true });                                    // the lid is the top: drawn last
++    [[1.3, .3], [1.6, 1.05], [.9, 1.7], [1.5, 1.45]].forEach(([r, a]) => { const p = pt(r, a * PI); normals.push({ p, n: g4Unit([2 * p[0], 2 * p[1], -1]) }); });
++    [[1, .35], [1.1, 1.25]].forEach(([r, a]) => normals.push({ p: [r * Math.cos(a * PI), r * Math.sin(a * PI), 4], n: [0, 0, 1] }));
++  }
++  // the outward normals: the ones on the far side first (faint), then the surface, then the near ones on top
++  const nDraw = (want) => normals.filter(q => front(q.n) === want).map(q => `<g opacity="${q2(nOp * (want ? 1 : .45))}">${arrow(q.p, q.n, g.nl * eN, "O", g.nw || 2.2)}</g>`).join("");
++  if (eN > .01) o += nDraw(false);
++  // the sweep of step 5: the gold part of the solid grows (box: a wall, then the block; bowl: ring by ring)
++  const e1 = k === last && !g.cube ? L(last, 0, .1, .8) : 0, e2 = k === last && !g.cube ? L(last, 1, .1, 1) : 0, e3 = k === last && !g.cube ? L(last, 2, .1, 1.2) : 0;
++  pieces.sort((A, B) => B.d - A.d).forEach(f => {
++    const fc = faceCol(f.id), gold = g.kind === "bowl" ? vzClamp(e2 * 6 - f.ring, 0, 1) * (f.lid ? 0 : 1) : 0;
++    o += poly(f.P, `fill="${VZ.red}" fill-opacity="${q2(f.lid ? tint * .8 : tint)}" stroke="${f.edge || VZ.ink}" stroke-opacity="${f.edge ? .55 : .45}" stroke-width="${f.edge ? .6 : 1.1}"`);
++    if (fc) o += poly(f.P, `fill="${fc[0]}" fill-opacity="${q2((fc[0] === VZ.grey ? .12 : .3) * fc[1])}"`);
++    if (gold > .01) o += poly(f.P, `fill="${VZ.gold}" fill-opacity="${q2(.4 * gold)}"`);
++  });
++  if (g.kind === "bowl") { const rim = []; for (let j = 0; j <= 48; j++) rim.push([2 * Math.cos(j * PI / 24), 2 * Math.sin(j * PI / 24), 4]); o += vzPath3(cam, rim, `stroke="${VZ.red}" stroke-width="1.8"`); if (e2 > .01) { const lg = []; for (let j = 0; j <= 48; j++) lg.push([2 * e2 * Math.cos(j * PI / 24), 2 * e2 * Math.sin(j * PI / 24), 4]); o += vzPath3(cam, lg, `fill="${VZ.gold}" fill-opacity=".3" stroke="none"`); } }
++  if (g.kind === "box" && !g.cube && e2 > .01) {                                   // box, step 5: a wall at one x (the dy integral), then the whole block (dx)
++    const [x0] = g.foot, H = g.hi[2], W = g.hi[1] * e2;
++    o += `<g opacity="${q2(1 - e3)}">${poly([[x0, 0, 0], [x0, W, 0], [x0, W, H], [x0, 0, H]], `fill="${VZ.gold}" fill-opacity=".45" stroke="${G4_GOLD}" stroke-width="1"`)}</g>`;
++    if (e3 > .01) { const X = g.hi[0] * e3, B = [[0, 0, 0], [X, 0, 0], [X, g.hi[1], 0], [0, g.hi[1], 0]]; o += `<g opacity="${q2(Math.min(1, e3 * 4))}">`; [[[X, 0, 0], [X, g.hi[1], 0], [X, g.hi[1], H], [X, 0, H]], [[0, 0, H], [X, 0, H], [X, g.hi[1], H], [0, g.hi[1], H]], [[0, 0, 0], [X, 0, 0], [X, 0, H], [0, 0, H]], B].forEach(P => { o += poly(P, `fill="${VZ.gold}" fill-opacity=".3" stroke="${G4_GOLD}" stroke-opacity=".7" stroke-width="1"`); }); o += `</g>`; }
++  }
++  // the shadow D on the floor (step 4 on)
++  if (k >= 3 && !g.cube) {
++    const e = L(3, 0, .2, .8), at = `fill="${VZ.gold}" fill-opacity="${q2(.28 * e)}" stroke="${G4_GOLD}" stroke-opacity="${q2(e)}" stroke-width="1.4" stroke-dasharray="5 4"`;
++    if (g.kind === "box") o += poly([[0, 0, 0], [g.hi[0], 0, 0], [g.hi[0], g.hi[1], 0], [0, g.hi[1], 0]], at) + `<g opacity="${q2(e)}">${vzLab3(cam, [g.hi[0] * .5, g.hi[1] * .25, 0], "D", G4_GOLD, 0, 6, 16)}</g>`;
++    else { const d = []; for (let j = 0; j <= 48; j++) d.push([2 * Math.cos(j * PI / 24), 2 * Math.sin(j * PI / 24), 0]); o += vzPath3(cam, d, at) + `<g opacity="${q2(e)}">${vzLab3(cam, [-.9, -1.1, 0], "D", G4_GOLD, 0, 6, 16)}</g>`; }
++  }
++  if (eN > .01) o += nDraw(true);
++  // F itself on the cube's faces
++  if (g.F) {
++    const eF = k === 0 ? L(0, 1, .1, .8) : k === last ? 1 : .45;
++    g.Fpts.forEach(([p, n]) => { const f = g.F(...p), inn = f[0] * n[0] + f[1] * n[1] + f[2] * n[2] < 0; if (eF > .01) o += `<g opacity="${q2(eF)}">${arrow(inn ? g4Add(p, f, -.24) : p, f, .24, "I", 2.8)}</g>`; });   // in-flow arrives at its face, out-flow leaves it
++  }
++  // the stick: from the bottom surface up to the top one, at one point of D (step 3 on), drawn on top with a halo
++  if (k >= 2 && !g.cube) {
++    const [x, y] = g.foot, zb = g.zb(x, y), zt = g.zt(x, y), e = k === 2 ? L(2, 0, .2, 1) : 1, A = cam(x, y, zb), B = cam(x, y, zb + (zt - zb) * e), F0 = cam(x, y, 0);
++    if (k >= 3 && zb > 0) o += `<line x1="${q2(F0[0])}" y1="${q2(F0[1])}" x2="${q2(A[0])}" y2="${q2(A[1])}" stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="3 3"/>` + g4Dot(F0[0], F0[1], G4_GOLD);
++    o += halo(A, B, 8) + `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${e1 > .5 ? VZ.gold : VZ.deep}" stroke-width="3.6" stroke-linecap="round"/>` + g4Dot(A[0], A[1]);
++    o += vzLabel(A[0] + 14, A[1] + 6, g.labB, VZ.deep, 17, "start");
++    if (e > .95) o += `<g opacity="${q2(vzClamp((e - .95) / .05, 0, 1))}">${g4Dot(B[0], B[1])}${vzLabel(B[0] + 14, B[1] + 6, g.labT, VZ.deep, 17, "start")}</g>`;
++  }
++  let key;
++  if (g.cube && k === last) key = [["fill", VZ.red, "F flows out"], ["fill", VZ.ink, "F flows in"], ["fill", VZ.grey, "no flow"]];
++  else { key = [["line", VZ.gold, "outward normal"]]; if (g.F) key.push(["line", VZ.ink, "F"]); if (k >= 1) key.push(["fill", VZ.red, "the solid T"]); if (k >= 2 && !g.cube) key = [["fill", VZ.red, "T"], ["line", VZ.gold, "normal"], ["line", VZ.deep, "z bounds"]].concat(k >= 3 ? [["fill", VZ.gold, "D"]] : []); }
++  return o + vzKey(key, 16, 420) + stNote(180, 447, s.cap[Math.max(0, k)] || "", VZ.ink);
++}
++stAdd(g4Sits({
++  id: "m-divthm", title: "Flux out of a closed surface: the divergence theorem", card: "Divergence theorem, step by step",
++  tagline: "One triple integral of div F replaces every face of a closed surface.",
++  blurb: "For a closed surface \\(S\\) around a solid \\(T\\), with outward normals, \\(\\iint_S\\mathbf F\\cdot d\\mathbf S=\\iiint_T\\operatorname{div}\\mathbf F\\,dV\\). Compute \\(\\operatorname{div}\\mathbf F\\), read the \\(z\\) bounds off a vertical stick from the bottom surface to the top one, take the outer bounds from the shadow \\(D\\), and integrate inside-out.",
++  picLive: true,
++  pic(k, b, u) { return g4DivPic(this, k, b, u); },
++}, G4_DIV));
+ /* ---- wave-8 spacer Z1 ---- */
+ /* ---- wave-8 spacer Z2 ---- */
+ /* ---- wave-8 spacer Z3 ---- */

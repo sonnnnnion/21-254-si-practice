@@ -158,3 +158,21 @@ genuinely teach (vector calc is visual). Owner greenlights before ANY publish. U
 - ~/dev-21254/w8: base8 = w7 merged + ids registered + placeholders; g1..g4 on 8381..8384; BRIEF8.md.
 - g1 m-param, m-tangent · g2 m-lineint, m-work · g3 m-extrema rework (triangle/rectangle/disk/between curves) +
   m-tanplane · g4 m-polar, m-paramsurf, m-stokes. Situation chips via def.mount hook.
+- 2026-11-04 (after reboot): lead gap check, vector-calc lectures 18–35 + SI keys wk 8–13 → methods.
+  Added: m-merge → "Find a potential function" (2-D g(y) way, merge way, 3-D, failing case) to g2; level-curve
+  parametrization to g1; tangent plane of r(u,v) to g3. Registered (no owner yet, first free agent):
+  m-chain (partials, Clairaut, chain rule tree), m-dblint (double integral over a general region: type I / II,
+  bounds from the picture), m-surfint (scalar surface integral ∬ f dS set-up over a graph / parametrized S).
+  Covered already: dirderiv, critical, extrema, curl/div, isgrad, fieldmatch, green, flux, dome, cylinder, setup.
+- 2026-11-04 night: wave 8 DONE, merged (~/dev-21254/w8/merge8.sh 1 2 3 4; the registry hunks collide by design and
+  merge8 re-inserts m-sketch / m-greencheck / m-divthm). 16 methods with situation chips (new: m-param, m-tangent,
+  m-sketch, m-chain, m-tanplane, m-lineint, m-work, m-dblint, m-greencheck, m-surfint, m-polar, m-paramsurf, m-stokes,
+  m-divthm; reworked: m-extrema, m-merge = "Find a potential function").
+  QA: every chip × step at final beat at 1440 + 390 (_dev/tools/qa/student.mjs: overlap/clip/tiny/raw-TeX/NaN/overflow
+  checks), real Next-press scroll check (scrollchk.mjs), steps.mjs all 47 methods clean + phone 0, methflicker,
+  monkey 100 pages 0 errors; independent reviewer re-verified every answer with sympy (0 math errors).
+  Known nits left: vertex coordinates kept on region pictures (given data, needed to read bounds); circle-chip
+  tangent-line label in m-tangent sits on the circle with a halo; m-stokes has one situation only.
+  NOT on main: owner greenlights first.
+- Ideas next: Stokes run the other way (surface ∬curl → walk the edge); a 2nd Stokes situation (hemisphere → disk);
+  triple-integral bounds method (L35) beyond divthm.
