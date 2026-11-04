@@ -1,0 +1,379 @@
+diff -ru base7/index.html f5/index.html
+--- base7/index.html	2026-11-03 23:31:47
++++ f5/index.html	2026-11-04 00:39:08
+@@ -17073,72 +17073,136 @@
+   },
+ });
+ 
++/* Green's theorem as a story (Play): walk C; cut D into unit cells, each with its own counterclockwise loop; every
++   inside edge is walked twice, once each way, so its two arrows meet and cancel; only C's arrows are left.
++   F = [−xy, x], curl Q_x − P_y = 1 + x: a cell [a, a+1] × [b, b+1] circulates 3/2 + a (columns: −1/2, 1/2, 3/2).
++   Rectangle [−2, 1] × [−1, 1] (6 cells): ∮ = ∬ = 3. L-shape (5 cells, no top right cell): 3/2. (Checked with sympy.) */
++const F5_GRN_REG = [
++  { cells: [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1]], C: [[-2, -1], [1, -1], [1, 1], [-2, 1]], tot: "3", lab: [1, 0] },
++  { cells: [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1]], C: [[-2, -1], [1, -1], [1, 0], [0, 0], [0, 1], [-2, 1]], tot: "3/2", lab: [1, 0] },
++];
++// the region's pieces, once: unit sides of C in walking order, every cell side (with its inward normal), and which sides are shared
++function F5_grnGeo(r) {
++  const R = F5_GRN_REG[r] || F5_GRN_REG[0]; if (R.geo) return R.geo;
++  const has = new Set(R.cells.map(c => c.join(","))), sides = [], inner = new Map(), Cs = [];
++  R.C.forEach((p, k) => { const q = R.C[(k + 1) % R.C.length], n = Math.abs(q[0] - p[0]) + Math.abs(q[1] - p[1]), d = [(q[0] - p[0]) / n, (q[1] - p[1]) / n];
++    for (let s = 0; s < n; s++) Cs.push({ p: [p[0] + d[0] * s, p[1] + d[1] * s], d }); });
++  R.cells.forEach(([i, j], ci) => {
++    const a = -2 + i, b = -1 + j;
++    [[[a, b], [1, 0], [0, 1], [i, j - 1]], [[a + 1, b], [0, 1], [-1, 0], [i + 1, j]], [[a + 1, b + 1], [-1, 0], [0, -1], [i, j + 1]], [[a, b + 1], [0, -1], [1, 0], [i - 1, j]]].forEach(([p, d, nr, nb]) => {
++      const m = [p[0] + d[0] / 2, p[1] + d[1] / 2], key = m.map(v => v.toFixed(2)).join(","), isIn = has.has(nb.join(","));
++      const sd = { m, d, nr, ci, isIn, key }; sides.push(sd);
++      if (isIn) { if (!inner.has(key)) inner.set(key, []); inner.get(key).push(sd); }
++    });
++  });
++  // the shared edges cancel in a sweep from the bottom left; the cells appear in the same sweep
++  const keys = [...inner.keys()].sort((A, B) => { const a = A.split(",").map(Number), b = B.split(",").map(Number); return (a[0] + a[1]) - (b[0] + b[1]) || a[0] - b[0]; });
++  const rank = new Map(keys.map((k, i) => [k, keys.length > 1 ? i / (keys.length - 1) : 0]));
++  const cr = R.cells.map(([i, j]) => i + j), crMax = Math.max(1, ...cr);
++  return (R.geo = { R, Cs, sides, rank, nIn: keys.length, cellRank: cr.map(v => v / crMax) });
++}
++const F5_sm = (a, b, x) => { const q = vzClamp((x - a) / (b - a), 0, 1); return q * q * (3 - 2 * q); };
+ vzAdd({
+   id: "green", title: "Green's theorem", card: "Green's theorem",
+   tagline: "Small loops add up to the loop around the edge.",
+-  blurb: "Split \\(D\\) into cells and go counterclockwise around each. Each cell's circulation is its spin \\(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\) added over the cell. Inside, every shared edge is walked twice, once each way, and cancels; only the outer edge is left. So \\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_D\\left(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)dA\\).",
+-  tryIt: "Add more cells: the inside edges keep cancelling.",
+-  state: { n: 2 },
+-  thumb: { n: 3 },
+-  controls: [{ k: "n", label: "cells across", min: 1, max: 6, step: 1, digits: 0, fmt: v => String(Math.round(v)), play: 1.1, progress: true, aria: "the number of cells",
+-    rests: () => [2, 3, 4, 5], restMs: 900 }],
+-  P: vzPlane(300, 228, 92),
+-  X: [-2.4, 2.4], Y: [-1.6, 1.6],
+-  F: (x, y) => [-y, x * x / 2],                          // curl ∂Q/∂x − ∂P/∂y = x − (−1) = 1 + x: clockwise spin on the left, counterclockwise on the right
+-  // a cell's circulation, exactly: the curl 1 + x added over [a, a2] × [b, b2]
+-  cell(a, a2, b, b2) { return (b2 - b) * ((a2 - a) + (a2 * a2 - a * a) / 2); },
++  blurb: "Cut \\(D\\) into cells and go counterclockwise around each. Each inside edge is walked twice, once each way, so it cancels; only \\(C\\) is left. A cell's circulation is about \\(\\left(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)\\) times its area, so \\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_D\\left(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\right)dA\\).",
++  tryIt: "Play: watch the inside arrows meet and cancel.",
++  state: { t: 0, reg: 0 },
++  thumb: { t: 2.45 },
++  controls: [{ k: "t", label: "the story", min: 0, max: 4, step: .01, fmt: v => ["walk C", "cut D", "cancel", "only C"][Math.min(3, Math.floor(v - 1e-6 < 0 ? 0 : v - 1e-6))],
++    play: v => v < 2 ? .42 : v < 3 ? .3 : .46, progress: true, aria: "the story", rests: () => [1, 2, 3], restMs: 850 }],
++  presets: [["Rectangle", { reg: 0 }], ["L-shape", { reg: 1 }]],
++  P: vzPlane(356, 236, 112),
++  F: (x, y) => [-x * y, x],
++  // ∫ F · dr along one unit side of C, from its start to the fraction f of it (Simpson: exact, F · d is quadratic)
++  piece(sd, f) { const g = s => { const v = this.F(sd.p[0] + sd.d[0] * s, sd.p[1] + sd.d[1] * s); return v[0] * sd.d[0] + v[1] * sd.d[1]; }; return f / 6 * (g(0) + 4 * g(f / 2) + g(f)); },
+   draw(s, t, thumb) {
+-    // between two whole numbers of cells, a new column and row slide in from the right and top while the
+-    // others narrow to make room: Play is one continuous motion, never a jump from grid to grid
+-    const P = this.P, [x0, x1] = this.X, [y0, y1] = this.Y, nn = vzClamp(s.n, 1, 6), m = Math.floor(nn + 1e-6), f = nn - m > 1e-4 ? nn - m : 0, e = vzMorph(f), N = f ? m + 1 : m;
+-    const span = (lo, hi, i) => { const w = hi - lo, nw = [lo + i * w / N, lo + (i + 1) * w / N]; if (N === m) return nw;
+-      const ol = i < m ? [lo + i * w / m, lo + (i + 1) * w / m] : [hi, hi]; return [ol[0] + (nw[0] - ol[0]) * e, ol[1] + (nw[1] - ol[1]) * e]; };
++    const P = this.P, G = F5_grnGeo(Math.round(s.reg || 0)), R = G.R, T = vzClamp(s.t, 0, 4);
++    const u1 = vzClamp(T, 0, 1), u2 = vzClamp(T - 1, 0, 1), u3 = vzClamp(T - 2, 0, 1), u4 = vzClamp(T - 3, 0, 1);
++    const AL = .42;                                        // a loop arrow's length (a cell is 1 × 1)
++    const arr = (sd, inset, key, w, op, len = AL) => {
++      if (op < .02) return "";
++      const c = [sd.m[0] + sd.nr[0] * inset, sd.m[1] + sd.nr[1] * inset];
++      return `<g opacity="${q2(op)}">${P.arrow([c[0] - sd.d[0] * len / 2, c[1] - sd.d[1] * len / 2], [c[0] + sd.d[0] * len / 2, c[1] + sd.d[1] * len / 2], key, w)}</g>`;
++    };
+     let o = "";
+-    // the field, faint, everywhere
+-    for (let i = -6; i <= 6; i++) for (let j = -4; j <= 4; j++) {
+-      const x = i * .5, y = j * .5, v = this.F(x, y), mg = Math.hypot(...v); if (mg < 1e-6) continue;
+-      const L = .14, inD = Math.abs(x) < 2.45 && Math.abs(y) < 1.65; o += `<g opacity="${q2((inD ? .1 : .16) + (inD ? .14 : .22) * Math.min(1, mg / 2.5))}">${P.arrow([x - v[0] / mg * L, y - v[1] / mg * L], [x + v[0] / mg * L, y + v[1] / mg * L], "G", 1.2)}</g>`;
++    // D, faintly tinted from the start; then each cell shaded by its curl as it appears
++    o += P.poly(R.C, `fill="${VZ.red}" fill-opacity=".05" stroke="none"`);
++    R.cells.forEach(([i, j], ci) => {
++      const a = -2 + i, b = -1 + j, curl = 1.5 + a, ap = F5_sm(.12, .42, u2 - .5 * G.cellRank[ci]);
++      if (ap < .01) return;
++      o += P.poly([[a, b], [a + 1, b], [a + 1, b + 1], [a, b + 1]], `fill="${curl > 0 ? VZ.red : VZ.ink}" fill-opacity="${q2(ap * (curl > 0 ? .07 + .15 * Math.min(1, curl / 1.5) : .14))}" stroke="none"`);
++    });
++    // the field: soft, one arrow in the middle of every cell's square (where no loop arrow goes)
++    const fo = 1 - .45 * F5_sm(0, .5, u2);
++    for (let i = -3; i <= 1; i++) for (let j = -2; j <= 1; j++) {
++      const x = i + .5, y = j + .5, v = this.F(x, y), mg = Math.hypot(...v); if (mg < 1e-6) continue;
++      const L = .1 + .12 * Math.min(1, mg / 3);
++      o += `<g opacity="${q2(.42 * fo)}">${P.arrow([x - v[0] / mg * L, y - v[1] / mg * L], [x + v[0] / mg * L, y + v[1] / mg * L], "G", 1.6)}</g>`;
+     }
+-    // each cell shaded by its own spin: red counterclockwise, grey clockwise
+-    const cells = [];
+-    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+-      const [a, a2] = span(x0, x1, i), [b, b2] = span(y0, y1, j), op = N > m && (i === m || j === m) ? e : 1;
+-      if (a2 - a < 1e-6 || b2 - b < 1e-6) continue;
+-      const curl = 1 + (a + a2) / 2;
+-      o += P.poly([[a, b], [a2, b], [a2, b2], [a, b2]], `fill="${curl >= 0 ? VZ.red : VZ.ink}" fill-opacity="${q2(op * (curl >= 0 ? .06 + .2 * Math.min(1, curl / 3.4) : .07 + .12 * Math.min(1, -curl / 1.4)))}" stroke="none"`);
+-      cells.push({ i, j, a, a2, b, b2, op });
+-    }
+-    // every cell's counterclockwise edges, drawn just inside the cell; shared edges show two opposite arrows
+-    const edge = (a, b, outer, op) => {
++    // the cuts: shared edges drawn in as dashed lines (beat 2), faint once they have cancelled
++    G.sides.forEach(sd => {
++      if (!sd.isIn || sd.nr[0] + sd.nr[1] < 0) return;     // each shared edge once
++      const c = F5_sm(0, .3, u2), k = F5_sm(0, .28, u3 - .45 * G.rank.get(sd.key)), h = .5 * c;
++      if (c < .01) return;
++      const p = [sd.m[0] - sd.d[0] * h, sd.m[1] - sd.d[1] * h], q = [sd.m[0] + sd.d[0] * h, sd.m[1] + sd.d[1] * h];
++      o += `<line x1="${q2(P.X(p[0]))}" y1="${q2(P.Y(p[1]))}" x2="${q2(P.X(q[0]))}" y2="${q2(P.Y(q[1]))}" stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="4 4" opacity="${q2(.6 - .38 * k)}"/>`;
++    });
++    // C: dashed until it has been walked, then solid; a little bolder at the end
++    const Cl = G.Cs.length, walked = u1 * Cl, W = 2.6 + .8 * F5_sm(0, .4, u4);
++    o += P.poly(R.C, `fill="none" stroke="${VZ.red}" stroke-width="1.6" stroke-dasharray="5 5" opacity="${q2(.45 * (1 - F5_sm(.9, 1, u1)))}"`);
++    const done = [];
++    G.Cs.forEach((sd, k) => { const f = vzClamp(walked - k, 0, 1); if (f > 0) { if (!done.length) done.push(sd.p); done.push([sd.p[0] + sd.d[0] * f, sd.p[1] + sd.d[1] * f]); } });
++    if (u1 >= 1) done.push(G.Cs[0].p);
++    if (done.length > 1) o += P.path(done, `stroke="${VZ.red}" stroke-width="${q2(W)}" stroke-linecap="round" stroke-linejoin="round"`);
++    // beat 1: C's own arrows, drawn as the walker passes; they step aside (fade) while the cells take over in beat 2
++    const cOp = 1 - F5_sm(0, .25, u2);
++    if (u3 <= 0) G.Cs.forEach((sd, k) => {
++      const f = vzClamp(walked - k, 0, 1), a0 = .5 - AL / 2; if (f <= a0 || cOp < .02) return;
++      const e = Math.min(f, .5 + AL / 2);
++      o += `<g opacity="${q2(cOp)}">${P.arrow([sd.p[0] + sd.d[0] * a0, sd.p[1] + sd.d[1] * a0], [sd.p[0] + sd.d[0] * e, sd.p[1] + sd.d[1] * e], "R", 2.6)}</g>`;
++    });
++    // every cell's own counterclockwise loop (beats 2–4)
++    G.sides.forEach(sd => {
++      const ap = F5_sm(.12, .42, u2 - .5 * G.cellRank[sd.ci]); if (ap < .01) return;
++      const grow = .3 + .7 * ap, ins0 = .34 - .2 * ap;       // slides out from the cell's middle as it appears
++      if (sd.isIn) {
++        // the pair on a shared edge slides together onto the edge and fades out as one: they cancel
++        const k = vzEase(vzClamp((u3 - .45 * G.rank.get(sd.key)) / .28, 0, 1));
++        o += arr(sd, ins0 - .11 * k, "I", 2.2, ap * (1 - F5_sm(.5, 1, k)), AL * grow);
++      } else {
++        // on C there is no partner: once the inside pairs are gone, these slide out onto C and turn red
++        const k = vzEase(vzClamp((u3 - .68) / .3, 0, 1)), ins = ins0 * (1 - k);
++        o += arr(sd, ins, "I", 2.2, ap * (1 - k), AL * grow) + arr(sd, ins, "R", 2.8, ap * k, AL * grow);
++      }
++    });
++    // walkers: round C in beat 1, and once more at the end (the same loop the cells added up to)
++    const walker = (w, op) => {
+       if (op < .02) return "";
+-      const md = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], d = [b[0] - a[0], b[1] - a[1]], L = Math.hypot(...d) || 1e-9, len = Math.min(L * .32, .45);
+-      const u = [d[0] / L, d[1] / L], p = [md[0] - u[0] * len / 2, md[1] - u[1] * len / 2], q = [md[0] + u[0] * len / 2, md[1] + u[1] * len / 2];
+-      return `<g opacity="${q2((outer ? 1 : .7) * op)}">${vzArrow(P.X(p[0]), P.Y(p[1]), P.X(q[0]), P.Y(q[1]), outer ? "R" : "G", outer ? 2.4 : 1.6)}</g>`;
++      const k = Math.min(Cl - 1e-6, Math.max(0, w)), sd = G.Cs[Math.floor(k)], f = k - Math.floor(k), p = [sd.p[0] + sd.d[0] * f, sd.p[1] + sd.d[1] * f];
++      return `<circle cx="${q2(P.X(p[0]))}" cy="${q2(P.Y(p[1]))}" r="6" fill="${VZ.deep}" stroke="#fff" stroke-width="1.6" opacity="${q2(op)}"/>`;
+     };
+-    // an edge that is on C before the change but inside after (or the reverse) fades from one look to the other
+-    const both = (a, b, wasOut, isOut, op) => wasOut === isOut ? edge(a, b, isOut, op) : edge(a, b, wasOut, op * (1 - e)) + edge(a, b, isOut, op * e);
+-    cells.forEach(({ i, j, a, a2, b, b2, op }) => {
+-      const hx = a2 - a, hy = b2 - b, inset = .1 * Math.min(hx, hy);
+-      const c = [[a + inset, b + inset], [a2 - inset, b + inset], [a2 - inset, b2 - inset], [a + inset, b2 - inset]];
+-      o += P.poly(c, `fill="none" stroke="${VZ.grey}" stroke-width="1" stroke-dasharray="3 4" opacity="${q2(.5 * op)}"`);
+-      const lastOld = m - 1;
+-      o += both(c[0], c[1], j === 0, j === 0, op) + both(c[1], c[2], i === lastOld, i === N - 1, op) + both(c[2], c[3], j === lastOld, j === N - 1, op) + both(c[3], c[0], i === 0, i === 0, op);
++    o += walker(walked, 1 - F5_sm(.94, 1, u1)) + walker(vzEase(F5_sm(.15, 1, u4)) * Cl, Math.min(F5_sm(.05, .2, u4), 1 - F5_sm(.9, 1, u4)));
++    o += vzLabel(P.X(R.lab[0]) + 20, P.Y(R.lab[1]) + 6, "C", VZ.red, 19) + vzLabel(P.X(-1.84), P.Y(.8) + 6, "D", VZ.deep, 18);
++    // one caption per beat, top left
++    // (the old one fades out before the next fades in, so two never overlap)
++    if (!thumb) ["1 · walk around C", "2 · cut D into cells, each with its own loop", "3 · each inside edge is walked both ways: it cancels", "4 · only C is left"].forEach((txt, i) => {
++      const op = Math.min(i ? F5_sm(i + .04, i + .08, T) : 1, i < 3 ? 1 - F5_sm(i + 1, i + 1.04, T) : 1);
++      if (op > .01) o += `<g opacity="${q2(op)}">${vzNote(24, 36, txt, "start", VZ.ink)}</g>`;
+     });
+-    o += P.poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], `fill="none" stroke="${VZ.red}" stroke-width="2.4"`);
+-    o += vzLabel(P.X(x1) + 14, P.Y(y1) - 6, "C", VZ.red, 18) + vzLabel(P.X(x0) + 22, P.Y(y1) + 26, "D", VZ.deep, 17);
+-    o += vzKey([["line", VZ.red, "on C: counts"], ["line", VZ.grey, "inside: cancels"], ["fill", VZ.red, "cell: + spin"], ["fill", VZ.ink, "cell: − spin"]]);
++    o += vzKey([["line", VZ.red, "the loop C"], ["line", VZ.ink, "a cell's loop"], ["fill", VZ.red, "cell: curl > 0"], ["fill", VZ.ink, "cell: curl < 0"]]);
+     return o;
+   },
+   readout(s) {
+-    const n = Math.round(s.n), [x0, x1] = this.X, [y0, y1] = this.Y, hx = (x1 - x0) / n, hy = (y1 - y0) / n;
+-    const vals = []; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) vals.push(this.cell(x0 + i * hx, x0 + (i + 1) * hx, y0 + j * hy, y0 + (j + 1) * hy));
+-    const sum = vals.reduce((p, q) => p + q, 0), total = (x1 - x0) * (y1 - y0);   // ∬ (1 + x) dA over a rectangle centred on x = 0 is its area
+-    const list = n <= 2 ? vals.map(v => (v < 0 ? "(−" + vzNum(-v) + ")" : vzNum(v))).join(" + ") + " = " : "";
+-    return `<div class="vz-eq"><b>F</b> = [−y, x²/2]: &nbsp;${vzFrac("∂Q", "∂x")} − ${vzFrac("∂P", "∂y")} = x − (−1) = <b>1 + x</b></div>
+-      <div class="vz-eq">the ${n * n} cell circulation${n * n === 1 ? "" : "s"}: ${list}<b>${vzNum(sum)}</b></div>
+-      <div class="vz-eq">∮<sub>C</sub> <b>F</b> · d<b>r</b> = <b>${vzNum(total)}</b></div>
+-      <div class="vz-eq">∬<sub>D</sub> (1 + x) dA = <b>${vzNum(total)}</b></div>
+-      <div class="vz-status ok">${n === 1 ? "One cell is the whole region." : `All three agree: the inside edges cancel.`}</div>`;
++    const G = F5_grnGeo(Math.round(s.reg || 0)), R = G.R, T = vzClamp(s.t, 0, 4), Cl = G.Cs.length, w = vzClamp(T, 0, 1) * Cl;
++    let sofar = 0; G.Cs.forEach((sd, k) => { const f = vzClamp(w - k, 0, 1); if (f > 0) sofar += this.piece(sd, f); });
++    const u3 = vzClamp(T - 2, 0, 1), gone = T >= 3 ? G.nIn : [...G.rank.values()].filter(r => u3 - .45 * r >= .28).length;
++    const n = R.cells.length, st = T < 1 ? "Walk C counterclockwise, adding up F · dr." : T < 2 ? "Each cell gets its own counterclockwise loop." : T < 3 ? "Each inside edge is walked both ways, so it cancels." : "Only C is left, so ∮ and ∬ agree.";
++    return `<div class="vz-eq"><b>F</b> = [−xy, x]: &nbsp;${vzFrac("∂Q", "∂x")} − ${vzFrac("∂P", "∂y")} = 1 + x</div>
++      <div class="vz-eq">∮<sub>C</sub> <b>F</b> · d<b>r</b> = ${T < 1 ? `${vzNum(sofar)} so far` : `<b>${R.tot}</b>`}</div>
++      <div class="vz-eq">${n} cell loops add to <b>${R.tot}</b>${T >= 2 ? ` · ${gone} of ${G.nIn} cancelled` : ""}</div>
++      <div class="vz-eq">∬<sub>D</sub> (1 + x) dA = <b>${R.tot}</b></div>
++      <div class="vz-status ${T >= 3 ? "ok" : ""}">${st}</div>`;
+   },
+ });
+ 
+@@ -17311,57 +17375,64 @@
+   id: "stokes", title: "Stokes' theorem", card: "Stokes' theorem",
+   tagline: "Any surface with the same edge gives the same answer.",
+   blurb: "Stokes' theorem: \\(\\oint_C\\mathbf F\\cdot d\\mathbf r=\\iint_S(\\nabla\\times\\mathbf F)\\cdot\\mathbf n\\,dS\\). Raise or sink the surface: as long as its edge stays the circle \\(C\\), the flux of the curl doesn't change.",
+-  tryIt: "Play the height: the area changes, the flux doesn't.",
++  tryIt: "Play: the surface reshapes, every curl line still crosses it once.",
+   state: { h: 1.2, yaw: -32 },
+   controls: [
+-    { k: "h", label: "height of the surface", min: -1.4, max: 1.8, step: .02, fmt: v => vzNum(v, 2), play: .9, aria: "the height" },
++    { k: "h", label: "dome → disk → bowl", min: -1.4, max: 1.8, step: .02, fmt: v => vzNum(v, 2), play: .9, aria: "the height", rests: () => [0], restMs: 650 },
+     { k: "yaw", label: "turn the view", min: -80, max: 20, step: 1, unit: "°", digits: 0, noPlay: true },
+   ],
+   R: 1.6,
+-  draw(s) {
+-    const R = this.R, cam = vzCam(300, 262, 92, vzRad(s.yaw), .46), z = r => s.h * (1 - (r / R) ** 2), n = 10, m = 32, grid = [];
++  // the curl lines: ∇ × F = [0, 0, 2] everywhere, so they stand straight up, fixed, on a ring inside C (the normal n takes the middle)
++  lines: [0, 1, 2, 3, 4, 5, 6, 7].map(k => [Math.cos(k * Math.PI / 4 + Math.PI / 8), Math.sin(k * Math.PI / 4 + Math.PI / 8)]),
++  draw(s, t, thumb) {
++    const R = this.R, h = s.h, cam = vzCam(300, 272, 92, vzRad(s.yaw), .46), z = r => h * (1 - (r / R) ** 2), n = 10, m = 32, grid = [];
+     for (let i = 0; i <= n; i++) { const row = []; for (let j = 0; j <= m; j++) { const r = R * i / n, th = 2 * Math.PI * j / m; row.push([r * Math.cos(th), r * Math.sin(th), z(r)]); } grid.push(row); }
+-    let o = "";
+-    const qs = vzQuads(cam, grid, (i) => vzMix([250, 236, 232], [224, 120, 136], .25 + .5 * (1 - i / n)));
+-    // upward normals at a few points, each drawn among the surface's patches at its foot's depth, so the near wall of a
+-    // deep bowl hides what is behind it. As the surface sinks into a bowl they slide back onto the far wall, which you
+-    // see from inside, and the front one fades out (its foot goes out of sight)
+-    const ca = Math.cos(vzRad(s.yaw)), sa = Math.sin(vzRad(s.yaw)), tb = vzClamp(-s.h / .6, 0, 1), bx = .7 * tb * sa, by = .7 * tb * ca;   // screen-right is (ca, −sa) on the floor, the front is −(sa, ca)
+-    const arrows = [[bx, by, 1], [ca + bx, -sa + by, 1], [-ca + bx, sa + by, 1], [-.85 * sa, -.85 * ca, vzClamp((s.h + .8) / .4, 0, 1)]].map(([x, y, a]) => {
+-      const r = Math.hypot(x, y), zz = z(r), gx = -2 * s.h * x / (R * R), gy = -2 * s.h * y / (R * R), N = [-gx, -gy, 1], L = Math.hypot(...N);
+-      return { dep: cam(x, y, zz)[2] - .05, svg: a > .01 ? `<g opacity="${q2(a)}">${vzArrow3(cam, [x, y, zz], [x + N[0] / L * .7, y + N[1] / L * .7, zz + N[2] / L * .7], "O", 2)}</g>` : "" };
+-    });
+-    o += qs.map(q => ({ dep: q.dep, svg: vzQuadSvg([q], { op: .9, mesh: .8 }) })).concat(arrows).sort((A, B) => B.dep - A.dep).map(x => x.svg).join("");
++    const qs = vzQuads(cam, grid, (i) => vzMix([250, 238, 234], [232, 150, 162], .2 + .5 * (1 - i / n)));
++    const Z0 = -.95, Z1 = 2.15;                           // the curl lines run from below every surface to above every surface
++    // below S each curl line is dashed and faint (it is under, or inside, the surface); above S it is an arrow, drawn among
++    // the surface's patches at the depth of the point where it passes through, with that point marked
++    let o = this.lines.map(([x, y]) => vzPath3(cam, [[x, y, Z0], [x, y, z(1)]], `stroke="${VZ.gold}" stroke-width="1.8" stroke-dasharray="3 4" opacity=".55"`)).join("");
++    const items = this.lines.map(([x, y]) => { const zz = z(Math.hypot(x, y)), q = cam(x, y, zz);
++      return { dep: q[2] - .05, svg: vzArrow3(cam, [x, y, zz], [x, y, Z1], "O", 2.2), dot: `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="3.8" fill="${VZ.gold}" stroke="#fff" stroke-width="1.5"/>` }; });
++    // n at the middle of S: always up, the side the right-hand rule picks for C (counterclockwise from above), dome or bowl
++    const A = [0, 0, h], Nt = [0, 0, h + .8];
++    items.push({ dep: cam(...A)[2] - .04, svg: vzArrow3(cam, A, Nt, "I", 2.8) });
++    o += qs.map(q => ({ dep: q.dep, svg: vzQuadSvg([q], { op: .88, mesh: .8 }) })).concat(items).sort((P, Q) => Q.dep - P.dep).map(x => x.svg).join("");
++    o += items.map(x => x.dot || "").join("");              // where each line crosses S: on top, haloed, so none is lost behind a wall
++    // the right-hand rule: a small curled arrow round n, turning the same way as C
++    const ring = []; for (let k = 0; k <= 26; k++) { const a = -Math.PI / 2 + 1.55 * Math.PI * k / 26; ring.push([.26 * Math.cos(a), .26 * Math.sin(a), h + .45]); }
++    o += vzPath3(cam, ring.slice(0, -2), `stroke="${VZ.ink}" stroke-width="1.8" stroke-linecap="round"`) + vzArrow3(cam, ring[ring.length - 4], ring[ring.length - 1], "I", 1.8);
+     // the edge C, counterclockwise from above. A raised dome hides the back of C: a rim point is behind the dome when
+-    // b > R tan(el) / 2h, b = how far back it sits (1 at the very back). That part is drawn dashed and faint
+-    const thr = s.h > .01 ? R * Math.tan(.46) / (2 * s.h) : Infinity, runs = [];
+-    for (let j = 0, cur = null, prev = null; j <= 144; j++) {
+-      const th = 2 * Math.PI * j / 144, P = [R * Math.cos(th), R * Math.sin(th), 0], hid = Math.cos(th) * sa + Math.sin(th) * ca > thr;
+-      if (!cur || cur.hid !== hid) { cur = { hid, pts: prev ? [prev] : [] }; runs.push(cur); }
+-      cur.pts.push(P); prev = P;
++    // b > R tan(el) / 2h, b = how far back it sits (1 at the very back). That part is faint; the change is a short blend, never a step
++    const ca = Math.cos(vzRad(s.yaw)), sa = Math.sin(vzRad(s.yaw)), thr = h > .01 ? R * Math.tan(.46) / (2 * h) : Infinity;
++    const vis = th => isFinite(thr) ? 1 - F5_sm(thr - .1, thr + .1, Math.cos(th) * sa + Math.sin(th) * ca) : 1;
++    for (let j = 0; j < 72; j++) {
++      const a = 2 * Math.PI * j / 72, b = 2 * Math.PI * (j + 1) / 72, v = vis((a + b) / 2);
++      o += vzPath3(cam, [[R * Math.cos(a), R * Math.sin(a), 0], [R * Math.cos(b), R * Math.sin(b), 0]], `stroke="${VZ.red}" stroke-width="${q2(2 + v)}" stroke-opacity="${q2(.35 + .65 * v)}" stroke-linecap="round"`);
+     }
+-    runs.forEach(r => { o += vzPath3(cam, r.pts, r.hid ? `stroke="${VZ.red}" stroke-width="2" stroke-dasharray="5 5" stroke-opacity=".4"` : `stroke="${VZ.red}" stroke-width="3"`); });
+-    // which way C runs, on its front left and front right (never behind the dome); 0.3 rad of arc each
+-    const fr = Math.atan2(-ca, -sa);
+-    [fr - .75, fr + .45].forEach(a => { o += vzArrow3(cam, [R * Math.cos(a), R * Math.sin(a), 0], [R * Math.cos(a + .3), R * Math.sin(a + .3), 0], "R", 3); });
+-    // C at the edge's right end on screen, S on the surface left of the middle: clear of the normals in every view.
+-    // S sits a little to the front on a dome and slides to the back of a bowl, whose inside you see
+-    const side = .5 - .25 * tb, k = .3 - 1.6 * tb, sx = -side * ca - k * sa, sy = side * sa - k * ca;
+-    o += vzLab3(cam, [R * ca, -R * sa, 0], "C", VZ.red, 18, 6, 18) + vzLab3(cam, [sx, sy, z(Math.hypot(sx, sy))], "S", VZ.deep, -6, 4, 18);
+-    o += vzKey([["line", VZ.red, "the edge C (fixed)"], ["line", VZ.gold, "normals n"], ["fill", VZ.red, "the surface S"]]);
++    // F along C: F = [−y, x, 0] is tangent to the circle, so every arrow pushes the same way round (the circulation)
++    for (let k = 0; k < 8; k++) {
++      const a = k * Math.PI / 4, p = [R * Math.cos(a), R * Math.sin(a), 0], sc = .36, q = [p[0] - p[1] * sc, p[1] + p[0] * sc, 0], v = vis(a + .3);
++      o += `<g opacity="${q2(.3 + .7 * v)}">${vzArrow3(cam, p, q, "R", 2.8)}</g>`;
++    }
++    // names: C at the edge's right end on screen; n beside its tip; S on the surface, left of the middle
++    // (S sits on the surface toward the left, between the ring of curl lines and C, midway between two of the lines)
++    const sa0 = Math.round((Math.atan2(sa, -ca) - .4) / (Math.PI / 4)) * Math.PI / 4, sx = 1.3 * Math.cos(sa0), sy = 1.3 * Math.sin(sa0);
++    o += vzLab3(cam, [R * ca, -R * sa, 0], "C", VZ.red, 22, 8, 18) + vzLab3(cam, Nt, "<tspan font-weight=\"700\">n</tspan>", VZ.ink, 13, 2, 17) + vzLab3(cam, [sx, sy, z(Math.hypot(sx, sy))], "S", VZ.deep, -6, 4, 18);
++    if (!thumb) o += vzNote(24, 36, "right hand: fingers along C, thumb along n", "start", VZ.ink);
++    o += vzKey([["line", VZ.red, "F along C"], ["line", VZ.gold, "curl F, through S"], ["line", VZ.ink, "normal n"], ["fill", VZ.red, "the surface S"]]);
+     return o;
+   },
+   readout(s) {
+-    // F = (−y, x, 0), curl F = (0, 0, 2). Flux of the curl, summed patch by patch (exactly 2·πR² for any height).
+-    // The area of S does change: π R⁴ / 6h² · ((1 + 4h²/R²)^(3/2) − 1), πR² when flat
+-    const R = this.R, n = 40, m = 80, h2 = s.h * s.h, area = h2 < 1e-6 ? Math.PI * R * R : Math.PI * R ** 4 / (6 * h2) * ((1 + 4 * h2 / (R * R)) ** 1.5 - 1); let flux = 0;
+-    for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) { const r = R * (i + .5) / n, dr = R / n, dth = 2 * Math.PI / m; flux += 2 * r * dr * dth; }   // curl·(r_r × r_θ) = 2r for a graph
+-    const circ = 2 * Math.PI * R * R;
++    // F = [−y, x, 0], curl F = [0, 0, 2]. On the graph z = h(1 − r²/R²) with the upward normal, (curl F) · (r_r × r_θ) = 2r,
++    // so the flux is 2πR² for every h. The area of S does change: πR⁴/(6h²) · ((1 + 4h²/R²)^(3/2) − 1), πR² when flat (sympy-checked)
++    const R = this.R, h2 = s.h * s.h, area = h2 < 1e-6 ? Math.PI * R * R : Math.PI * R ** 4 / (6 * h2) * ((1 + 4 * h2 / (R * R)) ** 1.5 - 1);
++    const shape = s.h > .05 ? "A dome" : s.h < -.05 ? "A bowl" : "The flat disk";
+     return `<div class="vz-eq"><b>F</b> = [−y, x, 0], so ∇ × <b>F</b> = [0, 0, 2]</div>
+-      <div class="vz-eq">area of S = ${vzNum(area)}</div>
+-      <div class="vz-eq">∮<sub>C</sub> <b>F</b> · d<b>r</b> = 2π(${vzNum(R, 1)})² = <b>${vzNum(circ / Math.PI)}π</b></div>
+-      <div class="vz-eq">∬<sub>S</sub> (∇ × <b>F</b>) · <b>n</b> dS = <b>${vzNum(flux / Math.PI)}π</b></div>
+-      <div class="vz-status ok">Same edge, same answer.</div>`;
++      <div class="vz-eq">∮<sub>C</sub> <b>F</b> · d<b>r</b> = 2π(1.6)² = <b>5.12π</b></div>
++      <div class="vz-eq">∬<sub>S</sub> (∇ × <b>F</b>) · <b>n</b> dS = <b>5.12π</b></div>
++      <div class="vz-eq vz-small">area of S = ${vzNum(area)} (it changes)</div>
++      <div class="vz-status ok">${shape}: every curl line still crosses S once.</div>`;
+   },
+ });
+ 
+@@ -18373,6 +18444,19 @@
+     const rim = []; for (let j = 0; j <= 64; j++) rim.push(rp(R, 2 * Math.PI * j / 64)); o += vzPath3(cam, rim, `stroke="${VZ.deep}" stroke-width="1.8"`);
+     // one patch, with r_x dx and r_y dy along its sides (step 2 on), and the cross product standing on it (step 3 on)
+     const eA = L(1, 0, .2, 1.1), eB = L(1, 1, .2, 1.1), eT = Math.max(eA, eB), eX = L(2, 0, .3, 1.2);   // r_x with its line, r_y with the next, the cross product after
++    {                                                      // the parameters live in the disk: a dx × dy cell there, straight under (here: over) its patch
++      const x0 = .4, y0 = -1.3, d = .85, eC = L(0, 1, .2, .9), cs = [[x0, y0], [x0 + d, y0], [x0 + d, y0 + d], [x0, y0 + d]];
++      if (eC > .01) {
++        o += `<g opacity="${q2(eC)}"><path d="M${cs.map(([x, y]) => P2(cam(x, y, 0))).join("L")}Z" fill="${VZ.gold}" fill-opacity=".14" stroke="${VZ.gold}" stroke-width="1.4" stroke-dasharray="4 3"/>`;
++        cs.forEach(([x, y]) => { o += vzPath3(cam, [[x, y, 0], [x, y, g(x, y)]], `stroke="${VZ.gold}" stroke-width="1" stroke-dasharray="2 3" opacity=".8"`); });
++        const qc = cam(x0 + d, y0 + d, 0), sb = x => `<tspan font-weight="700">r</tspan><tspan baseline-shift="sub" font-size="12">${x}</tspan>`;
++        if (k === 3) {                                     // in clear space below the saddle, with a short leader to the cell
++          const cc = cam(x0 + d / 2, y0 + d / 2, 0);
++          o += `<line x1="${q2(cc[0])}" y1="${q2(cc[1])}" x2="62" y2="384" stroke="#7A5C0F" stroke-width="1" opacity=".7"/>` + vzLabel(18, 402, `patch = |${sb("x")} × ${sb("y")}| · cell`, "#7A5C0F", 15, "start");
++        } else o += vzLabel(qc[0] + 8, qc[1] - 4, "dx dy cell in D", "#7A5C0F", 13, "start");
++        o += `</g>`;
++      }
++    }
+     if (eT > .01) {
+       const x0 = .4, y0 = -1.3, d = .85, p = [x0, y0, g(x0, y0)], rx = [1, 0, x0 / 2], ry = [0, 1, -y0 / 2];
+       const A = p.map((x, i) => x + rx[i] * d * eA), B = p.map((x, i) => x + ry[i] * d * eB), C = p.map((x, i) => x + rx[i] * d * eA + ry[i] * d * eB), eP = Math.min(eA, eB);
+@@ -18422,6 +18506,9 @@
+       else { o += `<g opacity="${q2(eD)}">${vzPath3(cam, [a, [x, y, 0]], `stroke="${VZ.ink}" stroke-width="1.9" stroke-linecap="round"`)}</g>`; over += `<g opacity="${q2(eD)}">${vzArrow3(cam, [x, y, -.02], tip, "I", 1.9)}</g>`; }
+     }
+     o += `<path d="M${disk.map(p => P2(cam(...p))).join("L")}Z" fill="${VZ.ink}" fill-opacity="${q2(.03 + .14 * eL)}" stroke="${VZ.ink}" stroke-opacity="${q2(.25 + .45 * eL)}" stroke-width="${q2(1 + eL)}"/>` + over;
++    // outward on the lid is DOWN, out of the solid: n = [0, 0, −1], under the lid between the flow arrows
++    const eN = L(0, 1, .3, 1) * (k < 3 ? 1 : k === 3 ? 1 - stEase(u, 0, .6) : 0);   // makes way for the flow through the lid
++    if (eN > .01) { const nb = [-.32, .3, 0], nt = [-.32, .3, -.62 * eN], qn = cam(...nt); o += `<g opacity="${q2(Math.min(1, eN * 3))}">${vzArrow3(cam, nb, nt, "O", 2.8)}${eN > .7 ? vzLabel(qn[0] - 10, qn[1] + 6, "<tspan font-weight=\"700\">n</tspan>", "#7A5C0F", 16, "end") : ""}</g>`; }
+     // step 2 on: the solid T inside, an even tint (the divergence is the same 2 everywhere)
+     const eT = eF, c = cam(0, 0, 0), Rs = 120, Re = q2(120 * Math.sin(.42));
+     if (eT > .01) o += `<path d="M${q2(c[0] - Rs)} ${q2(c[1])}A${Rs} ${Rs} 0 0 1 ${q2(c[0] + Rs)} ${q2(c[1])}A${Rs} ${Re} 0 0 1 ${q2(c[0] - Rs)} ${q2(c[1])}Z" fill="${VZ.red}" fill-opacity="${q2(.09 * eT)}"/>`;
+@@ -18552,15 +18639,24 @@
+   pic(k, b, u) {
+     const L = stLines(this, k, b, u);                      // the velocity, the speed, the answer come in with their own lines
+     // one turn of the helix, drawn with z squeezed (0.45 t) so it fits; its shadow circle on the floor for depth
+-    const cam = vzCam(180, 330, 92, vzRad(-28), .45), N = 160, T = 2 * Math.PI, H = .45, fill = k >= 4 ? (k === 4 ? stEase(u, .3, 3.2) : 1) : 0;
++    const cam = vzCam(180, 362, 100, vzRad(-28), .3), N = 160, T = 2 * Math.PI, H = .45, fill = k >= 4 ? (k === 4 ? stEase(u, .3, 3.2) : 1) : 0;
+     const pt = t => cam(Math.cos(t), Math.sin(t), t * H), col = t => { const w = t / T; return `rgb(${Math.round(240 - 40 * w)},${Math.round(206 - 190 * w)},${Math.round(206 - 160 * w)})`; };
+     const flo = []; for (let j = 0; j <= 64; j++) { const v = T * j / 64; flo.push([Math.cos(v), Math.sin(v), 0]); }
+-    let o = vzPath3(cam, flo, `stroke="${VZ.grey}" stroke-width="1.1" stroke-dasharray="4 4" opacity=".5"`) + vzPath3(cam, [[0, 0, 0], [0, 0, T * H + .4]], `stroke="${VZ.ink}" stroke-opacity=".25"`);
++    let o = vzPath3(cam, flo, `stroke="${VZ.grey}" stroke-width="1.1" stroke-dasharray="4 4" opacity=".5"`) + vzPath3(cam, [[0, 0, 0], [0, 0, T * H + .4]], `stroke="${VZ.ink}" stroke-opacity=".45" stroke-width="1.3" stroke-dasharray="5 4"`) + vzDot3(cam, [0, 0, 0], 3, VZ.grey);   // the axis it climbs around
+     for (let i = 0; i < N; i++) {
+       const t0 = T * i / N, t1 = T * (i + 1) / N, a = pt(t0), c = pt(t1), front = a[2] < cam(0, 0, t0 * H)[2];   // nearer than the axis
+       const shaded = k >= 3, done = t1 <= fill * T + 1e-9;
+       o += `<line x1="${q2(a[0])}" y1="${q2(a[1])}" x2="${q2(c[0])}" y2="${q2(c[1])}" stroke="${shaded ? col(t0) : VZ.grey}" stroke-width="${done ? 7 : shaded ? 4.5 : 3}" stroke-linecap="round" opacity="${front ? 1 : .55}"/>`;
+     }
++    // steps 1–3: the wire cut into 8 pieces of equal t; equal t-steps give equal lengths (the speed is constant). One piece is named
++    const eP = k === 0 ? L(0, 0, .3, 1) : k <= 2 ? 1 : k === 3 ? 1 - stEase(u, 0, .6) : 0;
++    if (eP > .01) {
++      let tk = ""; for (let i = 1; i < 8; i++) { const q = pt(T * i / 8); tk += `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="3.4" fill="#fff" stroke="${VZ.ink}" stroke-width="1.5"/>`; }
++      const ta = T * 1 / 8, tb = T * 2 / 8,   // a piece on the near side, where it isn't foreshortened
++      seg = []; for (let i = 0; i <= 12; i++) seg.push([Math.cos(ta + (tb - ta) * i / 12), Math.sin(ta + (tb - ta) * i / 12), (ta + (tb - ta) * i / 12) * H]);
++      const m = pt((ta + tb) / 2);
++      o += `<g opacity="${q2(eP)}">${vzPath3(cam, seg, `stroke="${VZ.gold}" stroke-width="7" stroke-linecap="round"`)}${tk}${vzLabel(m[0] - 14, m[1] + 18, k === 0 ? "one piece: ρ Δs" : "Δs = √2 Δt", "#7A5C0F", 14, "end")}</g>`;
++    }
+     if (k === 1 || k === 2) {                              // the velocity at t = π/2: it arrives with its line, its name turns into "speed √2" with the next
+       const t = Math.PI / 2, p = [Math.cos(t), Math.sin(t), t * H], v = [-Math.sin(t), Math.cos(t), H], ea = k === 1 ? L(1, 0, .2, .8) : 1, sp = k === 2 ? L(2, 0, .2, .8) : 0, lp = [p[0] + v[0] * 1.6, p[1] + v[1] * 1.6, p[2] + v[2] * 1.6];
+       o += `<g opacity="${q2(ea)}">${vzArrow3(cam, p, [p[0] + v[0] * 1.4, p[1] + v[1] * 1.4, p[2] + v[2] * 1.4], "R", 2.8)}${vzDot3(cam, p, 5, VZ.deep)}<g opacity="${q2(1 - sp)}">${vzLab3(cam, lp, "r′(t)", VZ.red, 16, 0, 15)}</g>${sp > .01 ? `<g opacity="${q2(sp)}">${vzLab3(cam, lp, "speed √2", VZ.red, 16, 0, 15)}</g>` : ""}</g>`;
+@@ -19092,12 +19188,22 @@
+       o += `<path d="M${fin.map(p => P2(cam(...p))).join("L")}Z" fill="${VZ.deep}" fill-opacity=".22" stroke="${VZ.deep}" stroke-width="1.3" stroke-opacity=".7" stroke-linejoin="round"/>`;
+     }
+     if (k >= 2) {                                          // one column: from the cone z = r up to the lid z = 2
+-      const r = 1.1, x = r * Math.cos(a0), y = r * Math.sin(a0), e = k > 2 ? 1 : stEase(u, .6, 1.4), lab = 1 - E(4, .1, .5);   // its labels make way for the slice
++      const r = 1.1, x = r * Math.cos(a0), y = r * Math.sin(a0), e = k > 2 ? 1 : stEase(u, .6, 1.4), lab = k === 3 ? 1 - E(3, .1, .5) : 1 - E(4, .1, .5);   // in step 4 the bounds take over   // its labels make way for the slice
+       o += vzPath3(cam, [[x, y, r], [x, y, r + (2 - r) * e]], `stroke="${VZ.deep}" stroke-width="7" stroke-opacity=".75" stroke-linecap="round"`);
+       o += vzDot3(cam, [x, y, r], 4, VZ.ink);
+       if (lab > .01) o += `<g opacity="${q2(lab)}">${vzLabel(cam(x, y, r)[0] - 12, cam(x, y, r)[1] + 5, "z = r", VZ.ink, 14, "end")}${e > .8 ? `<g opacity="${q2((e - .8) / .2)}">${vzLab3(cam, [x, y, 2], "z = 2", VZ.ink, 30, -4, 14)}</g>` : ""}</g>`;
+     }
+     if (k === 1) o += vzLab3(cam, [R, 0, R], "cone: z = r", VZ.red, 10, 26, 15);
++    if (k === 3 || k === 4) {                              // dz inside, then dr, then dθ: each one's range, in that order
++      const f = k === 3 ? 1 : 1 - E(4, .1, .5), e1 = k === 3 ? E(3, .3, .8) : 1, e2 = k === 3 ? E(3, 1.1, .8) : 1, e3 = k === 3 ? E(3, 1.9, .8) : 1, c = Math.cos(a0), sn = Math.sin(a0);
++      if (f > .01) {
++        const lab = (p, t, dx, dy, an, e) => e > .01 ? `<g opacity="${q2(e)}">${vzLabel(cam(...p)[0] + dx, cam(...p)[1] + dy, t, VZ.deep, 14, an)}</g>` : "";
++        o += `<g opacity="${q2(f)}">` + lab([1.1 * c, 1.1 * sn, 1.45], "1 · z: r to 2", -12, 6, "end", e1);
++        if (e2 > .01) o += `<g opacity="${q2(e2)}">${vzArrow3(cam, [0, 0, R], [R * c * e2, R * sn * e2, R], "D", 2.4)}</g>` + lab([R * c * .5, R * sn * .5, R], "2 · r: 0 to 2", 0, -12, "middle", e2);
++        if (e3 > .01) { const arc = []; for (let i = 0; i <= 20; i++) { const a = a0 + .35 + 1.3 * e3 * i / 20; arc.push([R * Math.cos(a), R * Math.sin(a), R]); } o += vzPath3(cam, arc.slice(0, -1), `stroke="${VZ.deep}" stroke-width="2.4" stroke-linecap="round"`) + vzArrow3(cam, arc[17], arc[20], "D", 2.4) + lab(arc[10], "3 · θ: 0 to 2π", 0, -12, "middle", e3); }
++        o += `</g>`;
++      }
++    }
+     o += stNote(180, 440, ["an upside-down cone with a flat lid", "in cylindrical coordinates the cone is z = r", "each column runs from the cone up to the lid", "z inside, then r, then θ", "columns side by side, out to r = 2", "then all the way around", "V = 8π/3: a cone of radius 2 and height 2"][Math.max(0, Math.min(6, k))], VZ.ink);
+     return o;
+   },

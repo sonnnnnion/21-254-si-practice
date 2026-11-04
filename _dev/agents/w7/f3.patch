@@ -1,0 +1,902 @@
+diff -ru base7/index.html f3/index.html
+--- base7/index.html	2026-11-03 23:31:47
++++ f3/index.html	2026-11-04 00:47:10
+@@ -4423,6 +4423,23 @@
+   /* ---- wave-7 css spacer 6 ---- */
+   /* ---- wave-7 css spacer 7 ---- */
+   /* @@CSS-F3 (your CSS goes on the lines just below this one) @@ */
++  /* fieldmatch: the surface key; on phones the four plots sit in the panel (2 x 2, full width) and the stage is hidden */
++  .f3-sk { display: flex; gap: 14px; flex-wrap: wrap; font: 600 12.5px var(--font-sans); color: var(--ink-soft); }
++  .f3-sk span { display: inline-flex; align-items: center; gap: 5px; }
++  .f3-sk i { display: inline-block; width: 14px; height: 10px; border-radius: 3px; }
++  .f3-sk b { color: var(--ink); font-size: 14px; }
++  .f3-lk { flex-direction: column; gap: 6px; }
++  .f3-ph { display: none; }
++  @media (max-width: 640px) {
++    .vz-stage-wrap.f3-wrap { display: none; }
++    .f3-ph { display: block; margin: 0 -12px; padding: 4px 0 6px; background: var(--surface); }
++    .f3-ph.f3-stick { position: sticky; top: var(--nav-h); z-index: 3; box-shadow: 0 6px 8px -8px rgba(0, 0, 0, .25); }
++    .f3-ph svg { display: block; width: 100%; height: auto; }
++    .f3-phkey { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 2px 12px 0; font-size: 12.5px; color: var(--ink-soft); }
++    .fm6-ab button, .fm6-yn button { min-width: 40px; height: 36px; font-size: 14px; }
++    .fm6-ask, .fm6-look, .fm6-why, .fm6-tip { font-size: 14px; }
++    .fm6-f { font-size: 16px; }
++  }
+   /* ---- wave-7 css spacer 1 ---- */
+   /* ---- wave-7 css spacer 2 ---- */
+   /* ---- wave-7 css spacer 3 ---- */
+@@ -12465,9 +12482,9 @@
+ // The index is organized by idea; each picture belongs to one group (VZ_GROUP_OF), in VZ_ORDER.
+ const VZ_GROUP_OF = {
+   "Vectors, span, and subspaces": ["vectors", "span", "independence", "coords", "subspace"],
+-  "Matrices as maps": ["transpose", "matrix", "compose", "det", "inverse", "nullcol", "systems", "gauss"],
++  "Matrices as maps": ["transpose", "matrix", "compose", "det", "inverse", "nullcol", "ranknull", "systems", "gauss"],
+   "Dot and cross products": ["projection", "projplane", "cross"],
+-  "Eigenvalues and eigenvectors": ["eigen", "diag", "powers"],
++  "Eigenvalues and eigenvectors": ["eigen", "complexeig", "diag", "powers"],
+   "Curves": ["curves", "spacecurve", "arclength"],
+   "Functions of two variables": ["level", "partials", "chain", "gradient", "critical", "crit3d", "evt"],
+   "Double integrals": ["riemann", "fubini", "order", "polar", "jacobian"],
+@@ -12484,9 +12501,9 @@
+ const VZ_SECTION_OF = {
+   compose: 1, transpose: 1, "m-matmul": 1,
+   systems: 2, gauss: 2, "m-gauss": 2, "tool-rref": 2,
+-  span: 3, independence: 3, coords: 3, subspace: 3, vectors: 1, nullcol: 3, "m-nullcol": 3, "m-subspace": 3, "m-span": 3,
++  span: 3, independence: 3, coords: 3, subspace: 3, vectors: 1, nullcol: 3, ranknull: 3, "m-nullcol": 3, "m-subspace": 3, "m-span": 3,
+   matrix: 4, det: 4, inverse: 4, "m-reflect": 4, "m-det3": 4, "m-inverse": 4, "tool-det": 4,
+-  eigen: 5, "m-eigen": 5, "m-complex": 5, "tool-eigen": 5,
++  eigen: 5, complexeig: 5, "m-eigen": 5, "m-complex": 5, "tool-eigen": 5,
+   projection: 6, projplane: 6, cross: 6, diag: 6, powers: 6, "m-markov": 6, "m-planedist": 6, "m-plane3": 6, "tool-vec": 6,
+   curves: 7, spacecurve: 7, arclength: 7, level: 7, partials: 7, chain: 7, gradient: 7, critical: 7, "m-dirderiv": 7, "m-extrema": 7, crit3d: 7, evt: 7, "m-critical": 7, "tool-crit": 7,
+   gradfield: 8, fields: 8, curtain: 8, work: 8, conservative: 8, "m-wire": 8, "m-potential": 8, "m-square": 8,
+@@ -14368,6 +14385,88 @@
+   },
+ });
+ 
++/* ---------- Complex eigenvalues: a turn with no real eigenvector; A^k v spirals (f3, wave 7) ---------- */
++// [matrix, starting v, steps shown, name]; λ = a ± bi with a = tr/2, b = √(det − a²)
++const F3_CE = [[[1, -.6, .6, 1], [.9, 0], "spiral out"], [[.75, -.5, .5, .75], [3.2, 0], "spiral in"], [[1, -2, 1, -1], [1.5, 0], "pure rotation"]];
++function f3Ce(m) {
++  const [[p, q, r, s], v] = F3_CE[m] || F3_CE[0], a = (p + s) / 2, b = Math.sqrt(Math.max(0, p * s - q * r - a * a)), R = Math.hypot(a, b), ph = Math.atan2(b, a);
++  // real form: with w = [q, λ − p] an eigenvector for λ = a + bi, M = [Re w, Im w] gives A = M C M⁻¹, C = R·(turn by −ph);
++  // so A^t = M C^t M⁻¹ for any t ≥ 0, which lets A^k v glide smoothly from one step to the next
++  const M = [[q, 0], [a - p, b]], dM = M[0][0] * M[1][1] - M[0][1] * M[1][0];
++  const pow = (t, x) => {
++    const y = [(M[1][1] * x[0] - M[0][1] * x[1]) / dM, (-M[1][0] * x[0] + M[0][0] * x[1]) / dM], k = Math.pow(R, t), c = Math.cos(t * ph), sn = Math.sin(t * ph);
++    const z = [k * (c * y[0] + sn * y[1]), k * (-sn * y[0] + c * y[1])];
++    return [M[0][0] * z[0] + M[0][1] * z[1], M[1][0] * z[0] + M[1][1] * z[1]];
++  };
++  return { A: [[p, q], [r, s]], v, a, b, R, ph, pow, Ax: x => [p * x[0] + q * x[1], r * x[0] + s * x[1]] };
++}
++vzAdd({
++  id: "complexeig", group: "Eigenvalues and eigenvectors", title: "Complex eigenvalues: a turn", card: "Complex eigenvalues",
++  tagline: "No line stays put, so Aᵏv spirals.",
++  blurb: "A real matrix with eigenvalues \\(a\\pm bi\\) turns every vector, so no line is mapped to itself: there is no real eigenvector. Applying \\(A\\) again and again spirals: outward if \\(|\\lambda|>1\\), inward if \\(|\\lambda|<1\\), round a closed loop if \\(|\\lambda|=1\\). Each step turns by \\(\\arg\\lambda\\) (in the frame of the eigenvector's real and imaginary parts).",
++  tryIt: "Press Play: each step applies A once more.",
++  state: { m: 0, k: 0, test: false, ang: 30 },
++  thumb: { k: 6 },
++  controls: [
++    { k: "k", label: "steps: Aᵏv", min: 0, max: 10, step: .01, progress: true, play: 1.7, aria: "the steps", fmt: v => "k = " + Math.floor(v + 1e-6), show: s => !s.test, rests: () => [1, 2, 3, 4, 5, 6, 7, 8, 9], restMs: 200 },
++    { k: "test", label: "test every direction", type: "toggle" },
++    { k: "ang", label: "direction of u", min: 0, max: 360, step: 1, unit: "°", digits: 0, play: 40, show: s => s.test },
++  ],
++  presets: [["Spiral out", { m: 0 }], ["Spiral in", { m: 1 }], ["Pure rotation", { m: 2 }]],
++  // the zoom: v starts at a comfortable size (spiral in starts big), and the view eases out as the trail grows, so it always fits
++  scale(m, kk) {
++    const C = f3Ce(m), v0 = Math.hypot(...C.v); let mx = v0, all = v0;
++    for (let t = 0; t <= 10.001; t += .1) { const L = Math.hypot(...C.pow(t, C.v)); all = Math.max(all, L); if (t <= kk + 1e-6) mx = Math.max(mx, L); }
++    mx = Math.max(mx, Math.hypot(...C.pow(kk, C.v)));
++    const start = m === 1 ? 165 / v0 : m === 2 ? 170 / all : 72 / v0;
++    return Math.min(start, 178 / mx);
++  },
++  draw(s, t, thumb) {
++    const C = f3Ce(s.m), P = vzPlane(300, 230, s.test ? 64 : this.scale(s.m, vzClamp(s.k, 0, 10))), O = [P.X(0), P.Y(0)];
++    let o = P.axes(.24);
++    if (s.test) {
++      // a test vector u turning all the way round, and its image Au: they never lie on one line
++      const th = vzRad(s.ang), u = [1.8 * Math.cos(th), 1.8 * Math.sin(th)], Au = C.Ax(u), a1 = Math.atan2(u[1], u[0]), a2 = Math.atan2(Au[1], Au[0]);
++      let d = a2 - a1; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
++      o += P.line([0, 0], u, `stroke="${VZ.ink}" stroke-width="1.4" stroke-dasharray="3 6" opacity=".55"`);
++      const rr = 34, steps = 24; let arc = "";
++      for (let i = 0; i <= steps; i++) { const g = a1 + d * i / steps; arc += (i ? "L" : "M") + q2(O[0] + rr * Math.cos(g)) + " " + q2(O[1] - rr * Math.sin(g)); }
++      o += `<path d="${arc}" fill="none" stroke="${VZ.gold}" stroke-width="2.4" stroke-linecap="round"/>`;
++      o += P.arrow([0, 0], u, "I", 3) + P.arrow([0, 0], Au, "R", 3) + P.dot([0, 0], 3.6);
++      const lab = (p, html, col) => { const L = Math.hypot(...p) || 1; return vzLabel(P.X(p[0]) + p[0] / L * 20, P.Y(p[1]) - p[1] / L * 20 + 5, html, col, 16); };
++      o += lab(u, vzB("u"), VZ.ink) + lab(Au, "A" + vzB("u"), VZ.red);
++      const g = a1 + d / 2; o += vzLabel(O[0] + 56 * Math.cos(g), O[1] - 56 * Math.sin(g) + 5, `${Math.round(Math.abs(d) * 180 / Math.PI)}°`, "#7A5C0F", 15);
++      return o + vzKey([["line", VZ.ink, "u"], ["line", VZ.red, "Au"], ["line", VZ.gold, "the turn: never 0° or 180°"]]);
++    }
++    const kk = vzClamp(s.k, 0, 10), n = Math.floor(kk + 1e-6);
++    // where the steps are headed (faint), and the trail so far (red), as one smooth spiral
++    let fut = "", past = "";
++    for (let i = 0; i <= 200; i++) { const tt = i / 20, q = C.pow(tt, C.v), seg = q2(P.X(q[0])) + " " + q2(P.Y(q[1])); if (tt <= kk) past += (past ? "L" : "M") + seg; fut += (i ? "L" : "M") + seg; }
++    o += `<path d="${fut}" fill="none" stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="3 5" opacity=".45"/>`;
++    if (past.length > 20) o += `<path d="${past}" fill="none" stroke="${VZ.red}" stroke-width="2" opacity=".45"/>`;
++    for (let j = 0; j <= n; j++) {
++      const q = C.pow(j, C.v), op = .3 + .7 * Math.exp(-(kk - j) / 2.5);
++      o += `<circle cx="${q2(P.X(q[0]))}" cy="${q2(P.Y(q[1]))}" r="4.4" fill="${j ? VZ.red : VZ.ink}" stroke="#fff" stroke-width="1.4" opacity="${q2(op)}"/>`;
++      if (j === 0 && kk > .25) { const L = Math.hypot(...q) || 1; o += vzLabel(P.X(q[0]) + q[0] / L * 18, P.Y(q[1]) - q[1] / L * 18 + 5, vzB("v"), VZ.ink, 15); }   // only v and the current one are named
++    }
++    const cur = C.pow(kk, C.v), L = Math.hypot(...cur) || 1;
++    o += P.arrow([0, 0], cur, kk < .02 ? "I" : "R", 3) + P.dot([0, 0], 3.6);
++    o += vzLabel(P.X(cur[0]) + cur[0] / L * 22, P.Y(cur[1]) - cur[1] / L * 22 + 5, kk < .02 ? vzB("v") : "A<tspan baseline-shift=\"super\" font-size=\"11\">k</tspan>" + vzB("v"), kk < .02 ? VZ.ink : VZ.red, 16);
++    return o + vzKey([["dot", VZ.red, "Aᵏv, one dot per step"], ["dash", VZ.grey, "where it is headed"]]);
++  },
++  readout(s) {
++    const C = f3Ce(s.m), [[p, q], [r, w]] = C.A, deg = C.ph * 180 / Math.PI, Rr = Math.round(C.R * 1000) / 1000;
++    const head = `<div class="vz-mat"><span class="vz-mat-name">A =</span><span class="vz-brk"><table><tr><td>${vzShort(p)}</td><td>${vzShort(q)}</td></tr><tr><td>${vzShort(r)}</td><td>${vzShort(w)}</td></tr></table></span></div>
++      <div class="vz-eq">λ = ${vzShort(C.a)} ± ${vzShort(Math.round(C.b * 1000) / 1000)}<i>i</i>, |λ| = ${vzShort(Rr)}, arg λ ≈ ${Math.round(deg)}°</div>`;
++    if (s.test) {
++      const th = vzRad(s.ang), u = [Math.cos(th), Math.sin(th)], Au = C.Ax(u); let d = Math.atan2(Au[1], Au[0]) - th; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
++      return head + `<div class="vz-status warn">Au is ${Math.round(Math.abs(d) * 180 / Math.PI)}° off u's line. It never lines up, so A has no real eigenvector.</div>`;
++    }
++    const msg = C.R > 1 + 1e-9 ? "|λ| > 1: each step turns and grows, so Aᵏv spirals out." : C.R < 1 - 1e-9 ? "|λ| < 1: each step turns and shrinks, so Aᵏv spirals in to 0." : `|λ| = 1: it loops back to v every ${Math.round(360 / deg)} steps.`;
++    return head + `<div class="vz-status ok">${msg}</div>`;
++  },
++});
++
+ /* ---------- 7. Powers of a matrix ---------- */
+ vzAdd({
+   id: "powers", group: "Eigenvalues", title: "Powers of a matrix",
+@@ -15241,9 +15340,10 @@
+   tagline: "Test the three rules a subspace must pass.",
+   blurb: "Pick a set \\(W\\), explore each condition in the picture, then check it. One counterexample proves \\(W\\) is not a subspace. Examples alone never prove it is: that takes a reason that works for every \\(\\mathbf u\\), \\(\\mathbf v\\) and \\(c\\).",
+   tryIt: "Pick Quadrant: which of the three conditions fails?",
+-  state: { dim: 2, set: 1, test: 0, c: 1.5, yaw: -35, ux: 1, uy: 2, uz: 0, vx: -2.5, vy: -1.5, vz: 0, r0: 0, r1: 0, r2: 0 },
++  state: { dim: 2, set: 1, test: 1, ad: 1, c: 1.5, yaw: -35, ux: 1, uy: 2, uz: 0, vx: -2.5, vy: -1.5, vz: 0, r0: 0, r1: 0, r2: 0 },
+   thumb: { set: 2, test: 2, c: -1, vx: 1.5, vy: 2, r2: 1 },
+   controls: [
++    { k: "ad", label: "slide v to the tip of u", min: 0, max: 1, step: .01, progress: true, show: s => s.test === 1, aria: "v to the tip of u", fmt: v => Math.round(v * 100) + "%" },
+     { k: "c", label: "scalar c", min: -2, max: 2, step: .25, show: s => s.test === 2, play: 1.2, aria: "c", fmt: v => vzShort(v), snap: true, rests: () => [-1, 0, .5] },
+     { k: "yaw", label: "turn the view", min: -80, max: 80, step: 1, unit: "°", digits: 0, show: s => s.dim === 3, noPlay: true },
+   ],
+@@ -15353,25 +15453,30 @@
+       if (!p) return;
+     }
+     if (k === "u") { s.ux = p[0]; s.uy = p[1]; s.uz = p[2] || 0; } else { s.vx = p[0]; s.vy = p[1]; s.vz = p[2] || 0; }
++    s.ad = 1;                                            // a dragged vector shows the finished sum
+   },
+   draw(s, t, thumb) {
+     const W = this.W(s), e = this.ev(s), u = this.u(s), v = this.v(s), hot = thumb ? null : VzView.hot;
+-    const moving = !thumb && !!VzView.tweens;              // gliding to a new example: no verdict until it lands
++    const building = s.test === 1 && s.ad < .6, moving = !thumb && (!!VzView.tweens || building);   // gliding to a new example, or u + v still being built: no verdict yet
+     if (!thumb && !moving) { if (!e.inW && s._wasIn !== false && s.test) s._outT = t; s._wasIn = e.inW; }
+     if (moving) e.pending = true;
++    if (!thumb && building) s._wasIn = true;              // so the landing of each new build rings again if it leaves W
++    // u + v built tip to tail: a copy of v slides from 0 to the tip of u; the sum follows its tip
++    const bm = s.test === 1 ? vzEase(vzClamp(s.ad / .6, 0, 1)) : 1, gA = u.map(x => x * bm), gB = gA.map((x, i) => x + v[i]);
++    if (s.test === 1 && bm < 1) e.r = gB;
+     const keyItems = s.test ? [["fill", VZ.gold, "W"], ["line", VZ.green, "in W"], ["line", VZ.red, "not in W"]] : [["fill", VZ.gold, "W"]], keyBox = vzKeyBox(keyItems.map(k => k[2]));
+     let o = "";
+     if (s.dim === 2) {
+       const P = this.P2, pt = p => [P.X(p[0]), P.Y(p[1])];
+       o += P.axes(.28) + W.draw(P);
+-      if (s.test === 1) o += P.path([u, e.r], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`) + P.path([v, e.r], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`);
++      if (s.test === 1) o += P.path([u, e.r], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`) + P.path([v, e.r], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="5 5"`) + (bm < 1 ? P.arrow(gA, gB, "G", 2.4) : "");
+       if (s.test === 2 && Math.hypot(v[0], v[1]) > .01) o += P.line([0, 0], v, `stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="3 6" opacity=".7"`);
+       if (s.test) o += this.vecs(s, e, pt, thumb, hot, s.test === 1 ? [[...pt(u), ...pt(e.r)], [...pt(v), ...pt(e.r)]] : [], [keyBox]);
+       const O = pt([0, 0]);
+       if (s.test === 0) o += this.zeroMark(s, O, W, thumb);
+       else o += `<circle cx="${O[0]}" cy="${O[1]}" r="4" fill="${VZ.ink}"/>`;
+       if (s.test && !thumb) s._tip = pt(e.r);
+-    } else o += this.draw3(s, e, thumb, hot, keyBox);
++    } else o += this.draw3(s, e, thumb, hot, keyBox, bm < 1 ? [gA, gB] : null);
+     o += vzKey(keyItems);
+     return o;
+   },
+@@ -15381,7 +15486,9 @@
+     const u = this.u(s), v = this.v(s), r = e.r, O = pr(u.map(() => 0)), col = this.resCol(e), key = e.pending ? "G" : e.inW ? "N" : "R";
+     const ln = p => { const q = pr(p); return Math.hypot(q[0] - O[0], q[1] - O[1]); }, ar = (p, k, w) => { const q = pr(p); return vzArrow(O[0], O[1], q[0], q[1], k, w); };
+     let o = thumb ? "" : (s.test === 1 ? vzGrip(...pr(u), VZ.ink, hot === "u") : "") + vzGrip(...pr(v), VZ.ink, hot === "v");
+-    o += vzStack(O, [[pr(r), ar(r, key, 3.4)]].concat(s.test === 1 ? [[pr(u), ar(u, "I", 2.6)]] : []).concat([[pr(v), ar(v, "I", s.test === 1 ? 2.6 : 2.4)]]));
++    const lf = s.test === 1 && !e.pending ? vzClamp((s.ad - .6) / .2, 0, 1) : 1;   // a sum that has just landed takes its colour over a moment
++    const res = lf < 1 ? ar(r, "G", 3.4) + `<g opacity="${q2(lf)}">${ar(r, key, 3.4)}</g>` : ar(r, key, 3.4);
++    o += vzStack(O, [[pr(r), res]].concat(s.test === 1 ? [[pr(u), ar(u, "I", 2.6)]] : []).concat([[pr(v), ar(v, "I", s.test === 1 ? 2.6 : 2.4)]]));
+     const txt = this.resTxt(e, s.test === 1 ? vzB("u") + " + " + vzB("v") : vzShort(s.c) + vzB("v")), items = [];
+     if (ln(r) < 3.5) {                                      // the result is 0: its name goes under the origin
+       const hw = (txt.replace(/<[^>]+>/g, "").length * 8.5 + 6) / 2;
+@@ -15399,7 +15506,7 @@
+     if (!shown) return o + `<circle cx="${O[0]}" cy="${O[1]}" r="20" fill="none" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="4 4"/>` + vzPill(O[0], O[1] - 38, "is 0 in W?", VZ.grey);
+     return o + `<circle cx="${O[0]}" cy="${O[1]}" r="20" fill="none" stroke="${inW ? VZ.green : VZ.red}" stroke-width="2.4"/>` + vzPill(O[0], O[1] - 38, inW ? "0 is in W" : "0 is not in W", inW ? VZ.green : VZ.red);
+   },
+-  draw3(s, e, thumb, hot, keyBox) {
++  draw3(s, e, thumb, hot, keyBox, ghost) {
+     const W = this.W(s), cam = this.cam(s), pr = p => { const q = cam(p[0], p[1], p[2]); return [q[0], q[1]]; };
+     const seg = (a, b, attrs) => { const A = pr(a), B = pr(b); return `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" ${attrs}/>`; };
+     const u = this.u(s), v = this.v(s), boxes = [keyBox], segs = [];
+@@ -15427,6 +15534,7 @@
+       o += seg(r, foot, `stroke="${VZ.red}" stroke-width="1.6" stroke-dasharray="3 4"`) + `<circle cx="${q2(pr(foot)[0])}" cy="${q2(pr(foot)[1])}" r="3" fill="${VZ.red}"/>`;
+       segs.push([...pr(r), ...pr(foot)]);
+     }
++    if (ghost) { const A = pr(ghost[0]), B = pr(ghost[1]); o += vzArrow(A[0], A[1], B[0], B[1], "G", 2.4); }
+     if (s.test) o += this.vecs(s, e, pr, thumb, hot, segs, boxes);
+     if (s.test === 0) o += this.zeroMark(s, O, W, thumb);
+     else o += `<circle cx="${q2(O[0])}" cy="${q2(O[1])}" r="4" fill="${VZ.ink}"/>`;
+@@ -15720,35 +15828,52 @@
+ /* ---------- Linear independence ---------- */
+ vzAdd({
+   id: "independence", group: "Linear algebra concepts", title: "Linear independence", card: "Linear independence",
+-  tagline: "When a vector adds nothing new.",
+-  blurb: "Two vectors span a parallelogram whose area is \\(|\\det[\\,\\mathbf v_1\\ \\mathbf v_2\\,]|\\). Bring them into line and it flattens: area 0, determinant 0, dependent.",
+-  tryIt: "Press Dependent: the parallelogram goes flat.",
+-  state: { v1x: 2, v1y: 0.5, v2x: 0.75, v2y: 1.75, three: false, v3x: -1.5, v3y: 1.5 },
+-  controls: [{ k: "three", label: "add a third vector v₃", type: "toggle" }],
+-  presets: [["Independent", { v2x: .75, v2y: 1.75 }], ["Almost dependent", { v2x: 2.25, v2y: 1 }], ["Dependent", { v2x: 1, v2y: .25 }]],
+-  P: vzPlane(300, 250, 52),
+-  vs(s) { return [[s.v1x, s.v1y], [s.v2x, s.v2y], [s.v3x, s.v3y]]; },
++  tagline: "Dependent: one vector is a combination of the others.",
++  blurb: "Vectors are dependent when one of them is a combination of the others. It adds no new direction, so the span collapses and the area (two vectors) or volume (three) they span drops to 0. That is exactly \\(\\det=0\\).",
++  tryIt: "Press Play: v₂ slides into v₁'s line and the area hits 0.",
++  state: { v1x: 2, v1y: 0.5, v2x: 0.75, v2y: 1.75, sl: 0, three: false, yaw: 28 },
++  thumb: { sl: .5 },
++  controls: [
++    { k: "sl", label: "slide into the span", min: 0, max: 1, step: .01, progress: true, aria: "the slide into the span", fmt: v => Math.round(v * 100) + "%" },
++    { k: "three", label: "three vectors in ℝ³", type: "toggle" },
++    { k: "yaw", label: "turn the view", min: -60, max: 80, step: 1, unit: "°", digits: 0, show: s => s.three, noPlay: true },
++  ],
++  presets: [["Independent", { three: false, sl: 0 }], ["Almost dependent", { three: false, sl: .85 }], ["Dependent", { three: false, sl: 1 }], ["Three in ℝ³", { three: true, sl: 0 }]],
++  P: vzPlane(230, 300, 78),
++  // ℝ³: v₁ and v₂ span the floor; v₃ starts above it and drops straight down to ½v₁ + ½v₂
++  V3: [[2, 0, 0], [.5, 2, 0], [1.25, 1, 1.8]],
++  foot(s) { const v1 = [s.v1x, s.v1y], v2 = [s.v2x, s.v2y], n = v1[0] * v1[0] + v1[1] * v1[1]; if (n < 1e-12) return [0, 0]; const c = (v2[0] * v1[0] + v2[1] * v1[1]) / n; return [c * v1[0], c * v1[1]]; },
++  v2e(s) { const f = this.foot(s), e = vzClamp(s.sl, 0, 1); return [s.v2x + (f[0] - s.v2x) * e, s.v2y + (f[1] - s.v2y) * e]; },
++  v3e(s) { const c = this.V3[2], e = vzClamp(s.sl, 0, 1); return [c[0], c[1], c[2] * (1 - e)]; },
+   handles(s) {
+-    const P = this.P, [a, b, c] = this.vs(s), h = [{ k: "v1", x: P.X(a[0]), y: P.Y(a[1]) }, { k: "v2", x: P.X(b[0]), y: P.Y(b[1]) }];
+-    if (s.three) h.push({ k: "v3", x: P.X(c[0]), y: P.Y(c[1]) });
+-    return h;
++    if (s.three) return [];
++    const P = this.P, b = this.v2e(s);
++    return [{ k: "v1", x: P.X(s.v1x), y: P.Y(s.v1y) }, { k: "v2", x: P.X(b[0]), y: P.Y(b[1]) }];
+   },
+   dragTo(s, k, x, y, fine) {
+     let p = vzWorld(this.P, x, y, undefined, fine);
+-    if (k !== "v3") p = vzOntoLine(p, k === "v1" ? [s.v2x, s.v2y] : [s.v1x, s.v1y], .07, fine);
++    if (k === "v2") { p = vzOntoLine(p, [s.v1x, s.v1y], .07, fine); s.sl = 0; }   // a dragged v₂ is the new start of the slide
++    else p = vzOntoLine(p, this.v2e(s), .07, fine);
+     s[k + "x"] = p[0]; s[k + "y"] = p[1];
+   },
+   draw(s, t, thumb) {
+-    const P = this.P, [v1, v2, v3] = this.vs(s), det = vzDet2(v1, v2), flat = Math.abs(det) < 1e-9, sum = [v1[0] + v2[0], v1[1] + v2[1]];
++    return s.three ? this.draw3(s, thumb) : this.draw2(s, thumb);
++  },
++  draw2(s, thumb) {
++    const P = this.P, v1 = [s.v1x, s.v1y], v2 = this.v2e(s), v20 = [s.v2x, s.v2y], f = this.foot(s), det = vzDet2(v1, v2), flat = Math.abs(det) < 1e-9, sum = [v1[0] + v2[0], v1[1] + v2[1]];
+     const S = p => [P.X(p[0]), P.Y(p[1])], O = S([0, 0]), len = p => Math.hypot(p[0], p[1]) * P.u;
+     const n = Math.hypot(...v1) * Math.hypot(...v2), sn = n > 1e-12 ? Math.abs(det) / n : 0, boxes = [], segs = [];
+     let o = P.axes(.24);
+-    // as the parallelogram thins, a flat band fades in under it, so going flat (area 0) is not a jump
++    if (Math.hypot(...v1) > 1e-9) o += P.line([0, 0], v1, `stroke="${VZ.grey}" stroke-width="9" stroke-opacity=".16" stroke-linecap="round"`);   // the span of v₁
++    // where v₂ started, while it slides down onto the line
++    const gh = vzClamp(s.sl * 6, 0, 1) * .45;
++    if (gh > .01 && len([v20[0] - v2[0], v20[1] - v2[1]]) > 4) o += `<g opacity="${q2(gh)}">${P.path([[0, 0], v20], `stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="4 4"`)}</g>`;
+     const band = flat ? .3 : .3 * vzClamp((.12 - sn) / .12, 0, 1);
+     if (band > .01) o += P.path([[0, 0], v1, sum, v2, [0, 0]], `stroke="${VZ.red}" stroke-width="7" stroke-opacity="${q2(band)}" stroke-linecap="round" stroke-linejoin="round"`);
+     if (!flat) o += P.poly([[0, 0], v1, sum, v2], `fill="${VZ.red}" fill-opacity=".14" stroke="${VZ.red}" stroke-opacity=".55" stroke-width="1.4"`);
+-    // the area, inside the parallelogram; when it is thin or flat, its middle sits on the tips' names, so the label
+-    // moves beside the near half of it instead
++    // the height of the parallelogram: area = base × height, and the slide shrinks the height to 0
++    const hl = len([v2[0] - f[0], v2[1] - f[1]]);
++    if (hl > 6) { o += P.path([v2, f], `stroke="${VZ.ink}" stroke-width="1.5" stroke-dasharray="3 4"`); segs.push([...S(v2), ...S(f)]); }
+     let lx = P.X(sum[0] / 2), ly = P.Y(sum[1] / 2) + 5;
+     if (sn < .3) {
+       const big = len(sum) > 12, d = big ? sum : len(v1) >= len(v2) ? v1 : v2, q = big ? S([sum[0] / 4, sum[1] / 4]) : O;
+@@ -15756,43 +15881,58 @@
+       let nx = L > 1 ? -dy / L : 0, ny = L > 1 ? dx / L : 1; if (ny < 0) { nx = -nx; ny = -ny; }
+       lx = q[0] + nx * 26; ly = q[1] + ny * 26 + 5;
+     }
+-    const area = "area";
++    const area = flat ? "area 0" : "area";
+     o += vzLabel(lx, ly, area, VZ.deep, 15);
+     boxes.push([lx - area.length * 4.2 - 4, ly - 17, lx + area.length * 4.2 + 4, ly + 4]);
+-    // a name beside the middle of segment A → B (screen), on the side away from the point "away"
+-    const beside = (A, B, away, html, col) => {
+-      const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1, mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2;
+-      let nx = -dy / L, ny = dx / L; if (nx * (away[0] - mx) + ny * (away[1] - my) > 0) { nx = -nx; ny = -ny; }
+-      const hw = html.replace(/<[^>]+>/g, "").length * 3.9 + 3, off = 9 + Math.abs(nx) * hw + Math.abs(ny) * 9, x = mx + nx * off, y = my + ny * off;
+-      boxes.push([x - hw, y - 10, x + hw, y + 8]);
+-      return vzLabel(x, y + 5, html, col, 14);
+-    };
+-    if (s.three) {
+-      if (!flat) {                                          // v3 = a v1 + b v2, drawn tip to tail
+-        const a = vzDet2(v3, v2) / det, b = vzDet2(v1, v3) / det, p = [a * v1[0], a * v1[1]];
+-        if (Math.max(Math.abs(a), Math.abs(b)) <= 3.2) {
+-          o += P.path([[0, 0], p], `stroke="${VZ.red}" stroke-width="2" stroke-dasharray="5 4"`) + P.path([p, v3], `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray="5 4"`);
+-          if (len(p) > 14 && Math.abs(a - 1) > 1e-9) o += beside(O, S(p), S(v2), vzCoefS(a) + vzB("v", "1"), VZ.red);   // (a = 1: that leg is v₁ itself)
+-          if (len([v3[0] - p[0], v3[1] - p[1]]) > 14) o += beside(S(p), S(v3), O, vzCoefS(b) + vzB("v", "2"), VZ.ink);
+-          segs.push([...O, ...S(p)], [...S(p), ...S(v3)]);
+-        } else { o += vzNote(22, 34, "v₃ takes huge multiples of v₁ and v₂", "start", VZ.ink); boxes.push([16, 18, 290, 42]); }
+-      }
+-      if (!thumb) o += vzTipGrip(P, v3, VZ.gold, "v3");
+-    }
+     if (!thumb) o += vzTipGrip(P, v1, VZ.red, "v1") + vzTipGrip(P, v2, VZ.ink, "v2");
+-    o += vzStack(O, (s.three ? [[S(v3), P.arrow([0, 0], v3, "O", 3)]] : []).concat([[S(v1), P.arrow([0, 0], v1, "R", 3)], [S(v2), P.arrow([0, 0], v2, "I", 3)]])) + P.dot([0, 0], 3.6);
+-    o += vzClearTips([{ o: O, p: S(v1), html: vzB("v", "1"), col: VZ.red }, { o: O, p: S(v2), html: vzB("v", "2"), col: VZ.ink }].concat(s.three ? [{ o: O, p: S(v3), html: vzB("v", "3"), col: "#8A6A12" }] : []),
+-      segs, boxes, thumb ? [] : [S(v1), S(v2)].concat(s.three ? [S(v3)] : []));
+-    return o;
++    o += vzStack(O, [[S(v1), P.arrow([0, 0], v1, "R", 3)], [S(v2), P.arrow([0, 0], v2, "I", 3)]]) + P.dot([0, 0], 3.6);
++    const key = [["fill", VZ.red, "the area = |det|"], ["line", VZ.grey, "span of v₁"]];
++    boxes.push(vzKeyBox(key.map(k => k[2])));
++    o += vzClearTips([{ o: O, p: S(v1), html: vzB("v", "1"), col: VZ.red }, { o: O, p: S(v2), html: vzB("v", "2"), col: VZ.ink }], segs, boxes, thumb ? [] : [S(v1), S(v2)]);
++    return o + vzKey(key);
+   },
++  draw3(s, thumb) {
++    const cam = vzCam(300, 300, 66, vzRad(s.yaw), .44), pr = p => cam(p[0], p[1], p[2]);
++    const [a, b] = this.V3, c = this.v3e(s), add = (...ps) => ps.reduce((q, p) => q.map((x, i) => x + p[i]), [0, 0, 0]), O = [0, 0, 0];
++    const pt = q => q2(q[0]) + " " + q2(q[1]);
++    let o = "";
++    // the plane spanned by v₁ and v₂ (the floor), with a grid of combinations
++    const at = (i, j) => pr(add(a.map(x => x * i), b.map(x => x * j)));
++    o += `<path d="M${[at(-.7, -.7), at(1.7, -.7), at(1.7, 1.7), at(-.7, 1.7)].map(pt).join("L")}Z" fill="${VZ.grey}" fill-opacity=".1" stroke="${VZ.grey}" stroke-opacity=".45" stroke-width="1.2"/>`;
++    for (let g = -.5; g <= 1.51; g += .5) o += `<path d="M${pt(at(g, -.7))}L${pt(at(g, 1.7))}M${pt(at(-.7, g))}L${pt(at(1.7, g))}" stroke="${VZ.grey}" stroke-opacity=".22" fill="none"/>`;
++    // the box spanned by v₁, v₂, v₃, painted far to near; it flattens onto the floor as v₃ drops
++    const V = { o: O, a, b, c, ab: add(a, b), ac: add(a, c), bc: add(b, c), abc: add(a, b, c) };
++    const faces = [["o", "a", "ab", "b"], ["c", "ac", "abc", "bc"], ["o", "a", "ac", "c"], ["b", "ab", "abc", "bc"], ["o", "b", "bc", "c"], ["a", "ab", "abc", "ac"]];
++    const hgt = c[2], fo = vzClamp(hgt / .25, 0, 1);
++    faces.map(F => { const q = F.map(k => pr(V[k])); return [q.reduce((m, p) => m + p[2], 0) / 4, q]; }).sort((p, q) => q[0] - p[0]).forEach(([, q], i) => {
++      o += `<path d="M${q.map(pt).join("L")}Z" fill="${VZ.red}" fill-opacity="${q2(.1 * fo + .05)}" stroke="${VZ.red}" stroke-opacity="${q2(.25 + .3 * fo)}" stroke-width="1.2" stroke-linejoin="round"/>`;
++    });
++    // the height: from v₃'s tip straight down to the floor
++    const ft = [c[0], c[1], 0], T = pr(c), F = pr(ft);
++    if (hgt > .06) o += `<line x1="${q2(T[0])}" y1="${q2(T[1])}" x2="${q2(F[0])}" y2="${q2(F[1])}" stroke="${VZ.ink}" stroke-width="1.5" stroke-dasharray="3 4"/>`;
++    o += `<circle cx="${q2(F[0])}" cy="${q2(F[1])}" r="3" fill="${VZ.ink}" opacity=".6"/>`;
++    const Os = pr(O), arr = (p, k, w) => { const q = pr(p); return vzArrow(Os[0], Os[1], q[0], q[1], k, w); };
++    o += arr(a, "R", 3) + arr(b, "I", 3) + arr(c, "O", 3) + `<circle cx="${q2(Os[0])}" cy="${q2(Os[1])}" r="3.6" fill="${VZ.ink}"/>`;
++    const tip = (p, html, col, dx, dy) => { const q = pr(p); return vzLabel(q[0] + dx, q[1] + dy, html, col, 16); };
++    o += tip(a, vzB("v", "1"), VZ.red, 18, 14) + tip(b, vzB("v", "2"), VZ.ink, 16, -8) + tip(c, vzB("v", "3"), "#8A6A12", -20, -8);
++    const vo = vzClamp((hgt - .25) / .4, 0, 1), m = pr(add(a.map(x => x / 2), b.map(x => x / 2), c.map(x => x / 2)));
++    if (vo > .01) o += `<g opacity="${q2(vo)}">${vzLabel(m[0] + 34, m[1] + 4, "volume", VZ.deep, 15)}</g>`;
++    if (hgt < .06) o += vzLabel(F[0] + 4, F[1] + 26, "volume 0", VZ.deep, 15);
++    return o + vzKey([["fill", VZ.red, "the box: volume = |det|"], ["fill", VZ.grey, "span of v₁, v₂"]]);
++  },
+   readout(s) {
+-    const [v1, v2, v3] = this.vs(s), det = vzDet2(v1, v2), flat = Math.abs(det) < 1e-9, zero = Math.hypot(...v1) < 1e-9 || Math.hypot(...v2) < 1e-9;
+-    const msg = flat ? (zero ? "Dependent: a set that contains <b>0</b> always is." : `Dependent: <b>v</b>₂ = ${vzCoefS((v2[0] * v1[0] + v2[1] * v1[1]) / (v1[0] * v1[0] + v1[1] * v1[1]))}<b>v</b>₁, so det = 0.`)
+-      : s.three ? `Dependent: <b>v</b>₃ = ${vzCombo([[vzDet2(v3, v2) / det, "<b>v</b>₁"], [vzDet2(v1, v3) / det, "<b>v</b>₂"]].filter(t => Math.abs(t[0]) > 1e-9)) || "<b>0</b>"}, as three vectors in ℝ² always are.`
+-      : "Independent: det ≠ 0, so neither is a multiple of the other.";
++    if (s.three) {
++      const [a, b] = this.V3, c = this.v3e(s), det = a[0] * (b[1] * c[2] - b[2] * c[1]) - b[0] * (a[1] * c[2] - a[2] * c[1]) + c[0] * (a[1] * b[2] - a[2] * b[1]), flat = Math.abs(det) < 1e-9;
++      return `<div class="vz-mat"><span class="vz-mat-name">[<b>v</b>₁ <b>v</b>₂ <b>v</b>₃] =</span><span class="vz-brk"><table>${[0, 1, 2].map(i => `<tr><td>${vzShort(a[i])}</td><td>${vzShort(b[i])}</td><td>${vzShort(c[i])}</td></tr>`).join("")}</table></span></div>
++        <div class="vz-eq">det = volume of the box = <b>${vzShort(det)}</b></div>
++        <div class="vz-status ${flat ? "warn" : "ok"}">${flat ? "Dependent: <b>v</b>₃ = ½<b>v</b>₁ + ½<b>v</b>₂ lies in their plane, so the volume is 0." : "Independent: <b>v</b>₃ sticks out of the plane of <b>v</b>₁, <b>v</b>₂."}</div>`;
++    }
++    const v1 = [s.v1x, s.v1y], v2 = this.v2e(s), det = vzDet2(v1, v2), flat = Math.abs(det) < 1e-9, zero = Math.hypot(...v1) < 1e-9 || Math.hypot(...v2) < 1e-9;
++    const msg = flat ? (zero ? "Dependent: a set that contains <b>0</b> always is." : `Dependent: <b>v</b>₂ = ${vzCoefS((v2[0] * v1[0] + v2[1] * v1[1]) / (v1[0] * v1[0] + v1[1] * v1[1]))}<b>v</b>₁, so the area and det are 0.`)
++      : "Independent: neither is a multiple of the other, so det ≠ 0.";
+     return `<div class="vz-mat"><span class="vz-mat-name">[<b>v</b>₁ <b>v</b>₂] =</span><span class="vz-brk"><table><tr><td>${vzShort(v1[0])}</td><td>${vzShort(v2[0])}</td></tr><tr><td>${vzShort(v1[1])}</td><td>${vzShort(v2[1])}</td></tr></table></span></div>
+       <div class="vz-eq">det = ${vzPar(v1[0])}·${vzPar(v2[1])} − ${vzPar(v2[0])}·${vzPar(v1[1])} = <b>${vzShort(det)}</b></div>
+-      <div class="vz-status ${flat || s.three ? "warn" : "ok"}">${msg}</div>`;
++      <div class="vz-status ${flat ? "warn" : "ok"}">${msg}</div>`;
+   },
+ });
+ 
+@@ -15887,10 +16027,11 @@
+   id: "nullcol", group: "Matrices as maps", title: "Null space and column space", card: "Null & column space",
+   tagline: "Which inputs land on 0, and which outputs A can reach.",
+   blurb: "Left: inputs \\(\\mathbf x\\). Right: outputs \\(A\\mathbf x\\). Each colored line of inputs lands on the dot of the same color. The dark line lands on \\(\\mathbf 0\\): it is the null space.",
+-  tryIt: "Slide x along its colored line: Ax stays put.",
++  tryIt: "Press Play: each colored line of inputs lands on one dot.",
+   defs: `<clipPath id="vz-cl"><rect x="10" y="50" width="280" height="390" rx="14"/></clipPath><clipPath id="vz-cr"><rect x="310" y="50" width="280" height="390" rx="14"/></clipPath>`,
+-  state: { a: 1, b: 2, c: 0.5, d: 1, tab: 0, xx: 1.5, xy: 0.5, x1: 1, x2: 0.5, bx: 1, by: 0.5 },
++  state: { a: 1, b: 2, c: 0.5, d: 1, tab: 0, go: 0, xx: 1.5, xy: 0.5, x1: 1, x2: 0.5, bx: 1, by: 0.5 },
+   controls: [
++    { k: "go", label: "send the inputs through A", min: 0, max: 1, step: .01, progress: true, show: s => s.tab === 0, aria: "the inputs through A", fmt: v => Math.round(v * 100) + "%" },
+     { k: "x1", label: "x₁ (how much of column 1)", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), show: s => s.tab === 1, snap: true },
+     { k: "x2", label: "x₂ (how much of column 2)", min: -2.5, max: 2.5, step: .25, fmt: v => vzShort(v), show: s => s.tab === 1, snap: true },
+   ],
+@@ -16015,15 +16156,33 @@
+     left += L.dot([0, 0], 3.6); right += R.dot([0, 0], 3.6);
+     let o = card(10) + card(310) + `<g clip-path="url(#vz-cl)">${left}</g><g clip-path="url(#vz-cr)">${right}</g>`;
+     const head = (x, t) => `<text x="${x}" y="34" font-family="'Manrope', sans-serif" font-size="16" font-weight="700" fill="${VZ.ink}" text-anchor="middle">${t}</text>`;
++    if (s.tab === 0 && s.go > .005) o += this.fly(s, I);
+     o += head(150, "inputs x") + head(450, "outputs Ax");
+     o += vzArrow(226, 28, 374, 28, "I", 2) + vzLabel(300, 20, "multiply by <tspan font-style=\"italic\">A</tspan>", VZ.ink, 14);
+     return o;
+   },
++  // Play: dots on the input lines travel across to their outputs. A whole colored line lands on one dot (the dark one on 0);
++  // for an invertible A, different inputs land on different outputs
++  fly(s, I) {
++    const L = this.L, R = this.R, pts = [];
++    if (I.rank === 1) {
++      const n = I.nul, nl = Math.hypot(...n), nu = [n[0] / nl, n[1] / nl], w = [-nu[1], nu[0]], Aw = Math.hypot(...this.Ax(s, w)), sp = Math.min(.95, 1.05 / Math.max(Aw, 1e-9));
++      for (let k = -3; k <= 3; k++) for (let m = -3; m <= 3; m++) { const p = [w[0] * k * sp + nu[0] * m * .9, w[1] * k * sp + nu[1] * m * .9]; pts.push([p, this.Ax(s, [w[0] * k * sp, w[1] * k * sp]), this.fiberColor(k), Math.abs(k)]); }
++    } else for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) { const p = [i * .9, j * .9]; pts.push([p, this.Ax(s, p), I.rank === 2 ? this.fiberColor(i) : VZ.ink, Math.abs(i)]); }
++    let o = "";
++    pts.forEach(([p, q, col, d]) => {
++      const sx = L.X(p[0]), sy = L.Y(p[1]); if (sx < 18 || sx > 282 || sy < 58 || sy > 432) return;
++      const e = vzEase(vzClamp((s.go - .06 * d) / .62, 0, 1)), tx = R.X(q[0]), ty = R.Y(q[1]), x = sx + (tx - sx) * e, y = sy + (ty - sy) * e - Math.sin(Math.PI * e) * 40;
++      o += `<circle cx="${q2(x)}" cy="${q2(y)}" r="4" fill="${col}" stroke="#fff" stroke-width="1.2" opacity="${q2(.25 + .75 * Math.min(1, e * 4))}"/>`;
++    });
++    return o;
++  },
+   readout(s) {
+     const I = this.info(s);
+     const nul = I.rank === 2 ? "{0}: only x = 0" : I.rank === 1 ? `the dark line through ${vzVec(I.nul)}` : "all of ℝ²", col = I.rank === 2 ? "all of ℝ²" : I.rank === 1 ? `the gold line through ${vzVec(I.col)}` : "{0}";
+     let now = "";
+-    if (s.tab === 0) {
++    if (s.tab === 0 && s.go > .005) now = I.rank === 1 ? "Each colored line of inputs lands on one dot of Col A. The dark line, Nul A, lands on 0." : I.rank === 2 ? "Different inputs land on different outputs: only 0 lands on 0." : "Every input lands on 0.";
++    else if (s.tab === 0) {
+       const y = this.Ax(s, [s.xx, s.xy]), zero = Math.hypot(...y) < 1e-9;
+       now = zero ? `A${vzVec([s.xx, s.xy])} = 0: this x is in Nul A.` : I.rank === 1 ? `Ax = ${vzVec(y)} for every x on this colored line.` : `A${vzVec([s.xx, s.xy])} = ${vzVec(y)}; no other x gives it.`;
+     } else if (s.tab === 1) {
+@@ -16043,6 +16202,64 @@
+   },
+ });
+ 
++/* ---------- Rank–nullity: every column of rref(A) is a pivot column or a free column (f3, wave 7) ---------- */
++const F3_RN = [[[1, 2, 0, -1, 3], [0, 0, 1, 2, -1], [0, 0, 0, 0, 0]], [[1, 0, 2, 0, 1], [0, 1, -1, 0, 2], [0, 0, 0, 1, -3]], [[1, -2, 3, 0, 1], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]];
++const f3Piv = A => A.map(r => r.findIndex(v => v !== 0)).filter(j => j >= 0);
++const F3_SUB = "₁₂₃₄₅";
++vzAdd({
++  id: "ranknull", group: "Matrices as maps", title: "Rank + nullity = number of columns", card: "Rank–nullity",
++  tagline: "Every column is a pivot or free, never both.",
++  blurb: "In reduced row echelon form, each pivot column adds a new direction to Col \\(A\\), and each free column gives a free variable: one basis vector of Nul \\(A\\). So rank \\(A\\) + dim Nul \\(A\\) = the number of columns.",
++  tryIt: "Press Play: the columns sort into pivot and free.",
++  state: { m: 0, so: 0 },
++  thumb: { so: 1 },
++  controls: [{ k: "so", label: "sort the columns", min: 0, max: 1, step: .01, progress: true, aria: "the columns", fmt: v => Math.round(v * 100) + "%" }],
++  presets: [["Rank 2", { m: 0 }], ["Rank 3", { m: 1 }], ["Rank 1", { m: 2 }]],
++  draw(s, t, thumb) {
++    const A = F3_RN[s.m] || F3_RN[0], piv = f3Piv(A), so = vzClamp(s.so, 0, 1), W = 58, H = 34, x0 = 155, y0 = 58;
++    const num = (x, y, v, col, sz, wt) => `<text x="${q2(x)}" y="${q2(y)}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="${sz || 21}" font-weight="${wt || 400}" fill="${col || VZ.ink}">${String(v).replace("-", "−")}</text>`;
++    const E = (a, d) => vzEase(vzClamp((so - a) / d, 0, 1));
++    let o = vzLabel(300, 28, "rref(<tspan font-style=\"italic\">A</tspan>): 3 rows, 5 columns", VZ.ink, 15);
++    o += `<path d="M${x0 - 6} ${y0 - 4}h-8v${3 * H + 8}h8M${x0 + 5 * W + 6} ${y0 - 4}h8v${3 * H + 8}h-8" fill="none" stroke="${VZ.ink}" stroke-width="2.2"/>`;
++    const npv = piv.length, nf = 5 - npv, fr = [0, 1, 2, 3, 4].filter(j => !piv.includes(j));
++    for (let j = 0; j < 5; j++) {
++      const isP = piv.includes(j), cx = x0 + j * W + W / 2, e1 = E(.04 + .06 * j, .18), col = isP ? VZ.red : VZ.ink;
++      if (e1 > .01) o += `<rect x="${q2(cx - W / 2 + 4)}" y="${y0 - 2}" width="${W - 8}" height="${3 * H + 4}" rx="8" fill="${isP ? VZ.red : VZ.grey}" fill-opacity="${q2(.09 * e1)}"/>`;
++      A.forEach((r, i) => {
++        const lead = isP && piv.indexOf(j) === i;
++        o += num(cx, y0 + i * H + 24, r[j], lead ? VZ.red : VZ.ink, 21, lead ? 700 : 400);
++        if (lead && e1 > .01) o += `<circle cx="${q2(cx)}" cy="${q2(y0 + i * H + 17)}" r="15" fill="none" stroke="${VZ.red}" stroke-width="1.6" opacity="${q2(e1)}"/>`;
++      });
++      o += `<text x="${q2(cx)}" y="${y0 + 3 * H + 22}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="15" fill="${VZ.grey}">x${F3_SUB[j]}</text>`;
++      if (e1 > .01) o += `<g opacity="${q2(e1)}">${vzPill(cx, y0 + 3 * H + 44, isP ? "pivot" : "free", col)}</g>`;
++    }
++    // the two bins, and each column's copy sliding into its bin
++    const eb = E(.3, .15), BY = 300;
++    if (eb > .01) o += `<g opacity="${q2(eb)}"><rect x="28" y="${BY - 52}" width="244" height="100" rx="14" fill="${VZ.red}" fill-opacity=".05" stroke="${VZ.red}" stroke-opacity=".45" stroke-dasharray="5 4"/><rect x="328" y="${BY - 52}" width="244" height="100" rx="14" fill="${VZ.grey}" fill-opacity=".06" stroke="${VZ.grey}" stroke-opacity=".55" stroke-dasharray="5 4"/>` +
++      vzLabel(150, BY - 62, "pivot columns: new directions", VZ.deep, 14) + vzLabel(450, BY - 62, "free columns: free variables", VZ.ink, 14) + `</g>`;
++    for (let j = 0; j < 5; j++) {
++      const isP = piv.includes(j), k = isP ? piv.indexOf(j) : fr.indexOf(j), cnt = isP ? npv : nf, e2 = E(.36 + .09 * j, .16);   // one column at a time, so copies in flight never cross
++      if (e2 <= .005) continue;
++      const sx = x0 + j * W + W / 2, sy = y0 + 1.5 * H, tx = (isP ? 150 : 450) + (k - (cnt - 1) / 2) * 46, ty = BY, x = sx + (tx - sx) * e2, y = sy + (ty - sy) * e2, sc = 1 - .35 * e2, col = isP ? VZ.red : VZ.ink;
++      // drawn in place (no transform), shrinking as it goes
++      o += `<rect x="${q2(x - 20 * sc)}" y="${q2(y - (1.5 * H + 2) * sc)}" width="${q2(40 * sc)}" height="${q2((3 * H + 4) * sc)}" rx="${q2(8 * sc)}" fill="#fff" fill-opacity="${q2(.9 * Math.min(1, e2 * 3))}" stroke="${col}" stroke-opacity="${q2(.6 * Math.min(1, e2 * 3))}" stroke-width="1.4"/>`;
++      A.forEach((r, i) => { const ld = isP && piv.indexOf(j) === i; o += num(x, y + (-1.5 * H + i * H + 24) * sc, r[j], ld ? VZ.red : VZ.ink, q2(21 * sc), ld ? 700 : 400); });
++      const tl = E(.46 + .09 * j, .1);
++      if (tl > .01) o += `<g opacity="${q2(tl)}"><text x="${q2(tx)}" y="${BY + 46}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="14" fill="${col}">x${F3_SUB[j]}</text></g>`;
++    }
++    // the count
++    const e3 = E(.86, .1);
++    if (e3 > .01) o += `<g opacity="${q2(e3)}">${vzLabel(150, 382, `rank <tspan font-style="italic">A</tspan> = ${npv}`, VZ.deep, 18)}${vzLabel(450, 382, `dim Nul <tspan font-style="italic">A</tspan> = ${nf}`, VZ.ink, 18)}${vzLabel(300, 424, `${npv} + ${nf} = 5, the number of columns`, VZ.ink, 18)}</g>`;
++    return o;
++  },
++  readout(s) {
++    const A = F3_RN[s.m] || F3_RN[0], piv = f3Piv(A), fr = [0, 1, 2, 3, 4].filter(j => !piv.includes(j)), xs = js => js.map(j => "x" + F3_SUB[j]).join(", ");
++    return `<div class="vz-eq">pivots in columns ${piv.map(j => j + 1).join(", ")}: rank <i>A</i> = <b>${piv.length}</b></div>
++      <div class="vz-eq">free: ${xs(fr)}: dim Nul <i>A</i> = <b>${fr.length}</b></div>
++      <div class="vz-status ok">${piv.length} + ${fr.length} = 5 columns. Each free variable gives one basis vector of Nul <i>A</i>.</div>`;
++  },
++});
++
+ /* ============================================================
+    MULTIVARIABLE AND VECTOR CALCULUS PICTURES (round 13)
+    Shared 3-D pieces first; vzCam is x right, y into the page, z up.
+@@ -22041,22 +22258,57 @@
+   problem: "Find and classify the critical points of \\(f(x,y)=x^2y-2x^2-y^2\\).",
+   picLive: true,
+   pic(k, b, u) {
+-    const L = stLines(this, k, b, u), P = stPlane(180, 296, 46), f = (x, y) => x * x * y - 2 * x * x - y * y;
+-    const lv = [-60, -45, -34, -25, -18, -12, -8, -6, -4, -2, -1, -.4, .4, 1, 3, 6, 10, 15, 21];
+-    const cs = m6Contours("crit", f, -3.6, 3.6, -2, 4.4, 56, lv, P), e0 = k < 0 ? .6 : 1;
+-    let o = P.axes(.2) + `<g opacity="${e0}" fill="none" stroke-linecap="round">` + cs.map(([l, d]) => `<path d="${d}" stroke="${l === -4 ? VZ.gold : VZ.grey}" stroke-width="${l === -4 ? 1.8 : 1}" opacity="${l === -4 ? .9 : .5}"/>`).join("") + `</g>`;
+-    const pts = [{ p: [0, 0], ty: "max", col: VZ.red, fj: 1, ly: 26 }, { p: [2, 2], ty: "saddle", col: VZ.gold, fj: 2, ly: 26 }, { p: [-2, 2], ty: "saddle", col: VZ.gold, fj: 2, ly: 26 }];
++    // the reasoning on paper, made visible: the slopes fx and fy, their zero-curves, and where the two curves cross
++    const L = stLines(this, k, b, u), P = stPlane(180, 296, 46), f = (x, y) => x * x * y - 2 * x * x - y * y, RD = VZ.red, BL = VZ.ink;
++    const lv = [-100, -80, -60, -45, -34, -25, -18, -12, -8, -6, -4, -2, -1, -.4, .4, 1, 3, 6, 10, 15, 21, 28];
++    const cs = m6Contours("crit7", f, -4, 4, -2.6, 6.6, 64, lv, P);
++    const zc = k < 1 ? 1 : k === 1 ? 1 - .55 * L(1, 0, 0, .6) : k < 4 ? .45 : k === 4 ? .45 + .55 * L(4, 0, .1, .8) : 1;   // the map steps back while the curves are drawn
++    const gold = k >= 6 ? L(6, 3, .1, .8) : 0;
++    let o = P.axes(.2) + `<g fill="none" stroke-linecap="round" opacity="${q2(zc)}">` + cs.map(([l, d]) => `<path d="${d}" stroke="${l === -4 && gold > 0 ? VZ.gold : VZ.grey}" stroke-width="${l === -4 && gold > 0 ? 1 + .8 * gold : 1}" opacity="${l === -4 && gold > 0 ? .5 + .4 * gold : .5}"/>`).join("") + `</g>`;
++    // step 1: fx as horizontal arrows (red), fy as vertical arrows (ink): how steep f is in each direction
++    const ax = k === 0 ? L(0, 0, .1, .8) * (1 - .65 * L(0, 1, 0, .6)) : k === 1 ? .35 * (1 - L(1, 1, .1, .6)) + .65 * (1 - L(1, 0, .1, .6)) : 0;
++    const ay = k === 0 ? L(0, 1, .1, .8) : k === 1 ? 1 - L(1, 1, .1, .6) : 0;
++    if (ax > .01 || ay > .01) {
++      let g = "";
++      for (let x = -3; x <= 3; x++) for (let y = -2; y <= 5; y++) {
++        const X = P.X(x), Y = P.Y(y), vx = 2 * x * y - 4 * x, vy = x * x - 2 * y, lx = 19 * Math.tanh(Math.abs(vx) / 5) * Math.sign(vx), ly = 19 * Math.tanh(Math.abs(vy) / 5) * Math.sign(vy);
++        if (ax > .01) g += Math.abs(lx) < 3 ? `<circle cx="${X}" cy="${Y}" r="2.2" fill="${RD}" opacity="${q2(ax)}"/>` : `<g opacity="${q2(ax)}">${vzArrow(X - lx / 2, Y, X + lx / 2, Y, "R", 1.7)}</g>`;
++        if (ay > .01) g += Math.abs(ly) < 3 ? `<circle cx="${X}" cy="${Y}" r="2.2" fill="${BL}" opacity="${q2(ay)}"/>` : `<g opacity="${q2(ay)}">${vzArrow(X, Y + ly / 2, X, Y - ly / 2, "I", 1.7)}</g>`;
++      }
++      o += g;
++    }
++    // step 2: the zero-curves. fx = 2x(y − 2) = 0 is two lines; fy = x² − 2y = 0 is a parabola. Drawn as if by pen.
++    const pen = (d, col, p, w, extra) => p > .005 ? `<path d="${d}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - p)}" fill="none" stroke="${col}" stroke-width="${w || 2.6}" stroke-linecap="round" ${extra || ""}/>` : "";
++    const xLine = `M${P.X(0)} ${P.Y(6.6)}V${P.Y(-2.35)}`, yLine = `M${P.X(-3.9)} ${P.Y(2)}H${P.X(3.9)}`;
++    let par = ""; for (let i = 0; i <= 48; i++) { const x = -3.6 + 7.2 * i / 48; par += (i ? "L" : "M") + q2(P.X(x)) + " " + q2(P.Y(x * x / 2)); }
++    const rx = k >= 1 ? L(1, 0, .15, .9) : 0, ry = k >= 1 ? L(1, 1, .15, .9) : 0;
++    // step 3: the cases, one line of the red curve at a time
++    const c0 = k === 2 ? L(2, 1, 0, 1.1) * (1 - L(2, 2, 0, 1.1)) : 0, c1 = k === 2 ? L(2, 2, 0, 1.1) : 0, dimX = 1 - .7 * c1, dimY = 1 - .7 * c0;
++    const glow = (d, c) => c > .01 ? `<path d="${d}" fill="none" stroke="${RD}" stroke-width="8" stroke-linecap="round" opacity="${q2(.22 * c)}"/>` : "";   // the case being used: a soft glow, no change of width
++    o += glow(xLine, c0) + glow(yLine, c1) + `<g opacity="${q2(dimX)}">${pen(xLine, RD, rx, 2.6)}</g><g opacity="${q2(dimY)}">${pen(yLine, RD, rx, 2.6)}</g>${pen(par, BL, ry, 2.6)}`;
++    const lab = (x, y, t, col, a, op) => op > .01 ? `<g opacity="${q2(op)}">${vzLabel(x, y, t, col, 15, a)}</g>` : "";
++    o += lab(P.X(3.85), P.Y(2) + 21, "f<tspan font-size=\"11\" dy=\"3\">x</tspan><tspan dy=\"-3\"> = 0</tspan>", RD, "end", k === 1 ? L(1, 0, .6, .4) : k >= 1 && k < 4 ? 1 : 0);
++    o += lab(P.X(1.25), P.Y(5.6), "f<tspan font-size=\"11\" dy=\"3\">y</tspan><tspan dy=\"-3\"> = 0</tspan>", BL, "start", k === 1 ? L(1, 1, .6, .4) : k >= 1 && k < 4 ? 1 : 0);
++    const cl = k === 2 ? L(2, 0, .1, .6) : 0;
++    o += lab(P.X(0) - 8, P.Y(5.9), "x = 0", RD, "end", cl) + lab(P.X(-3.85), P.Y(2) + 21, "y = 2", RD, "start", cl);
++    // the crossings: one in case x = 0, two in case y = 2
++    const pts = [{ p: [0, 0], ty: "max", col: RD, cb: 1, D: "8", lx: 30, ly: 22 }, { p: [2, 2], ty: "saddle", col: VZ.gold, cb: 2, D: "−16", lx: 40, ly: -18 }, { p: [-2, 2], ty: "saddle", col: VZ.gold, cb: 2, D: "−16", lx: -40, ly: -18 }];
+     pts.forEach((q, i) => {
+-      const x = P.X(q.p[0]), y = P.Y(q.p[1]), fo = L(2, q.fj, .15, .8), cl = L(6, q.ty === "max" ? 2 : 3, .15, .8), lab = L(3, 0, .1 + .15 * i, .7);
+-      if (fo > .01) o += `<g opacity="${q2(fo)}"><circle cx="${q2(x)}" cy="${q2(y)}" r="${q2(3 + 3 * fo)}" fill="${VZ.ink}" stroke="#fff" stroke-width="1.5"/></g>`;
+-      if (lab > .01) o += `<g opacity="${q2(lab)}">${vzLabel(x, y - 15, `(${q.p[0]}, ${q.p[1]})`, VZ.ink, 15)}</g>`;
+-      if (cl > .01) {
+-        const r = 4 + 5 * cl, mk = q.ty === "max" ? `<circle cx="${q2(x)}" cy="${q2(y)}" r="${q2(r)}" fill="${q.col}" stroke="#fff" stroke-width="2"/>` : `<path d="M${q2(x)} ${q2(y - r - 1)}L${q2(x + r + 1)} ${q2(y)}L${q2(x)} ${q2(y + r + 1)}L${q2(x - r - 1)} ${q2(y)}Z" fill="${q.col}" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>`;
+-        o += `<g opacity="${q2(Math.min(1, cl * 2))}">${mk}${vzLabel(x, y + q.ly, q.ty, q.ty === "max" ? VZ.deep : "#7A5C0F", 15)}</g>`;
++      const x = P.X(q.p[0]), y = P.Y(q.p[1]), fo = L(2, q.cb, .35, .6), cf = L(6, q.ty === "max" ? 2 : 3, .15, .8);
++      const ring = k === 2 && b === q.cb ? stEase(stLineT(this, k, b, u), .35, .9) : 0;
++      if (ring > 0 && ring < 1) o += `<circle cx="${x}" cy="${y}" r="${q2(6 + 22 * ring)}" fill="none" stroke="${VZ.ink}" stroke-width="1.6" opacity="${q2(.7 * Math.sin(Math.PI * ring))}"/>`;
++      if (fo > .01) o += `<circle cx="${x}" cy="${y}" r="${q2((3 + 3 * fo) * (1 - cf))}" fill="${VZ.ink}" stroke="#fff" stroke-width="1.5" opacity="${q2(fo)}"/>`;
++      const tl = k === 3 ? L(3, 0, .1 + .15 * i, .6) : k > 3 ? 1 : 0, dl = k === 5 ? L(5, 1, .1 + .15 * i, .6) : 0;
++      if (tl > .01) o += `<g opacity="${q2(tl * (1 - dl))}">${vzLabel(x + q.lx, y + q.ly, `(${q.p[0]}, ${q.p[1]})`.replace("-", "−"), VZ.ink, 15)}</g>`;
++      if (dl > .01) o += `<g opacity="${q2(dl * (1 - cf))}">${vzLabel(x + q.lx, y + q.ly, `D = ${q.D}`, q.D[0] === "−" ? "#7A5C0F" : VZ.deep, 15)}</g>`;
++      if (cf > .01) {
++        const r = 4 + 5 * cf, mk = q.ty === "max" ? `<circle cx="${x}" cy="${y}" r="${q2(r)}" fill="${q.col}" stroke="#fff" stroke-width="2"/>` : `<path d="M${x} ${q2(y - r - 1)}L${q2(x + r + 1)} ${y}L${x} ${q2(y + r + 1)}L${q2(x - r - 1)} ${y}Z" fill="${q.col}" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>`;
++        o += `<g opacity="${q2(Math.min(1, cf * 2))}">${mk}${vzLabel(x + q.lx, y + q.ly, q.ty, q.ty === "max" ? VZ.deep : "#7A5C0F", 15)}</g>`;
+       }
+     });
+-    if (k >= 6) o += `<g opacity="${q2(L(6, 2, .3, .6))}">${vzKey([["dot", VZ.red, "max"], ["dot", VZ.gold, "saddle"]], 16, 452)}</g>`;
+-    const note = ["contour map of f: where is the ground flat?", "slope in x and in y", "flat ground: both slopes 0", "cases: one flat spot, then two", "three flat spots to test", "how f curves at each spot", "D, point by point", "hill, pit, or pass?"][Math.max(0, k + 1)];
++    const key = k === 0 ? [["line", RD, "slope in x"], ["line", BL, "slope in y"]].slice(0, b + 1) : k >= 1 && k < 4 ? [["line", RD, "fx = 0"], ["line", BL, "fy = 0"]] : k >= 6 ? [["dot", RD, "max"], ["dot", VZ.gold, "saddle"]] : null;
++    if (key) o += vzKey(key, 16, 452);
++    const note = ["contour map of f: where is the ground flat?", "the slopes fx and fy", "the curves fx = 0 and fy = 0", "each case meets fy = 0", "flat spots: both curves cross", "how f curves at each spot", "D at each spot", "rings: a hill. A crossing: a pass."][Math.max(0, k + 1)];
+     return o + stNote(180, 424, note, VZ.ink);
+   },
+   steps: [
+@@ -22085,27 +22337,31 @@
+   problem: "For \\(\\mathbf F=[x^2-y^2,\\ z^2,\\ 0]\\), find \\(\\nabla\\cdot\\mathbf F\\) and \\(\\nabla\\times\\mathbf F\\). Where is \\(\\mathbf F\\) irrotational, where is it incompressible, and where is it a source?",
+   picLive: true,
+   pic(k, b, u) {
+-    const L = stLines(this, k, b, u), P = stPlane(180, 236, 44), T = performance.now() / 1000, F = (x, y) => x * x - y * y;
++    const L = stLines(this, k, b, u), P = stPlane(180, 236, 60), T = performance.now() / 1000, F = (x, y) => x * x - y * y;
+     let o = "";
+     if (k >= 5) o += `<g opacity="${q2(L(5, 0, .1, .8))}"><rect x="${P.X(0)}" y="40" width="${q2(344 - P.X(0))}" height="390" fill="${VZ.red}" fill-opacity=".07"/><rect x="16" y="40" width="${q2(P.X(0) - 16)}" height="390" fill="${VZ.ink}" fill-opacity=".06"/></g>`;
+     o += P.axes(.2);
+     if (k >= 4) o += `<g opacity="${q2(k === 4 ? L(4, 0, .1, .8) : 1)}"><line x1="${P.X(0)}" y1="40" x2="${P.X(0)}" y2="430" stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="5 5"/></g>`;
+-    // the flow in the slice z = 0: F = [x² − y², 0], drawn with tame lengths (short where it is weak)
+-    const fa = L(0, 0, .1, 1), dim = k === 0 ? 1 : .45;
++    // the flow in the slice z = 0: F = [x² − y², 0], drawn with tame lengths (short where it is weak).
++    // While the wheels turn, the arrows just above and below each wheel are picked out: unequal pushes make it spin.
++    const fa = L(0, 0, .1, 1), dim = k === 0 ? 1 : .45, wk = k === 2 ? L(2, 3, .1, .8) : k === 3 ? 1 : 0;
+     if (fa > .01) {
++      let hi = "";
+       o += `<g opacity="${q2(fa * dim)}">`;
+-      for (const x of [-2.6, -1.3, 0, 1.3, 2.6]) for (const y of [-2.2, -1.1, 0, 1.1, 2.2]) {
+-        const f = F(x, y), len = 24 * Math.tanh(Math.abs(f) / 2.2);
+-        if (len > 3) { const s = Math.sign(f); o += vzArrow(P.X(x) - s * len / 2, P.Y(y), P.X(x) + s * len / 2, P.Y(y), "I", 1.8); }
++      for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) {
++        const x = .8 * i, y = .8 * j, f = F(x, y), len = 26 * Math.tanh(Math.abs(f) / 3), s = Math.sign(f), pick = i === 0 && Math.abs(j) !== 2;
++        if (pick && wk > .01 && len > 3) hi += vzArrow(P.X(x) - s * len / 2, P.Y(y), P.X(x) + s * len / 2, P.Y(y), "D", 2.6);
++        if (len > 3) o += vzArrow(P.X(x) - s * len / 2, P.Y(y), P.X(x) + s * len / 2, P.Y(y), "I", 1.6);
++        else o += `<circle cx="${q2(P.X(x))}" cy="${q2(P.Y(y))}" r="1.8" fill="${VZ.ink}"/>`;
+       }
+-      o += `</g>`;
++      o += `</g>` + (hi ? `<g opacity="${q2(wk * fa)}">${hi}</g>` : "");
+     }
+-    // blobs of fluid: they swell where div > 0, shrink where div < 0, and keep their size where div = 0
+-    const blobs = k >= 4 ? [[-2.3, 0, -1], [2.3, 0, 1], [0, 0, 0]] : k === 1 ? [[-2.3, 0, -1], [2.3, 0, 1]] : [];
++    // blobs of fluid: here P_x = 2x is the only stretch, so a blob is stretched along x where div > 0, squeezed where div < 0, kept where div = 0
++    const blobs = k >= 4 ? [[-1.9, 0, -1], [1.9, 0, 1], [0, 0, 0]] : k === 1 ? [[-1.9, 0, -1], [1.9, 0, 1]] : [];
+     const bo = k === 1 ? L(1, 2, .1, .8) : k === 4 ? L(4, 0, .3, .8) : 1, sv = (T / 3.4) % 1, se = sv * sv * (3 - 2 * sv), bop = Math.min(1, sv / .1, (1 - sv) / .1);
+     blobs.forEach(([x, y, d]) => {
+-      const col = d > 0 ? VZ.red : d < 0 ? VZ.ink : VZ.gold, r = 17 * (1 + .55 * d * se), cx = P.X(x), cy = P.Y(y);
+-      o += `<g opacity="${q2(bo)}"><circle cx="${q2(cx)}" cy="${q2(cy)}" r="17" fill="none" stroke="${col}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".6"/><circle cx="${q2(cx)}" cy="${q2(cy)}" r="${q2(r)}" fill="${col}" fill-opacity="${q2(.28 * bop)}" stroke="${col}" stroke-width="2" stroke-opacity="${q2(bop)}"/></g>`;
++      const col = d > 0 ? VZ.red : d < 0 ? VZ.ink : VZ.gold, r = 17 * (1 + .6 * d * se), cx = P.X(x), cy = P.Y(y);
++      o += `<g opacity="${q2(bo)}"><circle cx="${q2(cx)}" cy="${q2(cy)}" r="17" fill="none" stroke="${col}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".6"/><ellipse cx="${q2(cx)}" cy="${q2(cy)}" rx="${q2(r)}" ry="17" fill="${col}" fill-opacity="${q2(.28 * bop)}" stroke="${col}" stroke-width="2" stroke-opacity="${q2(bop)}"/></g>`;
+     });
+     // paddle wheels: they turn where the curl is not 0 (counterclockwise for 2y > 0), and stay still on the x-axis
+     if (k === 2 || k === 3) {
+@@ -22113,16 +22369,21 @@
+       o += `<g opacity="${q2(wo)}">`;
+       [1.6, 0, -1.6].forEach(y => {
+         const cx = P.X(0), cy = P.Y(y), th = 1.3 * y * T, still = y === 0;
+-        o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="19" fill="${VZ.paper}" fill-opacity=".85" stroke="${still ? VZ.gold : VZ.deep}" stroke-width="1.6" ${still ? 'stroke-dasharray="4 3"' : ""}/>`;
+-        for (let j = 0; j < 4; j++) { const a = th + j * Math.PI / 2, ex = cx + 15 * Math.cos(a), ey = cy - 15 * Math.sin(a); o += `<line x1="${q2(cx)}" y1="${q2(cy)}" x2="${q2(ex)}" y2="${q2(ey)}" stroke="${still ? VZ.grey : VZ.deep}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${q2(ex)}" cy="${q2(ey)}" r="${j === 0 ? 3.6 : 2.6}" fill="${j === 0 && !still ? VZ.red : still ? VZ.grey : VZ.deep}"/>`; }
++        o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="16" fill="${VZ.paper}" fill-opacity=".9" stroke="${still ? VZ.gold : VZ.deep}" stroke-width="1.6" ${still ? 'stroke-dasharray="4 3"' : ""}/>`;
++        for (let j = 0; j < 4; j++) { const a = th + j * Math.PI / 2, ex = cx + 12.5 * Math.cos(a), ey = cy - 12.5 * Math.sin(a); o += `<line x1="${q2(cx)}" y1="${q2(cy)}" x2="${q2(ex)}" y2="${q2(ey)}" stroke="${still ? VZ.grey : VZ.deep}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${q2(ex)}" cy="${q2(ey)}" r="${j === 0 ? 3.6 : 2.6}" fill="${j === 0 && !still ? VZ.red : still ? VZ.grey : VZ.deep}"/>`; }
+         o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="2.6" fill="${VZ.ink}"/>`;
++        if (!still) {                                                   // which way it turns: counterclockwise above the axis, clockwise below
++          const sg = Math.sign(y), ps = []; for (let i = 0; i <= 10; i++) { const a = sg * (-.9 + 1.8 * i / 10); ps.push([cx + 23 * Math.cos(a), cy - 23 * Math.sin(a)]); }
++          const e = ps[10], q = ps[9], dx = e[0] - q[0], dy = e[1] - q[1], dl = Math.hypot(dx, dy), ux = dx / dl, uy = dy / dl;
++          o += `<path d="M${ps.slice(0, 10).map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" stroke="${VZ.deep}" stroke-width="1.8" stroke-linecap="round"/><path d="M${q2(e[0] + ux * 3)} ${q2(e[1] + uy * 3)}L${q2(e[0] - ux * 5 - uy * 4)} ${q2(e[1] - uy * 5 + ux * 4)}L${q2(e[0] - ux * 5 + uy * 4)} ${q2(e[1] - uy * 5 - ux * 4)}Z" fill="${VZ.deep}"/>`;
++        }
+       });
+       o += `</g>`;
+     }
+     if (k === 3) o += `<g opacity="${q2(L(3, 1, .1, .8))}"><line x1="16" y1="${P.Y(0)}" x2="344" y2="${P.Y(0)}" stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="5 5"/></g>`;
+-    if (k === 2 || k === 3) o += vzKey([["dot", VZ.deep, "spins"], ["dash", VZ.gold, "no spin"]], 16, 452);
++    if (k === 2 || k === 3) o += vzKey([["dot", VZ.deep, "spins"], ["dash", VZ.gold, "no spin"], ["line", VZ.deep, "push above / below"]], 16, 452);
+     else if (k === 1 || k >= 4) o += vzKey([["fill", VZ.red, "source"], ["fill", VZ.ink, "sink"], ["dash", VZ.gold, "neither"]].slice(0, k === 1 ? 2 : 3), 16, 452);
+-    const note = ["the flow in the slice z = 0", "does the flow spread out or squeeze in?", "would a paddle wheel turn?", "no spin on the x-axis only", "steady only on the plane x = 0", "red side spreads, grey side squeezes"][Math.max(0, k)];
++    const note = ["the flow in the slice z = 0", "does the flow spread out or squeeze in?", "unequal pushes above and below: it turns", "no spin on the x-axis only", "steady only on the plane x = 0", "red side spreads, grey side squeezes"][Math.max(0, k)];
+     return o + stNote(180, 428, note, VZ.ink);
+   },
+   steps: [
+@@ -22260,6 +22521,7 @@
+       o += P.axes(.2) + arrows(P, g, 7, 5, k === 0 ? L(0, 0, .1, 1) : L(1, 0, .1, 1), [1, 1, 26, k === 0 ? 8 : 2.5]);
+       const e = k === 0 ? L(0, 2, .1, .9) : L(1, 2, .1, .9);
+       o += k === 0 ? bars(66, 66, true, e) : bars(22, 44, false, e);
++      if (k < 0) return o + stNote(180, 448, "three fields: test each one", VZ.ink);
+       return o + stNote(180, 448, k === 0 ? m6Sub("P", "y", "") + " and " + m6Sub("Q", "x", " agree: passes the test") : m6Sub("P", "y", "") + " and " + m6Sub("Q", "x", " differ: not conservative"), VZ.ink);
+     }
+     // K = [−y, x]/(x² + y²) circulates around the origin, which is missing from its domain
+@@ -22269,8 +22531,11 @@
+       o += P.axes(.18) + arrows(P, K, 5, 5, k === 2 ? L(2, 0, .1, 1) : .5, [1.1, 1.1, 24, .4]) + hole();
+       if (k >= 3) {
+         const e = k === 3 ? L(3, 2, .5, 4.6) : 1, th = 2 * Math.PI * e, R = 60;
+-        const arc = th > .02 ? `<path d="M${P.X(1)} ${P.Y(0)}A${R} ${R} 0 ${th > Math.PI ? 1 : 0} 0 ${q2(180 + R * Math.cos(th))} ${q2(215 - R * Math.sin(th))}" fill="none" stroke="${VZ.red}" stroke-width="5" stroke-linecap="round"/>` : "";
++        const arc = e > .998 ? `<circle cx="180" cy="215" r="${R}" fill="none" stroke="${VZ.red}" stroke-width="5"/>` : th > .02 ? `<path d="M${P.X(1)} ${P.Y(0)}A${R} ${R} 0 ${th > Math.PI ? 1 : 0} 0 ${q2(180 + R * Math.cos(th))} ${q2(215 - R * Math.sin(th))}" fill="none" stroke="${VZ.red}" stroke-width="5" stroke-linecap="round"/>` : "";
+         o += `<g opacity="${q2(L(3, 0, .1, .8))}"><circle cx="180" cy="215" r="${R}" fill="none" stroke="${VZ.grey}" stroke-width="1.4" stroke-dasharray="4 4"/></g>` + arc;
++        // K on the circle: always along the walk (K · r' = 1), so every bit of the loop adds to the circulation
++        const ka = k === 3 ? L(3, 1, .1, .8) : 1;
++        if (ka > .01) { let g = ""; for (let i = 0; i < 8; i++) { const t = i * Math.PI / 4 + Math.PI / 8, x = 180 + R * Math.cos(t), y = 215 - R * Math.sin(t), tx = -Math.sin(t), ty = -Math.cos(t); g += vzArrow(x - tx * 11, y - ty * 11, x + tx * 11, y + ty * 11, "D", 2); } o += `<g opacity="${q2(ka)}">${g}</g>`; }
+         if (k === 3 && L(3, 2, 0, .4) > .02) { const wx = 180 + R * Math.cos(th), wy = 215 - R * Math.sin(th), tx = -Math.sin(th), ty = -Math.cos(th); o += `<g opacity="${q2(L(3, 2, 0, .4))}">${vzArrow(wx, wy, wx + tx * 30, wy + ty * 30, "R", 2.6)}<circle cx="${q2(wx)}" cy="${q2(wy)}" r="5.5" fill="${VZ.red}" stroke="#fff" stroke-width="2"/></g>`; }
+         const gl = L(3, 2, .1, .5);
+         o += `<g opacity="${q2(gl)}"><rect x="50" y="368" width="260" height="10" rx="5" fill="${VZ.ink}" fill-opacity=".1"/><rect x="50" y="368" width="${q2(260 * e)}" height="10" rx="5" fill="${VZ.red}"/>${vzLabel(180, 400, "circulation so far", VZ.ink, 16)}</g>`;
+@@ -24293,21 +24558,110 @@
+   });
+   return `<svg class="fm6-mini" viewBox="0 0 196 184" role="img" aria-label="Your sketch of the four test arrows">${F.back}${g}${F.front}</svg>`;
+ }
+-// the surface z = f(x, y), seen from az; painted far to near
+-function fm6Surf(it, az) {
+-  const N = 14, el = .6, s = 33, cam = vzCam(160, 104, s, az, el), xs = [], v = [];
++// the length of the field over the plot square, as colour (pale = short, red = the longest on this plot)
++function f3LenMap(it) {
++  const S = 140, ox = 34, oy = 14, F = fm6Frame(ox, oy, S, 11), n = 24, c = S / n, v = [];
++  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const x = -FM6_D + (i + .5) * 2 * FM6_D / n, y = FM6_D - (j + .5) * 2 * FM6_D / n, g = it.g(x, y); v.push(Math.hypot(g[0], g[1])); }
++  const mx = Math.max(1e-9, ...v), mix = t => [252 - 52 * t, 239 - 223 * t, 241 - 195 * t].map(Math.round).join(",");
++  const cells = v.map((l, q) => `<rect x="${q2(ox + (q % n) * c)}" y="${q2(oy + Math.floor(q / n) * c)}" width="${q2(c + .3)}" height="${q2(c + .3)}" fill="rgb(${mix(l / mx)})"/>`).join("");
++  return `<svg class="fm6-mini" viewBox="0 0 196 184" role="img" aria-label="Arrow length over the plot: pale is short, red is long">${F.back}${cells}<path d="M${ox} ${q2(F.cy)}H${ox + S}M${q2(F.cx)} ${oy}V${oy + S}" stroke="${VZ.ink}" stroke-width="1" opacity=".25"/>${F.front}</svg>`;
++}
++// the surface z = f(x, y), seen from az, with the floor axes and ∇f drawn ON the surface (so the arrows visibly climb); painted far to near
++function f3Surf(it, az) {
++  const N = 16, el = .55, s = 33, cam = vzCam(160, 114, s, az, el), v = [];
+   let lo = Infinity, hi = -Infinity;
+-  for (let j = 0; j <= N; j++) { v.push([]); for (let i = 0; i <= N; i++) { const x = -2 + 4 * i / N, y = -2 + 4 * j / N, z = it.f(x, y); v[j].push(z); lo = Math.min(lo, z); hi = Math.max(hi, z); } }
+-  const rg = Math.max(1e-6, hi - lo), P = (i, j) => cam(-2 + 4 * i / N, -2 + 4 * j / N, (v[j][i] - (hi + lo) / 2) / rg * 2.6);
+-  const quads = [];
++  for (let j = 0; j <= N; j++) { v.push([]); for (let i = 0; i <= N; i++) { const z = it.f(-2 + 4 * i / N, -2 + 4 * j / N); v[j].push(z); lo = Math.min(lo, z); hi = Math.max(hi, z); } }
++  const rg = Math.max(1e-6, hi - lo), Z = z => (z - (hi + lo) / 2) / rg * 2.4, z0 = -1.45, P = (i, j) => cam(-2 + 4 * i / N, -2 + 4 * j / N, Z(v[j][i]));
++  const mix = t => [252 - 60 * t, 239 - 215 * t, 241 - 189 * t].map(Math.round).join(",");
++  const L = [], pt = p => q2(p[0]) + " " + q2(p[1]);
+   for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+     const a = P(i, j), b = P(i + 1, j), c = P(i + 1, j + 1), d = P(i, j + 1), t = ((v[j][i] + v[j][i + 1] + v[j + 1][i + 1] + v[j + 1][i]) / 4 - lo) / rg;
+-    quads.push([(a[2] + b[2] + c[2] + d[2]) / 4, [a, b, c, d], t]);
++    L.push([(a[2] + b[2] + c[2] + d[2]) / 4, `<path d="M${[a, b, c, d].map(pt).join("L")}Z" fill="rgb(${mix(t)})" stroke="${VZ.ink}" stroke-opacity=".16" stroke-width=".6" stroke-linejoin="round"/>`]);
+   }
+-  quads.sort((p, q) => q[0] - p[0]);
+-  const mix = t => [252 - 60 * t, 239 - 215 * t, 241 - 189 * t].map(Math.round).join(",");
+-  return quads.map(([, ps, t]) => `<path d="M${ps.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="rgb(${mix(t)})" stroke="${VZ.ink}" stroke-opacity=".22" stroke-width=".7" stroke-linejoin="round"/>`).join("");
++  // ∇f at a 5 × 5 grid, each arrow laid along the surface: it starts on the surface and ends on it, uphill
++  const G = [];
++  for (let j = 0; j < 5; j++) for (let i = 0; i < 5; i++) { const x = -1.6 + .8 * i, y = -1.6 + .8 * j, g = it.g(x, y); G.push([x, y, g, Math.hypot(g[0], g[1])]); }
++  const gm = Math.max(1e-9, ...G.map(a => a[3]));
++  G.forEach(([x, y, g, l]) => {
++    const r = l / gm, on = (X, Y) => cam(X, Y, Z(it.f(X, Y)) + .07);
++    if (r < .14) { const p = on(x, y); L.push([p[2] - .3, `<circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="1.8" fill="${VZ.ink}" stroke="#fff" stroke-width="1"/>`]); return; }
++    let h = Math.min(.66 * r, ...[[x, g[0]], [y, g[1]]].map(([c, d]) => Math.abs(d) < 1e-9 ? 9 : ((d > 0 ? 2 : -2) - c) * l / d * .98));   // stays on the surface
++    const dz = Math.abs(Z(it.f(x + g[0] / l * h, y + g[1] / l * h)) - Z(it.f(x, y))), L3 = Math.hypot(h, dz);
++    if (L3 > .8) h *= .8 / L3;                                          // steep: shorter, so a climbing arrow never towers
++    const ps = [0, .25, .5, .75, 1].map(f => on(x + g[0] / l * h * f, y + g[1] / l * h * f)), e = ps[4], q = ps[3];
++    const dx = e[0] - q[0], dy = e[1] - q[1], dl = Math.hypot(dx, dy) || 1, ux = dx / dl, uy = dy / dl, hl = 5.2, hw = 2.4, bx = e[0] - ux * hl, by = e[1] - uy * hl;
++    const line = `M${ps.slice(0, 4).map(pt).join("L")}L${q2(bx)} ${q2(by)}`, head = `M${pt(e)}L${q2(bx - uy * hw)} ${q2(by + ux * hw)}L${q2(bx + uy * hw)} ${q2(by - ux * hw)}Z`;
++    L.push([ps[2][2] - .3, `<g stroke-linecap="round" stroke-linejoin="round"><path d="${line}" fill="none" stroke="#fff" stroke-width="3.6" stroke-opacity=".9"/><path d="${head}" fill="#fff" stroke="#fff" stroke-width="2.4" stroke-opacity=".9"/><path d="${line}" fill="none" stroke="${VZ.ink}" stroke-width="1.5"/><path d="${head}" fill="${VZ.ink}" stroke="${VZ.ink}" stroke-width=".6"/></g>`]);
++  });
++  L.sort((p, q) => q[0] - p[0]);
++  // the floor: a square under everything, and the x and y axes along its two near edges (arrowheads = the + direction)
++  const fl = (x, y) => cam(x, y, z0), sq = [[-2, -2], [2, -2], [2, 2], [-2, 2]].map(c => fl(c[0], c[1]));
++  const ca = Math.cos(az), sa = Math.sin(az), yE = ca > 0 ? -2.25 : 2.25, xE = sa > 0 ? -2.25 : 2.25;
++  const axis = (a, b, t, lp) => {
++    const p = fl(a[0], a[1]), q = fl(b[0], b[1]), dx = q[0] - p[0], dy = q[1] - p[1], dl = Math.hypot(dx, dy) || 1, ux = dx / dl, uy = dy / dl, m = fl(lp[0], lp[1]);
++    return `<line x1="${q2(p[0])}" y1="${q2(p[1])}" x2="${q2(q[0] - ux * 5)}" y2="${q2(q[1] - uy * 5)}" stroke="${VZ.ink}" stroke-width="1.3"/>` +
++      `<path d="M${pt(q)}L${q2(q[0] - ux * 7 - uy * 3.2)} ${q2(q[1] - uy * 7 + ux * 3.2)}L${q2(q[0] - ux * 7 + uy * 3.2)} ${q2(q[1] - uy * 7 - ux * 3.2)}Z" fill="${VZ.ink}"/>` +
++      `<text x="${q2(m[0])}" y="${q2(m[1] + 5)}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="15" fill="${VZ.ink}">${t}</text>`;
++  };
++  return `<path d="M${sq.map(pt).join("L")}Z" fill="${VZ.ink}" fill-opacity=".05" stroke="${VZ.ink}" stroke-opacity=".22"/>` + L.map(a => a[1]).join("") +
++    axis([-1.2, yE], [1.2, yE], "x", [0, yE * 1.2]) + axis([xE, -1.2], [xE, 1.2], "y", [xE * 1.2, 0]);
+ }
++// why a wrong match is wrong: the first test point (quadrants first, then whole numbers) where the formula and the chosen plot disagree
++const F3_DIRS = ["right", "up-right", "up", "up-left", "left", "down-left", "down", "down-right"];
++const f3Dir = a => F3_DIRS[((Math.round(Math.atan2(a[1], a[0]) / (Math.PI / 4)) % 8) + 8) % 8];
++const F3_CAND = FM6_Q.concat([[0, 1], [-1, 0], [0, -1], [1, 0], [2, 1], [-1, 2], [-2, -1], [1, -2], [2, 2], [-2, 2], [-2, -2], [2, -2], [0, 2], [-2, 0], [0, -2], [2, 0], [1, 2], [-2, 1], [-1, -2], [2, -1], [0, 0]]);
++function f3Why(set, k, j) {
++  const A = set.items[k], B = set.items[set.perm[j]], nm = set.kind === "grad" ? "∇f" : "F";
++  const mx = it => Math.max(1e-9, ...FM6_PTS.map(p => Math.hypot(...it.g(p[0], p[1])))), ma = mx(A), mb = mx(B);
++  for (const p of F3_CAND) {
++    // the plot draws a dot where its arrow is under 16% of its longest; the formula's own vector is what a student computes
++    const a = A.g(p[0], p[1]), b = B.g(p[0], p[1]), la = Math.hypot(a[0], a[1]), lb = Math.hypot(b[0], b[1]), z0 = la < 1e-9, zb = lb / mb < .16;
++    const at = `At (${fm6N(p[0])}, ${fm6N(p[1])}), ${nm} = ${fm6Vc(a)}`, pl = `plot ${FM6_RN[j]}`;
++    if (z0 && !zb) return { p, txt: `${at}, but ${pl} has an arrow there.` };
++    if (!z0 && zb && la / ma >= .16) return { p, txt: `${at} points ${f3Dir(a)}, but ${pl} has almost no arrow.` };
++    if (!z0 && !zb && (a[0] * b[0] + a[1] * b[1]) / (la * lb) < .866) return { p, txt: `${at} points ${f3Dir(a)}, but ${pl} points ${f3Dir(b)}.` };   // more than 30° apart
++  }
++  return { p: null, txt: `Plot ${FM6_RN[j]} points the same ways. Compare lengths: |${nm}| = ${A.tl}.` };
++}
++// layouts of the four plots: on the stage (600 × 450), and on a phone in the panel (378 × 384)
++const F3_LAY = { st: { S: 176, FX: [84, 352], FY: [22, 240], fs: 13, tf: 16, ml: 16.5, rr: 8.5, br: 9 }, ph: { S: 146, FX: [28, 212], FY: [24, 216], fs: 12, tf: 14, ml: 13.6, rr: 7.5, br: 8 } };
++function f3Plots(set, S, D, sh, L, k, phone) {
++  const chk = !!(S && S.st === 1 && S.ck), SZ = L.S, u = SZ / (2 * FM6_D), rings = !!(S && S.st === 1 && D.so && D.tab === 0 && k != null);
++  let o = "";
++  for (let j = 0; j < 4; j++) {
++    const ox = L.FX[j % 2], oy = L.FY[j >> 1], it = set.items[set.perm[j]], own = S ? S.asg.indexOf(j) : -1, badge = !!(S && S.st === 1 && own >= 0);
++    let stroke = VZ.ink, sw = 1.3, dash = false;
++    if (S && S.st === 1) {
++      if (chk && own >= 0) { stroke = set.perm[j] === own ? FM6_GREEN : VZ.red; sw = 2.4; }
++      else if (D.sel != null) dash = true;
++    }
++    const F = fm6Frame(ox, oy, SZ, L.fs, stroke, sw, dash);
++    o += (phone && S && S.st === 1 ? `<g data-fm="pl:${j}" style="cursor:pointer">` : "<g>") + F.back;
++    if (sh > .005) {
++      const v = fm6Vec(it);
++      FM6_PTS.forEach((p, i) => {
++        if (badge && p[0] === 2 && p[1] === 2) return;                 // the number badge takes the top-right arrow's place
++        const gr = vzEase(vzClamp((sh * 1.4 - Math.hypot(p[0], p[1]) / 2.83) / .4, 0, 1)); if (gr <= 0) return;
++        o += fm6Arrow(F.cx + p[0] * u, F.cy - p[1] * u, v[i][0] * L.ml * gr, -v[i][1] * L.ml * gr, gr);
++      });
++    }
++    if (sh < .995) o += `<text x="${F.cx}" y="${F.cy + 5}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="${L.fs + 1}" fill="${VZ.grey}" opacity="${q2(1 - sh)}">plot hidden</text>`;
++    if (rings) FM6_Q.forEach(p => { o += `<circle cx="${q2(F.cx + p[0] * u)}" cy="${q2(F.cy - p[1] * u)}" r="${L.rr}" fill="none" stroke="${VZ.red}" stroke-opacity=".55" stroke-width="1.3"/>`; });
++    if (chk && own >= 0 && set.perm[j] !== own) {                     // where the wrong match shows: the point the feedback names
++      const w = f3Why(set, own, j);
++      if (w.p) o += `<circle cx="${q2(F.cx + w.p[0] * u)}" cy="${q2(F.cy - w.p[1] * u)}" r="${L.rr + 1.5}" fill="none" stroke="#fff" stroke-width="4.4" stroke-opacity=".85"/><circle cx="${q2(F.cx + w.p[0] * u)}" cy="${q2(F.cy - w.p[1] * u)}" r="${L.rr + 1.5}" fill="none" stroke="${VZ.red}" stroke-width="2.2"/>`;
++    }
++    if (badge) {
++      const c = chk ? (set.perm[j] === own ? FM6_GREEN : VZ.red) : VZ.red, bx = F.cx + 2 * u, by = F.cy - 2 * u;
++      o += `<circle cx="${q2(bx)}" cy="${q2(by)}" r="${L.br}" fill="${c}"/><text x="${q2(bx)}" y="${q2(by + L.br * .5)}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="${L.br + 4}" font-weight="800" fill="#fff">${own + 1}</text>`;
++    }
++    o += F.front + `<text x="${F.cx}" y="${oy - 7}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="${L.tf}" font-weight="600" fill="${VZ.ink}">(${FM6_RN[j]})</text></g>`;
++  }
++  const key = [["line", VZ.ink, "longer arrow = stronger"]];
++  if (chk) key.push(["line", FM6_GREEN, "right"], ["line", VZ.red, "not yet"]);
++  else if (rings) key.push(["dot", VZ.red, "test points"]);
++  return { o, key };
++}
+ 
+ vzAdd({
+   id: "fieldmatch", title: "Match the fields", card: "Match the fields",
+@@ -24337,10 +24691,11 @@
+     if (D.tab === 0) {
+       o += `<p class="fm6-eq">${nm} = ${grad ? it.tg : it.th.replace(/^F = /, "")}</p><div class="fm6-test">${fm6Mini(it)}<ul class="fm6-vals">${FM6_Q.map(p => `<li>(${fm6N(p[0])}, ${fm6N(p[1])}) → ${fm6Vc(it.g(p[0], p[1]))}</li>`).join("")}</ul></div><p class="fm6-ask">Sketch these four arrows. The rings on the plots mark the same points.</p>`;
+     } else if (D.tab === 1) {
+-      o += `<p class="fm6-eq">|${nm}| = ${it.tl}</p><p class="fm6-ask">${it.lenS}</p>`;
++      o += `<p class="fm6-eq">|${nm}| = ${it.tl}</p><div class="fm6-test">${f3LenMap(it)}<div class="f3-sk f3-lk"><span><i style="background:#FCEFF1;border:1px solid #E2C8CC"></i>short</span><span><i style="background:#C8102E"></i>long</span></div></div><p class="fm6-ask">${it.lenS} Find the plot whose arrows grow the same way.</p>`;
+     } else if (grad) {
+-      o += `<svg id="fm6Surf" class="fm6-surf" viewBox="0 0 320 210" tabindex="0" role="img" aria-label="The surface z = f(x, y). Drag to turn it."></svg><p class="fm6-ask">Drag to turn it. ∇f points uphill, longest where it is steepest.</p>`;
+-    } else o += `<p class="fm6-ask">A field F need not be the gradient of anything, so there may be no surface. Try test points or lengths.</p>`;
++      o += `<svg id="fm6Surf" class="fm6-surf" viewBox="0 0 320 228" tabindex="0" role="img" aria-label="The surface z = f(x, y) with ∇f drawn on it. Drag to turn it."></svg>` +
++        `<div class="f3-sk"><span><i style="background:#C0182F"></i>high</span><span><i style="background:#FCEFF1;border:1px solid #E2C8CC"></i>low</span><span><b>→</b>∇f, uphill</span></div><p class="fm6-ask">Drag to turn it. Find the plot whose arrows climb the same way.</p>`;
++    } else o += `<p class="fm6-ask">F need not be a gradient, so there may be no surface. Use test points or lengths.</p>`;
+     return o + `</div>`;
+   },
+   html() {
+@@ -24351,23 +24706,23 @@
+     o += `<p class="fm6-what">${grad ? "The gradient ∇f of each f" : "Each vector field F"}</p>`;
+     const step = (n, name) => `<span class="${S.st === n ? "on" : S.st > n || S.fin ? "ok" : ""}">${n + 1} ${name}</span>`;
+     o += `<div class="fm6-steps">${step(0, "Try")}${step(1, "Match")}${step(2, "Classify")}</div>`;
+-    const row = (k, extra, cls) => { const lab = `<b class="fm6-n">${k + 1}</b><span class="fm6-f">${set.items[k].th}</span>`; return `<div class="fm6-row${cls || ""}">${S.st === 1 ? `<button type="button" class="fm6-pick" data-fm="sel:${k}" aria-pressed="${D.sel === k}">${lab}</button>` : lab}${extra || ""}</div>`; };
++    const row = (k, extra, cls) => { const lab = `<b class="fm6-n">${k + 1}</b><span class="fm6-f">${set.items[k].th}</span>`, on = S.st === 1 ? D.sel === k : D.pk === k; return `<div class="fm6-row${cls || ""}">${S.st <= 1 ? `<button type="button" class="fm6-pick" data-fm="sel:${k}" aria-pressed="${on}">${lab}</button>` : lab}${extra || ""}</div>`; };
++    if (S.st < 2) o += `<div class="f3-ph${S.st ? " f3-stick" : ""}"><svg id="f3Ph" viewBox="0 0 378 384" role="img" aria-label="The four plots"></svg><div class="f3-phkey" id="f3PhKey"></div></div>`;
+     if (S.st === 0) {
+-      o += [0, 1, 2, 3].map(k => row(k)).join("");
+-      o += `<p class="fm6-ask">Before you look: does it spread, spin, point out or in, get longer or shorter?</p>`;
+-      o += `<p class="fm6-tip">${grad ? "Tip: find ∇f, test a point in each quadrant, check the arrow lengths." : "Tip: test a point in each quadrant, check the arrow lengths."}</p>`;
++      o += [0, 1, 2, 3].map(k => row(k, "", D.pk === k ? " sel" : "")).join("");
++      o += `<p class="fm6-tip">On paper first: ${grad ? "find ∇f, then " : ""}sketch a few arrows of each.</p>`;
+       o += `<div class="vz-btnrow"><button type="button" class="btn btn-red btn-sm" data-fm="show">Show the plots</button></div>`;
++      o += this.strat(set, D.pk);
+     } else if (S.st === 1) {
+       const full = S.asg.every(v => v >= 0), bad = S.ck ? S.asg.filter((j, k) => set.perm[j] !== k).length : 0;
+-      const hint = { pts: "Test a point in each quadrant.", len: "Check the arrow lengths.", surf: grad ? "Picture the surface: where is it high?" : "Test a point in each quadrant." };
+       o += [0, 1, 2, 3].map(k => {
+         const j = S.asg[k], right = S.ck && j >= 0 && set.perm[j] === k, wrong = S.ck && j >= 0 && !right;
+         const ab = `<span class="fm6-ab" role="group" aria-label="Plot for formula ${k + 1}">${[0, 1, 2, 3].map(q =>
+           `<button type="button" data-fm="a:${k}:${q}" class="${j === q ? "on" : S.asg.includes(q) ? "taken" : ""}" aria-pressed="${j === q}" aria-label="Plot ${FM6_RN[q]}">${FM6_RN[q]}</button>`).join("")}</span>`;
+         return row(k, ab, (D.sel === k ? " sel" : "") + (right ? " ok" : "") + (wrong ? " bad" : "")) +
+-          (wrong ? `<p class="fm6-look">Strategy: ${hint[set.items[k].hs]}</p>` : "");
++          (wrong ? `<p class="fm6-look">${f3Why(set, k, j).txt}</p>` : "");
+       }).join("");
+-      if (S.ck) o += bad ? `<div class="vz-conclude no">${4 - bad} of 4 match. Fix the red ones.</div>` : `<div class="vz-conclude yes">All four match.</div>`;
++      if (S.ck) o += bad ? `<div class="vz-conclude no">${4 - bad} of 4 match. The ringed point shows why.</div>` : `<div class="vz-conclude yes">All four match.</div>`;
+       else o += `<p class="fm6-ask">Tap a formula, then its plot. Or press a number.</p>`;
+       o += `<div class="vz-btnrow">` + (S.ck && !bad
+         ? `<button type="button" class="btn btn-red btn-sm" data-fm="to2">Next: classify</button>`
+@@ -24375,7 +24730,7 @@
+       if (!(S.ck && !bad)) o += this.strat(set, this.target());
+     } else {
+       const all = S.cl.every(v => v >= 0);
+-      o += `<p class="fm6-ask">${S.fin ? "" : "For each plot: no spin? no net spread?"}</p>`;
++      if (!S.fin) o += `<p class="fm6-ask"><b>Irrotational:</b> no circling, no shearing.<br><b>Incompressible:</b> as much flows into a small box as out.</p>`;
+       for (let j = 0; j < 4; j++) {
+         const it = set.items[set.perm[j]], tr = fm6Truth(set, j);
+         const q = (qi, name) => {
+@@ -24397,7 +24752,7 @@
+   },
+   paintSurf() {
+     const sv = document.getElementById("fm6Surf"), k = this.target(), D = fm6Ensure(), set = FM6_SETS[D.set];
+-    if (sv && k != null && set.items[k].f) sv.innerHTML = fm6Surf(set.items[k], D.az);
++    if (sv && k != null && set.items[k].f) sv.innerHTML = f3Surf(set.items[k], D.az);
+   },
+   wire(panel) {
+     let drag = null;
+@@ -24420,6 +24775,7 @@
+     if (!panel) return;
+     const body = panel.querySelector("#fm6Body"); if (!body) return;
+     if (!panel._fm6) { panel._fm6 = true; this.wire(panel); }
++    const wrap = document.querySelector(".vz-stage-wrap"); if (wrap && !wrap.classList.contains("f3-wrap")) wrap.classList.add("f3-wrap");
+     const D = fm6Ensure(), html = this.html();
+     if (body._h === html) return;
+     const key = D.set + ":" + D.sets[D.set].st + ":" + D.sets[D.set].fin, act = document.activeElement, keep = act && body.contains(act) && act.dataset ? act.dataset.fm : null;
+@@ -24434,7 +24790,12 @@
+     switch (a[0]) {
+       case "set": { const i = +a[1]; if (i === D.set) return false; D.set = i; VzView.tweens = null; s.sh = D.sets[i].st >= 1 ? 1 : 0; D.sel = D.sets[i].st === 1 ? fm6Free(D.sets[i]) : null; D.pk = null; break; }
+       case "show": S.st = 1; D.sel = fm6Free(S); vzTweenTo({ sh: 1 }, 1000); break;
+-      case "sel": { const k = +a[1]; if (S.st !== 1) return false; D.sel = D.sel === k ? null : k; D.pk = k; break; }
++      case "sel": { const k = +a[1]; if (S.st > 1) return false; if (S.st === 0) { D.pk = D.pk === k ? null : k; break; } D.sel = D.sel === k ? null : k; D.pk = k; break; }
++      case "pl": {                                                        // a plot tapped on a phone: the same as a click on the stage
++        const j = +a[1], own = S.asg.indexOf(j); if (S.st !== 1) return false;
++        if (D.sel != null) fm6Assign(S, D.sel, j); else if (own >= 0) { S.asg[own] = -1; S.ck = false; D.sel = own; D.pk = own; } else return false;
++        break;
++      }
+       case "a": fm6Assign(S, +a[1], +a[2]); break;
+       case "so": D.so = !D.so; break;
+       case "tab": D.tab = +a[1]; break;
+@@ -24464,39 +24825,16 @@
+     fm6Save(); vzSwap(true, 300); return true;
+   },
+   draw(s, t, thumb) {
+-    const D = fm6Ensure(), si = thumb ? 0 : D.set, set = FM6_SETS[si], S = thumb ? null : D.sets[si], sh = thumb ? 1 : vzClamp(s.sh, 0, 1);
+-    const chk = !!(S && S.st === 1 && S.ck), SZ = FM6_S, u = SZ / (2 * FM6_D), k = S && S.st === 1 ? this.target() : null, rings = !!(S && S.st === 1 && D.so && D.tab === 0 && k != null);
+-    let o = "";
+-    for (let j = 0; j < 4; j++) {
+-      const ox = FM6_FX[j % 2], oy = FM6_FY[j >> 1], it = set.items[set.perm[j]], own = S ? S.asg.indexOf(j) : -1, badge = !!(S && S.st === 1 && own >= 0);
+-      let stroke = VZ.ink, sw = 1.3, dash = false;
+-      if (S && S.st === 1) {
+-        if (chk && own >= 0) { stroke = set.perm[j] === own ? FM6_GREEN : VZ.red; sw = 2.4; }
+-        else if (D.sel != null) dash = true;
++    const D = fm6Ensure(), si = thumb ? 0 : D.set, set = FM6_SETS[si], S = thumb ? null : D.sets[si], sh = thumb ? 1 : vzClamp(s.sh, 0, 1), k = S && S.st === 1 ? this.target() : null;
++    if (!thumb && VzView.def === this && window.matchMedia && matchMedia("(max-width: 640px)").matches) {
++      const ph = document.getElementById("f3Ph"), pk = document.getElementById("f3PhKey");
++      if (ph) {
++        const r = f3Plots(set, S, D, sh, F3_LAY.ph, k, true), h = r.key.map(([kd, c, l]) => `<span class="vz-kh"><i class="vz-kh-${kd === "dot" ? "dot" : "line"}" style="--c:${c}"></i>${l}</span>`).join("");
++        ph.innerHTML = r.o; if (pk && pk._h !== h) { pk._h = h; pk.innerHTML = h; }
+       }
+-      const F = fm6Frame(ox, oy, SZ, 13, stroke, sw, dash);
+-      o += F.back;
+-      if (sh > .005) {
+-        const v = fm6Vec(it);
+-        FM6_PTS.forEach((p, i) => {
+-          if (badge && p[0] === 2 && p[1] === 2) return;                 // the number badge takes the top-right arrow's place
+-          const gr = vzEase(vzClamp((sh * 1.4 - Math.hypot(p[0], p[1]) / 2.83) / .4, 0, 1)); if (gr <= 0) return;
+-          o += fm6Arrow(F.cx + p[0] * u, F.cy - p[1] * u, v[i][0] * FM6_MAXL * gr, -v[i][1] * FM6_MAXL * gr, gr);
+-        });
+-      }
+-      if (sh < .995) o += `<text x="${F.cx}" y="${F.cy + 5}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="14" fill="${VZ.grey}" opacity="${q2(1 - sh)}">plot hidden</text>`;
+-      if (rings) FM6_Q.forEach(p => { o += `<circle cx="${q2(F.cx + p[0] * u)}" cy="${q2(F.cy - p[1] * u)}" r="8.5" fill="none" stroke="${VZ.red}" stroke-opacity=".55" stroke-width="1.3"/>`; });
+-      if (badge) {
+-        const c = chk ? (set.perm[j] === own ? FM6_GREEN : VZ.red) : VZ.red, bx = F.cx + 2 * u, by = F.cy - 2 * u;
+-        o += `<circle cx="${q2(bx)}" cy="${q2(by)}" r="9" fill="${c}"/><text x="${q2(bx)}" y="${q2(by + 4.6)}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="13" font-weight="800" fill="#fff">${own + 1}</text>`;
+-      }
+-      o += F.front + `<text x="${F.cx}" y="${oy - 7}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="16" font-weight="600" fill="${VZ.ink}">(${FM6_RN[j]})</text>`;
+     }
+-    const key = [["line", VZ.ink, "longer arrow = stronger"]];
+-    if (chk) key.push(["line", FM6_GREEN, "right"], ["line", VZ.red, "not yet"]);
+-    else if (rings) key.push(["dot", VZ.red, "test points"]);
+-    o += vzKey(key, 16, 447);
+-    return o;
++    const r = f3Plots(set, S, D, sh, F3_LAY.st, k, false);
++    return r.o + vzKey(r.key, 16, 447);
+   },
+ });
+ const VZ_TAGLINE = {

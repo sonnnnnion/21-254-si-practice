@@ -1,0 +1,978 @@
+diff -ru base7/index.html f1/index.html
+--- base7/index.html	2026-11-03 23:31:47
++++ f1/index.html	2026-11-04 00:34:48
+@@ -16362,6 +16362,14 @@
+    back as it left (two sides). Around a Möbius strip it comes back pointing the other way: the strip has one side,
+    so "the flux through it" can't be given a sign. The surface is shaded by which side faces you, so the Möbius
+    strip's single side can be seen running into itself. */
++// On a phone the 600 × 450 picture is drawn at about 60%: lift every caption and label in f1's pictures to at least
++// 17.5 (about 10 px on screen; subscripts 14). Notes get it as an inline style, which wins over the page's phone rule.
++const F1_isPh = () => !!VzView.live && typeof matchMedia === "function" && matchMedia("(max-width: 640px)").matches;
++const F1_phone = (o, any) => !(any ? typeof matchMedia === "function" && matchMedia("(max-width: 640px)").matches : F1_isPh()) ? o : o
++  .replace(/(?<!baseline-shift="sub" )font-size="(\d+(?:\.\d+)?)"/g, (m, n) => +n < 17.5 ? 'font-size="17.5"' : m)
++  .replace(/baseline-shift="sub" font-size="(\d+(?:\.\d+)?)"/g, (m, n) => +n < 14 ? 'baseline-shift="sub" font-size="14"' : m)
++  .replace(/class="vz-note"([^>]*?)style="([^"]*)"/g, (m, a, b) => `class="vz-note"${a}style="${b};font-size:17.5px"`);
++const F1_OEL = .78;                                        // looking down steeply enough that the half twist reads at once
+ vzAdd({
+   id: "orient", title: "Orientable surfaces", card: "Orientation",
+   tagline: "Carry a normal around: does it come back the same way?",
+@@ -16380,31 +16388,34 @@
+   n(sf, u) {                                              // the unit normal r_u × r_v on the middle line v = 0
+     const ru = [-Math.sin(u), Math.cos(u), 0], rv = sf ? [Math.cos(u / 2) * Math.cos(u), Math.cos(u / 2) * Math.sin(u), Math.sin(u / 2)] : [0, 0, 1];
+     const c = [ru[1] * rv[2] - ru[2] * rv[1], ru[2] * rv[0] - ru[0] * rv[2], ru[0] * rv[1] - ru[1] * rv[0]], L = Math.hypot(...c);
+-    return c.map(x => x / L);
++    return c.map(x => (sf ? -x : x) / L);                // on the Möbius strip the walk starts on the side whose first half faces you
+   },
+   draw(s, t, thumb) {
+-    const sf = s.sf, c0 = vzCam(0, 0, 150, vzRad(s.yaw), .55), cam = (x, y, z) => { const q = c0(x, y, z); return [300 + q[0], 222 + q[1], q[2]]; }, V = c0.view, P2 = q => q2(q[0]) + " " + q2(q[1]);
+-    const NU = 72, NV = 4, W = .42, quads = [];
++    const sf = s.sf, c0 = vzCam(0, 0, 150, vzRad(s.yaw), F1_OEL), cam = (x, y, z) => { const q = c0(x, y, z); return [300 + q[0], 222 + q[1], q[2]]; }, V = c0.view, P2 = q => q2(q[0]) + " " + q2(q[1]);
++    const NU = 96, NV = 4, W = .46, quads = [], T = 2 * Math.PI * vzClamp(s.t, 0, 1);
+     for (let i = 0; i < NU; i++) for (let j = 0; j < NV; j++) {
+       const u0 = 2 * Math.PI * i / NU, u1 = 2 * Math.PI * (i + 1) / NU, v0 = -W + 2 * W * j / NV, v1 = -W + 2 * W * (j + 1) / NV;
+       const Q = [this.r(sf, u0, v0), this.r(sf, u1, v0), this.r(sf, u1, v1), this.r(sf, u0, v1)];
+       const a = Q[1].map((x, k) => x - Q[0][k]), b = Q[3].map((x, k) => x - Q[0][k]), nn = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+-      const face = vzDot(nn, V) / (Math.hypot(...nn) || 1);
+-      quads.push({ Q, d: Q.reduce((s2, p) => s2 + cam(...p)[2], 0) / 4, face });
++      quads.push({ Q, i, j, u0, u1, d: Q.reduce((s2, p) => s2 + cam(...p)[2], 0) / 4, face: (sf ? -1 : 1) * vzDot(nn, V) / (Math.hypot(...nn) || 1) });
+     }
+     let o = "";
++    // the walk paints the side the normal is on: a quad shows red where you see that painted side, pale where you see the
++    // bare side (or the walk hasn't got there yet). The edge of the strip is drawn dark, at its true depth: a band has two
++    // edges, a Möbius strip just one, going round twice. (Opaque tints, so a dissolve never stacks two see-through copies.)
++    const mix = (h, a) => "#" + [1, 3, 5].map((i2, j) => Math.round([0xFB, 0xF8, 0xF4][j] + (parseInt(h.slice(i2, i2 + 2), 16) - [0xFB, 0xF8, 0xF4][j]) * a).toString(16).padStart(2, "0")).join("");
+     quads.sort((A, B) => B.d - A.d).forEach(q => {
+-      // shaded by which side faces you (the side the parameterization's normal points out of is red), softly near edge-on
+-      // (an opaque tint, not a see-through fill: when Play starts over, the old drawing dissolves on top of the new one, and
+-      // two see-through copies of the same strip stacked would flash darker)
+-      const k = vzClamp(q.face * 4, -1, 1), red = k > 0, a = .12 + .2 * Math.abs(k), tint = [1, 3, 5].map((i2, j) => Math.round([0xFB, 0xF8, 0xF4][j] + (parseInt((red ? VZ.red : VZ.ink).slice(i2, i2 + 2), 16) - [0xFB, 0xF8, 0xF4][j]) * a).toString(16).padStart(2, "0")).join("");
+-      o += `<path d="M${q.Q.map(p => P2(cam(...p))).join("L")}Z" fill="#${tint}" stroke="#fff" stroke-opacity=".55" stroke-width=".6" stroke-linejoin="round"/>`;
++      const k = vzClamp(q.face * 4, -1, 1), paint = vzClamp((T - q.u0) / (q.u1 - q.u0), 0, 1), lit = .78 + .22 * Math.abs(k);
++      const fill = k > 0 && paint > 0 ? mix(VZ.red, (.14 + .26 * Math.abs(k)) * paint + .06 * (1 - paint)) : mix(VZ.ink, .07 + .1 * (1 - lit));
++      o += `<path d="M${q.Q.map(p => P2(cam(...p))).join("L")}Z" fill="${fill}" stroke="${fill}" stroke-width=".6" stroke-linejoin="round"/>`;
++      if (q.j === 0) o += `<path d="M${P2(cam(...q.Q[0]))}L${P2(cam(...q.Q[1]))}" stroke="${VZ.ink}" stroke-width="2.2" stroke-linecap="round"/>`;
++      if (q.j === NV - 1) o += `<path d="M${P2(cam(...q.Q[3]))}L${P2(cam(...q.Q[2]))}" stroke="${VZ.ink}" stroke-width="2.2" stroke-linecap="round"/>`;
++      if (q.j === NV / 2) {                                 // the middle line, at its depth too: bold where walked, dashed ahead
++        const A0 = cam(...q.Q[0]), A1 = cam(...q.Q[1]), w = paint;
++        if (w < 1) o += `<path d="M${P2(A0)}L${P2(A1)}" stroke="${VZ.ink}" stroke-width="1.1" stroke-dasharray="3 3" opacity=".5"/>`;
++        if (w > 0) o += `<path d="M${P2(A0)}L${q2(A0[0] + (A1[0] - A0[0]) * w)} ${q2(A0[1] + (A1[1] - A0[1]) * w)}" stroke="${VZ.deep}" stroke-width="2.8" stroke-linecap="round"/>`;
++      }
+     });
+-    // the middle line and the walk along it
+-    const T = 2 * Math.PI * vzClamp(s.t, 0, 1), mid = [], walked = [];
+-    for (let i = 0; i <= 96; i++) { const u = 2 * Math.PI * i / 96; mid.push(this.r(sf, u, 0)); }
+-    for (let i = 0; i <= 72; i++) walked.push(this.r(sf, T * i / 72, 0));
+-    o += vzPath3(cam, mid, `stroke="${VZ.ink}" stroke-width="1.1" stroke-dasharray="3 4" opacity=".5"`) + vzPath3(cam, walked, `stroke="${VZ.deep}" stroke-width="2.6" stroke-linecap="round"`);
+     // a trail of earlier normals, then the current one; the starting normal stays as a dashed ghost
+     const n0 = this.n(sf, 0), p0 = this.r(sf, 0, 0), L = .38;
+     o += vzPath3(cam, [p0, p0.map((x, i) => x + n0[i] * L)], `stroke="${VZ.ink}" stroke-width="2" stroke-dasharray="4 3"`);
+@@ -16421,8 +16432,8 @@
+       if (a > .01) o += `<g opacity="${q2(a)}">${vzNote(22, 34, "carry the normal n once around the middle line", "start", col)}</g>`;
+       if (b > .01) o += `<g opacity="${q2(b)}">${vzNote(22, 34, sf ? "back at the start, n points the other way" : "back at the start, n points the same way", "start", col)}</g>`;
+     }
+-    o += vzKey([["fill", VZ.red, "the side the normal starts on"], ["fill", VZ.ink, "the other side"], ["line", VZ.gold, "the normal n"]]);
+-    return o;
++    o += vzKey([["fill", VZ.red, "painted: the side n is on"], ["fill", VZ.grey, "bare side"], ["line", VZ.ink, "the edge"], ["line", VZ.gold, "the normal n"]]);
++    return F1_phone(o);
+   },
+   readout(s) {
+     const sf = s.sf;
+@@ -17143,42 +17154,68 @@
+ });
+ 
+ /* ---------- Parametric surfaces ---------- */
++// A parametrization bends a flat (u, v) rectangle into the surface; one small cell becomes a small parallelogram spanned
++// by r_u Δu and r_v Δv, of area ‖r_u × r_v‖ Δu Δv, which is why dS = ‖r_u × r_v‖ du dv.
++// The bend happens in two clean stages, so the sheet never tears or passes through itself: first the flat sheet rolls up
++// (like paper round a tube, its middle staying in front), then the tube swells or pinches into the surface. All three
++// surfaces turn about the z-axis, so the rolled sheet's seam can sit at the back without changing the shape.
++// ang: which parameter goes round; T: how far round; rA: the tube's radius after stage 1; rad, zF: the surface's own
++// radius and height; zA: the sheet's height (stage 1); split: where stage 2 starts (1: there is no stage 2).
++const F1_SF = [
++  { name: "r(u, v) = [2 sin u cos v, 2 sin u sin v, 2 cos u]", n: 6, m: 8, ang: "v", T: 2 * Math.PI, rA: .7, split: .55, U: [.02, Math.PI - .02], V: [0, 2 * Math.PI],
++    rad: (u, v) => 2 * Math.sin(u), zF: (u, v) => 2 * Math.cos(u), zA: (a, b) => 1.4 - 2.8 * a, r: (u, v) => [2 * Math.sin(u) * Math.cos(v), 2 * Math.sin(u) * Math.sin(v), 2 * Math.cos(u)] },
++  { name: "r(u, v) = [1.5 cos u, 1.5 sin u, v]", n: 8, m: 5, ang: "u", T: 1.5 * Math.PI, rA: 1.5, split: 1, U: [0, 1.5 * Math.PI], V: [-1.4, 1.4],
++    rad: () => 1.5, zF: (u, v) => v, zA: (a, b) => -1.4 + 2.8 * b, r: (u, v) => [1.5 * Math.cos(u), 1.5 * Math.sin(u), v] },
++  { name: "r(u, v) = [v cos u, v sin u, 0.6v²]", n: 8, m: 5, ang: "u", T: 2 * Math.PI, rA: .9, split: .55, U: [0, 2 * Math.PI], V: [0, 1.8],
++    rad: (u, v) => v, zF: (u, v) => .6 * v * v - .9, zA: (a, b) => -.9 + 1.944 * b, r: (u, v) => [v * Math.cos(u), v * Math.sin(u), .6 * v * v] },   // drawn 0.9 lower, to sit in the middle
++];
++// where (u, v) is at bend m: 0 the flat sheet (standing, facing you), 1 the surface
++function F1_sfPos(K, u, v, m) {
++  const a = (u - K.U[0]) / (K.U[1] - K.U[0]), b = (v - K.V[0]) / (K.V[1] - K.V[0]), sa = K.ang === "u" ? a : b, W0 = 3.8;
++  const eA = vzEase(vzClamp(m / K.split, 0, 1)), eB = K.split < 1 ? vzEase(vzClamp((m - K.split) / (1 - K.split), 0, 1)) : 0;
++  if (eA < 1) {                                             // stage 1: roll up (an arc of growing curvature, its middle in front)
++    const Th = eA * K.T, W = W0 + (K.rA * K.T - W0) * eA, t = (sa - .5) * W, k = Th / W;
++    const x = k < 1e-6 ? t : Math.sin(k * t) / k, y = (k < 1e-6 ? k * t * t / 2 : (1 - Math.cos(k * t)) / k) - eA * K.rA;
++    return [x, y, K.zA(a, b)];
++  }
++  const ph = (sa - .5) * K.T - Math.PI / 2, R = K.rA + (K.rad(u, v) - K.rA) * eB, z = K.zA(a, b) + (K.zF(u, v) - K.zA(a, b)) * eB;   // stage 2: swell into the surface
++  return [R * Math.cos(ph), R * Math.sin(ph), z];
++}
++// the (u, v) rectangle on the left: the parameter that goes round runs across, the other one up (the sphere's u runs down, as on the sheet)
++const F1_SB = { x: 34, y: 138, w: 190, h: 190 };
++function F1_sfBox(K) {
++  const X = (u, v) => F1_SB.x + F1_SB.w * (K.ang === "u" ? (u - K.U[0]) / (K.U[1] - K.U[0]) : (v - K.V[0]) / (K.V[1] - K.V[0]));
++  const Y = (u, v) => K.ang === "v" ? F1_SB.y + F1_SB.h * (u - K.U[0]) / (K.U[1] - K.U[0]) : F1_SB.y + F1_SB.h * (1 - (v - K.V[0]) / (K.V[1] - K.V[0]));
++  return { X, Y };
++}
+ vzAdd({
+   id: "surface", title: "Parametric surfaces", card: "Parametric surfaces",
+   tagline: "A (u, v) rectangle bent into a surface.",
+-  blurb: "\\(\\mathbf r(u,v)\\) bends a flat \\((u,v)\\) rectangle into a surface. A small cell becomes a patch spanned by \\(\\mathbf r_u\\,\\Delta u\\) and \\(\\mathbf r_v\\,\\Delta v\\), with area about \\(\\|\\mathbf r_u\\times\\mathbf r_v\\|\\,\\Delta u\\,\\Delta v\\).",
+-  tryIt: "Move the patch: where it stretches, the area grows.",
+-  state: { kind: 0, m: 1, u0: .3, v0: .02, yaw: -30 },
++  blurb: "\\(\\mathbf r(u,v)\\) bends a flat \\((u,v)\\) rectangle into a surface. One small cell becomes a small parallelogram spanned by \\(\\mathbf r_u\\,\\Delta u\\) and \\(\\mathbf r_v\\,\\Delta v\\), with area \\(\\|\\mathbf r_u\\times\\mathbf r_v\\|\\,\\Delta u\\,\\Delta v\\). Add them all up: \\(dS=\\|\\mathbf r_u\\times\\mathbf r_v\\|\\,du\\,dv\\).",
++  tryIt: "Drag the cell: where the sheet stretches, its area grows.",
++  state: { kind: 0, m: 1, u0: .42, v0: .44, yaw: -24 },
+   controls: [
+-    { k: "m", label: "flat → surface", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .27, aria: "the bend" },
+-    { k: "u0", label: "patch: u", min: 0, max: 1, step: .01, fmt: v => vzNum(v, 2), noPlay: true },
+-    { k: "v0", label: "patch: v", min: 0, max: 1, step: .01, fmt: v => vzNum(v, 2), noPlay: true },
+-    { k: "yaw", label: "turn the view", min: -80, max: 20, step: 1, unit: "°", digits: 0, noPlay: true },
++    { k: "m", label: "flat → surface", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + "%", play: .22, aria: "the bend" },
++    { k: "yaw", label: "turn the view", min: -80, max: 80, step: 1, unit: "°", digits: 0, noPlay: true },
+   ],
+-  // each surface opens with its patch on the side facing you
+-  presets: [["Sphere", { kind: 0, u0: .3, v0: .02 }], ["Cylinder", { kind: 1, u0: .06, v0: .35 }], ["Paraboloid", { kind: 2, u0: .88, v0: .7 }]],
++  // each surface opens with its cell on the side facing you
++  presets: [["Sphere", { kind: 0, u0: .42, v0: .44 }], ["Cylinder", { kind: 1, u0: .44, v0: .5 }], ["Paraboloid", { kind: 2, u0: .44, v0: .7 }]],
++  variants: [{ kind: 0, m: 0 }, { kind: 0, m: .5, u0: .05, v0: .99 }, { kind: 1, m: .3, yaw: 80 }, { kind: 2, m: .7, u0: .99, v0: .02 }, { kind: 2, m: 1, yaw: -80 }, { kind: 0, m: .56 }],
+   sync(s, panel) { panel && panel.querySelectorAll("[data-preset]").forEach(c => c.classList.toggle("on", +c.dataset.preset === Math.round(s.kind))); },   // the chosen surface's chip stays lit
+-  // n × m cells in u × v; wu / wv: that direction goes all the way round. The sphere is the usual one (u down from the
+-  // north pole, v around), so r_u × r_v points out; on the flat rectangle u runs down the page and v across, so the
+-  // normal points up there and turns smoothly into the outward one as the rectangle bends
+-  kinds: [
+-    { name: "r(u, v) = [2 sin u cos v, 2 sin u sin v, 2 cos u]", n: 8, m: 12, wv: true, flip: true, U: [.02, Math.PI - .02], V: [0, 2 * Math.PI], r: (u, v) => [2 * Math.sin(u) * Math.cos(v), 2 * Math.sin(u) * Math.sin(v), 2 * Math.cos(u)] },
+-    { name: "r(u, v) = [1.5 cos u, 1.5 sin u, v]", n: 12, m: 8, U: [0, 1.5 * Math.PI], V: [-1.4, 1.4], r: (u, v) => [1.5 * Math.cos(u), 1.5 * Math.sin(u), v] },
+-    { name: "r(u, v) = [v cos u, v sin u, 0.6v²]", n: 12, m: 8, wu: true, U: [0, 2 * Math.PI], V: [0, 1.8], r: (u, v) => [v * Math.cos(u), v * Math.sin(u), .6 * v * v - .9] },   // drawn 0.9 lower, to sit in the middle
+-  ],
+-  K(s) { return this.kinds[Math.round(s.kind)] || this.kinds[0]; },
+-  pos(K, u, v, m) {                                      // flat rectangle (in the plane z = −1.6) to the surface
+-    const a = (u - K.U[0]) / (K.U[1] - K.U[0]), b = (v - K.V[0]) / (K.V[1] - K.V[0]), p = K.r(u, v), e = m;   // (Play already eases in and out of both ends: easing again here made the whole bend happen in about a second)
+-    const flat = K.flip ? [-1.9 + 3.8 * b, 1.4 - 2.8 * a, -1.6] : [-1.9 + 3.8 * a, -1.4 + 2.8 * b, -1.6];
+-    return [flat[0] + (p[0] - flat[0]) * e, flat[1] + (p[1] - flat[1]) * e, flat[2] + (p[2] - flat[2]) * e];
+-  },
+-  // the chosen cell: its corner (u, v), its size, and r_u, r_v taken at its middle (fine at a pole or at v = 0, where the corner is degenerate)
++  K(s) { return F1_SF[Math.round(s.kind)] || F1_SF[0]; },
++  // the chosen cell: its corner (u, v), its size, and r_u, r_v at its middle (taken on what is drawn, so the arrows sit on the sheet)
+   cell(K, s, P) {
+-    const n = K.n, m = K.m, iu = Math.min(n - 1, Math.floor(vzClamp(s.u0, 0, 1) * n)), jv = Math.min(m - 1, Math.floor(vzClamp(s.v0, 0, 1) * m));
++    const n = K.n, m = K.m, iu = Math.min(n - 1, Math.floor(vzClamp(s.u0, 0, .9999) * n)), jv = Math.min(m - 1, Math.floor(vzClamp(s.v0, 0, .9999) * m));
+     const du = (K.U[1] - K.U[0]) / n, dv = (K.V[1] - K.V[0]) / m, u = K.U[0] + iu * du, v = K.V[0] + jv * dv, uc = u + du / 2, vc = v + dv / 2, e = 1e-5;
+     const p = P(uc, vc), ru = P(uc + e, vc).map((c, i) => (c - p[i]) / e), rv = P(uc, vc + e).map((c, i) => (c - p[i]) / e);
+     return { n, m, iu, jv, du, dv, u, v, uc, vc, ru, rv, N: [ru[1] * rv[2] - ru[2] * rv[1], ru[2] * rv[0] - ru[0] * rv[2], ru[0] * rv[1] - ru[1] * rv[0]] };
+   },
++  handles(s) { const K = this.K(s), B = F1_sfBox(K), C = this.cell(K, s, K.r); return [{ k: "cell", x: B.X(C.uc, C.vc), y: B.Y(C.uc, C.vc) }]; },
++  dragTo(s, k, x, y) {                                      // the cell follows the pointer from cell to cell
++    const K = this.K(s), fx = vzClamp((x - F1_SB.x) / F1_SB.w, 0, .9999), fy = vzClamp((y - F1_SB.y) / F1_SB.h, 0, .9999);
++    const a = K.ang === "u" ? fx : fy, b = K.ang === "u" ? 1 - fy : fx;   // fractions along u and along v
++    s.u0 = (Math.floor(Math.min(.9999, a) * K.n) + .5) / K.n; s.v0 = (Math.floor(Math.min(.9999, b) * K.m) + .5) / K.m;
++  },
+   // eased toward a target 0..1 over a few frames on the live picture, so nothing snaps as the view turns
+   glide(key, target) {
+     if (!VzView.live) return target;
+@@ -17188,47 +17225,67 @@
+     if (Math.abs(target - p.v) < .01) p.v = target; else VzView.again = true;
+     return p.v;
+   },
+-  draw(s) {
+-    // drawn on a grid twice as fine as the (u, v) cells, so the surface looks smooth; one cell = 2 × 2 quads
+-    const K = this.K(s), cam = vzCam(300, 230, 66, vzRad(s.yaw), .45), C = this.cell(K, s, (u, v) => this.pos(K, u, v, s.m)), { n, m, iu, jv, du, dv } = C, grid = [];
+-    for (let i = 0; i <= 2 * n; i++) { const row = []; for (let j = 0; j <= 2 * m; j++) row.push(this.pos(K, K.U[0] + (K.U[1] - K.U[0]) * i / (2 * n), K.V[0] + (K.V[1] - K.V[0]) * j / (2 * m), s.m)); grid.push(row); }
+-    const qs = vzQuads(cam, grid, (i, j) => (i >> 1) === iu && (j >> 1) === jv ? [244, 168, 180] : vzMix([250, 238, 230], [232, 196, 190], j / (2 * m)));
+-    let o = vzQuadSvg(qs, { op: .95, mesh: .55 });
+-    // is the patch behind another part of the surface? Test its middle against every nearer quad that isn't next to it.
+-    // Then the arrows are drawn faintly and their names fade out; the normal's too while it points away from you
+-    const prj = grid.map(r => r.map(p => cam(p[0], p[1], p[2]))), Cm = cam(...this.pos(K, C.uc, C.vc, s.m)), near = (a, b, N, w) => { const d = Math.abs(a - b); return (w ? Math.min(d, N - d) : d) <= 1; };
+-    const inQuad = (x, y, P) => { let c = false; for (let k = 0, l = 3; k < 4; l = k++) if ((P[k][1] > y) !== (P[l][1] > y) && x < (P[l][0] - P[k][0]) * (y - P[k][1]) / (P[l][1] - P[k][1]) + P[k][0]) c = !c; return c; };
+-    let hid = 0;
+-    for (let i = 0; i < 2 * n && !hid; i++) for (let j = 0; j < 2 * m; j++) {
+-      if (near(i >> 1, iu, n, K.wu) && near(j >> 1, jv, m, K.wv)) continue;
+-      const P = [prj[i][j], prj[i + 1][j], prj[i + 1][j + 1], prj[i][j + 1]];
+-      if ((P[0][2] + P[1][2] + P[2][2] + P[3][2]) / 4 < Cm[2] - .05 && inQuad(Cm[0], Cm[1], P)) { hid = 1; break; }
++  draw(s, t, thumb) {
++    const K = this.K(s), mm = vzClamp(s.m, 0, 1), P = (u, v) => F1_sfPos(K, u, v, mm), C = this.cell(K, s, P), { n, m, iu, jv, du, dv } = C, BX = F1_sfBox(K);
++    const RED = [238, 150, 164];
++    let o = vzNote(129, 108, "the (u, v) rectangle", "middle") + vzNote(408, 60, "the surface", "middle");
++    // ---- the flat rectangle: the grid, the chosen cell, its sides Δu and Δv
++    o += `<rect x="${F1_SB.x}" y="${F1_SB.y}" width="${F1_SB.w}" height="${F1_SB.h}" fill="#FBEFEA" stroke="${VZ.ink}" stroke-opacity=".45" stroke-width="1.2"/>`;
++    let gl = "";
++    for (let i = 1; i < n; i++) { const u = K.U[0] + i * du; gl += `M${q2(BX.X(u, K.V[0]))} ${q2(BX.Y(u, K.V[0]))}L${q2(BX.X(u, K.V[1]))} ${q2(BX.Y(u, K.V[1]))}`; }
++    for (let j = 1; j < m; j++) { const v = K.V[0] + j * dv; gl += `M${q2(BX.X(K.U[0], v))} ${q2(BX.Y(K.U[0], v))}L${q2(BX.X(K.U[1], v))} ${q2(BX.Y(K.U[1], v))}`; }
++    o += `<path d="${gl}" stroke="${VZ.ink}" stroke-opacity=".18" stroke-width="1" fill="none"/>`;
++    const c0 = [BX.X(C.u, C.v), BX.Y(C.u, C.v)], cu = [BX.X(C.u + du, C.v), BX.Y(C.u + du, C.v)], cv = [BX.X(C.u, C.v + dv), BX.Y(C.u, C.v + dv)], cuv = [BX.X(C.u + du, C.v + dv), BX.Y(C.u + du, C.v + dv)];
++    o += `<path d="M${[c0, cu, cuv, cv].map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="rgb(${RED})" stroke="${VZ.deep}" stroke-width="1.4"/>`;
++    o += vzArrow(c0[0], c0[1], cu[0], cu[1], "R", 2.6) + vzArrow(c0[0], c0[1], cv[0], cv[1], "I", 2.6);
++    if (!thumb) o += vzGrip((c0[0] + cuv[0]) / 2, (c0[1] + cuv[1]) / 2, VZ.red, VzView.hot === "cell");
++    const lab = (p, q, html, col) => { const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, cx = (c0[0] + cuv[0]) / 2, cy = (c0[1] + cuv[1]) / 2, dx = mx - cx, dy = my - cy, L = Math.hypot(dx, dy) || 1; return vzLabel(mx + dx / L * 15, my + dy / L * 15 + 5, html, col, 15); };
++    o += lab(c0, cu, "Δu", VZ.red) + lab(c0, cv, "Δv", VZ.ink);
++    const ax = K.ang === "u" ? ["u →", "v ↑"] : ["v →", "u ↓"];
++    o += vzNote(F1_SB.x + F1_SB.w, F1_SB.y + F1_SB.h + 18, ax[0], "end") + vzNote(F1_SB.x - 6, F1_SB.y + 12, ax[1], "end");
++    // ---- the surface, drawn 3 quads per cell each way; the chosen cell is red
++    const cam = vzCam(408, 236, 62, vzRad(s.yaw), .45), sub = 3, grid = [];
++    for (let i = 0; i <= sub * n; i++) { const row = []; for (let j = 0; j <= sub * m; j++) row.push(P(K.U[0] + (K.U[1] - K.U[0]) * i / (sub * n), K.V[0] + (K.V[1] - K.V[0]) * j / (sub * m))); grid.push(row); }
++    const isC = (i, j) => Math.floor(i / sub) === iu && Math.floor(j / sub) === jv;
++    const qs = vzQuads(cam, grid, (i, j) => isC(i, j) ? RED : vzMix([250, 240, 233], [232, 204, 198], j / (sub * m)));
++    // each quad, with only the cell lines on it (every 3rd mesh line), so the cells are easy to count
++    const prj = grid.map(r => r.map(p => cam(p[0], p[1], p[2]))), sg = (a, b) => `M${q2(a[0])} ${q2(a[1])}L${q2(b[0])} ${q2(b[1])}`;
++    o += qs.map(q => {
++      const { i, j } = q, A0 = prj[i][j], A1 = prj[i + 1][j], A2 = prj[i + 1][j + 1], A3 = prj[i][j + 1];
++      const e = (i % sub ? "" : sg(A0, A3)) + ((i + 1) % sub ? "" : sg(A1, A2)) + (j % sub ? "" : sg(A0, A1)) + ((j + 1) % sub ? "" : sg(A3, A2));
++      return `<path d="${q.d}" fill="${q.fill}" stroke="${q.fill}" stroke-width=".5" stroke-linejoin="round"/>` + (e ? `<path d="${e}" stroke="${isC(i, j) ? VZ.deep : "#7A6A66"}" stroke-opacity="${isC(i, j) ? .9 : .4}" stroke-width="${isC(i, j) ? 1.4 : .9}" fill="none" stroke-linecap="round"/>` : "");
++    }).join("");
++    // is the chosen cell behind another part of the sheet?
++    const Q = [];
++    for (let i = 0; i < sub * n; i++) for (let j = 0; j < sub * m; j++) {
++      if (Math.abs(Math.floor(i / sub) - iu) <= 1 && Math.abs(Math.floor(j / sub) - jv) <= 1) continue;
++      const p = [prj[i][j], prj[i + 1][j], prj[i + 1][j + 1], prj[i][j + 1]];
++      Q.push({ p, dep: (p[0][2] + p[1][2] + p[2][2] + p[3][2]) / 4, x0: Math.min(...p.map(q => q[0])), x1: Math.max(...p.map(q => q[0])), y0: Math.min(...p.map(q => q[1])), y1: Math.max(...p.map(q => q[1])) });
+     }
++    const Cm = cam(...P(C.uc, C.vc)), hid = F1_hidden(Q, Cm[0], Cm[1], Cm[2] + .17) ? 1 : 0;
+     const Nl = Math.hypot(...C.N) || 1, sm = (a, b, x) => { const q = vzClamp((x - a) / (b - a), 0, 1); return q * q * (3 - 2 * q); };
+-    const pv = this.glide("p", 1 - hid), nv = this.glide("n", (1 - hid) * sm(-.3, -.05, vzDot(C.N, cam.view) / Nl)), op = v => q2(.28 + .72 * v);
+-    // the vectors r_u Δu, r_v Δv from the patch's corner, along its edges, and the unit normal
+-    const P0 = this.pos(K, C.u, C.v, s.m), A = C.ru.map((c, i) => P0[i] + c * du), B = C.rv.map((c, i) => P0[i] + c * dv), Nn = C.N.map((c, i) => P0[i] + c / Nl * .85);
+-    o += `<g opacity="${op(pv)}">${vzArrow3(cam, P0, A, "R", 2.6) + vzArrow3(cam, P0, B, "I", 2.6)}</g><g opacity="${op(nv)}">${vzArrow3(cam, P0, Nn, "O", 2.6)}</g>`;
+-    // the three names, past their tips and pushed apart so they never sit on each other or on the key
+-    const sub = (x, y) => `<tspan font-weight="700">r</tspan><tspan baseline-shift="sub" font-size="12">${x}</tspan>${y || ""}`;
+-    const labs = this.names(cam(P0[0], P0[1], P0[2]), [[cam(...Nn), sub("u") + " × " + sub("v"), "#8A6A12", 24], [cam(...A), sub("u", " Δu"), VZ.red, 22], [cam(...B), sub("v", " Δv"), VZ.ink, 22]], 245);
++    const pv = this.glide("p", 1 - hid), nv = this.glide("n", (1 - hid) * sm(-.3, -.05, vzDot(C.N, cam.view) / Nl)), op = v => q2(.25 + .75 * v);
++    // the parallelogram spanned by r_u Δu and r_v Δv at the cell's corner: almost the red cell itself
++    const P0 = P(C.u, C.v), A = C.ru.map((c, i) => P0[i] + c * du), B = C.rv.map((c, i) => P0[i] + c * dv), AB = A.map((c, i) => c + B[i] - P0[i]), Nn = C.N.map((c, i) => P0[i] + c / Nl * .8);
++    o += `<g opacity="${op(pv)}">${vzPath3(cam, [P0, A, AB, B, P0], `fill="${VZ.red}" fill-opacity=".14" stroke="${VZ.ink}" stroke-width="1.4" stroke-dasharray="4 3"`)}` + vzArrow3(cam, P0, A, "R", 2.8) + vzArrow3(cam, P0, B, "I", 2.8) + `</g><g opacity="${op(nv)}">${vzArrow3(cam, P0, Nn, "O", 2.6)}</g>`;
++    const sb = (x, y) => `<tspan font-weight="700">r</tspan><tspan baseline-shift="sub" font-size="12">${x}</tspan>${y || ""}`;
++    const labs = this.names(cam(P0[0], P0[1], P0[2]), [[cam(...Nn), sb("u") + " × " + sb("v"), "#8A6A12", 24], [cam(...A), sb("u", " Δu"), VZ.red, 22], [cam(...B), sb("v", " Δv"), VZ.ink, 22]], 300);
+     o += labs.map((x, k) => `<g opacity="${q2(k ? pv : nv)}">${x}</g>`).join("");
+-    o += vzKey([["fill", VZ.red, "one (u, v) cell"], ["line", VZ.gold, "the normal"]]);   // 245 wide
+-    return o;
++    o += vzKey([["fill", VZ.red, "one (u, v) cell"], ["dash", VZ.ink, "its parallelogram"], ["line", VZ.gold, "the normal"]]);
++    return F1_phone(o);
+   },
+-  // like vzTipLabels (each name just past its arrow's tip, on whichever side keeps it clear, keeping last frame's side in a
+-  // near tie), with the key in the bottom-left corner as one more thing to keep clear of. items: [tip on screen, html, colour, gap]
++  // each name just past its arrow's tip, on whichever side keeps it clear of the others, the flat rectangle and the key
++  // (keeping last frame's side in a near tie). items: [tip on screen, html, colour, gap]
+   names(O, items, keyW) {
+-    const placed = [[16 + keyW / 2, 427, keyW]], mem = VzView.live ? (this._side || (this._side = {})) : {};
++    const placed = [[16 + keyW / 2, 427, keyW], [110, 216, 200], [408, 55, 110]], mem = VzView.live ? (this._side || (this._side = {})) : {};
+     return items.map(([T, html, col, gap], idx) => {
+       const dx = T[0] - O[0], dy = T[1] - O[1], L = Math.hypot(dx, dy);
+       if (L < .5) return "";
+       const ux = dx / L, uy = dy / L, w = html.replace(/<[^>]+>/g, "").length * 8.5 + 6;
+       let best = null, bs = -Infinity, bi = 0;
+-      // past the tip, nudged to either side; failing that, level with the tip on its left or right
+       [[gap, 6], [gap, -6], [gap, 20], [gap, -20], [gap, 34], [gap, -34], [0, w / 2 + 12], [0, -w / 2 - 12]].forEach(([along, side], i) => {
+         const x = T[0] + ux * along - uy * side, y = T[1] + uy * along + ux * side;
+-        const d = Math.min(...placed.map(p => Math.max(Math.abs(p[0] - x) / ((p[2] + w) / 2), Math.abs(p[1] - y) / 27)));
++        const d = Math.min(...placed.map(p => Math.max(Math.abs(p[0] - x) / ((p[2] + w) / 2), Math.abs(p[1] - y) / (p[2] === 200 ? 110 : 27))));
+         const sc = (d >= 1 ? 100 : d * 50) - i + (mem[idx] === i ? 12 : 0) - (y > 420 ? 40 : 0);
+         if (sc > bs) { bs = sc; best = [x, y]; bi = i; }
+       });
+@@ -17239,9 +17296,9 @@
+   readout(s) {
+     const K = this.K(s), C = this.cell(K, s, K.r), N = Math.hypot(...C.N);
+     return `<div class="vz-eq">${K.name}</div>
+-      <div class="vz-eq">at this patch ‖<b>r</b><sub>u</sub> × <b>r</b><sub>v</sub>‖ = <b>${vzNum(N)}</b></div>
+-      <div class="vz-eq">patch area ≈ ${vzNum(N)} × Δu Δv = ${vzNum(N * C.du * C.dv, 3)}</div>
+-      <div class="vz-status ok">Add up every patch: dS = ‖r<sub>u</sub> × r<sub>v</sub>‖ du dv.</div>`;
++      <div class="vz-eq">at this cell ‖<b>r</b><sub>u</sub> × <b>r</b><sub>v</sub>‖ = <b>${vzNum(N)}</b></div>
++      <div class="vz-eq">its area ≈ ${vzNum(N)} × Δu Δv = ${vzNum(N * C.du * C.dv, 3)}</div>
++      <div class="vz-status ok">Add up every cell: dS = ‖r<sub>u</sub> × r<sub>v</sub>‖ du dv.</div>`;
+   },
+ });
+ 
+@@ -22389,105 +22446,167 @@
+ });
+ 
+ /* ---------- Critical points of a bumpy surface (crit3d) ---------- */
+-// Three functions of our own. Each lists its critical points (checked with sympy), its gradient and its second derivatives.
+-const VZ6_BUMPS = [[1.5, 1, .4, .8], [1.1, -1.2, -.7, .6], [-1.2, -.1, 1.3, .5]];   // [height, centre x, centre y, width²]
+-function vzSixBump(x, y) {
++// A critical point is where the ground is flat: ∇f = 0 and the tangent plane is level. Walk a small circle round it
++// to tell which kind: all lower (a top), all higher (a pit) or up, down, up, down (a saddle). On the map, tops and pits
++// sit inside rings of closed loops and at a saddle the level curves cross. A ball let go just off a saddle rolls away.
++// Three functions of our own; their critical points were found and sorted with sympy (nsolve from a grid of seeds).
++const F1_BUMPS = [[1.5, 1, -.4, .8], [1.1, -1.2, .7, .6], [-1.2, -.1, -1.3, .5]];   // [height, centre x, centre y, width²]
++function F1_bump(x, y) {
+   let f = .06 * (x * x + y * y), gx = .12 * x, gy = .12 * y, hxx = .12, hxy = 0, hyy = .12;
+-  VZ6_BUMPS.forEach(([A, cx, cy, w]) => {
++  F1_BUMPS.forEach(([A, cx, cy, w]) => {
+     const dx = x - cx, dy = y - cy, e = A * Math.exp(-(dx * dx + dy * dy) / w);
+     f += e; gx += e * -2 * dx / w; gy += e * -2 * dy / w;
+     hxx += e * (4 * dx * dx / (w * w) - 2 / w); hxy += e * 4 * dx * dy / (w * w); hyy += e * (4 * dy * dy / (w * w) - 2 / w);
+   });
+   return { f, g: [gx, gy], h: [hxx, hxy, hyy] };
+ }
+-const VZ6_CR = [
+-  { name: "two hills, a pit and a bowl", R: 2.8, hk: 3,
+-    at: (x, y) => vzSixBump(x, y),
+-    crit: [[-2.2952698430, -1.3389075633], [-1.2398553964, -.7233630210], [-.1560285791, 1.3147617419], [-.1518937499, -.2676724401], [.2870996846, -1.2296788989], [1.0540123573, .3968904999], [2.4161514834, .9662680925]] },
+-  { name: "x³ − 3xy², a monkey saddle", R: 1.5, hk: 1, note: "a monkey saddle: up, down, up, down, up, down",
++// k: how strongly the slope pulls the ball, c: how much it is slowed (rolling friction)
++const F1_CR = [
++  { name: "two hills, a pit and a bowl", R: 2.8, k: 4, c: 2.4,
++    at: (x, y) => F1_bump(x, y),
++    crit: [[-2.2952698430, 1.3389075633], [-1.2398553964, .7233630210], [-.1560285791, -1.3147617419], [-.1518937499, .2676724401], [.2870996846, 1.2296788989], [1.0540123573, -.3968904999], [2.4161514834, -.9662680925]] },
++  { name: "x³ − 3xy², a monkey saddle", R: 1.5, k: 1.2, c: 1.2,
+     at: (x, y) => ({ f: x * x * x - 3 * x * y * y, g: [3 * x * x - 3 * y * y, -6 * x * y], h: [6 * x, -6 * y, -6 * x] }),
+     crit: [[0, 0]] },
+-  { name: "x⁴ + y⁴, a flat-bottomed bowl", R: 1.5, hk: 14, note: "a flat-bottomed bowl: really a minimum",
++  { name: "x⁴ + y⁴, a flat-bottomed bowl", R: 1.5, k: 2, c: 1.5,
+     at: (x, y) => ({ f: x ** 4 + y ** 4, g: [4 * x ** 3, 4 * y ** 3], h: [12 * x * x, 0, 12 * y * y] }),
+     crit: [[0, 0]] },
+ ];
+-const VZ6_TYPE = { max: ["a local maximum", VZ.red], min: ["a local minimum", VZ.ink], saddle: ["a saddle point", VZ.gold], tbd: ["a point where the test can't decide", VZ.grey] };
+-// per function, worked out once: range, steepest slope, the marks, the contour map as a picture
+-function vz6Info(i) {
+-  vz6Info.c = vz6Info.c || {};
+-  if (vz6Info.c[i]) return vz6Info.c[i];
+-  const K = VZ6_CR[i], R = K.R, N = 56, I = {};
++const F1_BLUE = "#2F6DB5", F1_RING = 30 / 126;            // lower is blue, higher is red; the circle walked has a radius of 30 map pixels
++const F1_TYPE = { max: ["a local maximum", VZ.red], min: ["a local minimum", VZ.ink], saddle: ["a saddle point", VZ.gold], tbd: ["a point where the test can't decide", VZ.grey] };
++// heights: pale blue (low) through paper to soft red (high), the same on the map and on the surface
++const F1_ramp = t => { t = vzClamp(t, 0, 1); return t < .5 ? vzMix([126, 160, 206], [247, 243, 238], t / .5) : vzMix([247, 243, 238], [222, 100, 114], (t - .5) / .5); };
++const F1_MX = n => 150 + 126 * n, F1_MY = n => 250 - 126 * n;
++// per function, worked out once: range, steepest slope, the marks, the banded contour map, the surface mesh
++function F1_info(i) {
++  F1_info.c = F1_info.c || {};
++  if (F1_info.c[i]) return F1_info.c[i];
++  const K = F1_CR[i], R = K.R, N = 56, I = {};
+   const F = Array.from({ length: N + 1 }, (_, j) => Array.from({ length: N + 1 }, (_, k) => K.at(-R + 2 * R * k / N, -R + 2 * R * j / N).f));
+   let lo = Infinity, hi = -Infinity, G = 0;
+   F.forEach(r => r.forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v); }));
+   for (let j = 0; j <= 30; j++) for (let k = 0; k <= 30; k++) G = Math.max(G, Math.hypot(...K.at(-R + 2 * R * k / 30, -R + 2 * R * j / 30).g));
+-  I.lo = lo; I.hi = hi; I.G = G; I.G0 = G * .3; I.mid = (lo + hi) / 2; I.zs = 2.4 / (hi - lo); I.F = F;
++  Object.assign(I, { lo, hi, G, G0: G * .3, mid: (lo + hi) / 2, zs: 2.4 / (hi - lo), F, N });
+   I.marks = K.crit.map(([x, y]) => {
+     const a = K.at(x, y), D = a.h[0] * a.h[2] - a.h[1] * a.h[1];
+     return { x, y, nx: x / R, ny: y / R, f: a.f, type: Math.abs(D) < 1e-3 ? "tbd" : D < 0 ? "saddle" : a.h[0] > 0 ? "min" : "max" };
+   });
+-  const W = 96, cv = document.createElement("canvas"); cv.width = cv.height = W;
++  const W = 168, cv = document.createElement("canvas"); cv.width = cv.height = W;   // 15 height bands, one colour each
+   const cx = cv.getContext("2d"), im = cx.createImageData(W, W);
+   for (let j = 0; j < W; j++) for (let k = 0; k < W; k++) {
+-    const v = K.at(-R + 2 * R * (k + .5) / W, R - 2 * R * (j + .5) / W).f, c = VZ_RAMP((v - lo) / (hi - lo)), p = 4 * (j * W + k);
++    const t = (K.at(-R + 2 * R * (k + .5) / W, R - 2 * R * (j + .5) / W).f - lo) / (hi - lo), c = F1_ramp((Math.min(14, Math.floor(t * 15)) + .5) / 15), p = 4 * (j * W + k);
+     im.data[p] = c[0]; im.data[p + 1] = c[1]; im.data[p + 2] = c[2]; im.data[p + 3] = 255;
+   }
+   cx.putImageData(im, 0, 0); I.img = cv.toDataURL();
+-  let d = "";   // 14 level curves on the map (map pixels: 126 per half-width)
+-  for (let q = 1; q < 15; q++) d += vzContour(F, N, N, -R, -R, 2 * R / N, 2 * R / N, lo + (hi - lo) * q / 15).map(([a, b]) => `M${q2(150 + 126 * a[0] / R)} ${q2(250 - 126 * a[1] / R)}L${q2(150 + 126 * b[0] / R)} ${q2(250 - 126 * b[1] / R)}`).join("");
++  let d = "";   // the 14 level curves between the bands
++  for (let q = 1; q < 15; q++) d += vzContour(F, N, N, -R, -R, 2 * R / N, 2 * R / N, lo + (hi - lo) * q / 15).map(([a, b]) => `M${q2(F1_MX(a[0] / R))} ${q2(F1_MY(a[1] / R))}L${q2(F1_MX(b[0] / R))} ${q2(F1_MY(b[1] / R))}`).join("");
+   I.contours = d;
+-  const E = 1.9, n = 18;   // the surface mesh (turned by the camera, never rebuilt)
++  const E = 1.9, n = 20;   // the surface mesh (turned by the camera, never rebuilt)
+   I.surf = Array.from({ length: n + 1 }, (_, a) => Array.from({ length: n + 1 }, (_, b) => { const nx = -1 + 2 * a / n, ny = -1 + 2 * b / n; return [nx * E, ny * E, (K.at(nx * R, ny * R).f - I.mid) * I.zs]; }));
+-  return (vz6Info.c[i] = I);
++  return (F1_info.c[i] = I);
+ }
+-// the ball's way downhill from (u, v): follows −∇f, in steps of about the same length, until it settles (or reaches the rim)
+-function vz6Path(i, u, v) {
+-  const K = VZ6_CR[i], I = vz6Info(i), R = K.R, key = i + "|" + u.toFixed(4) + "," + v.toFixed(4);
+-  if (vz6Path.k === key) return vz6Path.v;
+-  const h = .025 * R / I.G * K.hk, pts = [[u, v]], cum = [0];
+-  let x = u * R, y = v * R, out = false, px = u, py = v;
+-  for (let n = 0; n < 2500; n++) {
+-    const g = K.at(x, y).g, dx = -g[0] * h, dy = -g[1] * h;
+-    if (Math.hypot(dx, dy) < 2e-5 * R) break;
+-    x += dx; y += dy;
+-    if (Math.abs(x) > .97 * R || Math.abs(y) > .97 * R) { const k = Math.min(1, .97 * R / Math.max(Math.abs(x), Math.abs(y))); x *= k; y *= k; out = true; }
+-    if (out || Math.hypot(x / R - px, y / R - py) >= .004) { cum.push(cum[cum.length - 1] + Math.hypot(x / R - px, y / R - py)); pts.push([x / R, y / R]); px = x / R; py = y / R; }
+-    if (out) break;
++// the mark the point sits on (within tol, in map units of the half-width), or none
++const F1_markAt = (i, p, tol = .025) => F1_info(i).marks.find(m => Math.hypot(m.nx - p[0], m.ny - p[1]) < tol);
++// a heavy ball let go at rest: pulled down the slope (−k ∇f), slowed by friction (−c v). Positions every 1/50 s.
++function F1_sim(K, x, y) {
++  const R = K.R, dt = .004, pts = [[x / R, y / R]];
++  let vx = 0, vy = 0, out = false;
++  for (let n = 1; n <= 3500 && !out; n++) {
++    const g = K.at(x, y).g;
++    vx += (-K.k * g[0] - K.c * vx) * dt; vy += (-K.k * g[1] - K.c * vy) * dt; x += vx * dt; y += vy * dt;
++    if (Math.abs(x) > .97 * R || Math.abs(y) > .97 * R) { const s = .97 * R / Math.max(Math.abs(x), Math.abs(y)); x *= s; y *= s; out = true; }
++    if (n % 5 === 0 || out) pts.push([x / R, y / R]);
+   }
+-  if (Math.hypot(x / R - px, y / R - py) > 1e-9) { cum.push(cum[cum.length - 1] + Math.hypot(x / R - px, y / R - py)); pts.push([x / R, y / R]); }
+-  return (vz6Path.k = key, vz6Path.v = { pts, cum, L: cum[cum.length - 1], out });
++  return { pts, out };
+ }
+-// how far along the way the ball is at progress r (eased: it slows as it settles), and the track so far
+-function vz6Along(P, r) {
+-  const s = P.L * Math.sin(vzClamp(r, 0, 1) * Math.PI / 2);
+-  let k = 1; while (k < P.cum.length - 1 && P.cum[k] < s) k++;
+-  if (P.L < 1e-9) return { p: P.pts[0], upto: [P.pts[0]] };
+-  const f = vzClamp((s - P.cum[k - 1]) / ((P.cum[k] - P.cum[k - 1]) || 1), 0, 1), a = P.pts[k - 1], b = P.pts[k], p = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+-  return { p, upto: P.pts.slice(0, k).concat([p]) };
++// the ball's way from (u, v). Let go exactly on a top or a saddle it would stay balanced, so it gets a small nudge:
++// toward whichever of 24 directions leads it lowest in the end. On a pit there is no way down, and it stays put.
++function F1_roll(i, u, v) {
++  const key = i + "|" + u.toFixed(4) + "," + v.toFixed(4);
++  if (F1_roll.k === key) return F1_roll.v;
++  const K = F1_CR[i], R = K.R, m = F1_markAt(i, [u, v]), f0 = K.at(u * R, v * R).f;
++  let S = null, nudged = false;
++  if (m) {
++    let best = null;
++    for (let a = 0; a < 24; a++) {
++      const th = 2 * Math.PI * a / 24, x = (u + .05 * Math.cos(th)) * R, y = (v + .05 * Math.sin(th)) * R;
++      if (K.at(x, y).f >= f0) continue;
++      const T = F1_sim(K, x, y), e = T.pts[T.pts.length - 1], fe = T.out ? 1e9 : K.at(e[0] * R, e[1] * R).f;   // off the edge counts last
++      if (!best || fe < best.fe - 1e-6) best = { T, fe };
++    }
++    if (best) {                                             // the nudge itself is eased in over 0.3 s, so nothing jumps
++      S = best.T; nudged = true; const n0 = S.pts[0];
++      S.pts = Array.from({ length: 15 }, (_, k) => { const e = vzEase(k / 15); return [u + (n0[0] - u) * e, v + (n0[1] - v) * e]; }).concat(S.pts);
++    }
++  }
++  if (!S) S = m ? { pts: [[u, v], [u, v]], out: false } : F1_sim(K, u * R, v * R);
++  const P = S.pts, e = P[P.length - 1];
++  let last = 1; P.forEach((p, k) => { if (Math.hypot(p[0] - e[0], p[1] - e[1]) > .005) last = k + 1; });
++  const pts = P.slice(0, Math.min(P.length, last + 1)), T = (pts.length - 1) / 50;
++  const end = F1_markAt(i, pts[pts.length - 1], .04);
++  return (F1_roll.k = key, F1_roll.v = { pts, T, D: vzClamp(T, 1.6, 7), out: S.out, nudged, from: m, end: S.out ? null : end });
+ }
++// where the ball is at progress r, and how far along the samples (fractional index)
++function F1_ballAt(P, r) {
++  const s = vzClamp(r, 0, 1) * (P.pts.length - 1), k = Math.min(P.pts.length - 2, Math.floor(s)), f = s - k, a = P.pts[k], b = P.pts[k + 1] || a;
++  return { p: [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], s };
++}
++// the small circle round p: 96 heights compared with f(p); runs of "higher" / "lower" up to the walked angle
++function F1_circle(i, p, walk) {
++  const K = F1_CR[i], R = K.R, f0 = K.at(p[0] * R, p[1] * R).f, n = 96, pts = [];
++  for (let k = 0; k <= n; k++) { const a = 2 * Math.PI * k / n, x = p[0] + F1_RING * Math.cos(a), y = p[1] + F1_RING * Math.sin(a); pts.push({ a, x, y, d: K.at(x * R, y * R).f - f0 }); }
++  const sgn = q => q.d >= 0 ? 1 : -1, runs = [], th = 2 * Math.PI * vzClamp(walk, 0, 1);
++  let ch = 0; for (let k = 0; k < n; k++) if (sgn(pts[k]) !== sgn(pts[k + 1])) ch++;
++  for (let k = 0; k < n && pts[k].a < th - 1e-9; k++) {
++    const A = pts[k], B = pts[k + 1], s = sgn({ d: (A.d + B.d) / 2 }), endA = Math.min(B.a, th), f = (endA - A.a) / (B.a - A.a);
++    const Q = [A.x + (B.x - A.x) * f, A.y + (B.y - A.y) * f];
++    if (!runs.length || runs[runs.length - 1].s !== s) runs.push({ s, pts: [[A.x, A.y]] });
++    runs[runs.length - 1].pts.push(Q);
++  }
++  const hi = pts.every(q => q.d > 0), lo = pts.every(q => q.d < 0);
++  return { runs, ch, hi, lo, th, f0, walker: [p[0] + F1_RING * Math.cos(th), p[1] + F1_RING * Math.sin(th)] };
++}
++// is the screen point (x, y) at depth dep behind some nearer piece of the surface?
++function F1_hidden(Q, x, y, dep) {
++  for (const q of Q) {
++    if (q.dep > dep - .22 || x < q.x0 || x > q.x1 || y < q.y0 || y > q.y1) continue;
++    let inside = false; const p = q.p;
++    for (let a = 0, b = 3; a < 4; b = a++) if ((p[a][1] > y) !== (p[b][1] > y) && x < (p[b][0] - p[a][0]) * (y - p[a][1]) / (p[b][1] - p[a][1]) + p[a][0]) inside = !inside;
++    if (inside) return true;
++  }
++  return false;
++}
++// the ball: a small steel ball (shaded), or its outline where the surface hides it
++const F1_ball = (x, y, r, ghost, op = 1) => ghost
++  ? `<circle cx="${q2(x)}" cy="${q2(y)}" r="${r}" fill="#fff" fill-opacity=".45" stroke="${VZ.ink}" stroke-width="1.5" stroke-dasharray="3 2.5" opacity="${q2(.85 * op)}"/>`
++  : `<g opacity="${q2(op)}"><circle cx="${q2(x)}" cy="${q2(y)}" r="${r + 2.2}" fill="#fff" fill-opacity=".85"/><circle cx="${q2(x)}" cy="${q2(y)}" r="${r}" fill="url(#f1-ball)" stroke="${VZ.ink}" stroke-width="1.3"/></g>`;
+ vzAdd({
+   id: "crit3d", title: "Critical points of a bumpy surface", card: "Critical-point explorer",
+-  tagline: "Where the ground is flat: tops, pits and saddles.",
+-  blurb: "At a critical point \\(\\nabla f=\\mathbf 0\\): the arrow shrinks to nothing and the tangent plane lies flat. The second-derivative test \\(D=f_{xx}f_{yy}-f_{xy}^2\\) then sorts it into a maximum, a minimum or a saddle, or says nothing when \\(D=0\\).",
+-  tryIt: "Drag the point onto a mark: the arrow vanishes.",
+-  state: { fn: 0, u: .45, v: .5, roll: 0, yaw: -35 },
+-  thumb: { roll: 0, u: .55, v: -.2 },
++  tagline: "Flat ground: a top, a pit or a saddle.",
++  blurb: "At a critical point \\(\\nabla f=\\mathbf 0\\): the arrow shrinks to nothing and the tangent plane is level. Walk a small circle round it: all lower is a maximum, all higher a minimum, up and down in turn a saddle. On the map, tops and pits sit inside rings of closed loops; at a saddle the level curves cross.",
++  tryIt: "Drag the ball onto a mark, then walk the circle.",
++  state: { fn: 0, u: -.15189375 / 2.8, v: .26767244 / 2.8, walk: 1, roll: 0, yaw: -35 },
++  thumb: { walk: 1, roll: 0 },
++  defs: `<clipPath id="f1-cm"><rect x="24" y="124" width="252" height="252" rx="8"/></clipPath>` +
++    `<radialGradient id="f1-ball" cx=".36" cy=".32" r=".75"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#B9C2CC"/><stop offset="1" stop-color="#4A5562"/></radialGradient>`,
+   controls: [
+-    { k: "roll", label: "roll a ball downhill", min: 0, max: 1, step: .005, play: .2, progress: true, fmt: v => v < .005 ? "at the start" : v > .995 ? "settled" : "rolling", aria: "the ball" },
++    { k: "walk", label: "walk a small circle", min: 0, max: 1, step: .005, play: .3, progress: true, fmt: v => v < .005 ? "not yet" : v > .995 ? "all the way" : "walking", aria: "the walk round the circle" },
++    { k: "roll", label: "let a ball roll", min: 0, max: 1, step: .005, progress: true, aria: "the ball",
++      play: () => { const s = VzView.st; return 1 / F1_roll(Math.round(s.fn), s.u, s.v).D; }, fmt: v => v < .005 ? "at rest" : v > .995 ? "stopped" : "rolling" },
+     { k: "yaw", label: "turn the surface", min: -80, max: 80, step: 1, unit: "°", digits: 0, noPlay: true },
+   ],
+-  presets: [["Hills and pits", { fn: 0, roll: 0 }], ["Monkey saddle", { fn: 1, roll: 0 }], ["Flat-bottomed bowl", { fn: 2, roll: 0 }]],
+-  variants: [{ fn: 0, u: .9, v: .9 }, { fn: 1, roll: .5 }, { fn: 2, u: 0, v: 0 }, { fn: 1, u: -.96, v: -.96, roll: 1 }, { fn: 0, roll: 1 }, { fn: 2, roll: .4, yaw: 70 }, { fn: 0, u: -.96, v: .96, yaw: -80 }],
+-  defs: `<clipPath id="vz6-cm"><rect x="24" y="124" width="252" height="252" rx="8"/></clipPath>`,
+-  cur(s) {                                                  // the point the picture is looking at: where you put it, or where the ball is
++  presets: [["Saddle", { fn: 0, u: -.15189375 / 2.8, v: .26767244 / 2.8, roll: 0 }], ["Hilltop", { fn: 0, u: 1.05401236 / 2.8, v: -.3968905 / 2.8, roll: 0 }],
++    ["Monkey saddle", { fn: 1, u: 0, v: 0, roll: 0 }], ["Flat-bottomed bowl", { fn: 2, u: 0, v: 0, roll: 0 }]],
++  variants: [{ fn: 0, u: .9, v: .9 }, { fn: 1, roll: .5 }, { fn: 2, u: 0, v: 0, walk: .5 }, { fn: 1, u: -.96, v: -.96, roll: 1 }, { fn: 0, roll: 1 }, { fn: 2, roll: .4, yaw: 70 }, { fn: 0, u: -.96, v: .96, yaw: -80 }, { fn: 0, walk: .3, yaw: 80 }],
++  cur(s) {                                                  // where the ball is: where you put it, or where it has rolled to
+     if (!(s.roll > .0005)) return [s.u, s.v];
+-    return vz6Along(vz6Path(Math.round(s.fn), s.u, s.v), s.roll).p;
++    return F1_ballAt(F1_roll(Math.round(s.fn), s.u, s.v), s.roll).p;
+   },
+-  handles(s) { const c = this.cur(s); return [{ k: "pt", x: 150 + 126 * c[0], y: 250 - 126 * c[1] }]; },
++  handles(s) { const c = this.cur(s); return [{ k: "pt", x: F1_MX(c[0]), y: F1_MY(c[1]) }]; },
+   dragTo(s, k, x, y, fine) {
+     let nu = vzClamp((x - 150) / 126, -.96, .96), nv = vzClamp((250 - y) / 126, -.96, .96);
+     if (!fine) {                                            // let go near a mark and it settles on it
+-      const m = vz6Info(Math.round(s.fn)).marks.find(m => Math.hypot(m.nx - nu, m.ny - nv) < .1);
++      const m = F1_markAt(Math.round(s.fn), [nu, nv], .1);
+       if (m) { nu = m.nx; nv = m.ny; }
+     }
+     s.u = nu; s.v = nv; s.roll = 0;
+@@ -22499,61 +22618,107 @@
+   },
+   staticKey: s => Math.round(s.fn),
+   static(s) {
+-    const i = Math.round(s.fn), K = VZ6_CR[i], I = vz6Info(i);
++    const I = F1_info(Math.round(s.fn));
+     let o = `<rect x="18" y="112" width="264" height="276" rx="12" fill="#FFFFFF" fill-opacity=".55" stroke="${VZ.soft}"/>`;
+-    o += `<g clip-path="url(#vz6-cm)"><image href="${I.img}" x="24" y="124" width="252" height="252" preserveAspectRatio="none" opacity=".8"/><path d="${I.contours}" fill="none" stroke="${VZ.ink}" stroke-opacity=".3" stroke-width="1"/></g>`;
+-    o += `<rect x="24" y="124" width="252" height="252" rx="8" fill="none" stroke="${VZ.ink}" stroke-opacity=".18"/>`;
+-    I.marks.forEach(m => { o += `<circle cx="${q2(150 + 126 * m.nx)}" cy="${q2(250 - 126 * m.ny)}" r="5.6" fill="${VZ6_TYPE[m.type][1]}" stroke="#fff" stroke-width="1.6"/>`; });
+-    return o + vzNote(150, 104, "the contour map", "middle") + vzNote(448, 104, "the surface", "middle");
++    o += `<g clip-path="url(#f1-cm)"><image href="${I.img}" x="24" y="124" width="252" height="252" preserveAspectRatio="none"/><path d="${I.contours}" fill="none" stroke="${VZ.ink}" stroke-opacity=".32" stroke-width="1"/></g>`;
++    o += `<rect x="24" y="124" width="252" height="252" rx="8" fill="none" stroke="${VZ.ink}" stroke-opacity=".2"/>`;
++    I.marks.forEach(m => { o += `<circle cx="${q2(F1_MX(m.nx))}" cy="${q2(F1_MY(m.ny))}" r="6" fill="${F1_TYPE[m.type][1]}" stroke="#fff" stroke-width="2"/>`; });
++    return o + F1_phone(vzNote(150, 104, "the contour map", "middle") + vzNote(448, 104, "the surface", "middle"), true);   // (the static layer is drawn outside the live pass)
+   },
+   draw(s, t, thumb) {
+-    const i = Math.round(s.fn), K = VZ6_CR[i], I = vz6Info(i), roll = s.roll || 0, E = 1.9;
+-    const P = roll > .0005 ? vz6Path(i, s.u, s.v) : null, al = P ? vz6Along(P, roll) : null, c = al ? al.p : [s.u, s.v];
+-    const x = c[0] * K.R, y = c[1] * K.R, A = K.at(x, y), gl = Math.hypot(A.g[0], A.g[1]);
+-    const fade = P && P.out ? 1 - vzClamp((roll - .85) / .15, 0, 1) : 1;      // a ball that rolls off the rim fades out
+-    const MX = n => 150 + 126 * n, MY = n => 250 - 126 * n, pt = p => q2(MX(p[0])) + " " + q2(MY(p[1]));
++    const i = Math.round(s.fn), K = F1_CR[i], I = F1_info(i), R = K.R, E = 1.9, roll = vzClamp(s.roll || 0, 0, 1), walk = vzClamp(s.walk, 0, 1);
++    const P = roll > .0005 ? F1_roll(i, s.u, s.v) : null, B = P ? F1_ballAt(P, roll) : null, c = B ? B.p : [s.u, s.v];
++    const A = K.at(c[0] * R, c[1] * R), gl = Math.hypot(A.g[0], A.g[1]);
++    const gone = P && P.out ? vzClamp((roll - .82) / .18, 0, 1) : 0;                 // a ball that rolls off the edge fades out
++    const still = P ? Math.max(1 - vzClamp(roll / .05, 0, 1), P.out ? 0 : vzClamp((roll - .94) / .06, 0, 1)) : 1;   // the circle, plane and arrow: at rest only
++    const X0 = F1_MX(c[0]), Y0 = F1_MY(c[1]), pt = p => q2(F1_MX(p[0])) + " " + q2(F1_MY(p[1]));
+     let o = "";
+-    // ---- the map: the way the ball goes, the arrow ∇f, the point
+-    if (P && P.L > 1e-6) {
+-      o += `<path d="M${P.pts.map(pt).join("L")}" fill="none" stroke="${VZ.ink}" stroke-opacity=".25" stroke-width="1.6" stroke-dasharray="2 4" stroke-linecap="round"/>`;
+-      o += `<path d="M${al.upto.map(pt).join("L")}" fill="none" stroke="${VZ.ink}" stroke-opacity=".7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="${q2(fade)}"/>`;
++    // ---- the map: the level curve through the point, the circle walked round it, the arrow ∇f, the ball and its trail
++    if (still > .01) {
++      const lv = vzContour(I.F, I.N, I.N, -R, -R, 2 * R / I.N, 2 * R / I.N, A.f).map(([a, b]) => `M${pt([a[0] / R, a[1] / R])}L${pt([b[0] / R, b[1] / R])}`).join("");
++      if (lv) o += `<g clip-path="url(#f1-cm)" opacity="${q2(still)}"><path d="${lv}" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="4.4" stroke-linecap="round"/><path d="${lv}" fill="none" stroke="${VZ.ink}" stroke-width="2" stroke-linecap="round"/></g>`;
+     }
+-    const L = 60 * Math.tanh(gl / I.G0), ux = gl > 1e-9 ? A.g[0] / gl : 0, uy = gl > 1e-9 ? -A.g[1] / gl : 0, X0 = MX(c[0]), Y0 = MY(c[1]);
+-    if (!thumb) o += vzGrip(X0, Y0, VZ.red, VzView.hot === "pt");
+-    o += `<g opacity="${q2(vzClamp((L - 3) / 7, 0, 1) * fade)}">${vzArrow(X0, Y0, X0 + ux * L, Y0 + uy * L, "R", 3.2)}</g>`;
+-    if (L > 18) o += `<g opacity="${q2(vzClamp((L - 18) / 10, 0, 1) * fade)}">${vzLabel(X0 + ux * (L + 15), Y0 + uy * (L + 15) + 5, "∇f", VZ.red, 16)}</g>`;
+-    o += `<circle cx="${q2(X0)}" cy="${q2(Y0)}" r="5.6" fill="${VZ.red}" stroke="#fff" stroke-width="1.7" opacity="${q2(fade)}"/>`;
+-    // ---- the surface, with the marks, the point and its tangent plane in far-to-near order
+-    const cam = vzCam(448, 262, 52, vzRad(s.yaw), .5), zw = f => (f - I.mid) * I.zs, items = [];
+-    const qs = vzQuads(cam, I.surf, (a, b, z) => VZ_RAMP(z / 2.4 + .5));
+-    qs.forEach(q => items.push({ dep: q.dep, svg: vzQuadSvg([q], { op: 1, mesh: .45 }) }));
+-    I.marks.forEach(m => { const q = cam(m.nx * E, m.ny * E, zw(m.f)); items.push({ dep: q[2] - .35, svg: `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="5.6" fill="${VZ6_TYPE[m.type][1]}" stroke="#fff" stroke-width="1.6"/>` }); });
+-    const xw = c[0] * E, yw = c[1] * E, z0 = zw(A.f), q0 = cam(xw, yw, z0), sc = I.zs * K.R / E;
+-    const sx = A.g[0] * sc, sy = A.g[1] * sc, d = .55 / Math.max(1, Math.hypot(sx, sy) / 1.1);
+-    const flat = 1 - vzClamp(gl / (I.G * .05), 0, 1);
+-    items.push({ dep: q0[2] - .45, svg: `<g opacity="${q2(fade)}">` + vzPath3(cam, [[xw, yw, -1.3], [xw, yw, z0]], `stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="3 4"`) +
+-      vzPath3(cam, [[xw - d, yw - d, z0 - d * sx - d * sy], [xw + d, yw - d, z0 + d * sx - d * sy], [xw + d, yw + d, z0 + d * sx + d * sy], [xw - d, yw + d, z0 - d * sx + d * sy], [xw - d, yw - d, z0 - d * sx - d * sy]],
+-        `stroke="${flat > .5 ? VZ.deep : VZ.ink}" stroke-width="1.5" stroke-opacity=".7" fill="${VZ.ink}" fill-opacity="${q2(.3 - .1 * flat)}"`) +
+-      `<circle cx="${q2(q0[0])}" cy="${q2(q0[1])}" r="5.6" fill="${VZ.red}" stroke="#fff" stroke-width="1.7"/></g>` });
+-    items.sort((a, b) => b.dep - a.dep);
++    const C = still > .01 && walk > .001 ? F1_circle(i, c, walk) : null;
++    if (C) {
++      let r = `<circle cx="${q2(X0)}" cy="${q2(Y0)}" r="30" fill="none" stroke="${VZ.ink}" stroke-opacity=".35" stroke-width="1.3" stroke-dasharray="3 3"/>`;
++      C.runs.forEach(u => { const d = "M" + u.pts.map(pt).join("L"); r += `<path d="${d}" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${u.s > 0 ? VZ.red : F1_BLUE}" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>`; });
++      if (walk < .999) r += `<circle cx="${pt(C.walker).split(" ")[0]}" cy="${pt(C.walker).split(" ")[1]}" r="4.6" fill="${VZ.ink}" stroke="#fff" stroke-width="1.8"/>`;
++      o += `<g opacity="${q2(still)}">${r}</g>`;
++    }
++    const L = 58 * Math.tanh(gl / I.G0), ux = gl > 1e-9 ? A.g[0] / gl : 0, uy = gl > 1e-9 ? -A.g[1] / gl : 0, ao = vzClamp((L - 3) / 7, 0, 1) * still;
++    if (ao > .01) {
++      o += `<g opacity="${q2(ao)}"><line x1="${q2(X0)}" y1="${q2(Y0)}" x2="${q2(X0 + ux * (L - 4))}" y2="${q2(Y0 + uy * (L - 4))}" stroke="#fff" stroke-width="6.5" stroke-linecap="round"/>${vzArrow(X0, Y0, X0 + ux * L, Y0 + uy * L, "D", 3)}</g>`;
++      if (L > 20) o += `<g opacity="${q2(vzClamp((L - 20) / 10, 0, 1) * still)}">${vzLabel(X0 + ux * (L + 14), Y0 + uy * (L + 14) + 5, "∇f", VZ.deep, 16)}</g>`;
++    }
++    if (P && B.s > .5) {                                    // the trail: the last second or so, fading behind the ball
++      const k1 = Math.floor(B.s), k0 = Math.max(0, k1 - 60), seg = 6;
++      for (let a = k0; a < k1; a += seg) {
++        const pts = P.pts.slice(a, Math.min(k1, a + seg) + 1).concat(a + seg >= k1 ? [c] : []);
++        if (pts.length > 1) o += `<path d="M${pts.map(pt).join("L")}" fill="none" stroke="${VZ.ink}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="${q2(.6 * ((a - k0 + seg) / (k1 - k0 + seg)) * (1 - gone))}"/>`;
++      }
++    }
++    if (P && P.end && P.end.type === "min" && roll > .9) { const m = P.end; o += `<circle cx="${q2(F1_MX(m.nx))}" cy="${q2(F1_MY(m.ny))}" r="14" fill="none" stroke="${VZ.ink}" stroke-width="1.6" opacity="${q2(.7 * vzClamp((roll - .9) / .1, 0, 1))}"/>`; }
++    if (!thumb) o += vzGrip(X0, Y0, VZ.ink, VzView.hot === "pt");
++    o += F1_ball(X0, Y0, 7.5, false, 1 - gone);
++    // ---- the surface: quads far to near; marks and the ball on top where they can be seen, as an outline where a hill hides them
++    const cam = vzCam(444, 262, 56, vzRad(s.yaw), .6), zw = f => (f - I.mid) * I.zs, W3 = p => [p[0] * E, p[1] * E, zw(K.at(p[0] * R, p[1] * R).f)];
++    const qs = vzQuads(cam, I.surf, (a, b, z) => F1_ramp(z / 2.4 + .5));
++    const pr = I.surf.map(r => r.map(p => cam(p[0], p[1], p[2]))), Q = [];
++    for (let a = 0; a < pr.length - 1; a++) for (let b = 0; b < pr[0].length - 1; b++) {
++      const p = [pr[a][b], pr[a + 1][b], pr[a + 1][b + 1], pr[a][b + 1]];
++      Q.push({ p, dep: (p[0][2] + p[1][2] + p[2][2] + p[3][2]) / 4, x0: Math.min(...p.map(q => q[0])), x1: Math.max(...p.map(q => q[0])), y0: Math.min(...p.map(q => q[1])), y1: Math.max(...p.map(q => q[1])) });
++    }
+     o += vzPath3(cam, [[-E, -E, -1.3], [E, -E, -1.3], [E, E, -1.3], [-E, E, -1.3], [-E, -E, -1.3]], `stroke="${VZ.grey}" stroke-width="1.1" opacity=".45"`);
+-    o += items.map(q => q.svg).join("");
+-    o += vzKey([["dot", VZ.red, "max"], ["dot", VZ.ink, "min"], ["dot", VZ.gold, "saddle"], ["dot", VZ.grey, "test can't tell"], ["fill", VZ.red, "higher"]]);
+-    return o;
++    o += vzQuadSvg(qs, { op: 1, mesh: .45 });
++    I.marks.forEach(m => {
++      const q = cam(m.nx * E, m.ny * E, zw(m.f)), h = F1_hidden(Q, q[0], q[1], q[2]);
++      o += h ? `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="5.5" fill="none" stroke="${F1_TYPE[m.type][1]}" stroke-width="1.6" stroke-dasharray="2.5 2" opacity=".75"/>`
++        : `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="6" fill="${F1_TYPE[m.type][1]}" stroke="#fff" stroke-width="2"/>`;
++    });
++    const pw = W3(c), q0 = cam(...pw);
++    if (still > .01) {                                      // the tangent plane: a small disc that tilts with ∇f and lies level where ∇f = 0
++      const sc = I.zs * R / E, sx = A.g[0] * sc, sy = A.g[1] * sc, rr = F1_RING * E, disc = [];
++      for (let k = 0; k <= 40; k++) { const a = 2 * Math.PI * k / 40, dx = rr * Math.cos(a), dy = rr * Math.sin(a); disc.push([pw[0] + dx, pw[1] + dy, pw[2] + sx * dx + sy * dy]); }
++      const flat = 1 - vzClamp(gl / (I.G * .04), 0, 1);
++      o += `<g opacity="${q2(still)}">` + vzPath3(cam, disc, `fill="#FFFFFF" fill-opacity="${q2(.42 + .2 * flat)}" stroke="${VZ.ink}" stroke-width="${q2(1.3 + .5 * flat)}" stroke-opacity=".75"`);
++      if (C) {                                              // the same circle on the surface, at its true heights: above or below the plane
++        C.runs.forEach(u => { const d = vzPath3(cam, u.pts.map(W3), ""); o += d.replace("/>", ` stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`) + d.replace("/>", ` stroke="${u.s > 0 ? VZ.red : F1_BLUE}" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>`); });
++        if (walk < .999) { const w = cam(...W3(C.walker)); o += `<circle cx="${q2(w[0])}" cy="${q2(w[1])}" r="5" fill="${VZ.ink}" stroke="#fff" stroke-width="1.8"/>`; }
++      }
++      o += `</g>`;
++    }
++    if (P && B.s > .5) {                                    // the ball's trail on the surface, where it can be seen
++      const k1 = Math.floor(B.s), k0 = Math.max(0, k1 - 60);
++      for (let a = k0; a < k1; a += 3) {
++        const p1 = P.pts[a], p2 = a + 3 >= k1 ? c : P.pts[a + 3], A1 = cam(...W3(p1)), A2 = cam(...W3(p2));
++        if (F1_hidden(Q, A2[0], A2[1], A2[2])) continue;
++        o += `<line x1="${q2(A1[0])}" y1="${q2(A1[1])}" x2="${q2(A2[0])}" y2="${q2(A2[1])}" stroke="${VZ.ink}" stroke-width="3" stroke-linecap="round" opacity="${q2(.6 * (a - k0 + 3) / (k1 - k0 + 3) * (1 - gone))}"/>`;
++      }
++    }
++    o += F1_ball(q0[0], q0[1] - 5, 7, F1_hidden(Q, q0[0], q0[1], q0[2]), 1 - gone);
++    o += vzKey([["dot", VZ.red, "max"], ["dot", VZ.ink, "min"], ["dot", VZ.gold, "saddle"], ["dot", VZ.grey, "can't tell"], ["fill", F1_BLUE, "lower"], ["fill", VZ.red, "higher"]]);
++    return F1_phone(o);
+   },
+   readout(s) {
+-    const i = Math.round(s.fn), K = VZ6_CR[i], I = vz6Info(i), P = s.roll > .0005 ? vz6Path(i, s.u, s.v) : null, c = this.cur(s), x = c[0] * K.R, y = c[1] * K.R, A = K.at(x, y);
+-    const m = I.marks.find(m => Math.hypot(m.nx - c[0], m.ny - c[1]) < .06);
++    const i = Math.round(s.fn), K = F1_CR[i], R = K.R, roll = s.roll || 0, P = roll > .0005 ? F1_roll(i, s.u, s.v) : null, c = this.cur(s), A = K.at(c[0] * R, c[1] * R);
++    const m = F1_markAt(i, c, .02), flat = Math.hypot(...A.g) < 2e-3;
+     let st;
+-    if (m) {
+-      const D = A.h[0] * A.h[2] - A.h[1] * A.h[1];
+-      st = m.type === "tbd" ? ["warn", `∇f = 0 but D = 0: the test can't decide. ${K.note ? "(It is " + K.note + ".)" : ""}`]
+-        : m.type === "saddle" ? ["ok", "∇f = 0 and D < 0: a saddle point."]
+-        : m.type === "min" ? ["ok", "∇f = 0, D > 0 and f<sub>xx</sub> > 0: a local minimum."] : ["ok", "∇f = 0, D > 0 and f<sub>xx</sub> < 0: a local maximum."];
+-    } else if (P && P.out && s.roll > .97) st = ["ok", "No pit here: the ball rolls off the edge."];
+-    else st = ["ok", s.roll > .0005 ? "The ball follows −∇f, straight downhill." : "∇f points uphill; the plane tilts with it."];
++    if (P && roll < .995) st = ["ok", P.from && P.nudged ? "Nudged off the flat spot, the ball rolls away downhill." : P.from ? "At a pit there is no way down: the ball stays." : "Let go, the ball rolls downhill, against ∇f."];
++    else if (P && P.out) st = ["warn", "It rolls off the edge: nothing stops it."];
++    else if (P && P.end && P.end.type === "min") st = ["ok", P.from && P.nudged ? "It settles in a pit. A saddle or a top can't hold a ball." : "It settles in a pit: a local minimum."];
++    else if (P && P.end) st = ["ok", "It stops where the ground is flat."];
++    else if (s.walk < .005) st = ["ok", "Press Play on the walk to compare heights."];
++    else if (s.walk < .995) st = ["ok", "Walking: red is higher than the ball, blue lower."];
++    else {
++      const C = F1_circle(i, c, 1);
++      st = !m ? ["ok", "Not flat: half the circle is higher, half lower."]
++        : C.lo ? ["ok", "All lower round the circle: a local maximum."]
++        : C.hi ? ["ok", m.type === "tbd" ? "All higher round the circle: a minimum (the D test can't tell)." : "All higher round the circle: a local minimum."]
++        : C.ch === 4 ? ["ok", "Up, down, up, down: a saddle point."]
++        : ["ok", `Up and down ${C.ch / 2} times: a monkey saddle (the D test can't tell).`];
++    }
+     return `<div class="vz-eq">f: ${K.name}</div>
+-      <div class="vz-eq">at (${vzNum(x)}, ${vzNum(y)}): ∇f = [${vzNum(A.g[0])}, ${vzNum(A.g[1])}]</div>
++      <div class="vz-eq">${m || flat ? "∇f = [0, 0]: the tangent plane is level" : `at (${vzNum(c[0] * R)}, ${vzNum(c[1] * R)}): ∇f = [${vzNum(A.g[0])}, ${vzNum(A.g[1])}]`}</div>
+       <div class="vz-status ${st[0]}">${st[1]}</div>`;
+   },
+ });
+@@ -22773,67 +22938,188 @@
+ });
+ 
+ /* ---------- Why closed and bounded? (evt) ---------- */
+-// f(x, y) = x − y²/2 on a region D. Closed square: the highest point (1, 0) and the lowest points (−1, ±1) are reached.
+-// Right edge left out (x < 1): the highest point would sit on the missing edge. Strip x ≥ −1: f keeps growing.
+-const VZ6_EVT = [
+-  { chip: "closed and bounded", D: "−1 ≤ x ≤ 1, −1 ≤ y ≤ 1", f: "x − y²/2 on a closed square", ok: "Closed and bounded: the highest and lowest values are both reached." },
+-  { chip: "an edge left out", D: "−1 ≤ x < 1, −1 ≤ y ≤ 1", f: "x − y²/2, right edge left out", ok: "Values get as close to the top as you like, but never reach it: no max." },
+-  { chip: "unbounded", D: "x ≥ −1, −1 ≤ y ≤ 1", f: "x − y²/2 on a strip that runs on", ok: "The region never ends and f keeps growing: no max." },
++// On a closed, bounded region a continuous f always reaches an absolute max and min, found in three steps: critical
++// points inside, the boundary edge by edge (each edge a one-variable problem), then compare. Leave an edge out, or let
++// the region run on, and the top can be approached but never reached.
++// f = x² + xy − y² − 3x + y on the square 0 ≤ x, y ≤ 3 (all checked with sympy): ∇f = 0 at (1, 1), a saddle, f = −1.
++// Edges: y = 0: x² − 3x (x = 3/2: −9/4); x = 3: −y² + 4y (y = 2: 4); y = 3: x² − 6 (no inner critical point);
++// x = 0: −y² + y (y = 1/2: 1/4). Corners 0, 0, 3, −6. Max 4 at (3, 2), min −6 at (0, 3).
++// Right edge left out: values creep up to 4 but never reach it. Strip x ≥ 0: f grows without bound; the min −6 is still reached.
++const F1_f = (x, y) => x * x + x * y - y * y - 3 * x + y;
++const F1_EV = [
++  { chip: "closed and bounded", D: "0 ≤ x ≤ 3, 0 ≤ y ≤ 3",
++    edges: [{ a: [0, 0], b: [3, 0], eq: "y = 0", g: "x² − 3x" }, { a: [3, 0], b: [3, 3], eq: "x = 3", g: "−y² + 4y" }, { a: [3, 3], b: [0, 3], eq: "y = 3", g: "x² − 6" }, { a: [0, 3], b: [0, 0], eq: "x = 0", g: "−y² + y" }],
++    cand: [[1, 1, "int"], [1.5, 0, "edge"], [3, 2, "edge"], [0, .5, "edge"], [0, 0, "corner"], [3, 0, "corner"], [3, 3, "corner"], [0, 3, "corner"]] },
++  { chip: "an edge left out", D: "0 ≤ x < 3, 0 ≤ y ≤ 3 (no right edge)",
++    edges: [{ a: [0, 0], b: [3, 0], eq: "y = 0", g: "x² − 3x" }, { a: [3, 0], b: [3, 3], eq: "x = 3", g: "−y² + 4y", open: 1 }, { a: [3, 3], b: [0, 3], eq: "y = 3", g: "x² − 6" }, { a: [0, 3], b: [0, 0], eq: "x = 0", g: "−y² + y" }],
++    cand: [[1, 1, "int"], [1.5, 0, "edge"], [3, 2, "edge", 1], [0, .5, "edge"], [0, 0, "corner"], [3, 0, "corner", 1], [3, 3, "corner", 1], [0, 3, "corner"]] },
++  { chip: "unbounded", D: "x ≥ 0, 0 ≤ y ≤ 3 (a strip that runs on)",
++    edges: [{ a: [0, 0], b: [4.6, 0], eq: "y = 0", g: "x² − 3x", out: 1 }, { a: [4.6, 3], b: [0, 3], eq: "y = 3", g: "x² − 6", inn: 1 }, { a: [0, 3], b: [0, 0], eq: "x = 0", g: "−y² + y" }],
++    cand: [[1, 1, "int"], [1.5, 0, "edge"], [0, .5, "edge"], [0, 0, "corner"], [0, 3, "corner"], [4.6, 0, "inf"]] },
+ ];
++const F1_EW = [.2, .74];                                    // the walk round the edge, as a share of the Play
++const F1_GX0 = 352, F1_GX1 = 578, F1_GY = v => 206 - (v + 6.6) / 11.6 * 118;   // the strip graph: f from −6.6 (y 206) to 5 (y 88)
++const F1_CX = v => 394 + (v + 6.6) / 11.6 * 180;            // the compare rows: value → x
++// per case, worked out once: each edge's samples (x, y, f) on the strip's horizontal scale, and when each candidate is found
++function F1_ev(c) {
++  F1_ev.c = F1_ev.c || {};
++  if (F1_ev.c[c]) return F1_ev.c[c];
++  const K = F1_EV[c], E = K.edges, gap = .7, len = E.map(e => Math.hypot(e.b[0] - e.a[0], e.b[1] - e.a[1]));
++  let s0 = 0; const S = E.map((e, k) => { const o = { s0, s1: s0 + len[k] }; s0 += len[k] + (e.out ? gap : 0); return o; });
++  const tot = s0, GX = s => F1_GX0 + (F1_GX1 - F1_GX0) * s / tot;
++  E.forEach((e, k) => { e.s0 = S[k].s0; e.s1 = S[k].s1; e.pts = Array.from({ length: 41 }, (_, j) => { const u = j / 40, x = e.a[0] + (e.b[0] - e.a[0]) * u, y = e.a[1] + (e.b[1] - e.a[1]) * u; return { u, x, y, f: F1_f(x, y), X: GX(e.s0 + len[k] * u) }; }); });
++  const nE = E.length, dw = (F1_EW[1] - F1_EW[0]) / nE;
++  const cand = K.cand.map(([x, y, kind, open], n) => {
++    let t = .07, k = -1, u = 0;
++    if (kind !== "int") {                                   // the first edge that passes through it, and how far along
++      k = E.findIndex(e => { const L = Math.hypot(e.b[0] - e.a[0], e.b[1] - e.a[1]), q = ((x - e.a[0]) * (e.b[0] - e.a[0]) + (y - e.a[1]) * (e.b[1] - e.a[1])) / (L * L), px = e.a[0] + (e.b[0] - e.a[0]) * q, py = e.a[1] + (e.b[1] - e.a[1]) * q; return q > -1e-9 && q < 1 + 1e-9 && Math.hypot(px - x, py - y) < 1e-9; });
++      const e = E[k], L = Math.hypot(e.b[0] - e.a[0], e.b[1] - e.a[1]);
++      u = ((x - e.a[0]) * (e.b[0] - e.a[0]) + (y - e.a[1]) * (e.b[1] - e.a[1])) / (L * L);
++      let lo = 0, hi = 1; for (let it = 0; it < 30; it++) { const m = (lo + hi) / 2; if (vzEase(m) < u) lo = m; else hi = m; }   // when the eased walk gets there
++      t = F1_EW[0] + dw * (k + hi);
++    }
++    return { x, y, kind, open: !!open, f: kind === "inf" ? Infinity : F1_f(x, y), t, k, u, X: k >= 0 ? GX(E[k].s0 + (E[k].s1 - E[k].s0) * u) : null, n };
++  });
++  const closed = cand.filter(q => !q.open && q.kind !== "inf"), top = cand.reduce((a, q) => q.f > a.f ? q : a), bot = cand.reduce((a, q) => q.f < a.f ? q : a);
++  return (F1_ev.c[c] = { K, E, tot, GX, cand, dw, max: top.open || top.kind === "inf" ? null : top, min: bot.open ? null : bot, top, bot, closed });
++}
++// where the walker is at Play time t: which edge, how far along it (eased, so it slows into each corner)
++function F1_walker(V, t) {
++  if (t <= F1_EW[0]) return { k: 0, u: 0, on: 0 };
++  if (t >= F1_EW[1]) return { k: V.E.length - 1, u: 1, on: 0 };
++  const w = (t - F1_EW[0]) / V.dw, k = Math.min(V.E.length - 1, Math.floor(w));
++  return { k, u: vzEase(w - k), on: 1 };
++}
+ vzAdd({
+   id: "evt", title: "Why closed and bounded?", card: "Extreme Value Theorem",
+-  tagline: "Closed and bounded: the top and the bottom are both reached.",
+-  blurb: "The Extreme Value Theorem: a continuous \\(f\\) on a closed, bounded region \\(D\\) has a maximum and a minimum there. Leave an edge out and the maximum can sit on the missing edge; let the region run on forever and \\(f\\) can keep growing. Either way the maximum is gone.",
+-  tryIt: "Press Play in each case: does the point reach the top?",
+-  state: { c: 0, w0: 1, w1: 0, w2: 0, climb: 0, yaw: 40 },
+-  thumb: { climb: .6 },
++  tagline: "Closed and bounded: the max and the min are always reached.",
++  blurb: "The Extreme Value Theorem: a continuous \\(f\\) on a closed, bounded region \\(D\\) reaches an absolute maximum and minimum. Find them in three steps: critical points inside, then each edge (a one-variable problem), then compare every candidate. Closed and bounded is a guarantee, not a requirement: without it the max may or may not exist.",
++  tryIt: "Press Play, then try an edge left out.",
++  state: { reg: 0, t: 1, yaw: 130 },
++  thumb: { t: 1 },
++  defs: `<clipPath id="f1-ev3"><rect x="14" y="52" width="310" height="352" rx="12"/></clipPath><clipPath id="f1-evg"><rect x="338" y="80" width="252" height="134"/></clipPath>` +
++    `<linearGradient id="f1-evfg" gradientUnits="userSpaceOnUse" x1="0" y1="78" x2="0" y2="200"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="f1-evm" maskUnits="userSpaceOnUse" x="0" y="0" width="600" height="450"><rect x="0" y="0" width="600" height="450" fill="url(#f1-evfg)"/></mask>`,
+   controls: [
+-    { k: "climb", label: "climb toward the highest value", min: 0, max: 1, step: .005, play: .2, progress: true, fmt: v => v < .005 ? "at the start" : v > .995 ? "done" : "climbing", aria: "the climb" },
+-    { k: "yaw", label: "turn the view", min: -80, max: 80, step: 1, unit: "°", digits: 0, noPlay: true },
++    { k: "t", label: "find the max and min", min: 0, max: 1, step: .005, play: .062, progress: true, fmt: v => v < .005 ? "start" : v < F1_EW[0] ? "inside" : v < F1_EW[1] ? "the edge" : v > .995 ? "done" : "compare", aria: "the three steps" },
++    { k: "yaw", label: "turn the view", min: 40, max: 220, step: 1, unit: "°", digits: 0, noPlay: true },
+   ],
+-  variants: [{ c: 1, w0: 0, w1: 1, climb: 1 }, { c: 2, w0: 0, w2: 1, climb: 1, yaw: 60 }, { c: 2, w0: 0, w2: .5, w1: .2, climb: .5 }, { c: 0, climb: 1, yaw: -80 }],
+-  panelTop() { return `<div class="vz-chips" id="vz6Evt">${VZ6_EVT.map((K, i) => `<button type="button" class="vz-chip" data-ec="${i}">${K.chip}</button>`).join("")}</div>`; },
+-  sync(s, panel) { panel && panel.querySelectorAll("[data-ec]").forEach(b => b.classList.toggle("on", +b.dataset.ec === Math.round(s.c))); },
+-  onClick(el, s) {
+-    const b = el.closest("[data-ec]"); if (!b) return false;
+-    const c = +b.dataset.ec; s.c = c;
+-    vzTweenTo({ w0: c === 0 ? 1 : 0, w1: c === 1 ? 1 : 0, w2: c === 2 ? 1 : 0, climb: 0 }, 800);
+-    return true;
+-  },
++  presets: F1_EV.map((K, i) => [K.chip, { reg: i }]),
++  variants: [{ reg: 1, t: 1 }, { reg: 2, t: 1, yaw: 40 }, { reg: 2, t: .4 }, { reg: 1, t: .5, yaw: 220 }, { reg: 0, t: .15 }, { reg: 0, t: .8 }],
+   draw(s, t, thumb) {
+-    const w = [s.w0, s.w1, s.w2].map(v => vzClamp(v, 0, 1)), xr = 1 + 2 * w[2], xc = (xr - 1) / 2, S = 84 - 26 * w[2], zk = 1.0 - .35 * w[2], lo = -1.5, hi = xr;
+-    const cam = vzCam(300, 236, S, vzRad(s.yaw), .5), f = (x, y) => x - y * y / 2, P = (x, y, z) => cam(x - xc, y, z * zk);
+-    const nx = 18, ny = 12, grid = [];
+-    for (let i = 0; i <= nx; i++) { const row = []; for (let j = 0; j <= ny; j++) { const x = -1 + (xr + 1) * i / nx, y = -1 + 2 * j / ny; row.push([x - xc, y, f(x, y) * zk]); } grid.push(row); }
+-    const zf = -1.55, floor = [[-1, -1], [xr, -1], [xr, 1], [-1, 1], [-1, -1]].map(([x, y]) => [x - xc, y, zf * zk]);
+-    let o = vzPath3(cam, floor, `stroke="${VZ.grey}" stroke-width="1.3" opacity=".6" fill="${VZ.ink}" fill-opacity=".04"`);
+-    const qs = vzQuads(cam, grid, (i, j, z) => VZ_RAMP((z / zk - lo) / (hi - lo)));
+-    o += vzQuadSvg(qs, { op: 1, mesh: .4 });
+-    // the edge x = 1: solid when it belongs to D, dashed (and open) when it was left out
+-    const edge = []; for (let j = 0; j <= 24; j++) { const y = -1 + 2 * j / 24; edge.push([1, y, f(1, y)]); }
+-    const ed = "M" + edge.map(p => { const q = P(...p); return q2(q[0]) + " " + q2(q[1]); }).join("L");
+-    o += `<path d="${ed}" fill="none" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="5 4" opacity="${q2(.8 * w[1])}"/>`;
+-    // the climbing point moves along y = 0
+-    const e = vzEase(vzClamp(s.climb, 0, 1)), xp = w[1] > .5 ? -1 + 1.94 * e : -1 + (xr + 1) * e * (w[2] > .5 ? 1 : 1);
+-    const xpt = -1 + (2 + 2 * w[2]) * e * (1 - .03 * w[1]) , trail = []; for (let i = 0; i <= 30; i++) { const x = -1 + (xpt + 1) * i / 30; trail.push(P(x, 0, x)); }
+-    o += `<path d="M${trail.map(q => q2(q[0]) + " " + q2(q[1])).join("L")}" fill="none" stroke="${VZ.ink}" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>`;
+-    const pq = P(xpt, 0, xpt);
+-    o += `<circle cx="${q2(pq[0])}" cy="${q2(pq[1])}" r="6" fill="${VZ.deep}" stroke="#fff" stroke-width="1.7"/>`;
+-    // the lowest points (both reached in every case)
+-    [[-1, 1], [-1, -1]].forEach(([x, y]) => { const q = P(x, y, f(x, y)); o += `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="5.6" fill="${VZ.ink}" stroke="#fff" stroke-width="1.6"/>`; });
+-    const m1 = P(-1, 1, f(-1, 1)), m2 = P(-1, -1, f(-1, -1)), lq = m1[1] > m2[1] ? m1 : m2; o += vzLabel(lq[0] - 22, lq[1] - 10, "min", VZ.ink, 16);
+-    // the highest point: reached (gold dot), or only approached (an open ring on the missing edge)
+-    const hq = P(1, 0, 1);
+-    if (w[0] > .01) o += `<g opacity="${q2(w[0])}"><circle cx="${q2(hq[0])}" cy="${q2(hq[1])}" r="6.6" fill="${VZ.gold}" stroke="#fff" stroke-width="1.7"/>${vzLabel(hq[0] + 4, hq[1] - 14, "max", "#7A5C0F", 16)}</g>`;
+-    if (w[1] > .01) o += `<g opacity="${q2(w[1])}"><circle cx="${q2(hq[0])}" cy="${q2(hq[1])}" r="7" fill="#fff" stroke="${VZ.gold}" stroke-width="2.4"/>${vzLabel(hq[0] + 4, hq[1] - 15, "not in D", "#7A5C0F", 16)}</g>`;
+-    if (w[2] > .01) { const a = P(xr, 0, xr), b = P(xr + .5, 0, xr + .5); o += `<g opacity="${q2(w[2])}">${vzArrow(a[0], a[1], a[0] + (b[0] - a[0]) * 1.3, a[1] + (b[1] - a[1]) * 1.3, "O", 2.6)}${vzLabel(a[0] + (b[0] - a[0]) * 1.3 + 4, a[1] + (b[1] - a[1]) * 1.3 - 12, "keeps growing", "#7A5C0F", 16)}</g>`; }
+-    o += vzNote(300, 38, "the surface z = f(x, y) over the region D", "middle");
+-    o += vzKey([["fill", VZ.red, "higher"], ["dot", VZ.gold, "highest value"], ["dot", VZ.ink, "lowest value"], ["dot", VZ.deep, "climbing point"]]);
+-    return o;
++    const c = Math.round(vzClamp(s.reg, 0, 2)), V = F1_ev(c), K = V.K, T = vzClamp(s.t, 0, 1), W = F1_walker(V, T), inf = c === 2;
++    const zk = .2, X1 = inf ? 5.6 : 3, cam = vzCam(170, 232, 60, vzRad(s.yaw), .55), P = (x, y, z) => cam(x - 1.5, y - 1.5, z), PF = (x, y) => P(x, y, F1_f(x, y) * zk), zf = -1.55;
++    const cw = vzClamp((T - .78) / .08, 0, 1), ce = vzEase(cw);                 // step 3: the crowns come in
++    const seen = q => q.kind === "inf" ? vzClamp((T - q.t) / .03, 0, 1) : vzClamp((T - q.t) / .025, 0, 1);
++    let o = `<rect x="14" y="52" width="310" height="352" rx="12" fill="#FFFFFF" fill-opacity=".5" stroke="${VZ.soft}"/>`;
++    o += `<rect x="336" y="52" width="252" height="168" rx="12" fill="#FFFFFF" fill-opacity=".5" stroke="${VZ.soft}"/><rect x="336" y="230" width="252" height="174" rx="12" fill="#FFFFFF" fill-opacity=".5" stroke="${VZ.soft}"/>`;
++    o += vzNote(348, 72, "f along the edge of D") + vzNote(348, 250, "compare the candidates");
++    // ---- the 3-D view: the floor region D, the surface, the edge walked so far, the candidates
++    let g = "", tags = "";
++    const fl = inf ? [[0, 0], [X1, 0], [X1, 3], [0, 3]] : [[0, 0], [3, 0], [3, 3], [0, 3]];
++    g += `<path d="M${fl.map(p => { const q = P(p[0], p[1], zf); return q2(q[0]) + " " + q2(q[1]); }).join("L")}Z" fill="${VZ.ink}" fill-opacity=".05" stroke="none"/>`;
++    K.edges.forEach(e => { g += vzPath3(cam, [[e.a[0] - 1.5, e.a[1] - 1.5, zf], [e.b[0] - 1.5, e.b[1] - 1.5, zf]], `stroke="${VZ.ink}" stroke-width="1.5" stroke-opacity=".55"${e.open ? ` stroke-dasharray="5 4"` : ""}`); });
++    if (inf) { const a = P(4.6, 1.5, zf), b = P(5.5, 1.5, zf); g += `<g opacity=".7">${vzArrow(a[0], a[1], b[0], b[1], "G", 2)}</g>`; }
++    const nx = inf ? 28 : 15, ny = 15, grid = [];
++    for (let i = 0; i <= nx; i++) { const row = []; for (let j = 0; j <= ny; j++) { const x = X1 * i / nx, y = 3 * j / ny; row.push([x - 1.5, y - 1.5, F1_f(x, y) * zk]); } grid.push(row); }
++    const qs = vzQuads(cam, grid, (a, b, z) => F1_ramp((z / zk + 6.6) / 11.6));
++    g += vzQuadSvg(qs, { op: .96, mesh: .5 });
++    const pr = grid.map(r => r.map(p => cam(p[0], p[1], p[2]))), Q = [];
++    for (let a = 0; a < nx; a++) for (let b = 0; b < ny; b++) { const p = [pr[a][b], pr[a + 1][b], pr[a + 1][b + 1], pr[a][b + 1]]; Q.push({ p, dep: (p[0][2] + p[1][2] + p[2][2] + p[3][2]) / 4, x0: Math.min(...p.map(q => q[0])), x1: Math.max(...p.map(q => q[0])), y0: Math.min(...p.map(q => q[1])), y1: Math.max(...p.map(q => q[1])) }); }
++    // the edge on the surface: faint all round, bold where the walker has been (dashed on an edge that is not in D)
++    K.edges.forEach((e, k) => {
++      const upto = k < W.k || (!W.on && T >= F1_EW[1]) ? 1 : k === W.k && W.on ? W.u : 0, n = Math.round(40 * upto);
++      g += `<path d="M${e.pts.map(p => { const q = PF(p.x, p.y); return q2(q[0]) + " " + q2(q[1]); }).join("L")}" fill="none" stroke="${VZ.ink}" stroke-opacity=".3" stroke-width="1.2"${e.open ? ` stroke-dasharray="4 3"` : ""}/>`;
++      if (upto > 0) {
++        const pts = e.pts.slice(0, n + 1).map(p => [p.x, p.y]); if (n < 40) pts.push([e.a[0] + (e.b[0] - e.a[0]) * upto, e.a[1] + (e.b[1] - e.a[1]) * upto]);
++        g += `<path d="M${pts.map(p => { const q = PF(p[0], p[1]); return q2(q[0]) + " " + q2(q[1]); }).join("L")}" fill="none" stroke="${VZ.ink}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"${e.open ? ` stroke-dasharray="6 4"` : ""}/>`;
++      }
++    });
++    // step 1: at the critical point the tangent plane is level (a small flat disc that comes and goes)
++    const lv = vzClamp((T - .02) / .04, 0, 1) * (1 - vzClamp((T - .16) / .04, 0, 1));
++    if (lv > .01) { const z = F1_f(1, 1) * zk, d = Array.from({ length: 41 }, (_, k) => [-.5 + .55 * Math.cos(k * Math.PI / 20), -.5 + .55 * Math.sin(k * Math.PI / 20), z]); g += `<g opacity="${q2(lv)}">${vzPath3(cam, d, `fill="#fff" fill-opacity=".55" stroke="${VZ.ink}" stroke-width="1.5" stroke-opacity=".75"`)}</g>`; }
++    // candidates on the surface; the winners grow and turn red (max) or ink (min); one that is not in D stays hollow
++    V.cand.forEach(q => {
++      if (q.kind === "inf") return;
++      const a = seen(q); if (a < .01) return;
++      const p = PF(q.x, q.y), hid = F1_hidden(Q, p[0], p[1], p[2]), isMax = V.max === q, isMin = V.min === q;
++      const col = isMax ? VZ.red : isMin ? VZ.ink : VZ.gold, r = (4.8 + (isMax || isMin ? 2 * ce : 0)) * (.4 + .6 * vzEase(a));
++      const fillC = q.open ? "#fff" : (isMax || isMin) ? (ce > .5 ? col : VZ.gold) : VZ.gold;
++      g += `<g opacity="${q2(a * (hid ? .6 : 1))}"><circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="${q2(r + 2)}" fill="#fff" fill-opacity="${hid ? 0 : .8}"/><circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="${q2(r)}" fill="${fillC}" stroke="${q.open ? VZ.gold : "#fff"}" stroke-width="${q.open ? 2.2 : 1.6}"${hid ? ` stroke-dasharray="2.5 2"` : ""}/></g>`;
++      if ((isMax || isMin) && ce > .01) tags += `<g opacity="${q2(ce)}">${vzLabel(p[0], p[1] - 15, isMax ? "max" : "min", isMax ? VZ.deep : VZ.ink, 16)}</g>`;
++      if (q.open && q === V.top && ce > .01) tags += `<g opacity="${q2(ce)}">${vzLabel(vzClamp(p[0], 70, 268), p[1] - 15, "never reached", VZ.grey, 14)}</g>`;
++    });
++    // the walker on the surface, with a line down to the floor
++    if (W.on) {
++      const e = K.edges[W.k], x = e.a[0] + (e.b[0] - e.a[0]) * W.u, y = e.a[1] + (e.b[1] - e.a[1]) * W.u, p = PF(x, y), fp = P(x, y, zf);
++      const fadeE = e.out ? 1 - vzClamp((W.u - .85) / .15, 0, 1) : e.inn ? vzClamp(W.u / .15, 0, 1) : 1;
++      g += `<g opacity="${q2(fadeE)}"><line x1="${q2(p[0])}" y1="${q2(p[1])}" x2="${q2(fp[0])}" y2="${q2(fp[1])}" stroke="${VZ.grey}" stroke-width="1.2" stroke-dasharray="3 3"/><circle cx="${q2(fp[0])}" cy="${q2(fp[1])}" r="2.6" fill="${VZ.grey}"/>` +
++        `<circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="8.5" fill="#fff" fill-opacity=".85"/><circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="6.2" fill="${e.open ? "#fff" : VZ.ink}" stroke="${e.open ? VZ.ink : "#fff"}" stroke-width="1.8"/></g>`;
++    }
++        o += `<g clip-path="url(#f1-ev3)"><g${inf ? ' mask="url(#f1-evm)"' : ""}>${g}</g></g>` + tags + (inf ? (() => { const a = PF(3.6, 1.5), x = vzClamp(a[0], 40, 300), y0 = vzClamp(a[1], 150, 330); return `<g opacity=".9">${vzArrow(x, y0, x, y0 - 62, "D", 2.6)}</g>` + vzLabel(x + (x < 170 ? 10 : -10), y0 - 30, "keeps rising", VZ.deep, 15, x < 170 ? "start" : "end"); })() : "") + vzNote(28, 72, "the surface over D");
++    // ---- the strip graph: f along the edge, unrolled; each edge is a function of one variable
++    let h = `<line x1="${F1_GX0}" y1="${q2(F1_GY(0))}" x2="${F1_GX1}" y2="${q2(F1_GY(0))}" stroke="${VZ.ink}" stroke-opacity=".25" stroke-dasharray="3 3"/>` + vzNote(F1_GX0 - 4, F1_GY(0) + 4, "0", "end");
++    K.edges.forEach((e, k) => {
++      const xa = e.pts[0].X, xb = e.pts[40].X;
++      if (k) h += `<line x1="${q2(xa)}" y1="84" x2="${q2(xa)}" y2="208" stroke="${VZ.ink}" stroke-opacity=".14"/>`;
++      if (e.out) h += vzNote((xb + K.edges[k + 1].pts[0].X) / 2, 150, "…", "middle");
++      const on = k === W.k && W.on;
++      h += `<text x="${q2((xa + xb) / 2)}" y="214" font-family="'Manrope', sans-serif" font-size="13" font-weight="${on ? 700 : 400}" fill="${on ? VZ.ink : VZ.grey}" text-anchor="middle">${e.eq}</text>`;
++      const upto = k < W.k || (!W.on && T >= F1_EW[1]) ? 1 : on ? W.u : 0, n = Math.round(40 * upto);
++      if (upto > 0) {
++        const pts = e.pts.slice(0, n + 1).map(p => [p.X, F1_GY(p.f)]);
++        if (n < 40) { const x = e.a[0] + (e.b[0] - e.a[0]) * upto, y = e.a[1] + (e.b[1] - e.a[1]) * upto; pts.push([xa + (xb - xa) * upto, F1_GY(F1_f(x, y))]); }
++        h += `<g clip-path="url(#f1-evg)"><path d="M${pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" stroke="${VZ.ink}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"${e.open ? ` stroke-dasharray="6 4"` : ""}/></g>`;
++        if (on) { const p = pts[pts.length - 1]; if (p[1] > 82) h += `<circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="5.2" fill="${e.open ? "#fff" : VZ.ink}" stroke="${e.open ? VZ.ink : "#fff"}" stroke-width="1.6"/>`; }
++      }
++    });
++    V.cand.forEach(q => {
++      if (q.k < 0 || q.kind === "inf") return;
++      const a = seen(q); if (a < .01) return;
++      const y = F1_GY(q.f), isMax = V.max === q, isMin = V.min === q, col = ce > .5 && isMax ? VZ.red : ce > .5 && isMin ? VZ.ink : VZ.gold;
++      h += `<circle cx="${q2(q.X)}" cy="${q2(y)}" r="${q2(4.6 * (.4 + .6 * vzEase(a)))}" fill="${q.open ? "#fff" : col}" stroke="${q.open ? VZ.gold : "#fff"}" stroke-width="${q.open ? 2 : 1.4}" opacity="${q2(a)}"/>`;
++    });
++    o += h;
++    // ---- compare: every candidate found so far, ranked by value (rows glide as new ones come in)
++    const found = V.cand.map(q => ({ q, a: seen(q) })).filter(z => z.a > .001);
++    let r = `<line x1="${q2(F1_CX(0))}" y1="260" x2="${q2(F1_CX(0))}" y2="${q2(266 + (F1_isPh() ? 18.5 : 17) * Math.max(1, found.length) - 6)}" stroke="${VZ.ink}" stroke-opacity=".2"/>`;
++    found.forEach(({ q, a }) => {
++      const rank = found.reduce((m, z) => m + (z.q.f > q.f || (z.q.f === q.f && z.q.n < q.n) ? vzEase(z.a) : 0), 0), y = (F1_isPh() ? 266 : 268) + (F1_isPh() ? 18.5 : 17) * rank;
++      const isMax = V.max === q, isMin = V.min === q, crown = (isMax || isMin) ? ce : 0, col = isMax ? VZ.red : isMin ? VZ.ink : VZ.gold;
++      const x0 = F1_CX(0), xv = q.kind === "inf" ? 584 : F1_CX(q.f), txt = q.kind === "inf" ? "∞" : vzNum(q.f, Number.isInteger(q.f) ? 0 : 2);
++      let row = "";
++      if (crown > .01) row += `<rect x="340" y="${q2(y - 9)}" width="244" height="18" rx="9" fill="${col}" fill-opacity="${q2(.1 * crown)}"/>`;
++      row += `<text x="386" y="${q2(y + 4.3)}" font-family="'Manrope', sans-serif" font-size="12.5" font-weight="${crown > .5 ? 700 : 400}" fill="${crown > .5 ? col : VZ.ink}" text-anchor="end" style="font-variant-numeric:tabular-nums">${txt}</text>`;
++      if (q.kind === "inf") row += `<g opacity=".9">${vzArrow(x0, y, xv, y, "D", 2)}</g>`;
++      else {
++        row += `<line x1="${q2(x0)}" y1="${q2(y)}" x2="${q2(xv)}" y2="${q2(y)}" stroke="${q.open ? VZ.faint : col}" stroke-width="2"${q.open ? ` stroke-dasharray="3 2"` : ""}/>`;
++        row += `<circle cx="${q2(xv)}" cy="${q2(y)}" r="${q2(4.6 + 1.2 * crown)}" fill="${q.open ? "#fff" : crown > .5 ? col : VZ.gold}" stroke="${q.open ? VZ.gold : "#fff"}" stroke-width="${q.open ? 2 : 1.3}"/>`;
++      }
++      const tag = isMax ? "max" : isMin ? "min" : (q === V.top && (q.open || q.kind === "inf")) ? (q.open ? "not reached" : "no top") : "";
++      if (tag && ce > .01) { const right = q.f < 0; row += `<g opacity="${q2(ce)}"><text x="${q2(x0 + (right ? 8 : -8))}" y="${q2(y + 4.3)}" font-family="'Manrope', sans-serif" font-size="12" font-weight="700" fill="${isMax ? VZ.red : isMin ? VZ.ink : VZ.grey}" text-anchor="${right ? "start" : "end"}">${tag}</text></g>`; }
++      r += `<g opacity="${q2(vzEase(a))}">${row}</g>`;
++    });
++    o += r;
++    // ---- what step we are on
++    o += vzNoteFade(300, 36, T, [F1_EW[0] - .01, F1_EW[1] + .03], ["Step 1. Inside: where is ∇f = 0?", "Step 2. Walk each edge: f becomes a function of one variable.", "Step 3. Compare every candidate."], "middle", VZ.ink, .03);
++    o += vzKey([["dot", VZ.gold, "candidate"], ["dot", VZ.red, "absolute max"], ["dot", VZ.ink, "absolute min"], ["dash", VZ.ink, "not in D"]]);
++    return F1_phone(o);
+   },
+   readout(s) {
+-    const K = VZ6_EVT[Math.round(s.c)];
+-    return `<div class="vz-eq">f = ${K.f}</div><div class="vz-eq">D: ${K.D}</div><div class="vz-status ${Math.round(s.c) ? "warn" : "ok"}">${K.ok}</div>`;
++    const c = Math.round(vzClamp(s.reg, 0, 2)), V = F1_ev(c), K = V.K, T = vzClamp(s.t, 0, 1), W = F1_walker(V, T);
++    let line, st;
++    if (T < F1_EW[0]) { line = "∇f = [2x + y − 3, x − 2y + 1] = 0 at (1, 1)"; st = ["ok", "One critical point inside: f(1, 1) = −1. A candidate."]; }
++    else if (T < F1_EW[1]) {
++      const e = K.edges[W.k];
++      line = `on ${e.eq}: f = ${e.g}`;
++      st = e.open ? ["warn", "This edge is not in D: points on it don't count."] : e.out ? ["warn", "This edge never ends, and f keeps climbing."] : ["ok", "One variable now: its highs, lows and ends are candidates."];
++    } else {
++      const fmt = q => `${vzNum(q.f, Number.isInteger(q.f) ? 0 : 2)} at (${vzNum(q.x, q.x % 1 ? 1 : 0)}, ${vzNum(q.y, q.y % 1 ? 1 : 0)})`;
++      line = `max: ${V.max ? fmt(V.max) : "none"}, min: ${V.min ? fmt(V.min) : "none"}`;
++      st = c === 0 ? ["ok", "Closed and bounded: the highest and lowest values are both reached."]
++        : c === 1 ? ["warn", "No max: f gets close to 4 but never reaches it. The min −6 is still reached."]
++        : ["warn", "No max: f keeps growing as the strip runs on. The min −6 is still reached."];
++    }
++    return `<div class="vz-eq">f = x² + xy − y² − 3x + y</div><div class="vz-eq">D: ${K.D}</div><div class="vz-eq">${line}</div><div class="vz-status ${st[0]}">${st[1]}</div>`;
+   },
+ });
+ 
+@@ -24611,7 +24897,18 @@
+     const col = v => v > 1e-9 ? VZ.red : v < -1e-9 ? VZ.ink : VZ.grey;
+     // everything solid goes in one list and is drawn far to near: each box's walls, every arrow, the solid's edges
+     const items = [], add = (p, svg) => { if (svg) items.push({ dep: pr(p)[2], svg }); };
++    // take 3 shows one inner wall only: a pair of neighbouring boxes side by side across the screen, the front-most such
++    // pair with flow between them. The rest dim while it plays. (Chosen while take 3 is off, so it never switches mid-take.)
++    const fb = E(.33, .4) * (1 - E(.47, .5)), dimB = 1 - .68 * fb;
++    if (!this._fk || this._fk.key !== G.key || fb < .01) {
++      const ax = [0, 1].sort((p, q) => Math.abs(V[p]) - Math.abs(V[q]));
++      let best = null;
++      for (const a2 of ax) { G.inner.forEach(z => { if (z.w.a !== a2 || Math.abs(z.w.phi) < 1e-6 * G.mxW) return; const dp = pr(z.b.c)[2]; if (!best || dp < best.dp - 1e-6) best = { z, dp }; }); if (best) break; }
++      this._fk = { key: G.key, z: best ? best.z : null };
++    }
++    const FZ = this._fk.z, FB = FZ ? [FZ.b, G.boxes.find(q => q.idx.every((v, i) => v === FZ.b.idx[i] + (i === FZ.w.a ? 1 : 0)))] : [];
+     G.boxes.forEach(b => {
++      const bd = FB.includes(b) ? 1 : dimB;
+       const d = off(b), w = b.out / G.mxB, fill = tint > .01 && Math.abs(w) > 1e-6 ? col(b.out) : VZ.grey, deep = b.out < -1e-9 ? .14 : .22;   // dark ink tints lighter
+       let walls = "";
+       b.walls.forEach(wl => {
+@@ -24621,8 +24918,12 @@
+         // the wall's corners, moved with its box
+         const o2 = [0, 1, 2].filter(i => i !== wl.a), crn = [[0, 0], [1, 0], [1, 1], [0, 1]].map(([p, q]) => { const x = [0, 0, 0]; x[wl.a] = wl.c; x[o2[0]] = p ? b.hi[o2[0]] : b.lo[o2[0]]; x[o2[1]] = q ? b.hi[o2[1]] : b.lo[o2[1]]; return pr(x.map((v, i) => v + d[i])); });
+         if (vis > .01) {
+-          const fo = wl.outer ? (.05 + tint * deep * Math.abs(w)) * vis : (.05 + tint * deep * Math.abs(w) * innerTint) * innerK * vis;
+-          walls += `<path d="M${crn.map(P2).join("L")}Z" fill="${fill}" fill-opacity="${q2(fo)}" stroke="${VZ.ink}" stroke-opacity="${q2((wl.outer ? .5 : .32) * vis * cut)}" stroke-width="${wl.outer ? 1.2 : .9}" stroke-linejoin="round"/>`;
++          // one flat, opaque tint per box (by its net outflow), drawn far to near: boxes behind never stack into a darker middle
++          // (only in take 4: before it the solid stays see-through, so the far side's arrows show; it cross-fades both ways)
++          const fo = wl.outer ? (.05 + tint * deep * Math.abs(w)) * vis : (.05 + tint * deep * Math.abs(w) * innerTint) * innerK * vis, oq = tint * (1 - gone);
++          const amt = .06 + tint * deep * 1.7 * Math.abs(w), pc = [0xFB, 0xF8, 0xF4], fr = [1, 3, 5].map(i2 => parseInt(fill.slice(i2, i2 + 2), 16));
++          const fc = fr.map((c, j) => Math.round(c + (pc[j] + (c - pc[j]) * amt - c) * oq));
++          walls += `<path d="M${crn.map(P2).join("L")}Z" fill="rgb(${fc.join(",")})" fill-opacity="${q2(fo + (vis - fo) * oq)}" stroke="${VZ.ink}" stroke-opacity="${q2((wl.outer ? .5 : .32) * vis * cut)}" stroke-width="${wl.outer ? 1.2 : .9}" stroke-linejoin="round"/>`;
+         }
+         // an arrow through each outer wall, outside the box: pointing out (red) or in (dark), as long as the flow through it
+         // is strong; an arrow on a wall that faces away is fainter, and it fades (never snaps) as the wall turns
+@@ -24630,10 +24931,10 @@
+           const ctr = [0, 0, 0]; ctr[wl.a] = wl.c; o2.forEach(i => { ctr[i] = (b.lo[i] + b.hi[i]) / 2; });
+           const c0 = ctr.map((v, i) => v + d[i]), L = .2 + .38 * Math.abs(wl.phi) / G.mxW, far = c0.map((v, i) => v + nrm[i] * L);
+           const A = pr(wl.phi > 0 ? c0 : far), B = pr(wl.phi > 0 ? far : c0);
+-          add(c0.map((v, i) => v + nrm[i] * L / 2), `<g opacity="${q2(.35 + .65 * sm(-.15, .15, face))}">${vzArrow(A[0], A[1], B[0], B[1], wl.phi > 0 ? "R" : "I", 1.4 + 1.6 * Math.abs(wl.phi) / G.mxW)}</g>`);
++          add(c0.map((v, i) => v + nrm[i] * L / 2), `<g opacity="${q2((.35 + .65 * sm(-.15, .15, face)) * (1 - .8 * fb))}">${vzArrow(A[0], A[1], B[0], B[1], wl.phi > 0 ? "R" : "I", 1.4 + 1.6 * Math.abs(wl.phi) / G.mxW)}</g>`);
+         }
+       });
+-      add(b.c.map((x, q) => x + d[q]), walls);
++      add(b.c.map((x, q) => x + d[q]), bd < .999 ? `<g opacity="${q2(bd)}">${walls}</g>` : walls);
+     });
+     // before the cut, the solid's own twelve edges (each as strong as the more visible of its two faces)
+     if (cut < .99) for (let a = 0; a < 3; a++) for (const s1 of [-1, 1]) for (const s2 of [-1, 1]) {
+@@ -24647,10 +24948,16 @@
+     // inner walls, once the boxes are apart: one arrow across the gap, out of one box and into the next
+     if (ia > .01 && n > 1) G.inner.forEach(({ b, w }) => {
+       if (Math.abs(w.phi) < 1e-6 * G.mxW) return;
++      const foc = FZ && FZ.b === b && FZ.w === w, av = foc ? ia : 0;   // only the chosen wall's arrow: one is enough to make the point
++      if (av < .01) return;
+       const o2 = [0, 1, 2].filter(i => i !== w.a), ctr = [0, 0, 0]; ctr[w.a] = w.c; o2.forEach(i => { ctr[i] = (b.lo[i] + b.hi[i]) / 2; });
+       const nb = G.boxes.find(q => q.idx.every((v, i) => v === b.idx[i] + (i === w.a ? 1 : 0))), d1 = off(b), d2 = off(nb);
+       const p1 = ctr.map((v, i) => v + d1[i]), p2 = ctr.map((v, i) => v + d2[i]), A = pr(w.phi > 0 ? p1 : p2), B = pr(w.phi > 0 ? p2 : p1);
+-      add(p1.map((v, i) => (v + p2[i]) / 2), `<g opacity="${q2(ia)}">${vzArrow(A[0], A[1], B[0], B[1], "G", 1.2 + 1.8 * Math.abs(w.phi) / G.mxW)}</g>`);
++      if (foc && fb > .01) {                                // bold, with what it means for each box: out of the one, into the other
++        const ux = B[0] - A[0], uy = B[1] - A[1], L = Math.hypot(ux, uy) || 1, nx = -uy / L, ny = ux / L, sd = ny > 0 ? -1 : 1;   // tags above the arrow
++        add(p1.map((v, i) => (v + p2[i]) / 2 - V[i] * 3), `<g opacity="${q2(av)}">${vzArrow(A[0] - ux / L * 10, A[1] - uy / L * 10, B[0] + ux / L * 10, B[1] + uy / L * 10, "D", 3.4)}</g>` +
++          `<g opacity="${q2(fb)}">${vzLabel(A[0] + nx * 16 * sd - ux / L * 8, A[1] + ny * 16 * sd + 5, "out", VZ.deep, 15)}${vzLabel(B[0] + nx * 16 * sd + ux / L * 8, B[1] + ny * 16 * sd + 5, "in", VZ.ink, 15)}</g>`);
++      } else add(p1.map((v, i) => (v + p2[i]) / 2), `<g opacity="${q2(av)}">${vzArrow(A[0], A[1], B[0], B[1], "G", 1.2 + 1.8 * Math.abs(w.phi) / G.mxW)}</g>`);
+     });
+     let o = this.axes(cam, sm, add, 1 + 1.2 * gap * (1 - 1 / n));
+     o += items.sort((A, B) => B.dep - A.dep).map(x => x.svg).join("");
+@@ -24661,7 +24968,7 @@
+       o += `<g opacity="${q2(vzClamp(Math.min((u - a) / .015, (b - u) / .015), 0, 1))}">${vzNote(22, 34, caps[i], "start", VZ.ink)}</g>`;
+     }
+     o += vzKey([["fill", VZ.red, "net outflow"], ["fill", VZ.ink, "net inflow"], ["line", VZ.red, "out of T"], ["line", VZ.ink, "into T"], ["line", VZ.grey, "box to box"]]);
+-    return o;
++    return F1_phone(o);
+   },
+   readout(s) {
+     const Fd = this.Fd(s), G = this.geo(s), n = G.n, r = v => { const x = Math.round(v * 100) / 100; return Math.abs(x) < 1e-9 ? "0" : (x < 0 ? "−" : "") + vzShort(Math.abs(x)); };

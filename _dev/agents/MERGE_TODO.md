@@ -141,3 +141,20 @@ irrotational / incompressible. No Lagrange multipliers (not in the course). Week
 - Bespoke concept sketches for the 10 new problems (they reuse generic ones).
 - fieldmatch / crit3d / zoo text is small at 390 px (the 600×450 stage scales to ~0.6); a phone layout for the stage.
 - tool-crit numeric search is limited to |x|, |y| ≤ 4; tool-field's hole check knows only a hole at the origin.
+
+## Wave 7 (2026-11-04): owner rejected wave 6 as slop → unpushed (main force-reset to 36ea9ad; dev keeps e960f98)
+Owner: crit3d ball hidden behind the surface and missing on the map; evt "helps literally nobody"; everything must
+genuinely teach (vector calc is visual). Owner greenlights before ANY publish. Up to 4 agents.
+- Workspace ~/dev-21254/w7: base7 (= e960f98 + CSS markers @@CSS-F1..F4), f1..f4 on ports 8371..8374, BRIEF7.md.
+- f1 (opus) crit3d + evt rebuild · f2 (opus) probe + zoo rebuild · f3 (opus) fieldmatch + 5 methods teaching pass +
+  phone layout · f4 (sonnet) tool-crit wider search, tool-field holes anywhere, bespoke sketches for the 10 problems.
+- Lead audit of OLD vector-calc pictures (filmstrips): solid = work, curtain, flux, fields, chain, partials, gradient,
+  conservative, greenarea, divthm (busy exploded view). Weak → round 2:
+  surface (flat→surface morph passes through a torn-bag shape; patch tiny), orient (Möbius twist hard to see; draw the
+  single edge), green (inner edges never visibly cancel; cluttered), stokes (no circulation/curl shown), divthm declutter.
+- 2026-11-04: wave 7 all merged in ~/dev-21254/w7/merged (merge7.sh 1 2 3 4 5): monkey 86 pages 0 errors, steps all
+  clean + phone 0, fuzz 0 of 55. New pictures ranknull, complexeig.
+## Wave 8 (2026-11-04): new vector-calc METHODS (owner: "really teach ... in methods", situations line/circle/cyl∩plane)
+- ~/dev-21254/w8: base8 = w7 merged + ids registered + placeholders; g1..g4 on 8381..8384; BRIEF8.md.
+- g1 m-param, m-tangent · g2 m-lineint, m-work · g3 m-extrema rework (triangle/rectangle/disk/between curves) +
+  m-tanplane · g4 m-polar, m-paramsurf, m-stokes. Situation chips via def.mount hook.
