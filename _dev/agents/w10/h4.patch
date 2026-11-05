@@ -1,0 +1,299 @@
+diff -ru base10/index.html h4/index.html
+--- base10/index.html	2026-11-04 20:43:37
++++ h4/index.html	2026-11-04 21:39:54
+@@ -22668,121 +22668,174 @@
+ });
+ 
+ 
++/* ---- h4 (wave 10): m-curldiv and m-isgrad. Paddle wheels show spin, drops show spread; each card has its own icon ---- */
++// a paddle wheel at (cx, cy), radius r, turned to angle th. A still wheel has a dashed gold rim and grey blades;
++// a turning one is dark red, with one red blade so the turning shows.
++function h4Wheel(cx, cy, r, th, still) {
++  const rim = still ? VZ.gold : VZ.deep, bl = still ? VZ.grey : VZ.deep;
++  let o = `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="${r}" fill="${VZ.paper}" fill-opacity=".94" stroke="${rim}" stroke-width="${q2(Math.max(1.7, r / 11))}"${still ? ' stroke-dasharray="4 3"' : ""}/>`;
++  for (let j = 0; j < 4; j++) {
++    const a = th + j * Math.PI / 2, ex = cx + (r - 3.5) * Math.cos(a), ey = cy - (r - 3.5) * Math.sin(a);
++    o += `<line x1="${q2(cx)}" y1="${q2(cy)}" x2="${q2(ex)}" y2="${q2(ey)}" stroke="${j === 0 && !still ? VZ.red : bl}" stroke-width="${q2(Math.max(2.6, r / 6))}" stroke-linecap="round"/>`;
++  }
++  return o + `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="${q2(Math.max(2.6, r / 7))}" fill="${VZ.ink}"/>`;
++}
++// a curved arrow on the right of (cx, cy) at radius R: counterclockwise for sg > 0, clockwise for sg < 0
++function h4Spin(cx, cy, R, sg, col, w) {
++  const ps = []; for (let i = 0; i <= 14; i++) { const a = sg * (-.95 + 1.9 * i / 14); ps.push([cx + R * Math.cos(a), cy - R * Math.sin(a)]); }
++  const e = ps[14], q = ps[13], dx = e[0] - q[0], dy = e[1] - q[1], dl = Math.hypot(dx, dy), ux = dx / dl, uy = dy / dl, h = 2.8 * w, hw = 2.2 * w;
++  return `<path d="M${ps.slice(0, 13).map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>` +
++    `<path d="M${q2(e[0] + ux * h * .5)} ${q2(e[1] + uy * h * .5)}L${q2(e[0] - ux * h - uy * hw)} ${q2(e[1] - uy * h + ux * hw)}L${q2(e[0] - ux * h + uy * hw)} ${q2(e[1] - uy * h - ux * hw)}Z" fill="${col}" stroke="${col}" stroke-width=".8" stroke-linejoin="round"/>`;
++}
++// a round badge: a green tick (good) or a red cross
++function h4Mark(cx, cy, r, good) {
++  const c = good ? VZ.green : VZ.red, d = good ? `M${q2(cx - .45 * r)} ${q2(cy + .02 * r)}L${q2(cx - .12 * r)} ${q2(cy + .36 * r)}L${q2(cx + .48 * r)} ${q2(cy - .34 * r)}` : `M${q2(cx - .36 * r)} ${q2(cy - .36 * r)}L${q2(cx + .36 * r)} ${q2(cy + .36 * r)}M${q2(cx + .36 * r)} ${q2(cy - .36 * r)}L${q2(cx - .36 * r)} ${q2(cy + .36 * r)}`;
++  return `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="${r}" fill="${c}"/><path d="${d}" fill="none" stroke="#fff" stroke-width="${q2(Math.max(2.2, r / 4.5))}" stroke-linecap="round" stroke-linejoin="round"/>`;
++}
++
+ stAdd({
+   id: "m-curldiv", title: "Curl and divergence, then what they mean", card: "Curl & divergence: read them",
+-  tagline: "Compute both, then read spin and spread off the answers.",
++  tagline: "Div says spread or squeeze, curl says spin: compute, then read.",
+   blurb: "Divergence is a number: does the flow spread out of a point (positive), squeeze into it (negative), or neither? Curl is a vector: how fast a tiny paddle wheel would spin there, and about which axis. Each is one short calculation, and the answer says where the field behaves which way.",
+-  problem: "For \\(\\mathbf F=[x^2-y^2,\\ z^2,\\ 0]\\), find \\(\\nabla\\cdot\\mathbf F\\) and \\(\\nabla\\times\\mathbf F\\). Where is \\(\\mathbf F\\) irrotational, where is it incompressible, and where is it a source?",
++  problem: "For \\(\\mathbf F=[x^2-y^2,\\ z^2,\\ 0]\\), find \\(\\operatorname{div}\\mathbf F\\) and \\(\\operatorname{curl}\\mathbf F\\). Where is \\(\\mathbf F\\) irrotational, where is it incompressible, and where is it a source?",
++  // the card: a paddle wheel turned by uneven flow (curl = spin), and a drop that swells (div = spread)
++  draw() {
++    let o = `<line x1="300" y1="70" x2="300" y2="390" stroke="${VZ.grey}" stroke-opacity=".28" stroke-width="2"/>`;
++    o += vzArrow(138, 110, 78, 110, "I", 5) + vzArrow(222, 110, 162, 110, "I", 5) + vzArrow(78, 290, 138, 290, "I", 5) + vzArrow(162, 290, 222, 290, "I", 5);   // pushed left on top, right below: counterclockwise
++    o += h4Wheel(150, 200, 56, .4, false) + h4Spin(150, 200, 74, 1, VZ.red, 5);
++    o += vzLabel(150, 372, "curl: spin", VZ.deep, 34);
++    o += `<circle cx="450" cy="200" r="40" fill="none" stroke="${VZ.ink}" stroke-width="2.4" stroke-dasharray="6 5" opacity=".55"/>` +
++      `<circle cx="450" cy="200" r="60" fill="${VZ.red}" fill-opacity=".2" stroke="${VZ.red}" stroke-width="4"/>`;
++    for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 + Math.PI / 8, c = Math.cos(a), s = Math.sin(a); o += vzArrow(450 + 68 * c, 200 - 68 * s, 450 + 104 * c, 200 - 104 * s, "R", 4.4); }
++    return o + vzLabel(450, 372, "div: spread", VZ.red, 34);
++  },
+   picLive: true,
+   pic(k, b, u) {
+     const L = stLines(this, k, b, u), P = stPlane(180, 236, 60), T = performance.now() / 1000, F = (x, y) => x * x - y * y;
++    const wheels = k === 2 || k === 3, drops = k === 1 || k >= 4;
++    const wo = k === 2 ? L(2, 3, .1, .8) : wheels ? 1 : 0;                       // the wheels come with the curl's answer
++    const bo = k === 1 ? L(1, 2, .1, .8) : k === 4 ? L(4, 0, .3, .8) : drops ? 1 : 0;   // the drops with the divergence's
+     let o = "";
+     if (k >= 5) o += `<g opacity="${q2(L(5, 0, .1, .8))}"><rect x="${P.X(0)}" y="40" width="${q2(344 - P.X(0))}" height="390" fill="${VZ.red}" fill-opacity=".07"/><rect x="16" y="40" width="${q2(P.X(0) - 16)}" height="390" fill="${VZ.ink}" fill-opacity=".06"/></g>`;
+     o += P.axes(.2);
+     if (k >= 4) o += `<g opacity="${q2(k === 4 ? L(4, 0, .1, .8) : 1)}"><line x1="${P.X(0)}" y1="40" x2="${P.X(0)}" y2="430" stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="5 5"/></g>`;
+-    // the flow in the slice z = 0: F = [x² − y², 0], drawn with tame lengths (short where it is weak).
+-    // While the wheels turn, the arrows just above and below each wheel are picked out: unequal pushes make it spin.
+-    const fa = L(0, 0, .1, 1), dim = k === 0 ? 1 : .45, wk = k === 2 ? L(2, 3, .1, .8) : k === 3 ? 1 : 0;
++    if (k >= 1) o += vzLabel(180, 66, "the slice z = 0", VZ.grey, 15);
++    // the flow in the slice z = 0: F = [x² − y², 0], drawn with tame lengths (short where it is weak). The arrows where a
++    // drop or a wheel sits fade out as it comes in: their own in/out or rim arrows take over there.
++    const fa = k < 0 ? .8 : L(0, 0, .1, 1), dim = k <= 0 ? 1 : .4;   // (before step 1: the flow, faint)
+     if (fa > .01) {
+-      let hi = "";
+-      o += `<g opacity="${q2(fa * dim)}">`;
++      let g = "", s = "";
+       for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) {
+-        const x = .8 * i, y = .8 * j, f = F(x, y), len = 26 * Math.tanh(Math.abs(f) / 3), s = Math.sign(f), pick = i === 0 && Math.abs(j) !== 2;
+-        if (pick && wk > .01 && len > 3) hi += vzArrow(P.X(x) - s * len / 2, P.Y(y), P.X(x) + s * len / 2, P.Y(y), "D", 2.6);
+-        if (len > 3) o += vzArrow(P.X(x) - s * len / 2, P.Y(y), P.X(x) + s * len / 2, P.Y(y), "I", 1.6);
+-        else o += `<circle cx="${q2(P.X(x))}" cy="${q2(P.Y(y))}" r="1.8" fill="${VZ.ink}"/>`;
++        const x = .8 * i, y = .8 * j, f = F(x, y), len = 26 * Math.tanh(Math.abs(f) / 3), sg = Math.sign(f);
++        const a = len > 3 ? vzArrow(P.X(x) - sg * len / 2, P.Y(y), P.X(x) + sg * len / 2, P.Y(y), "I", 1.6) : `<circle cx="${q2(P.X(x))}" cy="${q2(P.Y(y))}" r="1.8" fill="${VZ.ink}"/>`;
++        if (drops && j === 0 && Math.abs(i) >= 2 || wheels && (i === 0 || Math.abs(i) === 1 && (j === 0 || Math.abs(j) === 2))) s += a; else g += a;
+       }
+-      o += `</g>` + (hi ? `<g opacity="${q2(wk * fa)}">${hi}</g>` : "");
++      o += `<g opacity="${q2(fa * dim)}">${g}</g>` + (s ? `<g opacity="${q2(fa * dim * (1 - Math.max(bo, wo)))}">${s}</g>` : "");
+     }
+-    // blobs of fluid: here P_x = 2x is the only stretch, so a blob is stretched along x where div > 0, squeezed where div < 0, kept where div = 0
+-    const blobs = k >= 4 ? [[-1.9, 0, -1], [1.9, 0, 1], [0, 0, 0]] : k === 1 ? [[-1.9, 0, -1], [1.9, 0, 1]] : [];
+-    const bo = k === 1 ? L(1, 2, .1, .8) : k === 4 ? L(4, 0, .3, .8) : 1, sv = (T / 3.4) % 1, se = sv * sv * (3 - 2 * sv), bop = Math.min(1, sv / .1, (1 - sv) / .1);
+-    blobs.forEach(([x, y, d]) => {
+-      const col = d > 0 ? VZ.red : d < 0 ? VZ.ink : VZ.gold, r = 17 * (1 + .6 * d * se), cx = P.X(x), cy = P.Y(y);
+-      o += `<g opacity="${q2(bo)}"><circle cx="${q2(cx)}" cy="${q2(cy)}" r="17" fill="none" stroke="${col}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".6"/><ellipse cx="${q2(cx)}" cy="${q2(cy)}" rx="${q2(r)}" ry="17" fill="${col}" fill-opacity="${q2(.28 * bop)}" stroke="${col}" stroke-width="2" stroke-opacity="${q2(bop)}"/></g>`;
+-    });
+-    // paddle wheels: they turn where the curl is not 0 (counterclockwise for 2y > 0), and stay still on the x-axis
+-    if (k === 2 || k === 3) {
+-      const wo = k === 2 ? L(2, 3, .1, .8) : 1;
++    // drops of fluid on the x-axis. Flow enters on the left and leaves on the right (arrow length ∝ P = x² there):
++    // at x = 2 more leaves than enters, so the drop spreads; at x = −2 more enters than leaves, so it squeezes.
++    if (bo > .01) {
++      const sv = (T / 3.4) % 1, se = sv * sv * (3 - 2 * sv), bop = Math.min(1, sv / .1, (1 - sv) / .1);
++      (k >= 4 ? [-2, 0, 2] : [-2, 2]).forEach(x => {
++        const d = Math.sign(x), col = d > 0 ? VZ.red : d < 0 ? VZ.ink : VZ.gold, cx = P.X(x), cy = P.Y(0), r = 15 * (1 + .5 * d * se);
++        const io = d ? vzArrow(cx - 23 - 5 * (x - .25) ** 2, cy, cx - 23, cy, "D", 2.6) + vzArrow(cx + 23, cy, cx + 23 + 5 * (x + .25) ** 2, cy, "D", 2.6) : "";
++        o += `<g opacity="${q2(bo)}">${io}<circle cx="${q2(cx)}" cy="${q2(cy)}" r="15" fill="none" stroke="${col}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".6"/>` +
++          `<ellipse cx="${q2(cx)}" cy="${q2(cy)}" rx="${q2(r)}" ry="15" fill="${col}" fill-opacity="${q2(.3 * bop)}" stroke="${col}" stroke-width="2" stroke-opacity="${q2(bop)}"/>` +
++          vzLabel(cx, cy - 27, d > 0 ? "div > 0" : d < 0 ? "div &lt; 0" : "div = 0", d > 0 ? VZ.red : d < 0 ? VZ.ink : "#7A5C0F", 15) + `</g>`;
++      });
++    }
++    // paddle wheels on the y-axis, where F = [−y², 0]: the push on the top rim and on the bottom rim differ (the farther
++    // from y = 0, the harder), so the wheel turns: counterclockwise above the axis (2y > 0), clockwise below, still on it
++    if (wo > .01) {
+       o += `<g opacity="${q2(wo)}">`;
+       [1.6, 0, -1.6].forEach(y => {
+-        const cx = P.X(0), cy = P.Y(y), th = 1.3 * y * T, still = y === 0;
+-        o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="16" fill="${VZ.paper}" fill-opacity=".9" stroke="${still ? VZ.gold : VZ.deep}" stroke-width="1.6" ${still ? 'stroke-dasharray="4 3"' : ""}/>`;
+-        for (let j = 0; j < 4; j++) { const a = th + j * Math.PI / 2, ex = cx + 12.5 * Math.cos(a), ey = cy - 12.5 * Math.sin(a); o += `<line x1="${q2(cx)}" y1="${q2(cy)}" x2="${q2(ex)}" y2="${q2(ey)}" stroke="${still ? VZ.grey : VZ.deep}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${q2(ex)}" cy="${q2(ey)}" r="${j === 0 ? 3.6 : 2.6}" fill="${j === 0 && !still ? VZ.red : still ? VZ.grey : VZ.deep}"/>`; }
+-        o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="2.6" fill="${VZ.ink}"/>`;
+-        if (!still) {                                                   // which way it turns: counterclockwise above the axis, clockwise below
+-          const sg = Math.sign(y), ps = []; for (let i = 0; i <= 10; i++) { const a = sg * (-.9 + 1.8 * i / 10); ps.push([cx + 23 * Math.cos(a), cy - 23 * Math.sin(a)]); }
+-          const e = ps[10], q = ps[9], dx = e[0] - q[0], dy = e[1] - q[1], dl = Math.hypot(dx, dy), ux = dx / dl, uy = dy / dl;
+-          o += `<path d="M${ps.slice(0, 10).map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" stroke="${VZ.deep}" stroke-width="1.8" stroke-linecap="round"/><path d="M${q2(e[0] + ux * 3)} ${q2(e[1] + uy * 3)}L${q2(e[0] - ux * 5 - uy * 4)} ${q2(e[1] - uy * 5 + ux * 4)}L${q2(e[0] - ux * 5 + uy * 4)} ${q2(e[1] - uy * 5 - ux * 4)}Z" fill="${VZ.deep}"/>`;
+-        }
++        const cx = P.X(0), cy = P.Y(y), still = y === 0, r = 20;
++        o += vzArrow(cx + 3 * (y + .4) ** 2, cy - r - 5, cx - 3 * (y + .4) ** 2, cy - r - 5, "D", 2.6) + vzArrow(cx + 3 * (y - .4) ** 2, cy + r + 5, cx - 3 * (y - .4) ** 2, cy + r + 5, "D", 2.6);
++        o += h4Wheel(cx, cy, r, 1.2 * y * T + .4, still) + (still ? "" : h4Spin(cx, cy, r + 8, Math.sign(y), VZ.deep, 1.8));
++        o += vzLabel(cx + 36, cy - 8, still ? "2y = 0" : y > 0 ? "2y > 0" : "2y &lt; 0", still ? "#7A5C0F" : VZ.deep, 15, "start");
+       });
+       o += `</g>`;
+     }
+     if (k === 3) o += `<g opacity="${q2(L(3, 1, .1, .8))}"><line x1="16" y1="${P.Y(0)}" x2="344" y2="${P.Y(0)}" stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="5 5"/></g>`;
+-    if (k === 2 || k === 3) o += vzKey([["dot", VZ.deep, "spins"], ["dash", VZ.gold, "no spin"], ["line", VZ.deep, "push above / below"]], 16, 452);
+-    else if (k === 1 || k >= 4) o += vzKey([["fill", VZ.red, "source"], ["fill", VZ.ink, "sink"], ["dash", VZ.gold, "neither"]].slice(0, k === 1 ? 2 : 3), 16, 452);
+-    const note = ["the flow in the slice z = 0", "does the flow spread out or squeeze in?", "unequal pushes above and below: it turns", "no spin on the x-axis only", "steady only on the plane x = 0", "red side spreads, grey side squeezes"][Math.max(0, k)];
++    if (wheels) o += vzKey([["dot", VZ.deep, "spins"], ["dash", VZ.gold, "no spin"], ["line", VZ.deep, "push on rim"]], 16, 452);
++    else if (drops) o += vzKey(k === 1 ? [["fill", VZ.red, "spreads"], ["fill", VZ.ink, "squeezes"], ["line", VZ.deep, "flow in / out"]] : [["fill", VZ.red, "source"], ["fill", VZ.ink, "sink"], ["dash", VZ.gold, "neither"]], 16, 452);
++    const note = ["the flow in the slice z = 0", "out > in: it spreads. In > out: it squeezes", "a harder push on one rim: the wheel turns", "the wheel is still only on the x-axis", "div = 0 only on the plane x = 0", "red side spreads, grey side squeezes"][Math.max(0, k)];
+     return o + stNote(180, 428, note, VZ.ink);
+   },
+   steps: [
+     { t: "Name the parts", tex: ["P=x^2-y^2,\\qquad Q=z^2,\\qquad R=0"],
+       why: "Write \\(\\mathbf F=[P,Q,R]\\) and label each component. Every partial below is built from these three.", sum: "\\(P=x^2-y^2,\\ Q=z^2,\\ R=0\\)" },
+-    { t: "Divergence: three partials", tex: ["\\nabla\\cdot\\mathbf F=P_x+Q_y+R_z", "=\\tfrac{\\partial}{\\partial x}(x^2-y^2)+\\tfrac{\\partial}{\\partial y}(z^2)+\\tfrac{\\partial}{\\partial z}(0)", "=2x+0+0=2x"],
+-      why: "Each component is differentiated with respect to its own variable, then the three are added. The result is a single number at each point.", sum: "\\(\\nabla\\cdot\\mathbf F=2x\\)" },
+-    { t: "Curl: the 3×3 determinant", tex: ["\\nabla\\times\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\partial_x&\\partial_y&\\partial_z\\\\P&Q&R\\end{vmatrix}", "=\\mathbf i\\,(R_y-Q_z)-\\mathbf j\\,(R_x-P_z)+\\mathbf k\\,(Q_x-P_y)", "=\\mathbf i\\,(0-2z)-\\mathbf j\\,\\big(\\color{#C8102E}{0-0}\\big)+\\mathbf k\\,\\big(0-(-2y)\\big)", "=[-2z,\\ 0,\\ 2y]"],
+-      why: "Expand along the top row. The middle term carries a minus sign. Here \\(R_x\\) and \\(P_z\\) are both 0, so the \\(\\mathbf j\\) part cancels.", sum: "\\(\\nabla\\times\\mathbf F=[-2z,\\,0,\\,2y]\\)" },
++    { t: "Divergence: three partials", tex: ["\\operatorname{div}\\mathbf F=\\frac{\\partial P}{\\partial x}+\\frac{\\partial Q}{\\partial y}+\\frac{\\partial R}{\\partial z}", "=\\tfrac{\\partial}{\\partial x}(x^2-y^2)+\\tfrac{\\partial}{\\partial y}(z^2)+\\tfrac{\\partial}{\\partial z}(0)", "=2x+0+0=2x"],
++      why: "Differentiate each component by its own variable, then add. The answer is one number at each point.", sum: "\\(\\operatorname{div}\\mathbf F=2x\\)" },
++    { t: "Curl: the 3×3 determinant", tex: ["\\operatorname{curl}\\mathbf F=\\nabla\\times\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\partial_x&\\partial_y&\\partial_z\\\\P&Q&R\\end{vmatrix}", "=\\Big[\\tfrac{\\partial R}{\\partial y}-\\tfrac{\\partial Q}{\\partial z},\\ \\ \\tfrac{\\partial P}{\\partial z}-\\tfrac{\\partial R}{\\partial x},\\ \\ \\tfrac{\\partial Q}{\\partial x}-\\tfrac{\\partial P}{\\partial y}\\Big]", "=\\big[0-2z,\\ \\ 0-0,\\ \\ 0-(-2y)\\big]", "=[-2z,\\ 0,\\ 2y]"],
++      why: "Expanding along the top row gives this bracket form. In the slice \\(z=0\\) the curl is \\([0,0,2y]\\): a spin about the \\(z\\)-axis, counterclockwise where \\(y>0\\).", sum: "\\(\\operatorname{curl}\\mathbf F=[-2z,\\,0,\\,2y]\\)" },
+     { t: "Irrotational where? Curl = 0", tex: ["[-2z,\\ 0,\\ 2y]=\\mathbf 0\\iff z=0\\ \\text{and}\\ y=0", "\\text{only on the }x\\text{-axis}"],
+-      why: "A paddle wheel stays still only where all three components vanish. Everywhere else the curl is nonzero, and the wheel turns about the curl's direction.", sum: "irrotational only on the \\(x\\)-axis" },
+-    { t: "Incompressible where? Div = 0", tex: ["\\nabla\\cdot\\mathbf F=2x=0\\iff x=0", "\\text{steady only on the plane }x=0"],
+-      why: "Incompressible means \\(\\nabla\\cdot\\mathbf F=0\\): a blob of fluid keeps its volume. This field does that only on the plane \\(x=0\\).", sum: "divergence 0 only on \\(x=0\\)" },
+-    { t: "Source or sink?", tex: ["\\nabla\\cdot\\mathbf F=2x>0\\iff x>0:\\ \\text{a source}", "x<0:\\ \\text{a sink (the flow squeezes in)}"],
+-      why: "Positive divergence: more flows out of a point than in, so a blob swells. Negative: it shrinks.", sum: "source for \\(x>0\\), sink for \\(x<0\\)" },
++      why: "A paddle wheel stays still only where all three components are 0. Everywhere else it turns, about the curl's direction.", sum: "irrotational only on the \\(x\\)-axis" },
++    { t: "Incompressible where? Div = 0", tex: ["\\operatorname{div}\\mathbf F=2x=0\\iff x=0", "\\text{incompressible only on the plane }x=0"],
++      why: "Incompressible means \\(\\operatorname{div}\\mathbf F=0\\): a drop of fluid keeps its size. Here that happens only on the plane \\(x=0\\).", sum: "\\(\\operatorname{div}\\mathbf F=0\\) only on \\(x=0\\)" },
++    { t: "Source or sink?", tex: ["\\operatorname{div}\\mathbf F=2x>0\\iff x>0:\\ \\text{a source}", "x<0:\\ \\text{a sink (the flow squeezes in)}"],
++      why: "Positive divergence: more flows out of a point than in, so a drop swells. Negative: it shrinks.", sum: "source for \\(x>0\\), sink for \\(x<0\\)" },
+   ],
+ });
+ 
+ 
+-const m6Sub = (n, sub, rest) => `${n}<tspan dy="4" font-size="12">${sub}</tspan><tspan dy="-4">${rest}</tspan>`;
+-
+-
+-
+ stAdd({
+   id: "m-isgrad", title: "Is this field conservative?", card: "Conservative? The test",
+-  tagline: "Compare P_y with Q_x, then check the region for holes.",
+-  blurb: "If \\(\\mathbf F=\\nabla f\\) then \\(P_y=f_{xy}=f_{yx}=Q_x\\), so a field that fails \\(P_y=Q_x\\) is never conservative. The converse needs one more condition: the region must have no holes. Without it, \\(P_y=Q_x\\) can pass and the field can still circulate.",
++  tagline: "Check ∂P/∂y = ∂Q/∂x, then make sure the region has no holes.",
++  blurb: "If \\(\\mathbf F=\\nabla f\\), then \\(\\partial P/\\partial y=f_{xy}=f_{yx}=\\partial Q/\\partial x\\), so a field that fails this test is never conservative. The converse needs one more condition: the region must have no holes. Without it, the test can pass and the field can still circulate.",
+   problem: "Test \\(\\mathbf F=[3x^2y,\\ x^3+2y]\\) and \\(\\mathbf H=[xy,\\ x^2]\\). Then look at \\(\\mathbf K=\\dfrac{[-y,\\ x]}{x^2+y^2}\\): it passes the test, so is it conservative?",
++  // the card: the test passes, and then the region decides: no hole (✓) or a hole (✗)
++  draw() {
++    let o = vzLabel(262, 120, "∂P/∂y = ∂Q/∂x", VZ.ink, 46) + h4Mark(478, 104, 24, true);
++    const blob = (cx, hole) => `<ellipse cx="${cx}" cy="262" rx="112" ry="78" fill="${VZ.gold}" fill-opacity=".2" stroke="${VZ.gold}" stroke-width="3.4"/>` +
++      (hole ? `<circle cx="${cx}" cy="262" r="24" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="3" stroke-dasharray="6 4"/><circle cx="${cx}" cy="262" r="50" fill="none" stroke="${VZ.red}" stroke-width="5.5"/>`
++        : [56, 36, 17].map((r, i) => `<circle cx="${cx}" cy="262" r="${r}" fill="none" stroke="${VZ.red}" stroke-width="5" opacity="${[.3, .55, .85][i]}"/>`).join("") + `<circle cx="${cx}" cy="262" r="6" fill="${VZ.red}"/>`);
++    o += blob(160, false) + blob(440, true);
++    o += vzLabel(146, 392, "no hole", VZ.ink, 30) + h4Mark(232, 381, 15, true) + vzLabel(426, 392, "a hole", VZ.ink, 30) + h4Mark(505, 381, 15, false);
++    return o;
++  },
+   picLive: true,
+   pic(k, b, u) {
+-    const L = stLines(this, k, b, u), T = performance.now() / 1000;
++    const L = stLines(this, k, b, u), T = performance.now() / 1000, GR = "#7A5C0F";
+     let o = "";
+-    const arrows = (P, f, nx, ny, op, tame) => {
+-      let s = `<g opacity="${q2(op)}">`;
++    // the field's arrows, tame lengths; the ones next to a paddle wheel fade out as the wheels come in (wf)
++    const arrows = (P, f, nx, ny, op, tame, ws, wf) => {
++      let s = "", t = "";
+       for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+         const x = (i - (nx - 1) / 2) * tame[0], y = (j - (ny - 1) / 2) * tame[1], v = f(x, y), m = Math.hypot(v[0], v[1]);
+-        if (m < 1e-6) continue; const len = tame[2] * Math.tanh(m / tame[3]);
+-        if (len > 3) s += vzArrow(P.X(x) - v[0] / m * len / 2, P.Y(y) + v[1] / m * len / 2, P.X(x) + v[0] / m * len / 2, P.Y(y) - v[1] / m * len / 2, "I", 1.8);
++        if (!(m > 1e-6)) continue; const len = tame[2] * Math.tanh(m / tame[3]);
++        if (len <= 3) continue;
++        const a = vzArrow(P.X(x) - v[0] / m * len / 2, P.Y(y) + v[1] / m * len / 2, P.X(x) + v[0] / m * len / 2, P.Y(y) - v[1] / m * len / 2, "I", 1.8);
++        if (ws.some(w => Math.hypot(P.X(x) - P.X(w[0]), P.Y(y) - P.Y(w[1])) < 30)) t += a; else s += a;
+       }
+-      return s + `</g>`;
++      return `<g opacity="${q2(op)}">${s}</g>` + (t ? `<g opacity="${q2(op * (1 - .85 * wf))}">${t}</g>` : "");
+     };
+-    const bars = (hp, hq, ok, op) => {                    // P_y and Q_x at one sample point, side by side: equal or not equal
++    // the test's verdict as one line, with a tick or a cross
++    const badge = (y, eq, op) => op > .01 ? `<g opacity="${q2(op)}">${vzLabel(166, y, `∂P/∂y ${eq ? "=" : "≠"} ∂Q/∂x`, eq ? VZ.ink : VZ.red, 22)}${h4Mark(266, y - 7, 11, eq)}</g>` : "";
++    // paddle wheels: each turns at a rate set by ∂Q/∂x − ∂P/∂y at its spot, so the test is "does any wheel turn?"
++    const wheels = (P, ws, spin, op) => {
++      if (op <= .01) return "";
+       let s = `<g opacity="${q2(op)}">`;
+-      [[120, hp, VZ.red, "P", "y"], [240, hq, VZ.ink, "Q", "x"]].forEach(([cx, h, col, n, sb]) => {
+-        s += `<rect x="${cx - 24}" y="${q2(396 - h)}" width="48" height="${q2(h)}" rx="5" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="1.8"/>` + vzLabel(cx, 418, m6Sub(n, sb, ""), col, 18);
+-      });
+-      return s + vzLabel(180, 372, ok ? "=" : "≠", ok ? "#2F7A4A" : VZ.red, 30) + `</g>`;
++      ws.forEach(([x, y]) => { const c = spin(x, y), still = Math.abs(c) < 1e-9, cx = P.X(x), cy = P.Y(y); s += h4Wheel(cx, cy, 14, .9 * c * T + .4, still) + (still ? "" : h4Spin(cx, cy, 21, Math.sign(c), VZ.deep, 1.6)); });
++      return s + `</g>`;
+     };
+     if (k <= 1) {
+-      const P = stPlane(180, 190, 40), g = k === 0 ? (x, y) => [3 * x * x * y, x * x * x + 2 * y] : (x, y) => [x * y, x * x];
+-      o += P.axes(.2) + arrows(P, g, 7, 5, k === 0 ? L(0, 0, .1, 1) : L(1, 0, .1, 1), [1, 1, 26, k === 0 ? 8 : 2.5]);
+-      const e = k === 0 ? L(0, 2, .1, .9) : L(1, 2, .1, .9);
+-      o += k === 0 ? bars(66, 66, true, e) : bars(22, 44, false, e);
+-      if (k < 0) return o + stNote(180, 448, "three fields: test each one", VZ.ink);
+-      return o + stNote(180, 448, k === 0 ? m6Sub("P", "y", "") + " and " + m6Sub("Q", "x", " agree: passes the test") : m6Sub("P", "y", "") + " and " + m6Sub("Q", "x", " differ: not conservative"), VZ.ink);
++      const P = stPlane(180, 190, 40), g = k <= 0 ? (x, y) => [3 * x * x * y, x * x * x + 2 * y] : (x, y) => [x * y, x * x];
++      if (k < 0) return o + P.axes(.2) + arrows(P, g, 7, 5, .75, [1, 1, 26, 8], [], 0) + stNote(180, 428, "three fields: test each one", VZ.ink);   // before step 1: F, waiting
++      const ws = [[-2, -.5], [0, -.5], [2, -.5]], wf = L(k, 1, .1, .8), spin = k === 0 ? () => 0 : x => x;   // ∂Q/∂x − ∂P/∂y: 0 for F, x for H
++      o += P.axes(.2) + arrows(P, g, 7, 5, L(k, 0, .1, 1), [1, 1, 26, k === 0 ? 8 : 2.5], ws, wf) + wheels(P, ws, spin, wf);
++      o += badge(338, k === 0, L(k, 2, .1, .8));
++      if (k === 0) o += `<g opacity="${q2(L(0, 2, .5, .8))}">${stNote(180, 366, "on the whole plane: no holes", VZ.green)}</g>`;
++      o += vzKey(k === 0 ? [["dash", VZ.gold, "wheel stays still"]] : [["dash", VZ.gold, "wheel stays still"], ["dot", VZ.deep, "wheel turns"]], 16, 452);
++      return o + stNote(180, 428, k === 0 ? "no wheel turns: F passes the test" : "wheels turn where x ≠ 0: H fails the test", VZ.ink);
+     }
+     // K = [−y, x]/(x² + y²) circulates around the origin, which is missing from its domain
+     const P = stPlane(180, 215, 60), K = (x, y) => { const r2 = x * x + y * y; return [-y / r2, x / r2]; };
+-    const hole = () => `<circle cx="180" cy="215" r="7" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="3 2"/>`;
++    const hole = `<circle cx="180" cy="215" r="8" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="3 2"/>`;
+     if (k <= 4) {
+-      o += P.axes(.18) + arrows(P, K, 5, 5, k === 2 ? L(2, 0, .1, 1) : .5, [1.1, 1.1, 24, .4]) + hole();
++      const ws = [[-1.65, 1.65], [1.65, 1.65], [-1.65, -1.65], [1.65, -1.65]], wf = k === 2 ? L(2, 1, .1, .8) : .55;
++      o += P.axes(.18) + arrows(P, K, 5, 5, k === 2 ? L(2, 0, .1, 1) : .5, [1.1, 1.1, 24, .4], ws, wf) + hole + wheels(P, ws, () => 0, wf);
++      if (k === 2) o += badge(382, true, L(2, 1, .3, .8)) + `<g opacity="${q2(L(2, 2, .1, .8))}">${vzLabel(194, 252, "not defined at 0", VZ.red, 14, "start")}${stNote(180, 405, "…but only away from the origin", VZ.red)}</g>`;
+       if (k >= 3) {
+         const e = k === 3 ? L(3, 2, .5, 4.6) : 1, th = 2 * Math.PI * e, R = 60;
+         const arc = e > .998 ? `<circle cx="180" cy="215" r="${R}" fill="none" stroke="${VZ.red}" stroke-width="5"/>` : th > .02 ? `<path d="M${P.X(1)} ${P.Y(0)}A${R} ${R} 0 ${th > Math.PI ? 1 : 0} 0 ${q2(180 + R * Math.cos(th))} ${q2(215 - R * Math.sin(th))}" fill="none" stroke="${VZ.red}" stroke-width="5" stroke-linecap="round"/>` : "";
+@@ -22794,31 +22847,37 @@
+         const gl = L(3, 2, .1, .5);
+         o += `<g opacity="${q2(gl)}"><rect x="50" y="368" width="260" height="10" rx="5" fill="${VZ.ink}" fill-opacity=".1"/><rect x="50" y="368" width="${q2(260 * e)}" height="10" rx="5" fill="${VZ.red}"/>${vzLabel(180, 400, "circulation so far", VZ.ink, 16)}</g>`;
+       }
+-      const note = [m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), "walk once around the origin", "circulation is not 0: a hole fools the test"][k];
+-      return o + stNote(180, 448, note, VZ.ink);
++      if (k === 2) o += vzKey([["dash", VZ.gold, "wheel stays still"]], 16, 452);
++      else o += vzKey([["dash", VZ.gold, "wheel stays still"], ["line", VZ.red, "the walk"]], 16, 452);
++      const note = ["", "", "no wheel turns, yet the origin is missing", "walk once around the hole", "the loop gives 2π, not 0: the hole fooled the test"][k];
++      return o + stNote(180, 428, note, VZ.ink);
+     }
+-    // k = 5: a loop can shrink to a point only if there is no hole
+-    const cs = Math.cos(T * 1.1) * .5 + .5, wob = L(5, 0, .1, .8);
++    // k = 5: why holes matter. A loop with no hole inside shrinks to a point (so its circulation is 0); a loop around a
++    // hole gets stuck on it. Shrink, hold, fade, start again.
++    const sv = (T / 4.2) % 1, sh = vzEase(vzClamp((sv - .06) / .5, 0, 1)), lop = Math.min(1, sv / .06, (1 - sv) / .08), wob = L(5, 0, .1, .8);
+     o += `<g opacity="${q2(wob)}">`;
+     [[96, "no hole", false], [264, "a hole", true]].forEach(([cx, nm, hl]) => {
+-      const R = hl ? 26 + 30 * cs : 4 + 52 * cs;
+-      o += `<ellipse cx="${cx}" cy="190" rx="70" ry="66" fill="${VZ.gold}" fill-opacity=".14" stroke="${VZ.gold}" stroke-width="1.6"/>` + (hl ? `<circle cx="${cx}" cy="190" r="22" fill="${VZ.paper}" stroke="${VZ.gold}" stroke-width="1.6" stroke-dasharray="4 3"/>` : "") + `<circle cx="${cx}" cy="190" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="3"/>` + vzLabel(cx, 292, nm, VZ.ink, 18);
++      const R = hl ? 56 - 26 * sh : 56 - 52 * sh;
++      o += `<ellipse cx="${cx}" cy="196" rx="74" ry="70" fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="1.8"/>` + (hl ? `<circle cx="${cx}" cy="196" r="22" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>` : "") +
++        `<circle cx="${cx}" cy="196" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="3.2" opacity="${q2(lop)}"/>` + vzLabel(cx, 108, nm, VZ.ink, 18) +
++        stNote(cx, 296, hl ? "the loop gets stuck" : "shrinks to a point", hl ? VZ.red : VZ.green);
+     });
+     o += `</g>`;
+-    return o + `<g opacity="${q2(L(5, 1, .1, .8))}">${stNote(180, 440, "curl 0 and no holes: conservative", VZ.ink)}</g>`;
++    o += vzKey([["line", VZ.red, "a closed loop"], ["fill", VZ.gold, "the region"]], 16, 452);
++    return o + `<g opacity="${q2(L(5, 1, .1, .8))}">${stNote(180, 428, "curl 0 and no holes: conservative", VZ.ink)}</g>`;
+   },
+   steps: [
+-    { t: "Test F: compare P_y and Q_x", tex: ["P=3x^2y,\\qquad Q=x^3+2y", "P_y=3x^2,\\qquad Q_x=3x^2", "P_y=Q_x\\ \\text{ on all of the plane (no holes)}"],
+-      why: "If \\(\\mathbf F=\\nabla f\\), mixed partials of \\(f\\) agree, so \\(P_y\\) must equal \\(Q_x\\). Here they do, and the plane has no holes, so \\(\\mathbf F\\) is conservative.", sum: "\\(P_y=Q_x\\): \\(\\mathbf F\\) conservative" },
+-    { t: "A field that fails", tex: ["P=xy,\\qquad Q=x^2", "P_y=x,\\qquad Q_x=2x", "P_y\\ne Q_x\\ \\Rightarrow\\ \\mathbf H\\text{ is not conservative}"],
+-      why: "One mismatch is enough: no potential \\(f\\) can exist. (There is nothing to check about holes in this direction.)", sum: "\\(P_y\\neq Q_x\\): \\(\\mathbf H\\) not conservative" },
+-    { t: "The trap: K passes the test", tex: ["P=\\dfrac{-y}{x^2+y^2},\\qquad Q=\\dfrac{x}{x^2+y^2}", "P_y=\\dfrac{y^2-x^2}{(x^2+y^2)^2}=Q_x", "\\text{for every point except }(0,0)"],
+-      why: "Differentiate with the quotient rule. The two partials agree everywhere \\(\\mathbf K\\) is defined. But \\(\\mathbf K\\) is not defined at the origin: the domain has a hole.", sum: "\\(P_y=Q_x\\) away from \\((0,0)\\)" },
++    { t: "Test F: compare ∂P/∂y and ∂Q/∂x", tex: ["P=3x^2y,\\qquad Q=x^3+2y", "\\frac{\\partial P}{\\partial y}=3x^2,\\qquad \\frac{\\partial Q}{\\partial x}=3x^2", "\\frac{\\partial P}{\\partial y}=\\frac{\\partial Q}{\\partial x}\\ \\text{ on the whole plane (no holes)}"],
++      why: "If \\(\\mathbf F=\\nabla f\\), both are the mixed partial of \\(f\\), so they must agree. They do, on a plane with no holes: \\(\\mathbf F\\) is conservative (one potential is \\(f=x^3y+y^2\\)).", sum: "equal: \\(\\mathbf F\\) conservative" },
++    { t: "A field that fails", tex: ["P=xy,\\qquad Q=x^2", "\\frac{\\partial P}{\\partial y}=x,\\qquad \\frac{\\partial Q}{\\partial x}=2x", "\\frac{\\partial P}{\\partial y}\\ne\\frac{\\partial Q}{\\partial x}\\ \\Rightarrow\\ \\mathbf H\\text{ is not conservative}"],
++      why: "They differ wherever \\(x\\ne0\\), and one mismatch is enough: no potential can exist. Holes don't matter in this direction.", sum: "not equal: \\(\\mathbf H\\) not conservative" },
++    { t: "The trap: K passes the test", tex: ["P=\\dfrac{-y}{x^2+y^2},\\qquad Q=\\dfrac{x}{x^2+y^2}", "\\frac{\\partial P}{\\partial y}=\\dfrac{y^2-x^2}{(x^2+y^2)^2}=\\frac{\\partial Q}{\\partial x}", "\\text{for every point except }(0,0)"],
++      why: "Use the quotient rule. The two partials agree everywhere \\(\\mathbf K\\) is defined, but \\(\\mathbf K\\) is not defined at the origin: the domain has a hole.", sum: "equal away from \\((0,0)\\)" },
+     { t: "Walk around the hole", tex: ["\\mathbf r(t)=[\\cos t,\\ \\sin t],\\qquad 0\\le t\\le2\\pi", "\\mathbf K(\\mathbf r(t))=[-\\sin t,\\ \\cos t],\\qquad \\mathbf r'(t)=[-\\sin t,\\ \\cos t]", "\\mathbf K\\cdot\\mathbf r'=\\sin^2t+\\cos^2t=1", "\\oint\\mathbf K\\cdot d\\mathbf r=\\int_0^{2\\pi}1\\,dt=2\\pi"],
+       why: "The field points along the circle the whole way round, so the circulation only grows.", sum: "\\(\\oint\\mathbf K\\cdot d\\mathbf r=2\\pi\\)" },
+     { t: "So K is not conservative", tex: ["\\oint\\mathbf K\\cdot d\\mathbf r=2\\pi\\ne0\\ \\Rightarrow\\ \\mathbf K\\text{ is not conservative}"],
+-      why: "In a conservative field every closed loop gives 0. The test \\(P_y=Q_x\\) was fooled by the missing point.", sum: "\\(2\\pi\\neq0\\): \\(\\mathbf K\\) not conservative" },
+-    { t: "The rule", tex: ["\\text{curl}=0\\ \\text{ on a region with no holes}\\ \\Rightarrow\\ \\mathbf F\\text{ conservative}", "\\text{2D: }P_y=Q_x\\qquad\\text{3D: }\\nabla\\times\\mathbf F=\\mathbf 0"],
++      why: "In a conservative field every closed loop gives 0. The test was fooled by the missing point.", sum: "\\(2\\pi\\neq0\\): \\(\\mathbf K\\) not conservative" },
++    { t: "The rule", tex: ["\\operatorname{curl}\\mathbf F=\\mathbf 0\\ \\text{ on a region with no holes}\\ \\Rightarrow\\ \\mathbf F\\text{ conservative}", "\\text{2D: }\\tfrac{\\partial P}{\\partial y}=\\tfrac{\\partial Q}{\\partial x}\\qquad\\text{3D: }\\operatorname{curl}\\mathbf F=\\mathbf 0"],
+       why: "A loop in a region with no holes can shrink to a point, which forces the circulation to 0. With a hole it cannot. Always check both: the curl and the region.", sum: "curl \\(0\\) + no holes \\(\\Rightarrow\\) conservative" },
+   ],
+ });

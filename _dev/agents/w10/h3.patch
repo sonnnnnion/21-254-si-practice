@@ -1,0 +1,81 @@
+diff -ru base10/index.html h3/index.html
+--- base10/index.html	2026-11-04 20:43:37
++++ h3/index.html	2026-11-04 21:28:53
+@@ -25490,8 +25490,10 @@
+   // the plane, a tilted sheet
+   const pc = [[-3.9, -3.9], [3.9, -3.9], [3.9, 3.9], [-3.9, 3.9]].map(([x, y]) => cam(x, y, 4 - x / 3));
+   o += `<path d="${h3D(pc)}Z" fill="${VZ.ink}" fill-opacity="${q2(.09 * plO)}" stroke="${VZ.ink}" stroke-opacity="${q2(.45 * plO)}" stroke-width="1.2"/>`;
+-  const lc = pc.reduce((a, q) => q[0] < a[0] ? q : a), cl = cam(-3, 0, ZT);
+-  o += h3Op(Math.max(.35, plO), vzLabel(lc[0] + 6, lc[1] + 22, "x + 3z = 12", VZ.ink, 14, "start")) + h3Op(Math.max(.35, cyO), vzLabel(cl[0] - 4, cl[1] - 8, "x² + y² = 9", VZ.ink, 14, "end"));
++  // the plane's name sits in the clear space below its left corner, with a short leader up onto the plane
++  const lc = pc.reduce((a, q) => q[0] < a[0] ? q : a), li = cam(...[[-3.9, -3.9], [3.9, -3.9], [3.9, 3.9], [-3.9, 3.9]].map(([x, y]) => [x * .8, y * .8, 4 - x * .8 / 3]).reduce((a, c) => cam(...c)[0] < cam(...a)[0] ? c : a)), cl = cam(-3, 0, ZT);
++  const lx = Math.max(8, lc[0] - 26), ly = lc[1] + 58;
++  o += h3Op(Math.max(.35, plO), `<line x1="${q2(lx + 30)}" y1="${q2(ly - 15)}" x2="${q2(li[0])}" y2="${q2(li[1])}" stroke="${VZ.ink}" stroke-width="1" opacity=".55"/>` + vzLabel(lx, ly, "x + 3z = 12", VZ.ink, 14, "start")) + h3Op(Math.max(.35, cyO), vzLabel(cl[0] - 4, cl[1] - 8, "x² + y² = 9", VZ.ink, 14, "end"));
+   // the curve itself
+   const cP = Array.from({ length: 97 }, (_, i) => cam(...Cp(2 * Math.PI * i / 96)));
+   o += `<path d="${h3D(cP)}Z" fill="none" stroke="${VZ.ink}" stroke-width="2.6" opacity="${k >= 3 ? .3 : k >= 1 ? .85 : .55}" stroke-linecap="round"/>`;
+@@ -25521,7 +25523,7 @@
+   let o = g1Grid(P, -1.7, 4.4, -1.3, 2.6) + `<path d="${h3D(full)}" fill="none" stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 5" opacity=".6"/>`;
+   const ink = k >= 1 ? (k === 1 ? L(1, 0, .1, 1) : 1) : 0;
+   o += g1Pen(h3D(piece), VZ.ink, ink, 3, `opacity="${k >= 3 ? .3 : .85}"`);
+-  o += h3Op(Math.max(.6, ink), vzLabel(S(2.05, 1.68)[0] + 6, S(2.05, 1.68)[1] + 22, "x = y² − 1", VZ.ink, 15, "start"));
++  o += h3Op(Math.max(.6, ink), vzLabel(S(2.05, 1.68)[0] + 14, S(2.05, 1.68)[1] + 38, "x = y² − 1", VZ.ink, 15, "start"));
+   if (k === 0) { const m = at(1), m2 = at(1.1); o += h3Two(m, [m2[0] - m[0], m2[1] - m[1]], 42, "t", [m[0] - 22, m[1] - 8], L(0, 0, .2, .7)); }
+   // the clue: y is free (the y-axis lights up); x follows
+   if (k >= 1 && k <= 2) { const e = k === 1 ? L(1, 0, .6, .7) : 1; o += h3Op(e, `<line x1="${q2(P.X(0))}" y1="${q2(P.Y(0))}" x2="${q2(P.X(0))}" y2="${q2(P.Y(2))}" stroke="${VZ.deep}" stroke-width="4" stroke-linecap="round" opacity=".5"/>` + vzLabel(P.X(0) - 10, P.Y(2.2) + 4, "y free", VZ.deep, 15, "end")); }
+@@ -25612,8 +25614,8 @@
+     o += h3Op(e * run.op, `<line x1="${q2(C[0])}" y1="${q2(C[1])}" x2="${q2(F[0])}" y2="${q2(F[1])}" stroke="${VZ.deep}" stroke-width="1.6"/>` + vzLabel((C[0] + F[0]) / 2, (C[1] + F[1]) / 2 - 7, "u", VZ.deep, 15) + h3Dot(F, VZ.deep, 5));
+   }
+   if (k >= 4) {
+-    const e = k === 4 ? L(4, 0, .2, .6) : 1, rimA = cam(...pol(2, 1.2, 5)), ri = Array.from({ length: 31 }, (_, m) => cam(...pol(2.25, -1.9 + 1.3 * m / 30, 5)));
+-    o += h3Op(e, vzLabel(top[0] - 10, top[1] - 14, "u = 0", VZ.red, 14, "end") + vzLabel(cam(...pol(2, 2.6, 5))[0] - 10, cam(...pol(2, 2.6, 5))[1] + 4, "u = 2", VZ.red, 14, "end") +
++    const e = k === 4 ? L(4, 0, .2, .6) : 1, rimL = Array.from({ length: 48 }, (_, m) => cam(...pol(2, 2 * Math.PI * m / 48, 5))).reduce((a, q) => q[0] < a[0] ? q : a), ri = Array.from({ length: 31 }, (_, m) => cam(...pol(2.25, -1.9 + 1.3 * m / 30, 5)));
++    o += h3Op(e, vzLabel(top[0] - 10, top[1] - 14, "u = 0", VZ.red, 14, "end") + vzLabel(rimL[0] - 8, rimL[1] + 5, "u = 2", VZ.red, 14, "end") +
+       `<path d="${h3D(ri)}" fill="none" stroke="${VZ.red}" stroke-width="1.8"/>` + h3Chev(ri[28], ri[30]) + vzLabel(ri[15][0], ri[15][1] + 22, "v: 0 to 2π", VZ.red, 14));
+   }
+   if (k === 5) o += h3Ok(cam(2, 0, 5), "(2, 0, 5) ✓", 12, 18, "start", L(5, 0, .2, .6));
+@@ -25636,7 +25638,7 @@
+     let s = "";
+     for (let i = 0; i <= n; i++) { const c = g0 + i * step, w = vzClamp(e * (n + 2) - i, 0, 1); if (w < .01) continue; const fade = k >= 4 ? 1 - .6 * Math.max(0, Math.max(-c, c - 1)) / .45 : 1;
+       s += h3Op(w * fade, vzPath3(cam, [at(c, g0), at(c, g0 + (g1 - g0) * w)], `stroke="${VZ.red}" stroke-width="1.2" opacity=".7"`) + vzPath3(cam, [at(g0, c), at(g0 + (g1 - g0) * w, c)], `stroke="${VZ.ink}" stroke-width="1.2" opacity=".5"`)); }
+-    o += s;
++    o += h3Op(k === 5 ? .45 : 1, s);
+   }
+   // a = Q − P and b = R − P, from P
+   if (k >= 3) {
+@@ -25765,6 +25767,27 @@
+   o += h3Op(ke, vzKey([["fill", VZ.gold, "clue"], ["fill", VZ.red, "its recipe"], ["line", VZ.red, s.kind === "c" ? "r(t)" : "r(u, v)"]], 16, 452));
+   return o;
+ }
++// the index card: the clue x² + y² = 4 lights the "round" card, and the circle is traced with cos and sin
++function h3Icon() {
++  const icons = [
++    c => `<path d="M${c - 42} 128Q${c - 10} 128 ${c} 98T${c + 42} 66" fill="none" stroke="${VZ.ink}" stroke-width="5" stroke-linecap="round"/>`,
++    c => `<circle cx="${c}" cy="96" r="32" fill="none" stroke="${VZ.red}" stroke-width="5"/>`,
++    c => `<line x1="${c - 40}" y1="124" x2="${c + 40}" y2="70" stroke="${VZ.ink}" stroke-width="5" stroke-linecap="round"/><circle cx="${c - 40}" cy="124" r="8" fill="${VZ.ink}"/><circle cx="${c + 40}" cy="70" r="8" fill="${VZ.ink}"/>`];
++  let o = "";
++  ["a graph", "round", "a line"].forEach((t, i) => {
++    const x = 42 + i * 182, c = x + 79, on = i === 1;
++    o += `<g opacity="${on ? 1 : .38}"><rect x="${x}" y="34" width="158" height="152" rx="18" fill="${on ? VZ.tint : VZ.paper}" stroke="${on ? VZ.red : "#9AA3AC"}" stroke-width="${on ? 5 : 2.5}"/>${icons[i](c)}` +
++      h3Sans(c, 168, t, 27, on ? VZ.deep : VZ.ink, "middle", 700) + `</g>`;
++  });
++  // the clue tag, an arrow up into its card
++  o += `<rect x="150" y="222" width="300" height="56" rx="28" fill="${VZ.paper}"/><rect x="150" y="222" width="300" height="56" rx="28" fill="${VZ.gold}" fill-opacity=".28" stroke="${VZ.gold}" stroke-width="3"/>` +
++    h3Serif(300, 261, "x² + y² = 4", 30, H3_GOLD) + vzArrow(300, 218, 300, 192, "O", 5);
++  // the circle, traced
++  const cx = 300, cy = 368, r = 58, a1 = 4.6, arc = Array.from({ length: 41 }, (_, i) => [cx + r * Math.cos(a1 * i / 40), cy - r * Math.sin(a1 * i / 40)]), E = arc[40];
++  o += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${VZ.grey}" stroke-width="3" stroke-dasharray="8 8" opacity=".6"/><path d="${h3D(arc)}" fill="none" stroke="${VZ.red}" stroke-width="7" stroke-linecap="round"/>` +
++    `<line x1="${cx}" y1="${cy}" x2="${q2(E[0])}" y2="${q2(E[1])}" stroke="${VZ.deep}" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="6" fill="${VZ.ink}"/>` + h3Dot(E, VZ.red, 12);
++  return o;
++}
+ const H3_CHOOSE = {
+   id: "m-choosepar", title: "Choose how to parametrize", card: "Choose how to parametrize",
+   tagline: "Find the clue in the problem: it picks one of three recipes.",
+@@ -25779,6 +25802,7 @@
+     }));
+   },
+   pic(k, b, u) { return h3Pic(this, k, b, u); },
++  draw() { return h3Icon(); },
+ };
+ h3Use(H3_CHOOSE, 0);
+ stAdd(H3_CHOOSE);

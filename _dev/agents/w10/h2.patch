@@ -1,0 +1,290 @@
+diff -ru base10/index.html h2/index.html
+--- base10/index.html	2026-11-04 20:43:37
++++ h2/index.html	2026-11-04 21:34:32
+@@ -26250,6 +26250,7 @@
+ 
+ const G1_TAN = {
+   id: "m-tangent", title: "r′(t): velocity, speed, tangent line, arc length", card: "r′(t), speed, tangent, length",
++  draw() { return h2CardTangent(); },   // the index card (h2, wave 10)
+   tagline: "Differentiate each component; the rest follows from r′(t).",
+   blurb: "Differentiate each component to get \\(\\mathbf r'(t)\\), the velocity, which is tangent to the curve. Its length \\(|\\mathbf r'(t)|\\) is the speed; the tangent line at \\(t_0\\) is \\(\\mathbf r(t_0)+s\\,\\mathbf r'(t_0)\\); and the arc length is \\(\\int|\\mathbf r'(t)|\\,dt\\).",
+   picLive: true, picDur: 3600,
+@@ -26549,6 +26550,7 @@
+   blurb: "Parametrize \\(C\\), find \\(ds=|\\mathbf r'(t)|\\,dt\\), put \\(\\mathbf r(t)\\) into \\(f\\), and integrate over the \\(t\\)-range. The answer doesn't depend on the direction you run along \\(C\\).",
+   sits: G2_LI, picLive: true,
+   pic(k, b, u) { return g2LiPic(this, k, b, u); },
++  draw() { return h2CardLine(); },   // the index card (h2, wave 10)
+   mount(given, rebuild) { g2Mount(this, given, rebuild); },
+ };
+ g2Load(G2_LI_DEF, 0);
+@@ -26734,6 +26736,7 @@
+   blurb: "Parametrize \\(C\\), find \\(\\mathbf r'(t)\\), dot \\(\\mathbf F(\\mathbf r(t))\\) with \\(\\mathbf r'(t)\\), and integrate. Direction matters: reverse \\(C\\) and the sign flips. If \\(\\mathbf F=\\nabla f\\), use \\(f(\\text{end})-f(\\text{start})\\) instead.",
+   sits: G2_WK, picLive: true,
+   pic(k, b, u) { return g2WkPic(this, k, b, u); },
++  draw() { return h2CardWork(); },   // the index card (h2, wave 10)
+   mount(given, rebuild) { g2Mount(this, given, rebuild); },
+ };
+ g2Load(G2_WK_DEF, 0);
+@@ -27299,6 +27302,7 @@
+   blurb: "Green's theorem needs \\(C\\) closed, traversed counterclockwise (\\(D\\) on the left), and \\(\\mathbf F\\) smooth on all of \\(D\\). Check those three things first, and fix whichever fails.",
+   sits: G2_GC, picLive: true,
+   pic(k, b, u) { return g2GcPic(this, k, b, u); },
++  draw() { return h2CardGreen(); },   // the index card (h2, wave 10)
+   mount(given, rebuild) { g2Mount(this, given, rebuild); },
+ };
+ g2Load(G2_GC_DEF, 0);
+@@ -27528,6 +27532,7 @@
+   picLive: true, picDur: 3600,
+   mount(given, rebuild) { g3Chips(this, given, rebuild, G3X, G3X_SITS, "Kind of region"); },
+   pic(k, b, u) { return g3xPic(this, k, b, u); },
++  draw() { return h2CardExtrema(); },   // the index card (h2, wave 10)
+ });
+ 
+ /* ---------- m-tanplane (g3): tangent plane and linear approximation; four situations ---------- */
+@@ -27828,6 +27833,7 @@
+   picLive: true, picDur: 3600,
+   mount(given, rebuild) { g3Chips(this, given, rebuild, G3C, G3C_SITS, "Kind of problem"); },
+   pic(k, b, u) { const S = G3C_SITS[G3C.cur]; return S.kind === "part" ? g3cPart(S, this, k, b, u) : g3cTree(S, this, k, b, u); },
++  draw() { return h2CardChain(); },   // the index card (h2, wave 10)
+ });
+ /* ---------- m-sketch (g3): sketch z = f(x, y) from level curves and traces; three situations ---------- */
+ const G3S = { cur: 0 };
+@@ -28589,6 +28595,7 @@
+ // which plots does a test's formula agree with? (used by the QA check, and it keeps the data honest)
+ function h2Agree(sit, test, f, j) {
+   const g = sit.F[sit.perm[j]].g, h = sit.F[f].g, pts = test.line ? H2_GRID.map(t => test.line.x != null ? [test.line.x, t] : [t, test.line.y]) : test.pts;
++  if (test.len) { const ls = pts.map(([x, y]) => Math.hypot(...g(x, y))); return ls.every(l => Math.abs(l - ls[0]) < .01 * Math.max(1, ls[0])); }   // a length test: is every arrow the same length?
+   return pts.every(([x, y]) => {
+     const a = g(x, y), c = test.line ? [0, 0] : h(x, y), la = Math.hypot(...a), lc = Math.hypot(...c);
+     if (lc < 1e-9 || la < 1e-9) return lc < 1e-9 && la < 1e-9;
+@@ -28613,11 +28620,14 @@
+   const A = sit.acts[cur] || {}, owner = {}, taken = {}, shown = {};
+   sit.acts.forEach((a, i) => { if (i > cur) return; if (a.match != null) { owner[a.match] = a.f; if (i < cur) taken[a.match] = 1; } (a.grad || []).forEach(f => { shown[f] = 1; }); });
+   const inPlay = j => !taken[j];
++  // cross-outs carry over while the same formula is still being placed (a second test keeps the first one's)
++  const xs = [], early = {};
++  for (let i = cur; i >= 0 && A.f != null && sit.acts[i].f === A.f && !(i < cur && sit.acts[i].match != null); i--) (sit.acts[i].out || []).forEach(j => { if (!xs.includes(j)) xs.unshift(j); if (sit.acts[i].test !== A.test) early[j] = 1; });
+   let o = "";
+   // the formula list: one row each; the one being tested gets a soft tint; ∇f (gradient sets) arrives in step 1
+   sit.F.forEach((F, f) => {
+-    const y = 20 + 19 * f, h = V("H|" + f, A.f === f ? 1 : 0, .5, .05);
+-    if (h > .01) o += `<rect x="6" y="${y - 14}" width="348" height="19" rx="9.5" fill="${VZ.red}" opacity="${q2(.09 * h)}"/>`;
++    const y = 22 + 18.5 * f, h = V("H|" + f, A.f === f ? 1 : 0, .5, .05);
++    if (h > .01) o += `<rect x="6" y="${y - 13.5}" width="348" height="18" rx="9" fill="${VZ.red}" opacity="${q2(.09 * h)}"/>`;
+     o += h2Txt(14, y, h2Subs(grad ? "f_" + (f + 1) : "F_" + (f + 1)) + " = " + F.t);
+     if (grad) { const g = V("G|" + f, shown[f] ? 1 : 0, .7, .1 + .25 * (f % 2)); if (g > .01) o += h2Txt(118 + 10 * (1 - g), y, "∇" + h2Sub("f", f + 1) + " = " + F.gt, { op: g }); }
+   });
+@@ -28627,12 +28637,12 @@
+   const ms = [];
+   for (let j = 0; j < 4; j++) {
+     const B = h2Box(j), m = ms[j] = V("M|" + j, owner[j] != null ? 1 : 0, .8, A.match === j ? (A.out ? 1.4 : .35) : 0);
+-    const xi = A.out ? A.out.indexOf(j) : -1, x = V("X|" + j, xi >= 0 ? 1 : 0, .55, .95 + .14 * Math.max(0, xi));
++    const xi = !xs.includes(j) ? -1 : A.out && A.out.includes(j) ? A.out.indexOf(j) : 0, x = V("X|" + j, xi >= 0 ? 1 : 0, .55, .95 + .14 * Math.max(0, xi));
+     o += `<rect x="${B.ox}" y="${B.oy}" width="${H2_S}" height="${H2_S}" fill="#fff"/>`;
+     if (m > .01) o += `<rect x="${B.ox}" y="${B.oy}" width="${H2_S}" height="${H2_S}" fill="${VZ.green}" opacity="${q2(.1 * m)}"/>`;
+     // neutral bands: a row (y fixed) or a column (x fixed)
+     ["row", "col"].forEach(t => {
+-      const bv = V("B|" + t + j, A.band && A.band[t] != null && inPlay(j) ? 1 : 0, .6, .1);
++      const bv = V("B|" + t + j, A.band && A.band[t] != null && (A.check != null ? A.check === j : inPlay(j)) ? 1 : 0, .6, .1);
+       if (bv < .01) return;
+       const c = (sit.acts.find(a => a.band && a.band[t] != null) || { band: { [t]: -1 } }).band[t];   // each situation bands one row and one column only
+       o += t === "row" ? `<rect x="${B.ox + 3}" y="${q2(B.Y(c) - 9)}" width="${H2_S - 6}" height="18" rx="9" fill="${VZ.ink}" opacity="${q2(.08 * bv)}"/>` : `<rect x="${q2(B.X(c) - 9)}" y="${B.oy + 3}" width="18" height="${H2_S - 6}" rx="9" fill="${VZ.ink}" opacity="${q2(.08 * bv)}"/>`;
+@@ -28653,7 +28663,7 @@
+     if (rg > .01) [[1, 0], [0, 1]].forEach(([px, py], q) => { const e = vzClamp(rg * 1.6 - .6 * q, 0, 1); if (e > .01) o += `<circle cx="${B.X(px)}" cy="${B.Y(py)}" r="${q2(4 + 3.5 * e)}" fill="none" stroke="${VZ.red}" stroke-width="1.6" stroke-dasharray="3 2.5" opacity="${q2(e)}"/>`; });
+     // the tests: a red ring and the formula's arrow at each test point (or rings along a line where F should be 0)
+     tests.forEach(T => {
+-      const on = A.test === T && (A.check != null ? A.check === j : inPlay(j)), v = V("T|" + T.id + "|" + j, on ? 1 : 0, .75, .15);
++      const on = A.test === T && (A.check != null ? A.check === j : inPlay(j) && !early[j]), v = V("T|" + T.id + "|" + j, on ? 1 : 0, .75, .15);
+       if (v < .01) return;
+       if (T.line) {
+         const vert = T.line.x != null, c = vert ? T.line.x : T.line.y, p0 = vert ? [B.X(c), B.oy + 6] : [B.ox + 6, B.Y(c)], p1 = vert ? [B.X(c), B.oy + H2_S - 6] : [B.ox + H2_S - 6, B.Y(c)];
+@@ -28665,16 +28675,16 @@
+       T.pts.forEach(([px, py], q) => {
+         const e = vzClamp(v * (1 + .5 * (T.pts.length > 1)) - .5 * (T.pts.length > 1) * q / Math.max(1, T.pts.length - 1), 0, 1); if (e < .01) return;
+         const c = sit.F[T.f].g(px, py), L = Math.hypot(c[0], c[1]) || 1, X = B.X(px), Y = B.Y(py), len = (T.pts.length > 3 ? 17 : 23) * e, own = fld.find(a => a[0] === px && a[1] === py);
+-        o += `<circle cx="${q2(X)}" cy="${q2(Y)}" r="5" fill="none" stroke="${VZ.red}" stroke-width="1.5" opacity="${q2(e)}"/>`;
++        o += `<circle cx="${q2(X)}" cy="${q2(Y)}" r="${T.len ? 9 : 5}" fill="none" stroke="${VZ.red}" stroke-width="${T.len ? 1.8 : 1.5}" opacity="${q2(e)}"/>`;
+         if (own) o += `<g opacity="${q2(e)}">${h2Arw(X, Y, own[2] * 1.15, own[3] * 1.15, 1.7)}</g>`;
+-        if (len > 3) o += `<g opacity="${q2(Math.min(1, e * 2))}">${vzArrow(X, Y, X + c[0] / L * len, Y - c[1] / L * len, "R", T.pts.length > 3 ? 1.9 : 2.3)}</g>`;
++        if (len > 3 && !T.len) o += `<g opacity="${q2(Math.min(1, e * 2))}">${vzArrow(X, Y, X + c[0] / L * len, Y - c[1] / L * len, "R", T.pts.length > 3 ? 1.9 : 2.3)}</g>`;
+       });
+     });
+   }
+   // the tags: when a formula is matched its tag flies from its row to its plot, and the row shows where it went
+   for (let j = 0; j < 4; j++) {
+     const f = sit.perm[j], m = ms[j], r = V("L|" + j, owner[j] != null ? 1 : 0, .4, A.match === j ? (A.out ? 2.2 : 1.15) : 0);
+-    const y = 20 + 19 * f, B = h2Box(j);
++    const y = 22 + 18.5 * f, B = h2Box(j);
+     if (r > .01) o += h2Txt(346, y, "→ " + H2_LET[j], { sans: 1, w: 800, size: 13, col: VZ.green, a: "end", op: r });
+     if (m > .01) {
+       const pw = grad ? 40 : 32, x0 = 316, y0 = y - 5, x1 = B.ox + 28 + pw / 2, y1 = B.oy - 12, px = x0 + (x1 - x0) * m, py = y0 + (y1 - y0) * m - 34 * Math.sin(Math.PI * m), op = vzClamp(m * 5, 0, 1);
+@@ -28686,6 +28696,98 @@
+   sit.acts.forEach((a, i) => { if (!a.note) return; const v = V("N|" + i, i === cur ? 1 : 0, .45, .2); if (v > .01) o += `<g opacity="${q2(v)}">${stNote(180, 428, h2Subs(a.note), VZ.ink)}</g>`; });
+   return o + vzKey([["line", VZ.red, "test arrow"], ["dash", VZ.grey, "crossed out"], ["fill", VZ.green, "matched"]], 16, 453);
+ }
++// ---------- index-card icons for six wave-8 methods (wave 10, h2): each def's draw() calls one of these ----------
++// 600 × 450 frame, bold strokes, no small text: the card is an icon of the method's core move.
++const h2Big = (x, y, t, col, sz = 46, a = "middle") => `<text x="${x}" y="${y}" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="${sz}" fill="${col || VZ.ink}" text-anchor="${a}" stroke="${VZ.paper}" stroke-width="8" stroke-linejoin="round" paint-order="stroke">${t}</text>`;
++const h2Path = (pts, attrs) => `<path d="M${pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" ${attrs}/>`;
++// m-chain: the tree z → x, y → t; one path (z → x → t) in red, one product per path
++function h2CardChain() {
++  const N = { z: [300, 82], x: [180, 226], y: [420, 226], t: [300, 370] }, R = 38, red = ["zx", "xt"];
++  const edge = (a, b) => { const A = N[a], B = N[b], d = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / d, uy = (B[1] - A[1]) / d, on = red.includes(a + b);
++    return `<line x1="${q2(A[0] + ux * R)}" y1="${q2(A[1] + uy * R)}" x2="${q2(B[0] - ux * R)}" y2="${q2(B[1] - uy * R)}" stroke="${on ? VZ.red : VZ.grey}" stroke-width="${on ? 10 : 6}" stroke-linecap="round" opacity="${on ? 1 : .55}"/>`; };
++  let o = edge("z", "x") + edge("z", "y") + edge("x", "t") + edge("y", "t");
++  Object.entries(N).forEach(([n, [x, y]]) => { const on = n === "z" || n === "x" || n === "t";
++    o += `<circle cx="${x}" cy="${y}" r="${R}" fill="#fff" stroke="${on ? VZ.red : VZ.ink}" stroke-width="${on ? 6 : 4}"/>` + h2Big(x, y + 15, n, on ? VZ.deep : VZ.ink, 48); });
++  return o;
++}
++// m-extrema: the region, its interior critical point, the edge points and corners; the biggest and smallest marked
++function h2CardExtrema() {
++  const A = [110, 400], B = [490, 400], C = [110, 50], dot = (p, r, col, ring) => (ring ? `<circle cx="${p[0]}" cy="${p[1]}" r="${r + 12}" fill="none" stroke="${col}" stroke-width="5" opacity=".45"/>` : "") + `<circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="${col}" stroke="#fff" stroke-width="4"/>`;
++  let o = `<path d="M${A}L${B}L${C}Z" fill="${VZ.red}" fill-opacity=".12" stroke="${VZ.red}" stroke-width="6" stroke-linejoin="round"/>`;
++  [70, 125, 180].forEach(r => { o += `<circle cx="215" cy="300" r="${r}" fill="none" stroke="${VZ.red}" stroke-width="3" opacity=".22" clip-path="url(#h2-exc)"/>`; });
++  o = `<defs><clipPath id="h2-exc"><path d="M${A}L${B}L${C}Z"/></clipPath></defs>` + o;
++  o += dot([300, 400], 13, VZ.gold) + dot([110, 225], 13, VZ.gold) + dot([300, 225], 13, VZ.gold);   // one on each edge
++  o += dot(A, 13, VZ.ink) + dot(C, 13, VZ.ink);
++  o += dot([215, 300], 17, VZ.ink, 1) + h2Big(215, 362, "min", VZ.ink, 40);
++  o += dot(B, 17, VZ.red, 1) + h2Big(470, 350, "max", VZ.deep, 40, "end");
++  return o;
++}
++// m-greencheck: a closed counterclockwise loop C around a shaded D, and the three checks passed
++function h2CardGreen() {
++  const cx = 225, cy = 225, P = th => { const r = 1 + .1 * Math.sin(2 * th) + .07 * Math.cos(3 * th); return [cx + 165 * r * Math.cos(th), cy - 140 * r * Math.sin(th)]; };
++  const pts = []; for (let i = 0; i <= 96; i++) pts.push(P(i / 96 * 2 * Math.PI));
++  let o = `<path d="M${pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="${VZ.red}" fill-opacity=".13" stroke="${VZ.red}" stroke-width="7" stroke-linejoin="round"/>` + h2Big(cx, cy + 18, "D", VZ.deep, 64);
++  [.25, .95, 1.6].forEach(f => { const a = P(f * Math.PI - .2), b = P(f * Math.PI + .2); o += vzArrow(a[0], a[1], b[0], b[1], "I", 8); });   // counterclockwise: D on the left
++  [110, 225, 340].forEach(y => { o += `<circle cx="505" cy="${y}" r="38" fill="${VZ.green}" stroke="#fff" stroke-width="4"/><path d="M486 ${y + 1}l12 12 22-25" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`; });
++  return o;
++}
++// m-tangent: a curve, a point on it, and the velocity r′(t) along the tangent there
++function h2CardTangent() {
++  const r = t => [70 + 460 * t, 300 - 150 * Math.sin(4.2 * t) + 120 * t * t], t0 = .52, h = 1e-4;
++  const pts = []; for (let i = 0; i <= 80; i++) pts.push(r(i / 80));
++  const p = r(t0), q = r(t0 + h), dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
++  let o = `<line x1="${q2(p[0] - ux * 230)}" y1="${q2(p[1] - uy * 230)}" x2="${q2(p[0] + ux * 230)}" y2="${q2(p[1] + uy * 230)}" stroke="${VZ.grey}" stroke-width="3.5" stroke-dasharray="10 9" opacity=".6"/>`;
++  o += h2Path(pts, `stroke="${VZ.ink}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"`);
++  o += vzArrow(p[0], p[1], p[0] + ux * 175, p[1] + uy * 175, "R", 9);
++  o += `<circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="14" fill="${VZ.deep}" stroke="#fff" stroke-width="4"/>` + h2Big(q2(p[0] + ux * 175 + 6), q2(p[1] + uy * 175 - 26), "r′(t)", VZ.deep, 46, "start");
++  return o;
++}
++// m-lineint: the curtain of height f standing on the curve C; ∫ f ds is its area
++function h2CardLine() {
++  const F = t => [90 + 420 * t, 380 - 60 * t - 70 * Math.sin(Math.PI * t)], H = t => 60 + 190 * t * t, n = 60;
++  const fl = [], tp = []; for (let i = 0; i <= n; i++) { const t = i / n, p = F(t); fl.push(p); tp.push([p[0], p[1] - H(t)]); }
++  let o = `<path d="M40 420L470 420L560 300L130 300Z" fill="none" stroke="${VZ.grey}" stroke-width="3" opacity=".4" stroke-linejoin="round"/>`;
++  o += `<path d="M${fl.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}L${tp.slice().reverse().map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="${VZ.red}" fill-opacity=".3"/>`;
++  for (let i = 4; i < n; i += 7) o += `<line x1="${q2(fl[i][0])}" y1="${q2(fl[i][1])}" x2="${q2(tp[i][0])}" y2="${q2(tp[i][1])}" stroke="${VZ.red}" stroke-width="3" opacity=".45"/>`;
++  o += h2Path(tp, `stroke="${VZ.red}" stroke-width="7" stroke-linecap="round"`) + h2Path(fl, `stroke="${VZ.ink}" stroke-width="7" stroke-linecap="round"`);
++  o += `<line x1="${q2(fl[n][0])}" y1="${q2(fl[n][1])}" x2="${q2(tp[n][0])}" y2="${q2(tp[n][1])}" stroke="${VZ.red}" stroke-width="6"/>`;
++  return o + `<circle cx="${q2(fl[0][0])}" cy="${q2(fl[0][1])}" r="11" fill="${VZ.ink}" stroke="#fff" stroke-width="3"/><circle cx="${q2(fl[n][0])}" cy="${q2(fl[n][1])}" r="11" fill="${VZ.ink}" stroke="#fff" stroke-width="3"/>`;
++}
++// m-work: a path C through a field F, its direction, the field pushing along it
++function h2CardWork() {
++  const Fv = (x, y) => [1 + .35 * y, .5 + .25 * x], C = t => [110 + 380 * t, 370 - 300 * t + 90 * Math.sin(Math.PI * t) * (1 - t)];
++  let o = "";
++  for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) {
++    const x = 75 + 90 * i, y = 75 + 100 * j, v = Fv(i - 2.5, 1.5 - j), l = Math.hypot(...v), s = 44 / l;
++    o += `<g opacity=".5">${vzArrow(x - v[0] * s / 2, y + v[1] * s / 2, x + v[0] * s / 2, y - v[1] * s / 2, "G", 4.4)}</g>`;
++  }
++  const pts = []; for (let i = 0; i <= 60; i++) pts.push(C(i / 60));
++  o += h2Path(pts.slice(0, 57), `stroke="${VZ.red}" stroke-width="9" stroke-linecap="round"`) + vzArrow(pts[54][0], pts[54][1], pts[60][0], pts[60][1], "R", 9);
++  [.3, .62].forEach(t => { const p = C(t), v = Fv((p[0] - 300) / 90, (225 - p[1]) / 100), l = Math.hypot(...v); o += vzArrow(p[0], p[1], p[0] + v[0] / l * 80, p[1] - v[1] / l * 80, "I", 6); });
++  return o + `<circle cx="${q2(pts[0][0])}" cy="${q2(pts[0][1])}" r="12" fill="${VZ.deep}" stroke="#fff" stroke-width="4"/>`;
++}
++// the index card: the core move as an icon. One red test arrow at (1, 0) on every plot; three disagree and are
++// crossed out, the one left is matched. (F = [y, −x] gives [0, −1] there: down, as on the green plot.)
++function h2Card() {
++  const S = 198, OX = [93, 309], OY = [24, 238], fs = [(x, y) => [0, x], (x, y) => [y, -x], (x, y) => [x, 2 * y], (x, y) => [2 * x, -y]], u = S / 3;
++  let o = "";
++  fs.forEach((g, j) => {
++    const ox = OX[j % 2], oy = OY[j >> 1], cx = ox + S / 2, cy = oy + S / 2, ok = j === 1, X = x => cx + x * u, Y = y => cy - y * u;
++    const pts = []; for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) pts.push([a, b, g(a, b)]);
++    const mx = Math.max(...pts.map(p => Math.hypot(...p[2])));
++    let f = `<path d="M${ox} ${cy}H${ox + S}M${cx} ${oy}V${oy + S}" stroke="${VZ.ink}" stroke-width="2" opacity=".18"/>`;
++    pts.forEach(([a, b, v]) => {
++      const l = Math.hypot(...v), s = l < 1e-9 ? 0 : 44 * Math.sqrt(l / mx) / l, dx = v[0] * s, dy = -v[1] * s;
++      f += s ? vzArrow(X(a) - dx / 2, Y(b) - dy / 2, X(a) + dx / 2, Y(b) + dy / 2, "I", 4.6) : `<circle cx="${X(a)}" cy="${Y(b)}" r="5" fill="${VZ.ink}"/>`;
++    });
++    o += `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" rx="10" fill="${ok ? "#EAF3ED" : "#fff"}"/><g opacity="${ok ? 1 : .3}">${f}</g>`;
++    o += ok ? `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" rx="10" fill="none" stroke="${VZ.green}" stroke-width="7"/>`
++      : `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" rx="10" fill="none" stroke="${VZ.grey}" stroke-width="4" stroke-dasharray="12 9"/><path d="M${ox + 22} ${oy + S - 22}L${ox + S - 22} ${oy + 22}" stroke="${VZ.grey}" stroke-width="7" stroke-linecap="round" opacity=".75"/>`;
++    o += `<circle cx="${X(1)}" cy="${Y(0)}" r="13" fill="none" stroke="${VZ.red}" stroke-width="4.5"/>` + vzArrow(X(1), Y(0), X(1), Y(0) + 74, "R", 7);
++    if (ok) o += `<circle cx="${ox + S - 6}" cy="${oy + 6}" r="26" fill="${VZ.green}" stroke="#fff" stroke-width="4"/><path d="M${ox + S - 18} ${oy + 7}l8 8 16-17" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
++  });
++  return o;
++}
+ // the chips: one worked example per situation (like g4Sits, with its own names)
+ function h2Sits(def, sits) {
+   def._sits = sits;
+@@ -28766,7 +28868,7 @@
+         why: "The last formula takes the last plot. One quick check catches a slip.", sum: "\\(\\mathbf F_3\\) is B" },
+     ] };
+   // Gradient of f. Plots A–D show ∇f4, ∇f2, ∇f1, ∇f3. Step 1 computes ∇f; then zeros, (1, 0), (0, 1).
+-  const z1g = { id: "z1g", f: 0, line: { y: 0 } }, a2g = { id: "a2g", f: 1, pts: [[1, 0]] }, a3g = { id: "a3g", f: 2, pts: [[1, 0]] }, b3g = { id: "b3g", f: 2, pts: [[0, 1]] }, c4g = { id: "c4g", f: 3, pts: [[0, 1]] };
++  const z1g = { id: "z1g", f: 0, line: { y: 0 } }, a2g = { id: "a2g", f: 1, pts: [[1, 0]] }, a3g = { id: "a3g", f: 2, pts: [[1, 0]] }, b3g = { id: "b3g", f: 2, pts: [[0, 1]] }, c4g = { id: "c4g", f: 3, pts: [[1, -1], [1, 0], [1, 1]] };
+   const grd = { chip: "Gradient of f", kind: "grad", perm: [3, 1, 0, 2],
+     F: [{ t: "y³", gt: "[0, 3y²]", g: (x, y) => [0, 3 * y * y] }, { t: "x − 2y", gt: "[1, −2]", g: () => [1, -2] }, { t: "x + ½y²", gt: "[1, y]", g: (x, y) => [1, y] }, { t: "⅓x³ + x", gt: "[x² + 1, 0]", g: x => [x * x + 1, 0] }],
+     problem: "Match each function to the plot of its gradient \\(\\nabla f\\), A–D: \\(f_1=y^3\\), \\(f_2=x-2y\\), \\(f_3=x+\\tfrac12y^2\\), \\(f_4=\\tfrac13x^3+x\\).",
+@@ -28783,7 +28885,7 @@
+       { k: 3, b: 0, f: 2, test: b3g, note: "∇f_3(0, 1) = [1, 1]: up and right" },
+       { k: 3, b: 1, f: 2, test: b3g, out: [0], match: 3, note: "A points right: f_3 goes with D" },
+       { k: 4, b: 0, f: 3, match: 0, note: "the one left: f_4 goes with A" },
+-      { k: 4, b: 1, f: 3, test: c4g, check: 0, note: "check: ∇f_4(0, 1) points right ✓" }],
++      { k: 4, b: 1, f: 3, test: c4g, band: { col: 1 }, check: 0, note: "check: only x, so A's columns repeat ✓" }],
+     steps: [
+       { t: "Compute ∇f first", tex: ["\\nabla f_1=[0,\\ 3y^2],\\qquad \\nabla f_2=[1,\\ -2]", "\\nabla f_3=[1,\\ y],\\qquad \\nabla f_4=[x^2+1,\\ 0]"],
+         why: "The plots show \\(\\nabla f\\), not \\(f\\). Take both partials of each function, then test those fields.", sum: "four gradient fields" },
+@@ -28793,17 +28895,48 @@
+         why: H2_PT, sum: "\\(f_2\\) goes with B" },
+       { t: "Another test point: (0, 1)", tex: ["\\nabla f_3(0,1)=[1,\\ 1]", { html: "Up and right. A points straight right there, so cross it out: \\(f_3\\) goes with D." }],
+         why: "One point couldn't tell A from D, so try a second one.", sum: "\\(f_3\\) goes with D" },
+-      { t: "The one left", tex: [{ html: "Only A is left, so \\(f_4\\) goes with A." }, { html: "Check: \\(\\nabla f_4(0,1)=[1,0]\\), right. A agrees ✓" }],
++      { t: "The one left", tex: [{ html: "Only A is left, so \\(f_4\\) goes with A." }, { html: "Check: \\(\\nabla f_4=[x^2+1,0]\\) has only \\(x\\), so each column repeats. A's do ✓" }],
+         why: "The last function takes the last plot. One quick check catches a slip.", sum: "\\(f_4\\) goes with A" },
+     ] };
+-  return [lin, one, grd];
++  // Length 1. Plots A–D show F2, F4, F1, F3. Tests: the length, one row, the zeros.
++  const l1 = { id: "l1", f: 0, len: 1, pts: [[-1, 1], [1, 1], [0, 0], [-1, -1], [1, -1]] }, w1 = { id: "w1", f: 0, pts: [[-1, 1], [0, 1], [1, 1]] }, v2 = { id: "v2", f: 1, pts: [[1, -1], [1, 0], [1, 1]] };
++  const z3 = { id: "z3", f: 2, line: { x: 0 } }, c4 = { id: "c4", f: 3, pts: [[0, 1]] };
++  const len = { chip: "Length 1", kind: "field", perm: [1, 3, 0, 2],
++    F: [{ t: "[cos y, sin y]", g: (x, y) => [Math.cos(y), Math.sin(y)] }, { t: "[cos x, sin x]", g: x => [Math.cos(x), Math.sin(x)] }, { t: "[x, x]", g: x => [x, x] }, { t: "[y, −y]", g: (x, y) => [y, -y] }],
++    problem: "Match each field to its plot A–D: \\(\\mathbf F_1=[\\cos y,\\ \\sin y]\\), \\(\\mathbf F_2=[\\cos x,\\ \\sin x]\\), \\(\\mathbf F_3=[x,\\ x]\\), \\(\\mathbf F_4=[y,\\ -y]\\).",
++    acts: [
++      { k: -1, b: 0, note: "four fields, four plots" },
++      { k: 0, b: 0, note: "spot what is easy: here, the length" },
++      { k: 1, b: 0, f: 0, test: l1, note: "|F_1| = 1: is every arrow the same length?" },
++      { k: 1, b: 1, f: 0, test: l1, out: [1, 3], note: "B and D change length: A or C" },
++      { k: 2, b: 0, f: 0, test: w1, band: { row: 1 }, note: "F_1 has only y: the row y = 1 repeats" },
++      { k: 2, b: 1, f: 0, test: w1, band: { row: 1 }, out: [0], match: 2, note: "A's row changes: F_1 is C" },
++      { k: 2, b: 2, f: 1, test: v2, band: { col: 1 }, match: 0, check: 0, note: "F_2 takes A: its columns repeat ✓" },
++      { k: 3, b: 0, f: 2, test: z3, note: "F_3 = 0 on the y-axis: dots there?" },
++      { k: 3, b: 1, f: 2, test: z3, out: [1], match: 3, note: "B's zeros are on the x-axis: F_3 is D" },
++      { k: 4, b: 0, f: 3, match: 1, note: "the one left: F_4 is B" },
++      { k: 4, b: 1, f: 3, test: c4, check: 1, note: "check: F_4(0, 1) points down and right ✓" }],
++    steps: [
++      { t: "What differs between the plots", tex: [{ html: "In A and C every arrow has the same length. In B and D the arrows grow away from a line of zeros." }],
++        why: "Before plugging in points, look for what is easy to compute. Here it is the length.", sum: "check the length" },
++      { t: "Check the length", tex: ["|\\mathbf F_1|=\\sqrt{\\cos^2y+\\sin^2y}=1", { html: "Every arrow has length 1. B and D change length: cross them out. A and C both pass, so not enough yet." }],
++        why: "If the length is the same at every point, every arrow on the plot is the same length.", sum: "\\(\\mathbf F_1\\) is A or C" },
++      { t: "Rows or columns?", tex: ["\\mathbf F_1(x,1)=[\\cos 1,\\ \\sin 1]\\ \\text{ for every } x", { html: "So each row repeats. A's row changes: \\(\\mathbf F_1\\) is C." }, { html: "\\(\\mathbf F_2=[\\cos x,\\sin x]\\) takes the other length-1 plot, A. Its columns repeat ✓" }],
++        why: "\\(\\mathbf F_1\\) has only \\(y\\), so along a row it stays the same. Test one row.", sum: "\\(\\mathbf F_1\\) is C, \\(\\mathbf F_2\\) is A" },
++      { t: "Where is F = 0?", tex: ["\\mathbf F_3=[x,\\ x]=\\mathbf 0\\ \\text{ when } x=0", { html: "That is the \\(y\\)-axis. B's zeros are on the \\(x\\)-axis instead: \\(\\mathbf F_3\\) is D." }],
++        why: H2_ZW, sum: "\\(\\mathbf F_3\\) is D" },
++      { t: "The one left", tex: [{ html: "Only B is left, so \\(\\mathbf F_4\\) is B." }, { html: "Check: \\(\\mathbf F_4(0,1)=[1,-1]\\), down and right. B agrees ✓" }],
++        why: "The last formula takes the last plot. One quick check catches a slip.", sum: "\\(\\mathbf F_4\\) is B" },
++    ] };
++  return [lin, one, len, grd];
+ })();
+ stAdd(h2Sits({
+   id: "m-fieldmatch", title: "Match a field to its plot", card: "Match a field to its plot",
+-  tagline: "Test a point, cross out the plots that disagree, take the one left.",
+-  blurb: "Don't sketch the whole field: test it. Plug in an easy point, find where \\(\\mathbf F\\) is \\(\\mathbf 0\\), or check whether it uses only \\(x\\) or only \\(y\\), and cross out every plot that disagrees. The one left is the match. For \\(\\nabla f\\), compute the gradient first, then test it.",
++  tagline: "Test a point, cross out the plots that disagree.",
++  blurb: "Don't sketch the whole field: test it. Plug in an easy point, find where \\(\\mathbf F\\) is \\(\\mathbf 0\\), or check its length, or whether it uses only \\(x\\) or only \\(y\\), and cross out every plot that disagrees. The one left is the match. For \\(\\nabla f\\), compute the gradient first, then test it.",
+   picLive: true,
+   pic(k, b, u) { return h2Pic(this, k, b, u); },
++  draw() { return h2Card(); },
+ }, H2_SITS));
+ const VZ_TAGLINE = {
+   systems: "Two lines meet once, never, or everywhere.", projection: "The shadow of one vector on another.",

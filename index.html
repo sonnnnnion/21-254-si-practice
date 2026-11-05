@@ -4369,6 +4369,8 @@
   .fm6-card.lift { opacity: .3; box-shadow: none; }
   .fm6-card.done { border-color: #2F7A4A; background: #EAF4EE; color: #245F3A; cursor: default; box-shadow: none; }
   .fm6-ck { font: 800 12px var(--font-sans); color: #2F7A4A; }
+  .fm6-cf { line-height: 1.25; }
+  .fm6-cf sup, .fm6-say sup { font-size: .7em; line-height: 0; vertical-align: .55em; }
   .fm6-fly { position: fixed; z-index: 1000; pointer-events: none; transform-origin: 50% 50%; box-sizing: border-box; transition: none; }
   .fm6-fly.held { box-shadow: 0 10px 24px rgba(31, 41, 51, .22); cursor: grabbing; }
   .fm6-sayrow { display: flex; gap: 10px; align-items: flex-start; }
@@ -4400,7 +4402,7 @@
     .fm6-phkey .vz-kh { display: inline-flex; align-items: center; gap: 5px; }
     .fm6-phkey .vz-kh i { display: inline-block; width: 14px; height: 0; border-top: 3px solid var(--c); border-radius: 2px; }
     .fm6-card { font-size: 16px; padding: 7px 14px; }
-    .fm6-say { font-size: 14px; min-height: 0; }
+    .fm6-say { font-size: 14px; min-height: 2.9em; }   /* two lines kept, so a longer caption never moves the cards */
     .fm6-sayrow { order: 1; } .fm6-cards { order: 2; } .fm6-btns { order: 3; }   /* the caption right under the plots, then the cards, then Show me one */
   }
   /* g1 css begin */
@@ -22668,121 +22670,174 @@ stAdd({
 });
 
 
+/* ---- h4 (wave 10): m-curldiv and m-isgrad. Paddle wheels show spin, drops show spread; each card has its own icon ---- */
+// a paddle wheel at (cx, cy), radius r, turned to angle th. A still wheel has a dashed gold rim and grey blades;
+// a turning one is dark red, with one red blade so the turning shows.
+function h4Wheel(cx, cy, r, th, still) {
+  const rim = still ? VZ.gold : VZ.deep, bl = still ? VZ.grey : VZ.deep;
+  let o = `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="${r}" fill="${VZ.paper}" fill-opacity=".94" stroke="${rim}" stroke-width="${q2(Math.max(1.7, r / 11))}"${still ? ' stroke-dasharray="4 3"' : ""}/>`;
+  for (let j = 0; j < 4; j++) {
+    const a = th + j * Math.PI / 2, ex = cx + (r - 3.5) * Math.cos(a), ey = cy - (r - 3.5) * Math.sin(a);
+    o += `<line x1="${q2(cx)}" y1="${q2(cy)}" x2="${q2(ex)}" y2="${q2(ey)}" stroke="${j === 0 && !still ? VZ.red : bl}" stroke-width="${q2(Math.max(2.6, r / 6))}" stroke-linecap="round"/>`;
+  }
+  return o + `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="${q2(Math.max(2.6, r / 7))}" fill="${VZ.ink}"/>`;
+}
+// a curved arrow on the right of (cx, cy) at radius R: counterclockwise for sg > 0, clockwise for sg < 0
+function h4Spin(cx, cy, R, sg, col, w) {
+  const ps = []; for (let i = 0; i <= 14; i++) { const a = sg * (-.95 + 1.9 * i / 14); ps.push([cx + R * Math.cos(a), cy - R * Math.sin(a)]); }
+  const e = ps[14], q = ps[13], dx = e[0] - q[0], dy = e[1] - q[1], dl = Math.hypot(dx, dy), ux = dx / dl, uy = dy / dl, h = 2.8 * w, hw = 2.2 * w;
+  return `<path d="M${ps.slice(0, 13).map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>` +
+    `<path d="M${q2(e[0] + ux * h * .5)} ${q2(e[1] + uy * h * .5)}L${q2(e[0] - ux * h - uy * hw)} ${q2(e[1] - uy * h + ux * hw)}L${q2(e[0] - ux * h + uy * hw)} ${q2(e[1] - uy * h - ux * hw)}Z" fill="${col}" stroke="${col}" stroke-width=".8" stroke-linejoin="round"/>`;
+}
+// a round badge: a green tick (good) or a red cross
+function h4Mark(cx, cy, r, good) {
+  const c = good ? VZ.green : VZ.red, d = good ? `M${q2(cx - .45 * r)} ${q2(cy + .02 * r)}L${q2(cx - .12 * r)} ${q2(cy + .36 * r)}L${q2(cx + .48 * r)} ${q2(cy - .34 * r)}` : `M${q2(cx - .36 * r)} ${q2(cy - .36 * r)}L${q2(cx + .36 * r)} ${q2(cy + .36 * r)}M${q2(cx + .36 * r)} ${q2(cy - .36 * r)}L${q2(cx - .36 * r)} ${q2(cy + .36 * r)}`;
+  return `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="${r}" fill="${c}"/><path d="${d}" fill="none" stroke="#fff" stroke-width="${q2(Math.max(2.2, r / 4.5))}" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+
 stAdd({
   id: "m-curldiv", title: "Curl and divergence, then what they mean", card: "Curl & divergence: read them",
-  tagline: "Compute both, then read spin and spread off the answers.",
+  tagline: "Div says spread or squeeze, curl says spin: compute, then read.",
   blurb: "Divergence is a number: does the flow spread out of a point (positive), squeeze into it (negative), or neither? Curl is a vector: how fast a tiny paddle wheel would spin there, and about which axis. Each is one short calculation, and the answer says where the field behaves which way.",
-  problem: "For \\(\\mathbf F=[x^2-y^2,\\ z^2,\\ 0]\\), find \\(\\nabla\\cdot\\mathbf F\\) and \\(\\nabla\\times\\mathbf F\\). Where is \\(\\mathbf F\\) irrotational, where is it incompressible, and where is it a source?",
+  problem: "For \\(\\mathbf F=[x^2-y^2,\\ z^2,\\ 0]\\), find \\(\\operatorname{div}\\mathbf F\\) and \\(\\operatorname{curl}\\mathbf F\\). Where is \\(\\mathbf F\\) irrotational, where is it incompressible, and where is it a source?",
+  // the card: a paddle wheel turned by uneven flow (curl = spin), and a drop that swells (div = spread)
+  draw() {
+    let o = `<line x1="300" y1="70" x2="300" y2="390" stroke="${VZ.grey}" stroke-opacity=".28" stroke-width="2"/>`;
+    o += vzArrow(138, 110, 78, 110, "I", 5) + vzArrow(222, 110, 162, 110, "I", 5) + vzArrow(78, 290, 138, 290, "I", 5) + vzArrow(162, 290, 222, 290, "I", 5);   // pushed left on top, right below: counterclockwise
+    o += h4Wheel(150, 200, 56, .4, false) + h4Spin(150, 200, 74, 1, VZ.red, 5);
+    o += vzLabel(150, 372, "curl: spin", VZ.deep, 34);
+    o += `<circle cx="450" cy="200" r="40" fill="none" stroke="${VZ.ink}" stroke-width="2.4" stroke-dasharray="6 5" opacity=".55"/>` +
+      `<circle cx="450" cy="200" r="60" fill="${VZ.red}" fill-opacity=".2" stroke="${VZ.red}" stroke-width="4"/>`;
+    for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 + Math.PI / 8, c = Math.cos(a), s = Math.sin(a); o += vzArrow(450 + 68 * c, 200 - 68 * s, 450 + 104 * c, 200 - 104 * s, "R", 4.4); }
+    return o + vzLabel(450, 372, "div: spread", VZ.red, 34);
+  },
   picLive: true,
   pic(k, b, u) {
     const L = stLines(this, k, b, u), P = stPlane(180, 236, 60), T = performance.now() / 1000, F = (x, y) => x * x - y * y;
+    const wheels = k === 2 || k === 3, drops = k === 1 || k >= 4;
+    const wo = k === 2 ? L(2, 3, .1, .8) : wheels ? 1 : 0;                       // the wheels come with the curl's answer
+    const bo = k === 1 ? L(1, 2, .1, .8) : k === 4 ? L(4, 0, .3, .8) : drops ? 1 : 0;   // the drops with the divergence's
     let o = "";
     if (k >= 5) o += `<g opacity="${q2(L(5, 0, .1, .8))}"><rect x="${P.X(0)}" y="40" width="${q2(344 - P.X(0))}" height="390" fill="${VZ.red}" fill-opacity=".07"/><rect x="16" y="40" width="${q2(P.X(0) - 16)}" height="390" fill="${VZ.ink}" fill-opacity=".06"/></g>`;
     o += P.axes(.2);
     if (k >= 4) o += `<g opacity="${q2(k === 4 ? L(4, 0, .1, .8) : 1)}"><line x1="${P.X(0)}" y1="40" x2="${P.X(0)}" y2="430" stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="5 5"/></g>`;
-    // the flow in the slice z = 0: F = [x² − y², 0], drawn with tame lengths (short where it is weak).
-    // While the wheels turn, the arrows just above and below each wheel are picked out: unequal pushes make it spin.
-    const fa = L(0, 0, .1, 1), dim = k === 0 ? 1 : .45, wk = k === 2 ? L(2, 3, .1, .8) : k === 3 ? 1 : 0;
+    if (k >= 1) o += vzLabel(180, 66, "the slice z = 0", VZ.grey, 15);
+    // the flow in the slice z = 0: F = [x² − y², 0], drawn with tame lengths (short where it is weak). The arrows where a
+    // drop or a wheel sits fade out as it comes in: their own in/out or rim arrows take over there.
+    const fa = k < 0 ? .8 : L(0, 0, .1, 1), dim = k <= 0 ? 1 : .4;   // (before step 1: the flow, faint)
     if (fa > .01) {
-      let hi = "";
-      o += `<g opacity="${q2(fa * dim)}">`;
+      let g = "", s = "";
       for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) {
-        const x = .8 * i, y = .8 * j, f = F(x, y), len = 26 * Math.tanh(Math.abs(f) / 3), s = Math.sign(f), pick = i === 0 && Math.abs(j) !== 2;
-        if (pick && wk > .01 && len > 3) hi += vzArrow(P.X(x) - s * len / 2, P.Y(y), P.X(x) + s * len / 2, P.Y(y), "D", 2.6);
-        if (len > 3) o += vzArrow(P.X(x) - s * len / 2, P.Y(y), P.X(x) + s * len / 2, P.Y(y), "I", 1.6);
-        else o += `<circle cx="${q2(P.X(x))}" cy="${q2(P.Y(y))}" r="1.8" fill="${VZ.ink}"/>`;
+        const x = .8 * i, y = .8 * j, f = F(x, y), len = 26 * Math.tanh(Math.abs(f) / 3), sg = Math.sign(f);
+        const a = len > 3 ? vzArrow(P.X(x) - sg * len / 2, P.Y(y), P.X(x) + sg * len / 2, P.Y(y), "I", 1.6) : `<circle cx="${q2(P.X(x))}" cy="${q2(P.Y(y))}" r="1.8" fill="${VZ.ink}"/>`;
+        if (drops && j === 0 && Math.abs(i) >= 2 || wheels && (i === 0 || Math.abs(i) === 1 && (j === 0 || Math.abs(j) === 2))) s += a; else g += a;
       }
-      o += `</g>` + (hi ? `<g opacity="${q2(wk * fa)}">${hi}</g>` : "");
+      o += `<g opacity="${q2(fa * dim)}">${g}</g>` + (s ? `<g opacity="${q2(fa * dim * (1 - Math.max(bo, wo)))}">${s}</g>` : "");
     }
-    // blobs of fluid: here P_x = 2x is the only stretch, so a blob is stretched along x where div > 0, squeezed where div < 0, kept where div = 0
-    const blobs = k >= 4 ? [[-1.9, 0, -1], [1.9, 0, 1], [0, 0, 0]] : k === 1 ? [[-1.9, 0, -1], [1.9, 0, 1]] : [];
-    const bo = k === 1 ? L(1, 2, .1, .8) : k === 4 ? L(4, 0, .3, .8) : 1, sv = (T / 3.4) % 1, se = sv * sv * (3 - 2 * sv), bop = Math.min(1, sv / .1, (1 - sv) / .1);
-    blobs.forEach(([x, y, d]) => {
-      const col = d > 0 ? VZ.red : d < 0 ? VZ.ink : VZ.gold, r = 17 * (1 + .6 * d * se), cx = P.X(x), cy = P.Y(y);
-      o += `<g opacity="${q2(bo)}"><circle cx="${q2(cx)}" cy="${q2(cy)}" r="17" fill="none" stroke="${col}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".6"/><ellipse cx="${q2(cx)}" cy="${q2(cy)}" rx="${q2(r)}" ry="17" fill="${col}" fill-opacity="${q2(.28 * bop)}" stroke="${col}" stroke-width="2" stroke-opacity="${q2(bop)}"/></g>`;
-    });
-    // paddle wheels: they turn where the curl is not 0 (counterclockwise for 2y > 0), and stay still on the x-axis
-    if (k === 2 || k === 3) {
-      const wo = k === 2 ? L(2, 3, .1, .8) : 1;
+    // drops of fluid on the x-axis. Flow enters on the left and leaves on the right (arrow length ∝ P = x² there):
+    // at x = 2 more leaves than enters, so the drop spreads; at x = −2 more enters than leaves, so it squeezes.
+    if (bo > .01) {
+      const sv = (T / 3.4) % 1, se = sv * sv * (3 - 2 * sv), bop = Math.min(1, sv / .1, (1 - sv) / .1);
+      (k >= 4 ? [-2, 0, 2] : [-2, 2]).forEach(x => {
+        const d = Math.sign(x), col = d > 0 ? VZ.red : d < 0 ? VZ.ink : VZ.gold, cx = P.X(x), cy = P.Y(0), r = 15 * (1 + .5 * d * se);
+        const io = d ? vzArrow(cx - 23 - 5 * (x - .25) ** 2, cy, cx - 23, cy, "D", 2.6) + vzArrow(cx + 23, cy, cx + 23 + 5 * (x + .25) ** 2, cy, "D", 2.6) : "";
+        o += `<g opacity="${q2(bo)}">${io}<circle cx="${q2(cx)}" cy="${q2(cy)}" r="15" fill="none" stroke="${col}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".6"/>` +
+          `<ellipse cx="${q2(cx)}" cy="${q2(cy)}" rx="${q2(r)}" ry="15" fill="${col}" fill-opacity="${q2(.3 * bop)}" stroke="${col}" stroke-width="2" stroke-opacity="${q2(bop)}"/>` +
+          vzLabel(cx, cy - 27, d > 0 ? "div > 0" : d < 0 ? "div &lt; 0" : "div = 0", d > 0 ? VZ.red : d < 0 ? VZ.ink : "#7A5C0F", 15) + `</g>`;
+      });
+    }
+    // paddle wheels on the y-axis, where F = [−y², 0]: the push on the top rim and on the bottom rim differ (the farther
+    // from y = 0, the harder), so the wheel turns: counterclockwise above the axis (2y > 0), clockwise below, still on it
+    if (wo > .01) {
       o += `<g opacity="${q2(wo)}">`;
       [1.6, 0, -1.6].forEach(y => {
-        const cx = P.X(0), cy = P.Y(y), th = 1.3 * y * T, still = y === 0;
-        o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="16" fill="${VZ.paper}" fill-opacity=".9" stroke="${still ? VZ.gold : VZ.deep}" stroke-width="1.6" ${still ? 'stroke-dasharray="4 3"' : ""}/>`;
-        for (let j = 0; j < 4; j++) { const a = th + j * Math.PI / 2, ex = cx + 12.5 * Math.cos(a), ey = cy - 12.5 * Math.sin(a); o += `<line x1="${q2(cx)}" y1="${q2(cy)}" x2="${q2(ex)}" y2="${q2(ey)}" stroke="${still ? VZ.grey : VZ.deep}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${q2(ex)}" cy="${q2(ey)}" r="${j === 0 ? 3.6 : 2.6}" fill="${j === 0 && !still ? VZ.red : still ? VZ.grey : VZ.deep}"/>`; }
-        o += `<circle cx="${q2(cx)}" cy="${q2(cy)}" r="2.6" fill="${VZ.ink}"/>`;
-        if (!still) {                                                   // which way it turns: counterclockwise above the axis, clockwise below
-          const sg = Math.sign(y), ps = []; for (let i = 0; i <= 10; i++) { const a = sg * (-.9 + 1.8 * i / 10); ps.push([cx + 23 * Math.cos(a), cy - 23 * Math.sin(a)]); }
-          const e = ps[10], q = ps[9], dx = e[0] - q[0], dy = e[1] - q[1], dl = Math.hypot(dx, dy), ux = dx / dl, uy = dy / dl;
-          o += `<path d="M${ps.slice(0, 10).map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" stroke="${VZ.deep}" stroke-width="1.8" stroke-linecap="round"/><path d="M${q2(e[0] + ux * 3)} ${q2(e[1] + uy * 3)}L${q2(e[0] - ux * 5 - uy * 4)} ${q2(e[1] - uy * 5 + ux * 4)}L${q2(e[0] - ux * 5 + uy * 4)} ${q2(e[1] - uy * 5 - ux * 4)}Z" fill="${VZ.deep}"/>`;
-        }
+        const cx = P.X(0), cy = P.Y(y), still = y === 0, r = 20;
+        o += vzArrow(cx + 3 * (y + .4) ** 2, cy - r - 5, cx - 3 * (y + .4) ** 2, cy - r - 5, "D", 2.6) + vzArrow(cx + 3 * (y - .4) ** 2, cy + r + 5, cx - 3 * (y - .4) ** 2, cy + r + 5, "D", 2.6);
+        o += h4Wheel(cx, cy, r, 1.2 * y * T + .4, still) + (still ? "" : h4Spin(cx, cy, r + 8, Math.sign(y), VZ.deep, 1.8));
+        o += vzLabel(cx + 36, cy - 8, still ? "2y = 0" : y > 0 ? "2y > 0" : "2y &lt; 0", still ? "#7A5C0F" : VZ.deep, 15, "start");
       });
       o += `</g>`;
     }
     if (k === 3) o += `<g opacity="${q2(L(3, 1, .1, .8))}"><line x1="16" y1="${P.Y(0)}" x2="344" y2="${P.Y(0)}" stroke="${VZ.gold}" stroke-width="2" stroke-dasharray="5 5"/></g>`;
-    if (k === 2 || k === 3) o += vzKey([["dot", VZ.deep, "spins"], ["dash", VZ.gold, "no spin"], ["line", VZ.deep, "push above / below"]], 16, 452);
-    else if (k === 1 || k >= 4) o += vzKey([["fill", VZ.red, "source"], ["fill", VZ.ink, "sink"], ["dash", VZ.gold, "neither"]].slice(0, k === 1 ? 2 : 3), 16, 452);
-    const note = ["the flow in the slice z = 0", "does the flow spread out or squeeze in?", "unequal pushes above and below: it turns", "no spin on the x-axis only", "steady only on the plane x = 0", "red side spreads, grey side squeezes"][Math.max(0, k)];
+    if (wheels) o += vzKey([["dot", VZ.deep, "spins"], ["dash", VZ.gold, "no spin"], ["line", VZ.deep, "push on rim"]], 16, 452);
+    else if (drops) o += vzKey(k === 1 ? [["fill", VZ.red, "spreads"], ["fill", VZ.ink, "squeezes"], ["line", VZ.deep, "flow in / out"]] : [["fill", VZ.red, "source"], ["fill", VZ.ink, "sink"], ["dash", VZ.gold, "neither"]], 16, 452);
+    const note = ["the flow in the slice z = 0", "out > in: it spreads. In > out: it squeezes", "a harder push on one rim: the wheel turns", "the wheel is still only on the x-axis", "div = 0 only on the plane x = 0", "red side spreads, grey side squeezes"][Math.max(0, k)];
     return o + stNote(180, 428, note, VZ.ink);
   },
   steps: [
     { t: "Name the parts", tex: ["P=x^2-y^2,\\qquad Q=z^2,\\qquad R=0"],
       why: "Write \\(\\mathbf F=[P,Q,R]\\) and label each component. Every partial below is built from these three.", sum: "\\(P=x^2-y^2,\\ Q=z^2,\\ R=0\\)" },
-    { t: "Divergence: three partials", tex: ["\\nabla\\cdot\\mathbf F=P_x+Q_y+R_z", "=\\tfrac{\\partial}{\\partial x}(x^2-y^2)+\\tfrac{\\partial}{\\partial y}(z^2)+\\tfrac{\\partial}{\\partial z}(0)", "=2x+0+0=2x"],
-      why: "Each component is differentiated with respect to its own variable, then the three are added. The result is a single number at each point.", sum: "\\(\\nabla\\cdot\\mathbf F=2x\\)" },
-    { t: "Curl: the 3×3 determinant", tex: ["\\nabla\\times\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\partial_x&\\partial_y&\\partial_z\\\\P&Q&R\\end{vmatrix}", "=\\mathbf i\\,(R_y-Q_z)-\\mathbf j\\,(R_x-P_z)+\\mathbf k\\,(Q_x-P_y)", "=\\mathbf i\\,(0-2z)-\\mathbf j\\,\\big(\\color{#C8102E}{0-0}\\big)+\\mathbf k\\,\\big(0-(-2y)\\big)", "=[-2z,\\ 0,\\ 2y]"],
-      why: "Expand along the top row. The middle term carries a minus sign. Here \\(R_x\\) and \\(P_z\\) are both 0, so the \\(\\mathbf j\\) part cancels.", sum: "\\(\\nabla\\times\\mathbf F=[-2z,\\,0,\\,2y]\\)" },
+    { t: "Divergence: three partials", tex: ["\\operatorname{div}\\mathbf F=\\frac{\\partial P}{\\partial x}+\\frac{\\partial Q}{\\partial y}+\\frac{\\partial R}{\\partial z}", "=\\tfrac{\\partial}{\\partial x}(x^2-y^2)+\\tfrac{\\partial}{\\partial y}(z^2)+\\tfrac{\\partial}{\\partial z}(0)", "=2x+0+0=2x"],
+      why: "Differentiate each component by its own variable, then add. The answer is one number at each point.", sum: "\\(\\operatorname{div}\\mathbf F=2x\\)" },
+    { t: "Curl: the 3×3 determinant", tex: ["\\operatorname{curl}\\mathbf F=\\nabla\\times\\mathbf F=\\begin{vmatrix}\\mathbf i&\\mathbf j&\\mathbf k\\\\\\partial_x&\\partial_y&\\partial_z\\\\P&Q&R\\end{vmatrix}", "=\\Big[\\tfrac{\\partial R}{\\partial y}-\\tfrac{\\partial Q}{\\partial z},\\ \\ \\tfrac{\\partial P}{\\partial z}-\\tfrac{\\partial R}{\\partial x},\\ \\ \\tfrac{\\partial Q}{\\partial x}-\\tfrac{\\partial P}{\\partial y}\\Big]", "=\\big[0-2z,\\ \\ 0-0,\\ \\ 0-(-2y)\\big]", "=[-2z,\\ 0,\\ 2y]"],
+      why: "Expanding along the top row gives this bracket form. In the slice \\(z=0\\) the curl is \\([0,0,2y]\\): a spin about the \\(z\\)-axis, counterclockwise where \\(y>0\\).", sum: "\\(\\operatorname{curl}\\mathbf F=[-2z,\\,0,\\,2y]\\)" },
     { t: "Irrotational where? Curl = 0", tex: ["[-2z,\\ 0,\\ 2y]=\\mathbf 0\\iff z=0\\ \\text{and}\\ y=0", "\\text{only on the }x\\text{-axis}"],
-      why: "A paddle wheel stays still only where all three components vanish. Everywhere else the curl is nonzero, and the wheel turns about the curl's direction.", sum: "irrotational only on the \\(x\\)-axis" },
-    { t: "Incompressible where? Div = 0", tex: ["\\nabla\\cdot\\mathbf F=2x=0\\iff x=0", "\\text{steady only on the plane }x=0"],
-      why: "Incompressible means \\(\\nabla\\cdot\\mathbf F=0\\): a blob of fluid keeps its volume. This field does that only on the plane \\(x=0\\).", sum: "divergence 0 only on \\(x=0\\)" },
-    { t: "Source or sink?", tex: ["\\nabla\\cdot\\mathbf F=2x>0\\iff x>0:\\ \\text{a source}", "x<0:\\ \\text{a sink (the flow squeezes in)}"],
-      why: "Positive divergence: more flows out of a point than in, so a blob swells. Negative: it shrinks.", sum: "source for \\(x>0\\), sink for \\(x<0\\)" },
+      why: "A paddle wheel stays still only where all three components are 0. Everywhere else it turns, about the curl's direction.", sum: "irrotational only on the \\(x\\)-axis" },
+    { t: "Incompressible where? Div = 0", tex: ["\\operatorname{div}\\mathbf F=2x=0\\iff x=0", "\\text{incompressible only on the plane }x=0"],
+      why: "Incompressible means \\(\\operatorname{div}\\mathbf F=0\\): a drop of fluid keeps its size. Here that happens only on the plane \\(x=0\\).", sum: "\\(\\operatorname{div}\\mathbf F=0\\) only on \\(x=0\\)" },
+    { t: "Source or sink?", tex: ["\\operatorname{div}\\mathbf F=2x>0\\iff x>0:\\ \\text{a source}", "x<0:\\ \\text{a sink (the flow squeezes in)}"],
+      why: "Positive divergence: more flows out of a point than in, so a drop swells. Negative: it shrinks.", sum: "source for \\(x>0\\), sink for \\(x<0\\)" },
   ],
 });
 
 
-const m6Sub = (n, sub, rest) => `${n}<tspan dy="4" font-size="12">${sub}</tspan><tspan dy="-4">${rest}</tspan>`;
-
-
-
 stAdd({
   id: "m-isgrad", title: "Is this field conservative?", card: "Conservative? The test",
-  tagline: "Compare P_y with Q_x, then check the region for holes.",
-  blurb: "If \\(\\mathbf F=\\nabla f\\) then \\(P_y=f_{xy}=f_{yx}=Q_x\\), so a field that fails \\(P_y=Q_x\\) is never conservative. The converse needs one more condition: the region must have no holes. Without it, \\(P_y=Q_x\\) can pass and the field can still circulate.",
+  tagline: "Check ∂P/∂y = ∂Q/∂x, then make sure the region has no holes.",
+  blurb: "If \\(\\mathbf F=\\nabla f\\), then \\(\\partial P/\\partial y=f_{xy}=f_{yx}=\\partial Q/\\partial x\\), so a field that fails this test is never conservative. The converse needs one more condition: the region must have no holes. Without it, the test can pass and the field can still circulate.",
   problem: "Test \\(\\mathbf F=[3x^2y,\\ x^3+2y]\\) and \\(\\mathbf H=[xy,\\ x^2]\\). Then look at \\(\\mathbf K=\\dfrac{[-y,\\ x]}{x^2+y^2}\\): it passes the test, so is it conservative?",
+  // the card: the test passes, and then the region decides: no hole (✓) or a hole (✗)
+  draw() {
+    let o = vzLabel(262, 120, "∂P/∂y = ∂Q/∂x", VZ.ink, 46) + h4Mark(478, 104, 24, true);
+    const blob = (cx, hole) => `<ellipse cx="${cx}" cy="262" rx="112" ry="78" fill="${VZ.gold}" fill-opacity=".2" stroke="${VZ.gold}" stroke-width="3.4"/>` +
+      (hole ? `<circle cx="${cx}" cy="262" r="24" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="3" stroke-dasharray="6 4"/><circle cx="${cx}" cy="262" r="50" fill="none" stroke="${VZ.red}" stroke-width="5.5"/>`
+        : [56, 36, 17].map((r, i) => `<circle cx="${cx}" cy="262" r="${r}" fill="none" stroke="${VZ.red}" stroke-width="5" opacity="${[.3, .55, .85][i]}"/>`).join("") + `<circle cx="${cx}" cy="262" r="6" fill="${VZ.red}"/>`);
+    o += blob(160, false) + blob(440, true);
+    o += vzLabel(146, 392, "no hole", VZ.ink, 30) + h4Mark(232, 381, 15, true) + vzLabel(426, 392, "a hole", VZ.ink, 30) + h4Mark(505, 381, 15, false);
+    return o;
+  },
   picLive: true,
   pic(k, b, u) {
-    const L = stLines(this, k, b, u), T = performance.now() / 1000;
+    const L = stLines(this, k, b, u), T = performance.now() / 1000, GR = "#7A5C0F";
     let o = "";
-    const arrows = (P, f, nx, ny, op, tame) => {
-      let s = `<g opacity="${q2(op)}">`;
+    // the field's arrows, tame lengths; the ones next to a paddle wheel fade out as the wheels come in (wf)
+    const arrows = (P, f, nx, ny, op, tame, ws, wf) => {
+      let s = "", t = "";
       for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
         const x = (i - (nx - 1) / 2) * tame[0], y = (j - (ny - 1) / 2) * tame[1], v = f(x, y), m = Math.hypot(v[0], v[1]);
-        if (m < 1e-6) continue; const len = tame[2] * Math.tanh(m / tame[3]);
-        if (len > 3) s += vzArrow(P.X(x) - v[0] / m * len / 2, P.Y(y) + v[1] / m * len / 2, P.X(x) + v[0] / m * len / 2, P.Y(y) - v[1] / m * len / 2, "I", 1.8);
+        if (!(m > 1e-6)) continue; const len = tame[2] * Math.tanh(m / tame[3]);
+        if (len <= 3) continue;
+        const a = vzArrow(P.X(x) - v[0] / m * len / 2, P.Y(y) + v[1] / m * len / 2, P.X(x) + v[0] / m * len / 2, P.Y(y) - v[1] / m * len / 2, "I", 1.8);
+        if (ws.some(w => Math.hypot(P.X(x) - P.X(w[0]), P.Y(y) - P.Y(w[1])) < 30)) t += a; else s += a;
       }
+      return `<g opacity="${q2(op)}">${s}</g>` + (t ? `<g opacity="${q2(op * (1 - .85 * wf))}">${t}</g>` : "");
+    };
+    // the test's verdict as one line, with a tick or a cross
+    const badge = (y, eq, op) => op > .01 ? `<g opacity="${q2(op)}">${vzLabel(166, y, `∂P/∂y ${eq ? "=" : "≠"} ∂Q/∂x`, eq ? VZ.ink : VZ.red, 22)}${h4Mark(266, y - 7, 11, eq)}</g>` : "";
+    // paddle wheels: each turns at a rate set by ∂Q/∂x − ∂P/∂y at its spot, so the test is "does any wheel turn?"
+    const wheels = (P, ws, spin, op) => {
+      if (op <= .01) return "";
+      let s = `<g opacity="${q2(op)}">`;
+      ws.forEach(([x, y]) => { const c = spin(x, y), still = Math.abs(c) < 1e-9, cx = P.X(x), cy = P.Y(y); s += h4Wheel(cx, cy, 14, .9 * c * T + .4, still) + (still ? "" : h4Spin(cx, cy, 21, Math.sign(c), VZ.deep, 1.6)); });
       return s + `</g>`;
     };
-    const bars = (hp, hq, ok, op) => {                    // P_y and Q_x at one sample point, side by side: equal or not equal
-      let s = `<g opacity="${q2(op)}">`;
-      [[120, hp, VZ.red, "P", "y"], [240, hq, VZ.ink, "Q", "x"]].forEach(([cx, h, col, n, sb]) => {
-        s += `<rect x="${cx - 24}" y="${q2(396 - h)}" width="48" height="${q2(h)}" rx="5" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="1.8"/>` + vzLabel(cx, 418, m6Sub(n, sb, ""), col, 18);
-      });
-      return s + vzLabel(180, 372, ok ? "=" : "≠", ok ? "#2F7A4A" : VZ.red, 30) + `</g>`;
-    };
     if (k <= 1) {
-      const P = stPlane(180, 190, 40), g = k === 0 ? (x, y) => [3 * x * x * y, x * x * x + 2 * y] : (x, y) => [x * y, x * x];
-      o += P.axes(.2) + arrows(P, g, 7, 5, k === 0 ? L(0, 0, .1, 1) : L(1, 0, .1, 1), [1, 1, 26, k === 0 ? 8 : 2.5]);
-      const e = k === 0 ? L(0, 2, .1, .9) : L(1, 2, .1, .9);
-      o += k === 0 ? bars(66, 66, true, e) : bars(22, 44, false, e);
-      if (k < 0) return o + stNote(180, 448, "three fields: test each one", VZ.ink);
-      return o + stNote(180, 448, k === 0 ? m6Sub("P", "y", "") + " and " + m6Sub("Q", "x", " agree: passes the test") : m6Sub("P", "y", "") + " and " + m6Sub("Q", "x", " differ: not conservative"), VZ.ink);
+      const P = stPlane(180, 190, 40), g = k <= 0 ? (x, y) => [3 * x * x * y, x * x * x + 2 * y] : (x, y) => [x * y, x * x];
+      if (k < 0) return o + P.axes(.2) + arrows(P, g, 7, 5, .75, [1, 1, 26, 8], [], 0) + stNote(180, 428, "three fields: test each one", VZ.ink);   // before step 1: F, waiting
+      const ws = [[-2, -.5], [0, -.5], [2, -.5]], wf = L(k, 1, .1, .8), spin = k === 0 ? () => 0 : x => x;   // ∂Q/∂x − ∂P/∂y: 0 for F, x for H
+      o += P.axes(.2) + arrows(P, g, 7, 5, L(k, 0, .1, 1), [1, 1, 26, k === 0 ? 8 : 2.5], ws, wf) + wheels(P, ws, spin, wf);
+      o += badge(338, k === 0, L(k, 2, .1, .8));
+      if (k === 0) o += `<g opacity="${q2(L(0, 2, .5, .8))}">${stNote(180, 366, "on the whole plane: no holes", VZ.green)}</g>`;
+      o += vzKey(k === 0 ? [["dash", VZ.gold, "wheel stays still"]] : [["dash", VZ.gold, "wheel stays still"], ["dot", VZ.deep, "wheel turns"]], 16, 452);
+      return o + stNote(180, 428, k === 0 ? "no wheel turns: F passes the test" : "wheels turn where x ≠ 0: H fails the test", VZ.ink);
     }
     // K = [−y, x]/(x² + y²) circulates around the origin, which is missing from its domain
     const P = stPlane(180, 215, 60), K = (x, y) => { const r2 = x * x + y * y; return [-y / r2, x / r2]; };
-    const hole = () => `<circle cx="180" cy="215" r="7" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="3 2"/>`;
+    const hole = `<circle cx="180" cy="215" r="8" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="3 2"/>`;
     if (k <= 4) {
-      o += P.axes(.18) + arrows(P, K, 5, 5, k === 2 ? L(2, 0, .1, 1) : .5, [1.1, 1.1, 24, .4]) + hole();
+      const ws = [[-1.65, 1.65], [1.65, 1.65], [-1.65, -1.65], [1.65, -1.65]], wf = k === 2 ? L(2, 1, .1, .8) : .55;
+      o += P.axes(.18) + arrows(P, K, 5, 5, k === 2 ? L(2, 0, .1, 1) : .5, [1.1, 1.1, 24, .4], ws, wf) + hole + wheels(P, ws, () => 0, wf);
+      if (k === 2) o += badge(382, true, L(2, 1, .3, .8)) + `<g opacity="${q2(L(2, 2, .1, .8))}">${vzLabel(194, 252, "not defined at 0", VZ.red, 14, "start")}${stNote(180, 405, "…but only away from the origin", VZ.red)}</g>`;
       if (k >= 3) {
         const e = k === 3 ? L(3, 2, .5, 4.6) : 1, th = 2 * Math.PI * e, R = 60;
         const arc = e > .998 ? `<circle cx="180" cy="215" r="${R}" fill="none" stroke="${VZ.red}" stroke-width="5"/>` : th > .02 ? `<path d="M${P.X(1)} ${P.Y(0)}A${R} ${R} 0 ${th > Math.PI ? 1 : 0} 0 ${q2(180 + R * Math.cos(th))} ${q2(215 - R * Math.sin(th))}" fill="none" stroke="${VZ.red}" stroke-width="5" stroke-linecap="round"/>` : "";
@@ -22794,31 +22849,37 @@ stAdd({
         const gl = L(3, 2, .1, .5);
         o += `<g opacity="${q2(gl)}"><rect x="50" y="368" width="260" height="10" rx="5" fill="${VZ.ink}" fill-opacity=".1"/><rect x="50" y="368" width="${q2(260 * e)}" height="10" rx="5" fill="${VZ.red}"/>${vzLabel(180, 400, "circulation so far", VZ.ink, 16)}</g>`;
       }
-      const note = [m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), m6Sub("P", "y", " = ") + m6Sub("Q", "x", " everywhere but the origin"), "walk once around the origin", "circulation is not 0: a hole fools the test"][k];
-      return o + stNote(180, 448, note, VZ.ink);
+      if (k === 2) o += vzKey([["dash", VZ.gold, "wheel stays still"]], 16, 452);
+      else o += vzKey([["dash", VZ.gold, "wheel stays still"], ["line", VZ.red, "the walk"]], 16, 452);
+      const note = ["", "", "no wheel turns, yet the origin is missing", "walk once around the hole", "the loop gives 2π, not 0: the hole fooled the test"][k];
+      return o + stNote(180, 428, note, VZ.ink);
     }
-    // k = 5: a loop can shrink to a point only if there is no hole
-    const cs = Math.cos(T * 1.1) * .5 + .5, wob = L(5, 0, .1, .8);
+    // k = 5: why holes matter. A loop with no hole inside shrinks to a point (so its circulation is 0); a loop around a
+    // hole gets stuck on it. Shrink, hold, fade, start again.
+    const sv = (T / 4.2) % 1, sh = vzEase(vzClamp((sv - .06) / .5, 0, 1)), lop = Math.min(1, sv / .06, (1 - sv) / .08), wob = L(5, 0, .1, .8);
     o += `<g opacity="${q2(wob)}">`;
     [[96, "no hole", false], [264, "a hole", true]].forEach(([cx, nm, hl]) => {
-      const R = hl ? 26 + 30 * cs : 4 + 52 * cs;
-      o += `<ellipse cx="${cx}" cy="190" rx="70" ry="66" fill="${VZ.gold}" fill-opacity=".14" stroke="${VZ.gold}" stroke-width="1.6"/>` + (hl ? `<circle cx="${cx}" cy="190" r="22" fill="${VZ.paper}" stroke="${VZ.gold}" stroke-width="1.6" stroke-dasharray="4 3"/>` : "") + `<circle cx="${cx}" cy="190" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="3"/>` + vzLabel(cx, 292, nm, VZ.ink, 18);
+      const R = hl ? 56 - 26 * sh : 56 - 52 * sh;
+      o += `<ellipse cx="${cx}" cy="196" rx="74" ry="70" fill="${VZ.gold}" fill-opacity=".16" stroke="${VZ.gold}" stroke-width="1.8"/>` + (hl ? `<circle cx="${cx}" cy="196" r="22" fill="${VZ.paper}" stroke="${VZ.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>` : "") +
+        `<circle cx="${cx}" cy="196" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="3.2" opacity="${q2(lop)}"/>` + vzLabel(cx, 108, nm, VZ.ink, 18) +
+        stNote(cx, 296, hl ? "the loop gets stuck" : "shrinks to a point", hl ? VZ.red : VZ.green);
     });
     o += `</g>`;
-    return o + `<g opacity="${q2(L(5, 1, .1, .8))}">${stNote(180, 440, "curl 0 and no holes: conservative", VZ.ink)}</g>`;
+    o += vzKey([["line", VZ.red, "a closed loop"], ["fill", VZ.gold, "the region"]], 16, 452);
+    return o + `<g opacity="${q2(L(5, 1, .1, .8))}">${stNote(180, 428, "curl 0 and no holes: conservative", VZ.ink)}</g>`;
   },
   steps: [
-    { t: "Test F: compare P_y and Q_x", tex: ["P=3x^2y,\\qquad Q=x^3+2y", "P_y=3x^2,\\qquad Q_x=3x^2", "P_y=Q_x\\ \\text{ on all of the plane (no holes)}"],
-      why: "If \\(\\mathbf F=\\nabla f\\), mixed partials of \\(f\\) agree, so \\(P_y\\) must equal \\(Q_x\\). Here they do, and the plane has no holes, so \\(\\mathbf F\\) is conservative.", sum: "\\(P_y=Q_x\\): \\(\\mathbf F\\) conservative" },
-    { t: "A field that fails", tex: ["P=xy,\\qquad Q=x^2", "P_y=x,\\qquad Q_x=2x", "P_y\\ne Q_x\\ \\Rightarrow\\ \\mathbf H\\text{ is not conservative}"],
-      why: "One mismatch is enough: no potential \\(f\\) can exist. (There is nothing to check about holes in this direction.)", sum: "\\(P_y\\neq Q_x\\): \\(\\mathbf H\\) not conservative" },
-    { t: "The trap: K passes the test", tex: ["P=\\dfrac{-y}{x^2+y^2},\\qquad Q=\\dfrac{x}{x^2+y^2}", "P_y=\\dfrac{y^2-x^2}{(x^2+y^2)^2}=Q_x", "\\text{for every point except }(0,0)"],
-      why: "Differentiate with the quotient rule. The two partials agree everywhere \\(\\mathbf K\\) is defined. But \\(\\mathbf K\\) is not defined at the origin: the domain has a hole.", sum: "\\(P_y=Q_x\\) away from \\((0,0)\\)" },
+    { t: "Test F: compare ∂P/∂y and ∂Q/∂x", tex: ["P=3x^2y,\\qquad Q=x^3+2y", "\\frac{\\partial P}{\\partial y}=3x^2,\\qquad \\frac{\\partial Q}{\\partial x}=3x^2", "\\frac{\\partial P}{\\partial y}=\\frac{\\partial Q}{\\partial x}\\ \\text{ on the whole plane (no holes)}"],
+      why: "If \\(\\mathbf F=\\nabla f\\), both are the mixed partial of \\(f\\), so they must agree. They do, on a plane with no holes: \\(\\mathbf F\\) is conservative (one potential is \\(f=x^3y+y^2\\)).", sum: "equal: \\(\\mathbf F\\) conservative" },
+    { t: "A field that fails", tex: ["P=xy,\\qquad Q=x^2", "\\frac{\\partial P}{\\partial y}=x,\\qquad \\frac{\\partial Q}{\\partial x}=2x", "\\frac{\\partial P}{\\partial y}\\ne\\frac{\\partial Q}{\\partial x}\\ \\Rightarrow\\ \\mathbf H\\text{ is not conservative}"],
+      why: "They differ wherever \\(x\\ne0\\), and one mismatch is enough: no potential can exist. Holes don't matter in this direction.", sum: "not equal: \\(\\mathbf H\\) not conservative" },
+    { t: "The trap: K passes the test", tex: ["P=\\dfrac{-y}{x^2+y^2},\\qquad Q=\\dfrac{x}{x^2+y^2}", "\\frac{\\partial P}{\\partial y}=\\dfrac{y^2-x^2}{(x^2+y^2)^2}=\\frac{\\partial Q}{\\partial x}", "\\text{for every point except }(0,0)"],
+      why: "Use the quotient rule. The two partials agree everywhere \\(\\mathbf K\\) is defined, but \\(\\mathbf K\\) is not defined at the origin: the domain has a hole.", sum: "equal away from \\((0,0)\\)" },
     { t: "Walk around the hole", tex: ["\\mathbf r(t)=[\\cos t,\\ \\sin t],\\qquad 0\\le t\\le2\\pi", "\\mathbf K(\\mathbf r(t))=[-\\sin t,\\ \\cos t],\\qquad \\mathbf r'(t)=[-\\sin t,\\ \\cos t]", "\\mathbf K\\cdot\\mathbf r'=\\sin^2t+\\cos^2t=1", "\\oint\\mathbf K\\cdot d\\mathbf r=\\int_0^{2\\pi}1\\,dt=2\\pi"],
       why: "The field points along the circle the whole way round, so the circulation only grows.", sum: "\\(\\oint\\mathbf K\\cdot d\\mathbf r=2\\pi\\)" },
     { t: "So K is not conservative", tex: ["\\oint\\mathbf K\\cdot d\\mathbf r=2\\pi\\ne0\\ \\Rightarrow\\ \\mathbf K\\text{ is not conservative}"],
-      why: "In a conservative field every closed loop gives 0. The test \\(P_y=Q_x\\) was fooled by the missing point.", sum: "\\(2\\pi\\neq0\\): \\(\\mathbf K\\) not conservative" },
-    { t: "The rule", tex: ["\\text{curl}=0\\ \\text{ on a region with no holes}\\ \\Rightarrow\\ \\mathbf F\\text{ conservative}", "\\text{2D: }P_y=Q_x\\qquad\\text{3D: }\\nabla\\times\\mathbf F=\\mathbf 0"],
+      why: "In a conservative field every closed loop gives 0. The test was fooled by the missing point.", sum: "\\(2\\pi\\neq0\\): \\(\\mathbf K\\) not conservative" },
+    { t: "The rule", tex: ["\\operatorname{curl}\\mathbf F=\\mathbf 0\\ \\text{ on a region with no holes}\\ \\Rightarrow\\ \\mathbf F\\text{ conservative}", "\\text{2D: }\\tfrac{\\partial P}{\\partial y}=\\tfrac{\\partial Q}{\\partial x}\\qquad\\text{3D: }\\operatorname{curl}\\mathbf F=\\mathbf 0"],
       why: "A loop in a region with no holes can shrink to a point, which forces the circulation to 0. With a hole it cannot. Always check both: the curl and the region.", sum: "curl \\(0\\) + no holes \\(\\Rightarrow\\) conservative" },
   ],
 });
@@ -24789,41 +24850,41 @@ const fm6Vc = a => `[${fm6N(a[0])}, ${fm6N(a[1])}]`;
 const fm6Ex = a => a.every(c => Math.abs(c * 100 - Math.round(c * 100)) < 1e-7);   // shown exactly with two decimals (else "≈")
 const FM6_SETS = [
   { kind: "grad", perm: [2, 0, 3, 1], items: [
-    { t: "f = 2x + y", gT: "[2, 1]", f: (x, y) => 2 * x + y, g: () => [2, 1] },
-    { t: "f = x² − 2y²", gT: "[2x, −4y]", f: (x, y) => x * x - 2 * y * y, g: (x, y) => [2 * x, -4 * y] },
-    { t: "f = e<sup>−(x²+y²)/2</sup>", gT: "−f · [x, y]", f: (x, y) => Math.exp(-(x * x + y * y) / 2), g: (x, y) => { const e = Math.exp(-(x * x + y * y) / 2); return [-x * e, -y * e]; } },
-    { t: "f = sin x", gT: "[cos x, 0]", f: x => Math.sin(x), g: x => [Math.cos(x), 0] }] },
+    { t: "f = 2x + y", gT: "[2, 1]", px: "2", py: "1", f: (x, y) => 2 * x + y, g: () => [2, 1] },
+    { t: "f = x² − 2y²", gT: "[2x, −4y]", px: "2x", py: "−4y", f: (x, y) => x * x - 2 * y * y, g: (x, y) => [2 * x, -4 * y] },
+    { t: "f = e<sup>−(x²+y²)/2</sup>", gT: "−f · [x, y]", px: "−x f", py: "−y f", f: (x, y) => Math.exp(-(x * x + y * y) / 2), g: (x, y) => { const e = Math.exp(-(x * x + y * y) / 2); return [-x * e, -y * e]; } },
+    { t: "f = sin x", gT: "[cos x, 0]", px: "cos x", py: "0", f: x => Math.sin(x), g: x => [Math.cos(x), 0] }] },
   { kind: "field", perm: [1, 3, 0, 2], items: [
     { t: "F = [−y, x]", g: (x, y) => [-y, x] },
     { t: "F = [x − y, x + y]", g: (x, y) => [x - y, x + y] },
     { t: "F = [x, −y]", g: (x, y) => [x, -y] },
     { t: "F = [x, y]", g: (x, y) => [x, y] }] },
   { kind: "grad", perm: [3, 0, 2, 1], items: [
-    { t: "f = ½x² + y", gT: "[x, 1]", f: (x, y) => x * x / 2 + y, g: x => [x, 1] },
-    { t: "f = ln(1 + x² + y²)", gT: "[2x, 2y] / (1 + x² + y²)", f: (x, y) => Math.log(1 + x * x + y * y), g: (x, y) => { const d = 1 + x * x + y * y; return [2 * x / d, 2 * y / d]; } },
-    { t: "f = ½(x + y)²", gT: "[x + y, x + y]", f: (x, y) => (x + y) * (x + y) / 2, g: (x, y) => [x + y, x + y] },
-    { t: "f = ½(y² − x²)", gT: "[−x, y]", f: (x, y) => (y * y - x * x) / 2, g: (x, y) => [-x, y] }] },
+    { t: "f = ½x² + y", gT: "[x, 1]", px: "x", py: "1", f: (x, y) => x * x / 2 + y, g: x => [x, 1] },
+    { t: "f = ln(1 + x² + y²)", gT: "[2x, 2y] / (1 + x² + y²)", px: "2x / (1 + x² + y²)", py: "2y / (1 + x² + y²)", f: (x, y) => Math.log(1 + x * x + y * y), g: (x, y) => { const d = 1 + x * x + y * y; return [2 * x / d, 2 * y / d]; } },
+    { t: "f = ½(x + y)²", gT: "[x + y, x + y]", px: "x + y", py: "x + y", f: (x, y) => (x + y) * (x + y) / 2, g: (x, y) => [x + y, x + y] },
+    { t: "f = ½(y² − x²)", gT: "[−x, y]", px: "−x", py: "y", f: (x, y) => (y * y - x * x) / 2, g: (x, y) => [-x, y] }] },
   { kind: "field", perm: [2, 3, 1, 0], items: [
     { t: "F = [y, 0]", g: (x, y) => [y, 0] },
     { t: "F = [−x, −y]", g: (x, y) => [-x, -y] },
     { t: "F = [−x − y, x − y]", g: (x, y) => [-x - y, x - y] },
     { t: "F = [−2, 1]", g: () => [-2, 1] }] },
   { kind: "grad", perm: [1, 2, 3, 0], items: [
-    { t: "f = ¼(x² + y²)²", gT: "(x² + y²) · [x, y]", f: (x, y) => Math.pow(x * x + y * y, 2) / 4, g: (x, y) => { const r = x * x + y * y; return [x * r, y * r]; } },
-    { t: "f = x − y²", gT: "[1, −2y]", f: (x, y) => x - y * y, g: (x, y) => [1, -2 * y] },
-    { t: "f = sin x + sin y", gT: "[cos x, cos y]", f: (x, y) => Math.sin(x) + Math.sin(y), g: (x, y) => [Math.cos(x), Math.cos(y)] },
-    { t: "f = ½x² + 2y²", gT: "[x, 4y]", f: (x, y) => x * x / 2 + 2 * y * y, g: (x, y) => [x, 4 * y] }] },
+    { t: "f = ¼(x² + y²)²", gT: "(x² + y²) · [x, y]", px: "x(x² + y²)", py: "y(x² + y²)", f: (x, y) => Math.pow(x * x + y * y, 2) / 4, g: (x, y) => { const r = x * x + y * y; return [x * r, y * r]; } },
+    { t: "f = x − y²", gT: "[1, −2y]", px: "1", py: "−2y", f: (x, y) => x - y * y, g: (x, y) => [1, -2 * y] },
+    { t: "f = sin x + sin y", gT: "[cos x, cos y]", px: "cos x", py: "cos y", f: (x, y) => Math.sin(x) + Math.sin(y), g: (x, y) => [Math.cos(x), Math.cos(y)] },
+    { t: "f = ½x² + 2y²", gT: "[x, 4y]", px: "x", py: "4y", f: (x, y) => x * x / 2 + 2 * y * y, g: (x, y) => [x, 4 * y] }] },
   { kind: "field", perm: [3, 0, 2, 1], items: [
     { t: "F = [−y, x] / (1 + x² + y²)", g: (x, y) => { const d = 1 + x * x + y * y; return [-y / d, x / d]; } },
     { t: "F = [x, y] / (1 + x² + y²)", g: (x, y) => { const d = 1 + x * x + y * y; return [x / d, y / d]; } },
     { t: "F = [x², 0]", g: x => [x * x, 0] },
-    { t: "F = [1, x]", g: (x, y) => [1, x] }] },
+    { t: "F = [cos y, sin y]", g: (x, y) => [Math.cos(y), Math.sin(y)] }] },
 ];
-FM6_SETS.forEach(S => S.items.forEach(it => { it.th = fm6V(it.t); if (it.gT) it.tg = fm6V(it.gT); }));
+FM6_SETS.forEach(S => S.items.forEach(it => { it.th = fm6V(it.t); if (it.gT) { it.tg = fm6V(it.gT); it.tpx = fm6V(it.px).replace(/ f$/, " · f"); it.tpy = fm6V(it.py).replace(/ f$/, " · f"); } }));
 // layouts of the four plots: on the stage (600 × 450), and on a phone in the panel (378 × 392); ph = height of a matched tag
 const FM6_LAY = { st: { W: 600, H: 450, S: 160, FX: [82, 362], FY: [34, 250], fs: 13, ml: 15, pf: 14, ph: 24 },
   ph: { W: 378, H: 392, S: 146, FX: [28, 212], FY: [28, 222], fs: 12, ml: 13.6, pf: 12.5, ph: 21 } };
-const FM6_KEYS = [["line", VZ.ink, "longer arrow = stronger"], ["line", VZ.red, "test arrow"], ["line", VZ.grey, "crossed out"], ["line", FM6_GREEN, "matched"]];
+const FM6_KEYS = [["line", VZ.ink, "longer arrow = stronger"], ["line", VZ.red, "test mark"], ["line", VZ.grey, "crossed out"], ["line", FM6_GREEN, "matched"]];
 // easy test points first: the axes, the centre, then the diagonals and farther out
 const FM6_EASY = [[1, 0], [0, 1], [-1, 0], [0, -1], [0, 0], [1, 1], [-1, 1], [-1, -1], [1, -1], [2, 0], [0, 2], [-2, 0], [0, -2], [2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2], [2, -1], [2, 2], [-2, 2], [-2, -2], [2, -2]];
 const FM6_DIR = ["right", "right and a bit up", "up and right", "up and a bit right", "straight up", "up and a bit left", "up and left", "left and a bit up",
@@ -24854,20 +24915,93 @@ function fm6Cmp(A, B, p) {
   return c < .866 ? 1 : c > .985 ? 0 : -1;                         // more than 30° apart: a different direction
 }
 const fm6Nice = (A, p) => fm6Ex(A.g(p[0], p[1])) && A.g(p[0], p[1]).every(c => Math.abs(c - Math.round(c)) < 1e-9);
-// the cheapest few test points (easy points, whole-number answers) that cross out every wrong plot in R
+/* The checks a student can make, each read straight off the plots: where the field is zero, how long its arrows are,
+   whether it changes along rows or columns only, and the arrow at a test point. fm6Tests lists those that apply to a
+   card; fm6Judge says, for one plot, whether it clearly disagrees (1), agrees (0) or can't be told from the picture (-1). */
+const fm6Rel = (it, p) => { const v = fm6Vec(it)[fm6Ix(p)]; return Math.hypot(v[0], v[1]); };
+const fm6Raw = (it, p) => { const v = it.g(p[0], p[1]); return Math.hypot(v[0], v[1]); };
+function fm6LenS(v) {                                                  // a length as a student would write it: 2, √5, 0.5
+  const r = Math.round(v); if (Math.abs(v - r) < 1e-9) return String(r);
+  const s = Math.round(v * v); if (Math.abs(v * v - s) < 1e-9) return "√" + s;
+  return (fm6Ex([v]) ? "" : "≈ ") + fm6N(v);
+}
+function fm6ZeroSet(it) {                                              // the grid points where the formula is exactly zero, and how to say it
+  const Z = FM6_PTS.filter(p => fm6Raw(it, p) < 1e-9);
+  if (!Z.length) return { Z, say: "never zero" };
+  if (Z.length === 1) return { Z, say: `zero only at ${fm6Pt(Z[0])}`, pt: 1 };
+  const sx = Z.every(p => p[0] === Z[0][0]), sy = Z.every(p => p[1] === Z[0][1]), d1 = Z.every(p => p[0] + p[1] === 0), d2 = Z.every(p => p[0] === p[1]);
+  const line = sx ? (Z[0][0] === 0 ? "the y-axis" : `the line x = ${fm6N(Z[0][0])}`) : sy ? (Z[0][1] === 0 ? "the x-axis" : `the line y = ${fm6N(Z[0][1])}`) : d1 ? "the line y = −x" : d2 ? "the line y = x" : null;
+  return line ? { Z, say: `zero along ${line}`, line: sx ? ["x", Z[0][0]] : sy ? ["y", Z[0][1]] : d1 ? ["d", -1] : ["d", 1] } : { Z: [], say: "" };
+}
+const FM6_RING4 = [[-1.5, 1.5], [1.5, 1.5], [0, 0], [1.5, -1.5], [-1.5, -1.5]];
+const FM6_PAIRS = [[[.5, 0], [2, 0]], [[0, .5], [0, 2]], [[-.5, 0], [-2, 0]], [[0, -.5], [0, -2]], [[1, 0], [2, 0]], [[0, 1], [0, 2]], [[.5, .5], [1.5, 1.5]], [[.5, 0], [1, 0]]];
+function fm6Tests(set, k) {
+  const A = set.items[k], nm = set.kind === "grad" ? "∇f" : "F", T = [], L = FM6_PTS.map(p => fm6Raw(A, p)), mx = Math.max(...L), mn = Math.min(...L);
+  const same = (a, b) => Math.abs(a[0] - b[0]) < 1e-9 && Math.abs(a[1] - b[1]) < 1e-9;
+  const col = FM6_PTS.every(p => same(A.g(p[0], p[1]), A.g(p[0], 0))), row = FM6_PTS.every(p => same(A.g(p[0], p[1]), A.g(0, p[1])));
+  const ftxt = set.kind === "grad" ? `∇f = ${A.tg}` : A.th;
+  if (mx - mn < 1e-9) T.push({ kind: "lenC", pts: FM6_RING4, cap: `Check the length: |${nm}| = ${fm6LenS(mx)} everywhere, so every arrow matches.`, why: "with arrows of different lengths", w: .9 });
+  else if (col !== row) {
+    const c = [1, -1, 1.5, .5, 2].find(v => col ? fm6Rel(A, [v, 0]) >= .3 && fm6Rel(A, [v, 0]) <= 1 : fm6Rel(A, [0, v]) >= .3);
+    if (c != null) T.push({ kind: "strip", ax: col ? "x" : "y", c, cap: `${ftxt} depends on ${col ? "x" : "y"} only: each ${col ? "column" : "row"} of arrows matches.`, why: `whose ${col ? "column" : "row"} changes`, w: 1 });
+  }
+  if (mn > 1e-9) T.push({ kind: "still", cap: `Where is ${nm} zero? ${ftxt.replace(/^.*= /, nm + " = ")} is never zero.`, why: "with a still point", w: 1 });
+  else if (mn <= 1e-9) { const z = fm6ZeroSet(A); if (z.Z.length) T.push({ kind: "zero", Z: z.Z, line: z.line, cap: `Where is ${nm} zero? ${z.say[0].toUpperCase() + z.say.slice(1)}.`, why: "with an arrow there", w: 1 }); }
+  if (mx - mn > 1e-9) FM6_PAIRS.forEach(pr => {
+    const a = fm6Raw(A, pr[0]), b = fm6Raw(A, pr[1]);
+    if (a < 1e-9 || Math.max(fm6Rel(A, pr[0]), fm6Rel(A, pr[1])) < .5) return;
+    const r = b / a, kd = r >= 1.8 ? "grows" : r <= .55 ? "shrinks" : r >= .8 && r <= 1.25 ? "same" : null; if (!kd) return;
+    T.push({ kind: "lenG", pts: pr, r, kd, cap: `Check the length: |${nm}| is ${fm6LenS(a)} at ${fm6Pt(pr[0])}, ${fm6LenS(b)} at ${fm6Pt(pr[1])}${kd === "grows" ? ": longer farther out" : kd === "shrinks" ? ": shorter farther out" : ": about the same"}.`,
+      why: kd === "same" ? "whose two arrows differ" : `whose arrows ${kd === "grows" ? "shrink" : "grow"} instead`, w: kd === "same" ? 2.6 : 1.4 });
+  });
+  FM6_EASY.forEach((p, d) => {
+    const a = A.g(p[0], p[1]), z = Math.hypot(a[0], a[1]) < 1e-9;
+    T.push({ kind: "pt", p, a, cap: `Test point ${fm6Pt(p)}: ${nm} ${fm6Ex(a) ? "=" : "≈"} ${fm6Vc(a)}${z ? ", no arrow" : `, ${fm6Dir(a)}`}.`, why: z ? "with an arrow there" : "pointing another way", w: 1.35 + .35 * d + (fm6Nice(A, p) ? 0 : 1.2) });
+  });
+  return T;
+}
+function fm6Judge(A, B, t) {
+  if (t.kind === "pt") { const c = fm6Cmp(A, B, t.p); return c === 1 && fm6Look(B, t.p).z ? 1 : c; }
+  if (t.kind === "zero") { const r = t.Z.map(p => fm6Raw(B, p) < 1e-9 ? 0 : fm6Rel(B, p)); return r.some(v => v >= .3) ? 1 : r.every(v => v < .08) ? 0 : -1; }
+  if (t.kind === "still") { const m = Math.min(...FM6_PTS.map(p => fm6Rel(B, p))); return m < .04 ? 1 : m > .12 ? 0 : -1; }
+  if (t.kind === "lenC") { const r = FM6_PTS.map(p => fm6Rel(B, p)); return Math.min(...r) < .5 ? 1 : Math.min(...r) > .9 ? 0 : -1; }
+  if (t.kind === "lenG") {
+    const a = fm6Rel(B, t.pts[0]), b = fm6Rel(B, t.pts[1]);
+    if (Math.max(a, b) < .3) return -1;
+    const r = b / Math.max(a, 1e-9);
+    if (t.kd === "grows") return r <= 1.1 ? 1 : r >= 1.6 ? 0 : -1;
+    if (t.kd === "shrinks") return r >= .9 ? 1 : r <= .6 ? 0 : -1;
+    return r >= 1.8 || r <= .55 ? 1 : r >= .8 && r <= 1.25 ? 0 : -1;
+  }
+  if (t.kind === "strip") {
+    const ps = FM6_PTS.filter(p => (t.ax === "x" ? p[0] : p[1]) === t.c), v = ps.map(p => fm6Vec(B)[fm6Ix(p)]), l = v.map(q => Math.hypot(q[0], q[1]));
+    const vis = v.filter((q, i) => l[i] >= .3), lmx = Math.max(...l), lmn = Math.min(...l);
+    if (lmx < .3) return -1;
+    let ang = 0; vis.forEach(a => vis.forEach(b => { ang = Math.max(ang, Math.acos(vzClamp((a[0] * b[0] + a[1] * b[1]) / Math.hypot(...a) / Math.hypot(...b), -1, 1))); }));
+    if (ang > .61 || lmn < .08 || lmx / lmn > 2) return 1;
+    return ang < .2 && lmx / lmn < 1.2 ? 0 : -1;
+  }
+  return -1;
+}
+// the plan for one card: the cheapest few checks (structural ones first, then test points) that leave only its plot.
+// A natural first check that rules nothing out is still shown, with "all still agree", the way a student would meet it.
 function fm6Plan(set, k, R) {
   const A = set.items[k], right = set.perm.indexOf(k), wrong = R.filter(j => j !== right);
-  const P = FM6_EASY.map((p, d) => ({ p, x: wrong.filter(j => fm6Cmp(A, set.items[set.perm[j]], p) === 1), c: 1 + .35 * d + (fm6Nice(A, p) ? 0 : 1.2) }))
-    .filter(o => fm6Cmp(A, A, o.p) === 0 && o.x.length);
+  const T = fm6Tests(set, k).filter(t => fm6Judge(A, A, t) === 0).map(t => Object.assign(t, { x: wrong.filter(j => fm6Judge(A, set.items[set.perm[j]], t) === 1) }));
+  const P = T.filter(t => t.x.length);
   let best = null;
   const go = (seq, cov, cost) => {
     if (best && cost >= best.cost) return;
     if (wrong.every(j => cov.has(j))) { best = { seq, cost }; return; }
     if (seq.length === 3) return;
-    P.forEach(o => { if (o.x.some(j => !cov.has(j))) go(seq.concat(o), new Set([...cov, ...o.x]), cost + o.c); });
+    P.forEach(o => { if (o.x.some(j => !cov.has(j))) go(seq.concat(o), new Set([...cov, ...o.x]), cost + o.w + (seq.length && seq[seq.length - 1].kind === o.kind ? .8 : 0)); });
   };
   go([], new Set(), 0);
-  return best ? best.seq : null;
+  if (!best) return null;
+  const seq = best.seq.slice().sort((a, b) => T.indexOf(a) - T.indexOf(b));
+  const first = T.find(t => t.kind !== "pt");
+  if (first && !first.x.length && seq.length < 3 && wrong.length) seq.unshift(Object.assign({}, first, { miss: true }));
+  return seq;
 }
 // why a wrong plot is wrong, in one line: the easiest test point that tells them apart
 function fm6Nudge(set, k, j) {
@@ -24884,7 +25018,7 @@ function fm6Nudge(set, k, j) {
 function fm6Arrow(px, py, dx, dy, op, w, col) {
   const L = Math.hypot(dx, dy), c = col || VZ.ink;
   if (L < 2.6) return `<circle cx="${q2(px)}" cy="${q2(py)}" r="${w > 1.5 ? 1.9 : 1.3}" fill="${c}" opacity="${q2(op)}"/>`;
-  const ux = dx / L, uy = dy / L, hl = Math.min(w > 1.5 ? 6 : 4.8, L * .5), hw = hl * .4, tx = px + dx / 2, ty = py + dy / 2, sx = px - dx / 2, sy = py - dy / 2, bx = tx - ux * hl, by = ty - uy * hl;
+  const ux = dx / L, uy = dy / L, hl = Math.min(w > 2.6 ? 12 : w > 1.5 ? 6 : 4.8, L * .5), hw = hl * .4, tx = px + dx / 2, ty = py + dy / 2, sx = px - dx / 2, sy = py - dy / 2, bx = tx - ux * hl, by = ty - uy * hl;
   return `<g opacity="${q2(op)}" fill="${c}" stroke="${c}" stroke-linecap="round" stroke-linejoin="round"><line x1="${q2(sx)}" y1="${q2(sy)}" x2="${q2(bx + ux * .6)}" y2="${q2(by + uy * .6)}" stroke-width="${w || 1.15}"/>` +
     `<path d="M${q2(tx)} ${q2(ty)}L${q2(bx - uy * hw)} ${q2(by + ux * hw)}L${q2(bx + uy * hw)} ${q2(by - ux * hw)}Z" stroke-width=".5"/></g>`;
 }
@@ -24934,15 +25068,56 @@ function fm6Pill(L, j, it, op) {
     `<text x="${q2(g.tx)}" y="${q2(g.cy + L.pf * .36)}" font-family="'Fraunces', Georgia, serif" font-size="${L.pf}" fill="${VZ.ink}">${fm6Tsp(it.th)}</text></g>`;
 }
 // the red test arrow at a test point (fixed length: its direction is what to compare), inside a red ring
+const fm6Ring = (px, py, L) => { const R = L.ml * .95; return `<circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="${VZ.red}" fill-opacity=".07" stroke="#fff" stroke-width="3.6" stroke-opacity=".9"/><circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="1.5"/>`; };
 function fm6Red(px, py, a, L, op, gr) {
-  const l = Math.hypot(a[0], a[1]), R = L.ml * .95;
-  let o = `<circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="${VZ.red}" fill-opacity=".07" stroke="#fff" stroke-width="3.6" stroke-opacity=".9"/><circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="1.5"/>`;
+  const l = Math.hypot(a[0], a[1]);
+  let o = fm6Ring(px, py, L);
   if (l < 1e-9) o += `<circle cx="${q2(px)}" cy="${q2(py)}" r="3.4" fill="${VZ.red}"/>`;
   else if (gr > .02) {
     const len = L.ml * 1.3 * gr, dx = a[0] / l * len, dy = -a[1] / l * len;
     o += fm6Arrow(px, py, dx, dy, .9, 4.6, "#fff") + fm6Arrow(px, py, dx, dy, 1, 2.3, VZ.red);
   }
   return `<g opacity="${q2(op)}">${o}</g>`;
+}
+// what one check marks on a plot: the ring and red arrow at a test point, a band along a zero line, rings round the
+// arrows being compared, or a strip along a column or row. The plot's own arrows there are drawn bolder, so they can be compared.
+function fm6Mark(t, it, L, F, op, gr) {
+  if (op <= .005) return "";
+  const u = L.S / (2 * FM6_D), P = p => [F.cx + p[0] * u, F.cy - p[1] * u];
+  const own = p => { const [px, py] = P(p), v = fm6Vec(it)[fm6Ix(p)]; return fm6Arrow(px, py, v[0] * L.ml, -v[1] * L.ml, 1, 1.9); };
+  let o = "";
+  if (t.kind === "pt") { const [px, py] = P(t.p); return fm6Red(px, py, t.a, L, op, gr) + `<g opacity="${q2(op)}">${own(t.p)}</g>`; }
+  if (t.kind === "zero" && t.line) {
+    const E = FM6_D, ax = t.line[0], c = t.line[1], ends = ax === "x" ? [[c, -E], [c, E]] : ax === "y" ? [[-E, c], [E, c]] : [[-E, -E * c], [E, E * c]];
+    const [a, b] = ends.map(P), d = `M${q2(a[0])} ${q2(a[1])}L${q2(b[0])} ${q2(b[1])}`, pen = `pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - gr)}" fill="none" stroke-linecap="round"`;
+    o += `<path d="${d}" ${pen} stroke="${VZ.red}" stroke-width="${q2(L.ml * 1.1)}" stroke-opacity=".12"/><path d="${d}" ${pen} stroke="${VZ.red}" stroke-width="1.6"/>` + t.Z.map(own).join("");
+  } else if (t.kind === "zero") o += t.Z.map(p => { const [px, py] = P(p); return fm6Red(px, py, [0, 0], L, 1, 1) + own(p); }).join("");
+  else if (t.kind === "still") o += FM6_PTS.filter(p => fm6Rel(it, p) < .04).sort((a, b) => Math.hypot(a[0], a[1]) - Math.hypot(b[0], b[1])).slice(0, 5).map(p => fm6Ring(...P(p), L) + own(p)).join("");
+  else if (t.kind === "lenC" || t.kind === "lenG") o += t.pts.map(p => fm6Ring(...P(p), L) + own(p)).join("");
+  else if (t.kind === "strip") {
+    const w = u * .62, h = L.S * vzClamp(gr, .02, 1), X = t.ax === "x";
+    const r = X ? [F.cx + t.c * u - w / 2, F.cy - h / 2, w, h] : [F.cx - h / 2, F.cy - t.c * u - w / 2, h, w];
+    o += `<rect x="${q2(r[0])}" y="${q2(r[1])}" width="${q2(r[2])}" height="${q2(r[3])}" rx="${q2(w / 2)}" fill="${VZ.red}" fill-opacity=".07" stroke="${VZ.red}" stroke-width="1.5"/>`;
+    o += FM6_PTS.filter(p => (X ? p[0] : p[1]) === t.c).map(own).join("");
+  }
+  return `<g opacity="${q2(op)}">${o}</g>`;
+}
+// the index card: two bold plots and one test point. The plot that disagrees is crossed out; the one left gets its card.
+function fm6Thumb() {
+  const set = FM6_SETS[1], L = { S: 272, FX: [16, 312], FY: [128, 128], ml: 34, pf: 30, ph: 54 }, u = L.S / 5.2, a = [0, 1];
+  let o = "";
+  [[3, false], [0, true]].forEach(([k, ok], j) => {
+    const it = set.items[k], ox = L.FX[j], oy = L.FY[0], cx = ox + L.S / 2, cy = oy + L.S / 2;
+    let g = `<rect x="${ox}" y="${oy}" width="${L.S}" height="${L.S}" fill="#fff"/><path d="M${ox} ${cy}H${ox + L.S}M${cx} ${oy}V${oy + L.S}" stroke="${VZ.ink}" stroke-width="1.5" opacity=".2"/>`;
+    for (let i = -2; i <= 2; i++) for (let q = -2; q <= 2; q++) { if (i === 1 && q === 0) continue; const v = it.g(i, q), l = Math.hypot(v[0], v[1]) / Math.SQRT2 / 2; if (l > .01) g += fm6Arrow(cx + i * u, cy - q * u, v[0] / (Math.SQRT2 * 2) * 50, -v[1] / (Math.SQRT2 * 2) * 50, 1, 3.6); }
+    g += `<rect x="${ox}" y="${oy}" width="${L.S}" height="${L.S}" fill="none" stroke="${ok ? FM6_GREEN : VZ.ink}" stroke-width="${ok ? 5 : 2.5}"/>`;
+    o += ok ? g : `<g opacity=".4">${g}</g>`;
+    o += fm6Red(cx + u, cy, it.g(1, 0), { ml: 34 }, 1, 1);
+    o += fm6Arrow(cx + u, cy, it.g(1, 0)[0] / (Math.SQRT2 * 2) * 50, -it.g(1, 0)[1] / (Math.SQRT2 * 2) * 50, 1, 3.6);
+    if (!ok) o += `<path d="M${ox + 28} ${oy + 28}L${ox + L.S - 28} ${oy + L.S - 28}M${ox + L.S - 28} ${oy + 28}L${ox + 28} ${oy + L.S - 28}" stroke="${VZ.grey}" stroke-width="8" stroke-linecap="round" opacity=".85"/>`;
+    else o += fm6Pill({ FX: [0, ox], FY: [oy], S: L.S, pf: L.pf, ph: L.ph }, 1, it, 1).replace('stroke-width="1.6"', 'stroke-width="3"');
+  });
+  return o;
 }
 // the four plots, with whatever the game shows on them (V: matched, hovered, crossed out, test arrows, a nudge)
 function fm6Plots(set, L, V, phone) {
@@ -24963,11 +25138,7 @@ function fm6Plots(set, L, V, phone) {
       if (V.hov === j && open) o += `<rect x="${ox - 1.5}" y="${oy - 1.5}" width="${L.S + 3}" height="${L.S + 3}" fill="${VZ.gold}" fill-opacity=".07" stroke="${VZ.gold}" stroke-width="3"/>`;
       const reds = V.tests.filter(t => t.js.includes(j));
       if (V.hint && V.hint.j === j && V.hint.p) reds.push(V.hint);
-      reds.forEach(t => {
-        const [px, py] = P(t.p), v = fm6Vec(it)[fm6Ix(t.p)];
-        const op = t.op * (1 - .55 * cx);
-        o += fm6Red(px, py, t.a, L, op, t.gr) + `<g opacity="${q2(op)}">${fm6Arrow(px, py, v[0] * L.ml, -v[1] * L.ml, 1, 1.9)}</g>`;
-      });
+      reds.forEach(t => { o += fm6Mark(t, it, L, F, t.op * (1 - .55 * cx), t.gr); });
       if (V.xx[j] > .005) {
         const m = L.S * .12, d = `M${ox + m} ${oy + m}L${ox + L.S - m} ${oy + L.S - m}M${ox + L.S - m} ${oy + m}L${ox + m} ${oy + L.S - m}`;
         o += `<path d="${d}" pathLength="2" stroke-dasharray="2 2" stroke-dashoffset="${q2(2 - 2 * V.pen[j])}" fill="none" stroke="${VZ.grey}" stroke-width="3" stroke-linecap="round" opacity="${q2(V.xx[j] * .85)}"/>`;
@@ -25069,7 +25240,7 @@ function fm6Commit(k, j) {
   const D = FM6, m = D.m[D.set]; if (m[k] >= 0) return;
   m[k] = j; D.tm[D.set + ":" + j] = performance.now(); D.sel = null; D.hint = null; fm6Save();
   const left = fm6Left();
-  D.say = left ? (D.walk ? "The one left is the match." : `Right. ${left} to go.`) : "All four match. Well done.";
+  D.say = left ? `${FM6_SETS[D.set].items[k].th} is matched. ${left} to go.` : "All four match. Well done.";
   D.sayC = "ok";
   fm6Later();
 }
@@ -25085,28 +25256,31 @@ function fm6Place(k, j, el) {
     return;
   }
   const n = fm6Nudge(set, k, j);
-  D.hint = { j, p: n.p, a: n.a, t0: performance.now(), op: 0, gr: 1 }; D.say = n.txt; D.sayC = "bad";
+  D.hint = { kind: "pt", j, p: n.p, a: n.a, t0: performance.now(), op: 0, gr: 1 }; D.say = n.txt; D.sayC = "bad";
   if (el) fm6Home(el, k);
 }
 
 /* "Show me one": the reasoning for the next card, in beats. (∇f first,) a test point and its arrow in red on every
    plot still in play, the plots that disagree crossed out (another point if needed), then the card flies to the one left. */
 function fm6Walk() {
-  const D = FM6, set = FM6_SETS[D.set], m = D.m[D.set], grad = set.kind === "grad", nm = grad ? "∇f" : "F";
+  const D = FM6, set = FM6_SETS[D.set], m = D.m[D.set], grad = set.kind === "grad";
   if (m.every(j => j >= 0)) return;
   const k = D.sel != null && m[D.sel] < 0 ? D.sel : m.indexOf(-1), it = set.items[k], j = set.perm.indexOf(k);
   const R = [0, 1, 2, 3].filter(q => m[set.perm[q]] !== q), plan = (R.length > 1 && fm6Plan(set, k, R)) || [];
   const beats = [], steps = []; let t = 0, out = [];
-  if (grad) { beats.push({ t, cap: `${it.th}, so ∇f = ${it.tg}.` }); t += 2300; }
-  plan.forEach((o, i) => {
-    const a = it.g(o.p[0], o.p[1]), z = Math.hypot(a[0], a[1]) < 1e-9, x = o.x.filter(q => !out.includes(q));
-    const v = `${nm} ${fm6Ex(a) ? "=" : "≈"} ${fm6Vc(a)}`;
-    beats.push({ t, cap: `${i ? "Another test point" : "Test point"} ${fm6Pt(o.p)}: ${v}${z ? ", no arrow" : `, ${fm6Dir(a)}`}.` });
-    const kinds = x.map(q => fm6Look(set.items[set.perm[q]], o.p).z ? "dot" : "arr");
-    const why = z ? "with an arrow there" : kinds.every(c => c === "dot") ? "with no arrow there" : kinds.every(c => c === "arr") ? "pointing another way" : "that disagree";
-    steps.push({ p: o.p, a, x, js: R.filter(q => !out.includes(q)), tb: t, tc: t + 2000 });
-    beats.push({ t: t + 2000, cap: `Cross out ${x.length === 1 ? "the plot" : `the ${x.length} plots`} ${why}.` });
-    out = out.concat(x); t += 3700;
+  if (grad && R.length > 1) {                                       // (a) take the gradient, one partial at a time
+    beats.push({ t, cap: `Take the gradient of ${it.th}: ∂f/∂x = ${it.tpx}.` }); t += 2000;
+    beats.push({ t, cap: `∂f/∂x = ${it.tpx} and ∂f/∂y = ${it.tpy}.` }); t += 1700;
+    beats.push({ t, cap: `So ∇f = ${it.tg}. Now test it.` }); t += 1700;
+  }
+  plan.forEach(o => {
+    const x = o.x.filter(q => !out.includes(q)), show = o.kind === "pt" ? 2100 : 2600;
+    let why = o.why;
+    if (o.kind === "pt" && Math.hypot(o.a[0], o.a[1]) > 1e-9) { const dots = x.map(q => !!fm6Look(set.items[set.perm[q]], o.p).z); why = dots.every(Boolean) ? "with no arrow there" : dots.some(Boolean) ? "that disagree" : why; }
+    beats.push({ t, cap: o.cap });
+    steps.push({ t: o, x, js: R.filter(q => !out.includes(q)), tb: t, tc: t + show });
+    beats.push({ t: t + show, cap: x.length ? `Cross out ${x.length === 1 ? "the plot" : `the ${x.length} plots`} ${why}.` : "All still agree: try another test." });
+    out = out.concat(x); t += show + (x.length ? 1700 : 1600);
   });
   beats.push({ t, cap: R.length === 1 ? "Only one plot is left, so that is the match." : "The one left is the match." });
   D.sel = null; D.hint = null;
@@ -25139,7 +25313,7 @@ function fm6View(now) {
     const u = (w.stop != null ? w.stop : now) - w.T0, f = w.stop != null ? 1 - E(now, w.stop, 320) : 1;
     w.steps.forEach((s, i) => {
       const nx = i + 1 < w.steps.length ? w.steps[i + 1].tb : w.fb + 1200, op = E(u, s.tb, 450) * (1 - E(u, nx, 400)) * f;
-      if (op > .005) V.tests.push({ p: s.p, a: s.a, op, gr: E(u, s.tb + 150, 550), js: s.js });
+      if (op > .005) V.tests.push(Object.assign({}, s.t, { op, gr: E(u, s.tb + 150, 650), js: s.js }));
       const back = 1 - E(u, w.fb + 1300, 600);
       s.x.forEach(q => { V.cx[q] = Math.max(V.cx[q], E(u, s.tc + 250, 600) * back * f); V.xx[q] = Math.max(V.xx[q], E(u, s.tc, 150) * back * f); V.pen[q] = Math.max(V.pen[q], E(u, s.tc, 650)); });
     });
@@ -25290,7 +25464,7 @@ vzAdd({
     fm6Place(D.sel, j, null); return true;
   },
   draw(s, t, thumb) {
-    if (thumb) return fm6Plots(FM6_SETS[0], FM6_LAY.st, null, false);
+    if (thumb) return fm6Thumb();
     const D = fm6Ensure(), set = FM6_SETS[D.set], V = fm6View(performance.now());
     if (VzView.def === this && window.matchMedia && matchMedia("(max-width: 640px)").matches) {
       const ph = document.getElementById("fm6Ph"); if (ph) ph.innerHTML = fm6Plots(set, FM6_LAY.ph, V, true);
@@ -25490,8 +25664,10 @@ function h3DrawCyl(k, L, T, u) {
   // the plane, a tilted sheet
   const pc = [[-3.9, -3.9], [3.9, -3.9], [3.9, 3.9], [-3.9, 3.9]].map(([x, y]) => cam(x, y, 4 - x / 3));
   o += `<path d="${h3D(pc)}Z" fill="${VZ.ink}" fill-opacity="${q2(.09 * plO)}" stroke="${VZ.ink}" stroke-opacity="${q2(.45 * plO)}" stroke-width="1.2"/>`;
-  const lc = pc.reduce((a, q) => q[0] < a[0] ? q : a), cl = cam(-3, 0, ZT);
-  o += h3Op(Math.max(.35, plO), vzLabel(lc[0] + 6, lc[1] + 22, "x + 3z = 12", VZ.ink, 14, "start")) + h3Op(Math.max(.35, cyO), vzLabel(cl[0] - 4, cl[1] - 8, "x² + y² = 9", VZ.ink, 14, "end"));
+  // the plane's name sits in the clear space below its left corner, with a short leader up onto the plane
+  const lc = pc.reduce((a, q) => q[0] < a[0] ? q : a), li = cam(...[[-3.9, -3.9], [3.9, -3.9], [3.9, 3.9], [-3.9, 3.9]].map(([x, y]) => [x * .8, y * .8, 4 - x * .8 / 3]).reduce((a, c) => cam(...c)[0] < cam(...a)[0] ? c : a)), cl = cam(-3, 0, ZT);
+  const lx = Math.max(8, lc[0] - 26), ly = lc[1] + 58;
+  o += h3Op(Math.max(.35, plO), `<line x1="${q2(lx + 30)}" y1="${q2(ly - 15)}" x2="${q2(li[0])}" y2="${q2(li[1])}" stroke="${VZ.ink}" stroke-width="1" opacity=".55"/>` + vzLabel(lx, ly, "x + 3z = 12", VZ.ink, 14, "start")) + h3Op(Math.max(.35, cyO), vzLabel(cl[0] - 4, cl[1] - 8, "x² + y² = 9", VZ.ink, 14, "end"));
   // the curve itself
   const cP = Array.from({ length: 97 }, (_, i) => cam(...Cp(2 * Math.PI * i / 96)));
   o += `<path d="${h3D(cP)}Z" fill="none" stroke="${VZ.ink}" stroke-width="2.6" opacity="${k >= 3 ? .3 : k >= 1 ? .85 : .55}" stroke-linecap="round"/>`;
@@ -25521,7 +25697,7 @@ function h3DrawGraph(k, L, T, u) {
   let o = g1Grid(P, -1.7, 4.4, -1.3, 2.6) + `<path d="${h3D(full)}" fill="none" stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 5" opacity=".6"/>`;
   const ink = k >= 1 ? (k === 1 ? L(1, 0, .1, 1) : 1) : 0;
   o += g1Pen(h3D(piece), VZ.ink, ink, 3, `opacity="${k >= 3 ? .3 : .85}"`);
-  o += h3Op(Math.max(.6, ink), vzLabel(S(2.05, 1.68)[0] + 6, S(2.05, 1.68)[1] + 22, "x = y² − 1", VZ.ink, 15, "start"));
+  o += h3Op(Math.max(.6, ink), vzLabel(S(2.05, 1.68)[0] + 14, S(2.05, 1.68)[1] + 38, "x = y² − 1", VZ.ink, 15, "start"));
   if (k === 0) { const m = at(1), m2 = at(1.1); o += h3Two(m, [m2[0] - m[0], m2[1] - m[1]], 42, "t", [m[0] - 22, m[1] - 8], L(0, 0, .2, .7)); }
   // the clue: y is free (the y-axis lights up); x follows
   if (k >= 1 && k <= 2) { const e = k === 1 ? L(1, 0, .6, .7) : 1; o += h3Op(e, `<line x1="${q2(P.X(0))}" y1="${q2(P.Y(0))}" x2="${q2(P.X(0))}" y2="${q2(P.Y(2))}" stroke="${VZ.deep}" stroke-width="4" stroke-linecap="round" opacity=".5"/>` + vzLabel(P.X(0) - 10, P.Y(2.2) + 4, "y free", VZ.deep, 15, "end")); }
@@ -25612,8 +25788,8 @@ function h3DrawCap(k, L, T, u) {
     o += h3Op(e * run.op, `<line x1="${q2(C[0])}" y1="${q2(C[1])}" x2="${q2(F[0])}" y2="${q2(F[1])}" stroke="${VZ.deep}" stroke-width="1.6"/>` + vzLabel((C[0] + F[0]) / 2, (C[1] + F[1]) / 2 - 7, "u", VZ.deep, 15) + h3Dot(F, VZ.deep, 5));
   }
   if (k >= 4) {
-    const e = k === 4 ? L(4, 0, .2, .6) : 1, rimA = cam(...pol(2, 1.2, 5)), ri = Array.from({ length: 31 }, (_, m) => cam(...pol(2.25, -1.9 + 1.3 * m / 30, 5)));
-    o += h3Op(e, vzLabel(top[0] - 10, top[1] - 14, "u = 0", VZ.red, 14, "end") + vzLabel(cam(...pol(2, 2.6, 5))[0] - 10, cam(...pol(2, 2.6, 5))[1] + 4, "u = 2", VZ.red, 14, "end") +
+    const e = k === 4 ? L(4, 0, .2, .6) : 1, rimL = Array.from({ length: 48 }, (_, m) => cam(...pol(2, 2 * Math.PI * m / 48, 5))).reduce((a, q) => q[0] < a[0] ? q : a), ri = Array.from({ length: 31 }, (_, m) => cam(...pol(2.25, -1.9 + 1.3 * m / 30, 5)));
+    o += h3Op(e, vzLabel(top[0] - 10, top[1] - 14, "u = 0", VZ.red, 14, "end") + vzLabel(rimL[0] - 8, rimL[1] + 5, "u = 2", VZ.red, 14, "end") +
       `<path d="${h3D(ri)}" fill="none" stroke="${VZ.red}" stroke-width="1.8"/>` + h3Chev(ri[28], ri[30]) + vzLabel(ri[15][0], ri[15][1] + 22, "v: 0 to 2π", VZ.red, 14));
   }
   if (k === 5) o += h3Ok(cam(2, 0, 5), "(2, 0, 5) ✓", 12, 18, "start", L(5, 0, .2, .6));
@@ -25636,7 +25812,7 @@ function h3DrawPlane(k, L, T, u) {
     let s = "";
     for (let i = 0; i <= n; i++) { const c = g0 + i * step, w = vzClamp(e * (n + 2) - i, 0, 1); if (w < .01) continue; const fade = k >= 4 ? 1 - .6 * Math.max(0, Math.max(-c, c - 1)) / .45 : 1;
       s += h3Op(w * fade, vzPath3(cam, [at(c, g0), at(c, g0 + (g1 - g0) * w)], `stroke="${VZ.red}" stroke-width="1.2" opacity=".7"`) + vzPath3(cam, [at(g0, c), at(g0 + (g1 - g0) * w, c)], `stroke="${VZ.ink}" stroke-width="1.2" opacity=".5"`)); }
-    o += s;
+    o += h3Op(k === 5 ? .45 : 1, s);
   }
   // a = Q − P and b = R − P, from P
   if (k >= 3) {
@@ -25765,6 +25941,27 @@ function h3Pic(def, k, b, u) {
   o += h3Op(ke, vzKey([["fill", VZ.gold, "clue"], ["fill", VZ.red, "its recipe"], ["line", VZ.red, s.kind === "c" ? "r(t)" : "r(u, v)"]], 16, 452));
   return o;
 }
+// the index card: the clue x² + y² = 4 lights the "round" card, and the circle is traced with cos and sin
+function h3Icon() {
+  const icons = [
+    c => `<path d="M${c - 42} 128Q${c - 10} 128 ${c} 98T${c + 42} 66" fill="none" stroke="${VZ.ink}" stroke-width="5" stroke-linecap="round"/>`,
+    c => `<circle cx="${c}" cy="96" r="32" fill="none" stroke="${VZ.red}" stroke-width="5"/>`,
+    c => `<line x1="${c - 40}" y1="124" x2="${c + 40}" y2="70" stroke="${VZ.ink}" stroke-width="5" stroke-linecap="round"/><circle cx="${c - 40}" cy="124" r="8" fill="${VZ.ink}"/><circle cx="${c + 40}" cy="70" r="8" fill="${VZ.ink}"/>`];
+  let o = "";
+  ["a graph", "round", "a line"].forEach((t, i) => {
+    const x = 42 + i * 182, c = x + 79, on = i === 1;
+    o += `<g opacity="${on ? 1 : .38}"><rect x="${x}" y="34" width="158" height="152" rx="18" fill="${on ? VZ.tint : VZ.paper}" stroke="${on ? VZ.red : "#9AA3AC"}" stroke-width="${on ? 5 : 2.5}"/>${icons[i](c)}` +
+      h3Sans(c, 168, t, 27, on ? VZ.deep : VZ.ink, "middle", 700) + `</g>`;
+  });
+  // the clue tag, an arrow up into its card
+  o += `<rect x="150" y="222" width="300" height="56" rx="28" fill="${VZ.paper}"/><rect x="150" y="222" width="300" height="56" rx="28" fill="${VZ.gold}" fill-opacity=".28" stroke="${VZ.gold}" stroke-width="3"/>` +
+    h3Serif(300, 261, "x² + y² = 4", 30, H3_GOLD) + vzArrow(300, 218, 300, 192, "O", 5);
+  // the circle, traced
+  const cx = 300, cy = 368, r = 58, a1 = 4.6, arc = Array.from({ length: 41 }, (_, i) => [cx + r * Math.cos(a1 * i / 40), cy - r * Math.sin(a1 * i / 40)]), E = arc[40];
+  o += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${VZ.grey}" stroke-width="3" stroke-dasharray="8 8" opacity=".6"/><path d="${h3D(arc)}" fill="none" stroke="${VZ.red}" stroke-width="7" stroke-linecap="round"/>` +
+    `<line x1="${cx}" y1="${cy}" x2="${q2(E[0])}" y2="${q2(E[1])}" stroke="${VZ.deep}" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="6" fill="${VZ.ink}"/>` + h3Dot(E, VZ.red, 12);
+  return o;
+}
 const H3_CHOOSE = {
   id: "m-choosepar", title: "Choose how to parametrize", card: "Choose how to parametrize",
   tagline: "Find the clue in the problem: it picks one of three recipes.",
@@ -25779,6 +25976,7 @@ const H3_CHOOSE = {
     }));
   },
   pic(k, b, u) { return h3Pic(this, k, b, u); },
+  draw() { return h3Icon(); },
 };
 h3Use(H3_CHOOSE, 0);
 stAdd(H3_CHOOSE);
@@ -26156,7 +26354,7 @@ function g1PicTan(def, k, b, u) {
   // the moving point with its velocity: "d" (always along the curve) and "speed" (the arrow's length, ticked)
   if (g === "d" || g === "speed") {
     const e = g === "d" ? L(k, 0, .2, .7) : L(k, 0, .1, .7), t = c.a + (c.b - c.a) * run.e, q = S(c.r(t)), dv = VD(t), sp = Math.hypot(...c.d(t));
-    o += g1Op(e * run.op, `<path d="${g1D(c.pts.slice(0, Math.max(2, Math.round(run.e * 160) + 1)).map(S))}" fill="none" stroke="${VZ.red}" stroke-width="3.2" stroke-linecap="round" opacity=".35"/>` + vzArrow(q[0], q[1], q[0] + dv[0], q[1] + dv[1], "R", 3) + (g === "speed" ? ticks(q, dv, sp, 1) : "") + `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="6" fill="${VZ.red}" stroke="#fff" stroke-width="2"/>` + g1Op(c.given ? vzClamp(Math.abs(t - t0) / .5 - .6, 0, 1) : 1, vzLabel(q[0] + dv[0] + (dv[0] >= 0 ? 8 : -8), q[1] + dv[1] - 8, "r′(t)", VZ.red, 15, dv[0] >= 0 ? "start" : "end")));
+    o += g1Op(e * run.op, `<path d="${g1D(c.pts.slice(0, Math.max(2, Math.round(run.e * 160) + 1)).map(S))}" fill="none" stroke="${VZ.red}" stroke-width="3.2" stroke-linecap="round" opacity=".35"/>` + vzArrow(q[0], q[1], q[0] + dv[0], q[1] + dv[1], "R", 3) + (g === "speed" ? ticks(q, dv, sp, 1) : "") + `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="6" fill="${VZ.red}" stroke="#fff" stroke-width="2"/>` + g1Op(c.given ? Math.min(vzClamp(Math.abs(t - t0) / .5 - .6, 0, 1), g1Gap(q, dv, S(c.r(t0)), c)) : 1, vzLabel(q[0] + dv[0] + (dv[0] >= 0 ? 8 : -8), q[1] + dv[1] - 8, "r′(t)", VZ.red, 15, dv[0] >= 0 ? "start" : "end")));
     o += g1TLine({ X: T.X, y: T.y, lo: c.a, hi: c.b, ticks: T.ticks, t, dot: run.op, hl: [c.a, c.b, 1], op: e });
   }
   // "t0": a point slides along the curve and stops on the given point: that t is t₀
@@ -26250,6 +26448,7 @@ const G1_CS = (() => { const { P, S, V } = g1P2(40, 118, 25); return g1TanSit({
 
 const G1_TAN = {
   id: "m-tangent", title: "r′(t): velocity, speed, tangent line, arc length", card: "r′(t), speed, tangent, length",
+  draw() { return h2CardTangent(); },   // the index card (h2, wave 10)
   tagline: "Differentiate each component; the rest follows from r′(t).",
   blurb: "Differentiate each component to get \\(\\mathbf r'(t)\\), the velocity, which is tangent to the curve. Its length \\(|\\mathbf r'(t)|\\) is the speed; the tangent line at \\(t_0\\) is \\(\\mathbf r(t_0)+s\\,\\mathbf r'(t_0)\\); and the arc length is \\(\\int|\\mathbf r'(t)|\\,dt\\).",
   picLive: true, picDur: 3600,
@@ -26365,6 +26564,13 @@ function g2Cyl(cam, R, z0, z1) {                           // a see-through cyli
   return o;
 }
 
+// m-tangent: how clear the moving "r′(t)" label is of the fixed point label (0 = on top of it, 1 = well clear)
+function g1Gap(q, dv, p0, c) {
+  const ax = q[0] + dv[0] + (dv[0] >= 0 ? 8 : -8), ay = q[1] + dv[1] - 8, aw = 40, A = dv[0] >= 0 ? [ax, ax + aw] : [ax - aw, ax];
+  const bx = p0[0] + c.pl[0], by = p0[1] + c.pl[1], bw = 8 * c.given.length, B = c.pl[2] === "end" ? [bx - bw, bx] : c.pl[2] === "middle" ? [bx - bw / 2, bx + bw / 2] : [bx, bx + bw];
+  const gx = Math.max(A[0] - B[1], B[0] - A[1]), gy = Math.abs(ay - by) - 18;
+  return vzClamp(Math.max(gx, gy) / 12, 0, 1);
+}
 /* --- m-lineint: ∫_C f ds. The picture: C, a piece ds = |r′(t)| dt, f along C as a curtain (or colour, in 3-D), the sum filling up --- */
 function g2LiPic(def, k, b, u) {
   const S = def.sits[g2Sit[def.id]], L = stLines(def, k, b, u), cam = S.cam, P = S.plan, pcs = S.pieces;
@@ -26549,6 +26755,7 @@ const G2_LI_DEF = {
   blurb: "Parametrize \\(C\\), find \\(ds=|\\mathbf r'(t)|\\,dt\\), put \\(\\mathbf r(t)\\) into \\(f\\), and integrate over the \\(t\\)-range. The answer doesn't depend on the direction you run along \\(C\\).",
   sits: G2_LI, picLive: true,
   pic(k, b, u) { return g2LiPic(this, k, b, u); },
+  draw() { return h2CardLine(); },   // the index card (h2, wave 10)
   mount(given, rebuild) { g2Mount(this, given, rebuild); },
 };
 g2Load(G2_LI_DEF, 0);
@@ -26597,7 +26804,8 @@ function g2WkPic(def, k, b, u) {
     let g = "";
     if (k >= P.F[0]) g += vzArrow3(cam, p, tipF, "I", 2.8);
     if (k >= P.dot[0]) { const e = k === P.dot[0] ? eD : 1; g += `<g opacity="${q2(e)}">${vzPath3(cam, [tipF, foot], `stroke="${VZ.grey}" stroke-width="1.3" stroke-dasharray="3 3"`)}${vzPath3(cam, [p, foot], `stroke="${c >= 0 ? G2_HELP : G2_HURT}" stroke-width="6" stroke-linecap="round"`)}</g>`; }
-    g += `<g opacity="${q2(eR)}">${vzArrow3(cam, p, g2Add(p, v, S.rpS), "O", 2.8)}${g2Lab(cam, g2Add(p, v, S.rpS * 1.25), "r′(t)", G2_GOLD, 0, 5, 14)}</g>`;
+    const lq = cam(...g2Add(p, v, S.rpS * 1.25)), eL = (S.avoid || []).reduce((m, a) => { const aq = cam(...a); return Math.min(m, vzClamp((Math.hypot(lq[0] - aq[0], lq[1] - aq[1]) - 16) / 14, 0, 1)); }, 1);   // fade the moving label as it passes a fixed one
+    g += `<g opacity="${q2(eR)}">${vzArrow3(cam, p, g2Add(p, v, S.rpS), "O", 2.8)}<g opacity="${q2(eL)}">${g2Lab(cam, g2Add(p, v, S.rpS * 1.25), "r′(t)", G2_GOLD, 0, 5, 14)}</g></g>`;
     const q = cam(...g2Add(p, v, S.rpS * 1.25)); rl = [q[0], q[1], eR * opm];
     g += vzDot3(cam, p, 5, VZ.deep);
     o += `<g opacity="${q2(opm)}">${g}</g>`;
@@ -26678,7 +26886,7 @@ const G2_WK = [
       return o + `<path d="M${pl.map(q => q2(q[0]) + " " + q2(q[1])).join("L")}Z" fill="${VZ.gold}" fill-opacity=".13" stroke="${VZ.gold}" stroke-opacity=".6" stroke-dasharray="5 4"/>`;
     },
     over: (cam, k) => k === 0 ? g2Lab(cam, [1.25, -1.25, .75], "plane x + z = 2", G2_GOLD, 6, 16, 13.5, "start") : "",
-    tF: [0, 1, 2, 3, 4, 5, 6, 7].map(i => (i + .5) / 8), fS: .2, rpS: .5, chev: [.25, .5, .75],
+    tF: [0, 1, 2, 3, 4, 5, 6, 7].map(i => (i + .5) / 8), fS: .2, rpS: .5, chev: [.25, .5, .75], avoid: [[1.62, 0, 0], [0, 1.62, 0], [0, 0, 3.95]],
     pts: [[[1, 0, 1], "start, end", 12, 6]],
     plan: { draw: [0, 2], rp: [1, 0], F: [2, 0], dot: [3, 1], sweep: [4, 0, "u"] }, key: g2WkKey(3),
     intro: "C: where the cylinder meets the tilted plane",
@@ -26734,6 +26942,7 @@ const G2_WK_DEF = {
   blurb: "Parametrize \\(C\\), find \\(\\mathbf r'(t)\\), dot \\(\\mathbf F(\\mathbf r(t))\\) with \\(\\mathbf r'(t)\\), and integrate. Direction matters: reverse \\(C\\) and the sign flips. If \\(\\mathbf F=\\nabla f\\), use \\(f(\\text{end})-f(\\text{start})\\) instead.",
   sits: G2_WK, picLive: true,
   pic(k, b, u) { return g2WkPic(this, k, b, u); },
+  draw() { return h2CardWork(); },   // the index card (h2, wave 10)
   mount(given, rebuild) { g2Mount(this, given, rebuild); },
 };
 g2Load(G2_WK_DEF, 0);
@@ -27299,6 +27508,7 @@ const G2_GC_DEF = {
   blurb: "Green's theorem needs \\(C\\) closed, traversed counterclockwise (\\(D\\) on the left), and \\(\\mathbf F\\) smooth on all of \\(D\\). Check those three things first, and fix whichever fails.",
   sits: G2_GC, picLive: true,
   pic(k, b, u) { return g2GcPic(this, k, b, u); },
+  draw() { return h2CardGreen(); },   // the index card (h2, wave 10)
   mount(given, rebuild) { g2Mount(this, given, rebuild); },
 };
 g2Load(G2_GC_DEF, 0);
@@ -27528,6 +27738,7 @@ stAdd({
   picLive: true, picDur: 3600,
   mount(given, rebuild) { g3Chips(this, given, rebuild, G3X, G3X_SITS, "Kind of region"); },
   pic(k, b, u) { return g3xPic(this, k, b, u); },
+  draw() { return h2CardExtrema(); },   // the index card (h2, wave 10)
 });
 
 /* ---------- m-tanplane (g3): tangent plane and linear approximation; four situations ---------- */
@@ -27828,6 +28039,7 @@ stAdd({
   picLive: true, picDur: 3600,
   mount(given, rebuild) { g3Chips(this, given, rebuild, G3C, G3C_SITS, "Kind of problem"); },
   pic(k, b, u) { const S = G3C_SITS[G3C.cur]; return S.kind === "part" ? g3cPart(S, this, k, b, u) : g3cTree(S, this, k, b, u); },
+  draw() { return h2CardChain(); },   // the index card (h2, wave 10)
 });
 /* ---------- m-sketch (g3): sketch z = f(x, y) from level curves and traces; three situations ---------- */
 const G3S = { cur: 0 };
@@ -28589,6 +28801,7 @@ function h2Field(def, j) {
 // which plots does a test's formula agree with? (used by the QA check, and it keeps the data honest)
 function h2Agree(sit, test, f, j) {
   const g = sit.F[sit.perm[j]].g, h = sit.F[f].g, pts = test.line ? H2_GRID.map(t => test.line.x != null ? [test.line.x, t] : [t, test.line.y]) : test.pts;
+  if (test.len) { const ls = pts.map(([x, y]) => Math.hypot(...g(x, y))); return ls.every(l => Math.abs(l - ls[0]) < .01 * Math.max(1, ls[0])); }   // a length test: is every arrow the same length?
   return pts.every(([x, y]) => {
     const a = g(x, y), c = test.line ? [0, 0] : h(x, y), la = Math.hypot(...a), lc = Math.hypot(...c);
     if (lc < 1e-9 || la < 1e-9) return lc < 1e-9 && la < 1e-9;
@@ -28613,11 +28826,14 @@ function h2Pic(def, k, b, u) {
   const A = sit.acts[cur] || {}, owner = {}, taken = {}, shown = {};
   sit.acts.forEach((a, i) => { if (i > cur) return; if (a.match != null) { owner[a.match] = a.f; if (i < cur) taken[a.match] = 1; } (a.grad || []).forEach(f => { shown[f] = 1; }); });
   const inPlay = j => !taken[j];
+  // cross-outs carry over while the same formula is still being placed (a second test keeps the first one's)
+  const xs = [], early = {};
+  for (let i = cur; i >= 0 && A.f != null && sit.acts[i].f === A.f && !(i < cur && sit.acts[i].match != null); i--) (sit.acts[i].out || []).forEach(j => { if (!xs.includes(j)) xs.unshift(j); if (sit.acts[i].test !== A.test) early[j] = 1; });
   let o = "";
   // the formula list: one row each; the one being tested gets a soft tint; ∇f (gradient sets) arrives in step 1
   sit.F.forEach((F, f) => {
-    const y = 20 + 19 * f, h = V("H|" + f, A.f === f ? 1 : 0, .5, .05);
-    if (h > .01) o += `<rect x="6" y="${y - 14}" width="348" height="19" rx="9.5" fill="${VZ.red}" opacity="${q2(.09 * h)}"/>`;
+    const y = 22 + 18.5 * f, h = V("H|" + f, A.f === f ? 1 : 0, .5, .05);
+    if (h > .01) o += `<rect x="6" y="${y - 13.5}" width="348" height="18" rx="9" fill="${VZ.red}" opacity="${q2(.09 * h)}"/>`;
     o += h2Txt(14, y, h2Subs(grad ? "f_" + (f + 1) : "F_" + (f + 1)) + " = " + F.t);
     if (grad) { const g = V("G|" + f, shown[f] ? 1 : 0, .7, .1 + .25 * (f % 2)); if (g > .01) o += h2Txt(118 + 10 * (1 - g), y, "∇" + h2Sub("f", f + 1) + " = " + F.gt, { op: g }); }
   });
@@ -28627,12 +28843,12 @@ function h2Pic(def, k, b, u) {
   const ms = [];
   for (let j = 0; j < 4; j++) {
     const B = h2Box(j), m = ms[j] = V("M|" + j, owner[j] != null ? 1 : 0, .8, A.match === j ? (A.out ? 1.4 : .35) : 0);
-    const xi = A.out ? A.out.indexOf(j) : -1, x = V("X|" + j, xi >= 0 ? 1 : 0, .55, .95 + .14 * Math.max(0, xi));
+    const xi = !xs.includes(j) ? -1 : A.out && A.out.includes(j) ? A.out.indexOf(j) : 0, x = V("X|" + j, xi >= 0 ? 1 : 0, .55, .95 + .14 * Math.max(0, xi));
     o += `<rect x="${B.ox}" y="${B.oy}" width="${H2_S}" height="${H2_S}" fill="#fff"/>`;
     if (m > .01) o += `<rect x="${B.ox}" y="${B.oy}" width="${H2_S}" height="${H2_S}" fill="${VZ.green}" opacity="${q2(.1 * m)}"/>`;
     // neutral bands: a row (y fixed) or a column (x fixed)
     ["row", "col"].forEach(t => {
-      const bv = V("B|" + t + j, A.band && A.band[t] != null && inPlay(j) ? 1 : 0, .6, .1);
+      const bv = V("B|" + t + j, A.band && A.band[t] != null && (A.check != null ? A.check === j : inPlay(j)) ? 1 : 0, .6, .1);
       if (bv < .01) return;
       const c = (sit.acts.find(a => a.band && a.band[t] != null) || { band: { [t]: -1 } }).band[t];   // each situation bands one row and one column only
       o += t === "row" ? `<rect x="${B.ox + 3}" y="${q2(B.Y(c) - 9)}" width="${H2_S - 6}" height="18" rx="9" fill="${VZ.ink}" opacity="${q2(.08 * bv)}"/>` : `<rect x="${q2(B.X(c) - 9)}" y="${B.oy + 3}" width="18" height="${H2_S - 6}" rx="9" fill="${VZ.ink}" opacity="${q2(.08 * bv)}"/>`;
@@ -28653,7 +28869,7 @@ function h2Pic(def, k, b, u) {
     if (rg > .01) [[1, 0], [0, 1]].forEach(([px, py], q) => { const e = vzClamp(rg * 1.6 - .6 * q, 0, 1); if (e > .01) o += `<circle cx="${B.X(px)}" cy="${B.Y(py)}" r="${q2(4 + 3.5 * e)}" fill="none" stroke="${VZ.red}" stroke-width="1.6" stroke-dasharray="3 2.5" opacity="${q2(e)}"/>`; });
     // the tests: a red ring and the formula's arrow at each test point (or rings along a line where F should be 0)
     tests.forEach(T => {
-      const on = A.test === T && (A.check != null ? A.check === j : inPlay(j)), v = V("T|" + T.id + "|" + j, on ? 1 : 0, .75, .15);
+      const on = A.test === T && (A.check != null ? A.check === j : inPlay(j) && !early[j]), v = V("T|" + T.id + "|" + j, on ? 1 : 0, .75, .15);
       if (v < .01) return;
       if (T.line) {
         const vert = T.line.x != null, c = vert ? T.line.x : T.line.y, p0 = vert ? [B.X(c), B.oy + 6] : [B.ox + 6, B.Y(c)], p1 = vert ? [B.X(c), B.oy + H2_S - 6] : [B.ox + H2_S - 6, B.Y(c)];
@@ -28665,16 +28881,16 @@ function h2Pic(def, k, b, u) {
       T.pts.forEach(([px, py], q) => {
         const e = vzClamp(v * (1 + .5 * (T.pts.length > 1)) - .5 * (T.pts.length > 1) * q / Math.max(1, T.pts.length - 1), 0, 1); if (e < .01) return;
         const c = sit.F[T.f].g(px, py), L = Math.hypot(c[0], c[1]) || 1, X = B.X(px), Y = B.Y(py), len = (T.pts.length > 3 ? 17 : 23) * e, own = fld.find(a => a[0] === px && a[1] === py);
-        o += `<circle cx="${q2(X)}" cy="${q2(Y)}" r="5" fill="none" stroke="${VZ.red}" stroke-width="1.5" opacity="${q2(e)}"/>`;
+        o += `<circle cx="${q2(X)}" cy="${q2(Y)}" r="${T.len ? 9 : 5}" fill="none" stroke="${VZ.red}" stroke-width="${T.len ? 1.8 : 1.5}" opacity="${q2(e)}"/>`;
         if (own) o += `<g opacity="${q2(e)}">${h2Arw(X, Y, own[2] * 1.15, own[3] * 1.15, 1.7)}</g>`;
-        if (len > 3) o += `<g opacity="${q2(Math.min(1, e * 2))}">${vzArrow(X, Y, X + c[0] / L * len, Y - c[1] / L * len, "R", T.pts.length > 3 ? 1.9 : 2.3)}</g>`;
+        if (len > 3 && !T.len) o += `<g opacity="${q2(Math.min(1, e * 2))}">${vzArrow(X, Y, X + c[0] / L * len, Y - c[1] / L * len, "R", T.pts.length > 3 ? 1.9 : 2.3)}</g>`;
       });
     });
   }
   // the tags: when a formula is matched its tag flies from its row to its plot, and the row shows where it went
   for (let j = 0; j < 4; j++) {
     const f = sit.perm[j], m = ms[j], r = V("L|" + j, owner[j] != null ? 1 : 0, .4, A.match === j ? (A.out ? 2.2 : 1.15) : 0);
-    const y = 20 + 19 * f, B = h2Box(j);
+    const y = 22 + 18.5 * f, B = h2Box(j);
     if (r > .01) o += h2Txt(346, y, "→ " + H2_LET[j], { sans: 1, w: 800, size: 13, col: VZ.green, a: "end", op: r });
     if (m > .01) {
       const pw = grad ? 40 : 32, x0 = 316, y0 = y - 5, x1 = B.ox + 28 + pw / 2, y1 = B.oy - 12, px = x0 + (x1 - x0) * m, py = y0 + (y1 - y0) * m - 34 * Math.sin(Math.PI * m), op = vzClamp(m * 5, 0, 1);
@@ -28685,6 +28901,98 @@ function h2Pic(def, k, b, u) {
   // one short caption for the current line, cross-fading with the last
   sit.acts.forEach((a, i) => { if (!a.note) return; const v = V("N|" + i, i === cur ? 1 : 0, .45, .2); if (v > .01) o += `<g opacity="${q2(v)}">${stNote(180, 428, h2Subs(a.note), VZ.ink)}</g>`; });
   return o + vzKey([["line", VZ.red, "test arrow"], ["dash", VZ.grey, "crossed out"], ["fill", VZ.green, "matched"]], 16, 453);
+}
+// ---------- index-card icons for six wave-8 methods (wave 10, h2): each def's draw() calls one of these ----------
+// 600 × 450 frame, bold strokes, no small text: the card is an icon of the method's core move.
+const h2Big = (x, y, t, col, sz = 46, a = "middle") => `<text x="${x}" y="${y}" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="${sz}" fill="${col || VZ.ink}" text-anchor="${a}" stroke="${VZ.paper}" stroke-width="8" stroke-linejoin="round" paint-order="stroke">${t}</text>`;
+const h2Path = (pts, attrs) => `<path d="M${pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}" fill="none" ${attrs}/>`;
+// m-chain: the tree z → x, y → t; one path (z → x → t) in red, one product per path
+function h2CardChain() {
+  const N = { z: [300, 82], x: [180, 226], y: [420, 226], t: [300, 370] }, R = 38, red = ["zx", "xt"];
+  const edge = (a, b) => { const A = N[a], B = N[b], d = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / d, uy = (B[1] - A[1]) / d, on = red.includes(a + b);
+    return `<line x1="${q2(A[0] + ux * R)}" y1="${q2(A[1] + uy * R)}" x2="${q2(B[0] - ux * R)}" y2="${q2(B[1] - uy * R)}" stroke="${on ? VZ.red : VZ.grey}" stroke-width="${on ? 10 : 6}" stroke-linecap="round" opacity="${on ? 1 : .55}"/>`; };
+  let o = edge("z", "x") + edge("z", "y") + edge("x", "t") + edge("y", "t");
+  Object.entries(N).forEach(([n, [x, y]]) => { const on = n === "z" || n === "x" || n === "t";
+    o += `<circle cx="${x}" cy="${y}" r="${R}" fill="#fff" stroke="${on ? VZ.red : VZ.ink}" stroke-width="${on ? 6 : 4}"/>` + h2Big(x, y + 15, n, on ? VZ.deep : VZ.ink, 48); });
+  return o;
+}
+// m-extrema: the region, its interior critical point, the edge points and corners; the biggest and smallest marked
+function h2CardExtrema() {
+  const A = [110, 400], B = [490, 400], C = [110, 50], dot = (p, r, col, ring) => (ring ? `<circle cx="${p[0]}" cy="${p[1]}" r="${r + 12}" fill="none" stroke="${col}" stroke-width="5" opacity=".45"/>` : "") + `<circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="${col}" stroke="#fff" stroke-width="4"/>`;
+  let o = `<path d="M${A}L${B}L${C}Z" fill="${VZ.red}" fill-opacity=".12" stroke="${VZ.red}" stroke-width="6" stroke-linejoin="round"/>`;
+  [70, 125, 180].forEach(r => { o += `<circle cx="215" cy="300" r="${r}" fill="none" stroke="${VZ.red}" stroke-width="3" opacity=".22" clip-path="url(#h2-exc)"/>`; });
+  o = `<defs><clipPath id="h2-exc"><path d="M${A}L${B}L${C}Z"/></clipPath></defs>` + o;
+  o += dot([300, 400], 13, VZ.gold) + dot([110, 225], 13, VZ.gold) + dot([300, 225], 13, VZ.gold);   // one on each edge
+  o += dot(A, 13, VZ.ink) + dot(C, 13, VZ.ink);
+  o += dot([215, 300], 17, VZ.ink, 1) + h2Big(215, 362, "min", VZ.ink, 40);
+  o += dot(B, 17, VZ.red, 1) + h2Big(470, 350, "max", VZ.deep, 40, "end");
+  return o;
+}
+// m-greencheck: a closed counterclockwise loop C around a shaded D, and the three checks passed
+function h2CardGreen() {
+  const cx = 225, cy = 225, P = th => { const r = 1 + .1 * Math.sin(2 * th) + .07 * Math.cos(3 * th); return [cx + 165 * r * Math.cos(th), cy - 140 * r * Math.sin(th)]; };
+  const pts = []; for (let i = 0; i <= 96; i++) pts.push(P(i / 96 * 2 * Math.PI));
+  let o = `<path d="M${pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="${VZ.red}" fill-opacity=".13" stroke="${VZ.red}" stroke-width="7" stroke-linejoin="round"/>` + h2Big(cx, cy + 18, "D", VZ.deep, 64);
+  [.25, .95, 1.6].forEach(f => { const a = P(f * Math.PI - .2), b = P(f * Math.PI + .2); o += vzArrow(a[0], a[1], b[0], b[1], "I", 8); });   // counterclockwise: D on the left
+  [110, 225, 340].forEach(y => { o += `<circle cx="505" cy="${y}" r="38" fill="${VZ.green}" stroke="#fff" stroke-width="4"/><path d="M486 ${y + 1}l12 12 22-25" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`; });
+  return o;
+}
+// m-tangent: a curve, a point on it, and the velocity r′(t) along the tangent there
+function h2CardTangent() {
+  const r = t => [70 + 460 * t, 300 - 150 * Math.sin(4.2 * t) + 120 * t * t], t0 = .52, h = 1e-4;
+  const pts = []; for (let i = 0; i <= 80; i++) pts.push(r(i / 80));
+  const p = r(t0), q = r(t0 + h), dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+  let o = `<line x1="${q2(p[0] - ux * 230)}" y1="${q2(p[1] - uy * 230)}" x2="${q2(p[0] + ux * 230)}" y2="${q2(p[1] + uy * 230)}" stroke="${VZ.grey}" stroke-width="3.5" stroke-dasharray="10 9" opacity=".6"/>`;
+  o += h2Path(pts, `stroke="${VZ.ink}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"`);
+  o += vzArrow(p[0], p[1], p[0] + ux * 175, p[1] + uy * 175, "R", 9);
+  o += `<circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="14" fill="${VZ.deep}" stroke="#fff" stroke-width="4"/>` + h2Big(q2(p[0] + ux * 175 + 6), q2(p[1] + uy * 175 - 26), "r′(t)", VZ.deep, 46, "start");
+  return o;
+}
+// m-lineint: the curtain of height f standing on the curve C; ∫ f ds is its area
+function h2CardLine() {
+  const F = t => [90 + 420 * t, 380 - 60 * t - 70 * Math.sin(Math.PI * t)], H = t => 60 + 190 * t * t, n = 60;
+  const fl = [], tp = []; for (let i = 0; i <= n; i++) { const t = i / n, p = F(t); fl.push(p); tp.push([p[0], p[1] - H(t)]); }
+  let o = `<path d="M40 420L470 420L560 300L130 300Z" fill="none" stroke="${VZ.grey}" stroke-width="3" opacity=".4" stroke-linejoin="round"/>`;
+  o += `<path d="M${fl.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}L${tp.slice().reverse().map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="${VZ.red}" fill-opacity=".3"/>`;
+  for (let i = 4; i < n; i += 7) o += `<line x1="${q2(fl[i][0])}" y1="${q2(fl[i][1])}" x2="${q2(tp[i][0])}" y2="${q2(tp[i][1])}" stroke="${VZ.red}" stroke-width="3" opacity=".45"/>`;
+  o += h2Path(tp, `stroke="${VZ.red}" stroke-width="7" stroke-linecap="round"`) + h2Path(fl, `stroke="${VZ.ink}" stroke-width="7" stroke-linecap="round"`);
+  o += `<line x1="${q2(fl[n][0])}" y1="${q2(fl[n][1])}" x2="${q2(tp[n][0])}" y2="${q2(tp[n][1])}" stroke="${VZ.red}" stroke-width="6"/>`;
+  return o + `<circle cx="${q2(fl[0][0])}" cy="${q2(fl[0][1])}" r="11" fill="${VZ.ink}" stroke="#fff" stroke-width="3"/><circle cx="${q2(fl[n][0])}" cy="${q2(fl[n][1])}" r="11" fill="${VZ.ink}" stroke="#fff" stroke-width="3"/>`;
+}
+// m-work: a path C through a field F, its direction, the field pushing along it
+function h2CardWork() {
+  const Fv = (x, y) => [1 + .35 * y, .5 + .25 * x], C = t => [110 + 380 * t, 370 - 300 * t + 90 * Math.sin(Math.PI * t) * (1 - t)];
+  let o = "";
+  for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) {
+    const x = 75 + 90 * i, y = 75 + 100 * j, v = Fv(i - 2.5, 1.5 - j), l = Math.hypot(...v), s = 44 / l;
+    o += `<g opacity=".5">${vzArrow(x - v[0] * s / 2, y + v[1] * s / 2, x + v[0] * s / 2, y - v[1] * s / 2, "G", 4.4)}</g>`;
+  }
+  const pts = []; for (let i = 0; i <= 60; i++) pts.push(C(i / 60));
+  o += h2Path(pts.slice(0, 57), `stroke="${VZ.red}" stroke-width="9" stroke-linecap="round"`) + vzArrow(pts[54][0], pts[54][1], pts[60][0], pts[60][1], "R", 9);
+  [.3, .62].forEach(t => { const p = C(t), v = Fv((p[0] - 300) / 90, (225 - p[1]) / 100), l = Math.hypot(...v); o += vzArrow(p[0], p[1], p[0] + v[0] / l * 80, p[1] - v[1] / l * 80, "I", 6); });
+  return o + `<circle cx="${q2(pts[0][0])}" cy="${q2(pts[0][1])}" r="12" fill="${VZ.deep}" stroke="#fff" stroke-width="4"/>`;
+}
+// the index card: the core move as an icon. One red test arrow at (1, 0) on every plot; three disagree and are
+// crossed out, the one left is matched. (F = [y, −x] gives [0, −1] there: down, as on the green plot.)
+function h2Card() {
+  const S = 198, OX = [93, 309], OY = [24, 238], fs = [(x, y) => [0, x], (x, y) => [y, -x], (x, y) => [x, 2 * y], (x, y) => [2 * x, -y]], u = S / 3;
+  let o = "";
+  fs.forEach((g, j) => {
+    const ox = OX[j % 2], oy = OY[j >> 1], cx = ox + S / 2, cy = oy + S / 2, ok = j === 1, X = x => cx + x * u, Y = y => cy - y * u;
+    const pts = []; for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) pts.push([a, b, g(a, b)]);
+    const mx = Math.max(...pts.map(p => Math.hypot(...p[2])));
+    let f = `<path d="M${ox} ${cy}H${ox + S}M${cx} ${oy}V${oy + S}" stroke="${VZ.ink}" stroke-width="2" opacity=".18"/>`;
+    pts.forEach(([a, b, v]) => {
+      const l = Math.hypot(...v), s = l < 1e-9 ? 0 : 44 * Math.sqrt(l / mx) / l, dx = v[0] * s, dy = -v[1] * s;
+      f += s ? vzArrow(X(a) - dx / 2, Y(b) - dy / 2, X(a) + dx / 2, Y(b) + dy / 2, "I", 4.6) : `<circle cx="${X(a)}" cy="${Y(b)}" r="5" fill="${VZ.ink}"/>`;
+    });
+    o += `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" rx="10" fill="${ok ? "#EAF3ED" : "#fff"}"/><g opacity="${ok ? 1 : .3}">${f}</g>`;
+    o += ok ? `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" rx="10" fill="none" stroke="${VZ.green}" stroke-width="7"/>`
+      : `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" rx="10" fill="none" stroke="${VZ.grey}" stroke-width="4" stroke-dasharray="12 9"/><path d="M${ox + 22} ${oy + S - 22}L${ox + S - 22} ${oy + 22}" stroke="${VZ.grey}" stroke-width="7" stroke-linecap="round" opacity=".75"/>`;
+    o += `<circle cx="${X(1)}" cy="${Y(0)}" r="13" fill="none" stroke="${VZ.red}" stroke-width="4.5"/>` + vzArrow(X(1), Y(0), X(1), Y(0) + 74, "R", 7);
+    if (ok) o += `<circle cx="${ox + S - 6}" cy="${oy + 6}" r="26" fill="${VZ.green}" stroke="#fff" stroke-width="4"/><path d="M${ox + S - 18} ${oy + 7}l8 8 16-17" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
+  });
+  return o;
 }
 // the chips: one worked example per situation (like g4Sits, with its own names)
 function h2Sits(def, sits) {
@@ -28766,7 +29074,7 @@ const H2_SITS = (() => {
         why: "The last formula takes the last plot. One quick check catches a slip.", sum: "\\(\\mathbf F_3\\) is B" },
     ] };
   // Gradient of f. Plots A–D show ∇f4, ∇f2, ∇f1, ∇f3. Step 1 computes ∇f; then zeros, (1, 0), (0, 1).
-  const z1g = { id: "z1g", f: 0, line: { y: 0 } }, a2g = { id: "a2g", f: 1, pts: [[1, 0]] }, a3g = { id: "a3g", f: 2, pts: [[1, 0]] }, b3g = { id: "b3g", f: 2, pts: [[0, 1]] }, c4g = { id: "c4g", f: 3, pts: [[0, 1]] };
+  const z1g = { id: "z1g", f: 0, line: { y: 0 } }, a2g = { id: "a2g", f: 1, pts: [[1, 0]] }, a3g = { id: "a3g", f: 2, pts: [[1, 0]] }, b3g = { id: "b3g", f: 2, pts: [[0, 1]] }, c4g = { id: "c4g", f: 3, pts: [[1, -1], [1, 0], [1, 1]] };
   const grd = { chip: "Gradient of f", kind: "grad", perm: [3, 1, 0, 2],
     F: [{ t: "y³", gt: "[0, 3y²]", g: (x, y) => [0, 3 * y * y] }, { t: "x − 2y", gt: "[1, −2]", g: () => [1, -2] }, { t: "x + ½y²", gt: "[1, y]", g: (x, y) => [1, y] }, { t: "⅓x³ + x", gt: "[x² + 1, 0]", g: x => [x * x + 1, 0] }],
     problem: "Match each function to the plot of its gradient \\(\\nabla f\\), A–D: \\(f_1=y^3\\), \\(f_2=x-2y\\), \\(f_3=x+\\tfrac12y^2\\), \\(f_4=\\tfrac13x^3+x\\).",
@@ -28783,7 +29091,7 @@ const H2_SITS = (() => {
       { k: 3, b: 0, f: 2, test: b3g, note: "∇f_3(0, 1) = [1, 1]: up and right" },
       { k: 3, b: 1, f: 2, test: b3g, out: [0], match: 3, note: "A points right: f_3 goes with D" },
       { k: 4, b: 0, f: 3, match: 0, note: "the one left: f_4 goes with A" },
-      { k: 4, b: 1, f: 3, test: c4g, check: 0, note: "check: ∇f_4(0, 1) points right ✓" }],
+      { k: 4, b: 1, f: 3, test: c4g, band: { col: 1 }, check: 0, note: "check: only x, so A's columns repeat ✓" }],
     steps: [
       { t: "Compute ∇f first", tex: ["\\nabla f_1=[0,\\ 3y^2],\\qquad \\nabla f_2=[1,\\ -2]", "\\nabla f_3=[1,\\ y],\\qquad \\nabla f_4=[x^2+1,\\ 0]"],
         why: "The plots show \\(\\nabla f\\), not \\(f\\). Take both partials of each function, then test those fields.", sum: "four gradient fields" },
@@ -28793,17 +29101,48 @@ const H2_SITS = (() => {
         why: H2_PT, sum: "\\(f_2\\) goes with B" },
       { t: "Another test point: (0, 1)", tex: ["\\nabla f_3(0,1)=[1,\\ 1]", { html: "Up and right. A points straight right there, so cross it out: \\(f_3\\) goes with D." }],
         why: "One point couldn't tell A from D, so try a second one.", sum: "\\(f_3\\) goes with D" },
-      { t: "The one left", tex: [{ html: "Only A is left, so \\(f_4\\) goes with A." }, { html: "Check: \\(\\nabla f_4(0,1)=[1,0]\\), right. A agrees ✓" }],
+      { t: "The one left", tex: [{ html: "Only A is left, so \\(f_4\\) goes with A." }, { html: "Check: \\(\\nabla f_4=[x^2+1,0]\\) has only \\(x\\), so each column repeats. A's do ✓" }],
         why: "The last function takes the last plot. One quick check catches a slip.", sum: "\\(f_4\\) goes with A" },
     ] };
-  return [lin, one, grd];
+  // Length 1. Plots A–D show F2, F4, F1, F3. Tests: the length, one row, the zeros.
+  const l1 = { id: "l1", f: 0, len: 1, pts: [[-1, 1], [1, 1], [0, 0], [-1, -1], [1, -1]] }, w1 = { id: "w1", f: 0, pts: [[-1, 1], [0, 1], [1, 1]] }, v2 = { id: "v2", f: 1, pts: [[1, -1], [1, 0], [1, 1]] };
+  const z3 = { id: "z3", f: 2, line: { x: 0 } }, c4 = { id: "c4", f: 3, pts: [[0, 1]] };
+  const len = { chip: "Length 1", kind: "field", perm: [1, 3, 0, 2],
+    F: [{ t: "[cos y, sin y]", g: (x, y) => [Math.cos(y), Math.sin(y)] }, { t: "[cos x, sin x]", g: x => [Math.cos(x), Math.sin(x)] }, { t: "[x, x]", g: x => [x, x] }, { t: "[y, −y]", g: (x, y) => [y, -y] }],
+    problem: "Match each field to its plot A–D: \\(\\mathbf F_1=[\\cos y,\\ \\sin y]\\), \\(\\mathbf F_2=[\\cos x,\\ \\sin x]\\), \\(\\mathbf F_3=[x,\\ x]\\), \\(\\mathbf F_4=[y,\\ -y]\\).",
+    acts: [
+      { k: -1, b: 0, note: "four fields, four plots" },
+      { k: 0, b: 0, note: "spot what is easy: here, the length" },
+      { k: 1, b: 0, f: 0, test: l1, note: "|F_1| = 1: is every arrow the same length?" },
+      { k: 1, b: 1, f: 0, test: l1, out: [1, 3], note: "B and D change length: A or C" },
+      { k: 2, b: 0, f: 0, test: w1, band: { row: 1 }, note: "F_1 has only y: the row y = 1 repeats" },
+      { k: 2, b: 1, f: 0, test: w1, band: { row: 1 }, out: [0], match: 2, note: "A's row changes: F_1 is C" },
+      { k: 2, b: 2, f: 1, test: v2, band: { col: 1 }, match: 0, check: 0, note: "F_2 takes A: its columns repeat ✓" },
+      { k: 3, b: 0, f: 2, test: z3, note: "F_3 = 0 on the y-axis: dots there?" },
+      { k: 3, b: 1, f: 2, test: z3, out: [1], match: 3, note: "B's zeros are on the x-axis: F_3 is D" },
+      { k: 4, b: 0, f: 3, match: 1, note: "the one left: F_4 is B" },
+      { k: 4, b: 1, f: 3, test: c4, check: 1, note: "check: F_4(0, 1) points down and right ✓" }],
+    steps: [
+      { t: "What differs between the plots", tex: [{ html: "In A and C every arrow has the same length. In B and D the arrows grow away from a line of zeros." }],
+        why: "Before plugging in points, look for what is easy to compute. Here it is the length.", sum: "check the length" },
+      { t: "Check the length", tex: ["|\\mathbf F_1|=\\sqrt{\\cos^2y+\\sin^2y}=1", { html: "Every arrow has length 1. B and D change length: cross them out. A and C both pass, so not enough yet." }],
+        why: "If the length is the same at every point, every arrow on the plot is the same length.", sum: "\\(\\mathbf F_1\\) is A or C" },
+      { t: "Rows or columns?", tex: ["\\mathbf F_1(x,1)=[\\cos 1,\\ \\sin 1]\\ \\text{ for every } x", { html: "So each row repeats. A's row changes: \\(\\mathbf F_1\\) is C." }, { html: "\\(\\mathbf F_2=[\\cos x,\\sin x]\\) takes the other length-1 plot, A. Its columns repeat ✓" }],
+        why: "\\(\\mathbf F_1\\) has only \\(y\\), so along a row it stays the same. Test one row.", sum: "\\(\\mathbf F_1\\) is C, \\(\\mathbf F_2\\) is A" },
+      { t: "Where is F = 0?", tex: ["\\mathbf F_3=[x,\\ x]=\\mathbf 0\\ \\text{ when } x=0", { html: "That is the \\(y\\)-axis. B's zeros are on the \\(x\\)-axis instead: \\(\\mathbf F_3\\) is D." }],
+        why: H2_ZW, sum: "\\(\\mathbf F_3\\) is D" },
+      { t: "The one left", tex: [{ html: "Only B is left, so \\(\\mathbf F_4\\) is B." }, { html: "Check: \\(\\mathbf F_4(0,1)=[1,-1]\\), down and right. B agrees ✓" }],
+        why: "The last formula takes the last plot. One quick check catches a slip.", sum: "\\(\\mathbf F_4\\) is B" },
+    ] };
+  return [lin, one, len, grd];
 })();
 stAdd(h2Sits({
   id: "m-fieldmatch", title: "Match a field to its plot", card: "Match a field to its plot",
-  tagline: "Test a point, cross out the plots that disagree, take the one left.",
-  blurb: "Don't sketch the whole field: test it. Plug in an easy point, find where \\(\\mathbf F\\) is \\(\\mathbf 0\\), or check whether it uses only \\(x\\) or only \\(y\\), and cross out every plot that disagrees. The one left is the match. For \\(\\nabla f\\), compute the gradient first, then test it.",
+  tagline: "Test a point, cross out the plots that disagree.",
+  blurb: "Don't sketch the whole field: test it. Plug in an easy point, find where \\(\\mathbf F\\) is \\(\\mathbf 0\\), or check its length, or whether it uses only \\(x\\) or only \\(y\\), and cross out every plot that disagrees. The one left is the match. For \\(\\nabla f\\), compute the gradient first, then test it.",
   picLive: true,
   pic(k, b, u) { return h2Pic(this, k, b, u); },
+  draw() { return h2Card(); },
 }, H2_SITS));
 const VZ_TAGLINE = {
   systems: "Two lines meet once, never, or everywhere.", projection: "The shadow of one vector on another.",

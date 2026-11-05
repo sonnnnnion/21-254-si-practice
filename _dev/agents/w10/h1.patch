@@ -1,0 +1,330 @@
+diff -ru base10/index.html h1/index.html
+--- base10/index.html	2026-11-04 20:43:37
++++ h1/index.html	2026-11-04 21:34:11
+@@ -4369,6 +4369,8 @@
+   .fm6-card.lift { opacity: .3; box-shadow: none; }
+   .fm6-card.done { border-color: #2F7A4A; background: #EAF4EE; color: #245F3A; cursor: default; box-shadow: none; }
+   .fm6-ck { font: 800 12px var(--font-sans); color: #2F7A4A; }
++  .fm6-cf { line-height: 1.25; }
++  .fm6-cf sup, .fm6-say sup { font-size: .7em; line-height: 0; vertical-align: .55em; }
+   .fm6-fly { position: fixed; z-index: 1000; pointer-events: none; transform-origin: 50% 50%; box-sizing: border-box; transition: none; }
+   .fm6-fly.held { box-shadow: 0 10px 24px rgba(31, 41, 51, .22); cursor: grabbing; }
+   .fm6-sayrow { display: flex; gap: 10px; align-items: flex-start; }
+@@ -4400,7 +4402,7 @@
+     .fm6-phkey .vz-kh { display: inline-flex; align-items: center; gap: 5px; }
+     .fm6-phkey .vz-kh i { display: inline-block; width: 14px; height: 0; border-top: 3px solid var(--c); border-radius: 2px; }
+     .fm6-card { font-size: 16px; padding: 7px 14px; }
+-    .fm6-say { font-size: 14px; min-height: 0; }
++    .fm6-say { font-size: 14px; min-height: 2.9em; }   /* two lines kept, so a longer caption never moves the cards */
+     .fm6-sayrow { order: 1; } .fm6-cards { order: 2; } .fm6-btns { order: 3; }   /* the caption right under the plots, then the cards, then Show me one */
+   }
+   /* g1 css begin */
+@@ -24789,41 +24791,41 @@
+ const fm6Ex = a => a.every(c => Math.abs(c * 100 - Math.round(c * 100)) < 1e-7);   // shown exactly with two decimals (else "≈")
+ const FM6_SETS = [
+   { kind: "grad", perm: [2, 0, 3, 1], items: [
+-    { t: "f = 2x + y", gT: "[2, 1]", f: (x, y) => 2 * x + y, g: () => [2, 1] },
+-    { t: "f = x² − 2y²", gT: "[2x, −4y]", f: (x, y) => x * x - 2 * y * y, g: (x, y) => [2 * x, -4 * y] },
+-    { t: "f = e<sup>−(x²+y²)/2</sup>", gT: "−f · [x, y]", f: (x, y) => Math.exp(-(x * x + y * y) / 2), g: (x, y) => { const e = Math.exp(-(x * x + y * y) / 2); return [-x * e, -y * e]; } },
+-    { t: "f = sin x", gT: "[cos x, 0]", f: x => Math.sin(x), g: x => [Math.cos(x), 0] }] },
++    { t: "f = 2x + y", gT: "[2, 1]", px: "2", py: "1", f: (x, y) => 2 * x + y, g: () => [2, 1] },
++    { t: "f = x² − 2y²", gT: "[2x, −4y]", px: "2x", py: "−4y", f: (x, y) => x * x - 2 * y * y, g: (x, y) => [2 * x, -4 * y] },
++    { t: "f = e<sup>−(x²+y²)/2</sup>", gT: "−f · [x, y]", px: "−x f", py: "−y f", f: (x, y) => Math.exp(-(x * x + y * y) / 2), g: (x, y) => { const e = Math.exp(-(x * x + y * y) / 2); return [-x * e, -y * e]; } },
++    { t: "f = sin x", gT: "[cos x, 0]", px: "cos x", py: "0", f: x => Math.sin(x), g: x => [Math.cos(x), 0] }] },
+   { kind: "field", perm: [1, 3, 0, 2], items: [
+     { t: "F = [−y, x]", g: (x, y) => [-y, x] },
+     { t: "F = [x − y, x + y]", g: (x, y) => [x - y, x + y] },
+     { t: "F = [x, −y]", g: (x, y) => [x, -y] },
+     { t: "F = [x, y]", g: (x, y) => [x, y] }] },
+   { kind: "grad", perm: [3, 0, 2, 1], items: [
+-    { t: "f = ½x² + y", gT: "[x, 1]", f: (x, y) => x * x / 2 + y, g: x => [x, 1] },
+-    { t: "f = ln(1 + x² + y²)", gT: "[2x, 2y] / (1 + x² + y²)", f: (x, y) => Math.log(1 + x * x + y * y), g: (x, y) => { const d = 1 + x * x + y * y; return [2 * x / d, 2 * y / d]; } },
+-    { t: "f = ½(x + y)²", gT: "[x + y, x + y]", f: (x, y) => (x + y) * (x + y) / 2, g: (x, y) => [x + y, x + y] },
+-    { t: "f = ½(y² − x²)", gT: "[−x, y]", f: (x, y) => (y * y - x * x) / 2, g: (x, y) => [-x, y] }] },
++    { t: "f = ½x² + y", gT: "[x, 1]", px: "x", py: "1", f: (x, y) => x * x / 2 + y, g: x => [x, 1] },
++    { t: "f = ln(1 + x² + y²)", gT: "[2x, 2y] / (1 + x² + y²)", px: "2x / (1 + x² + y²)", py: "2y / (1 + x² + y²)", f: (x, y) => Math.log(1 + x * x + y * y), g: (x, y) => { const d = 1 + x * x + y * y; return [2 * x / d, 2 * y / d]; } },
++    { t: "f = ½(x + y)²", gT: "[x + y, x + y]", px: "x + y", py: "x + y", f: (x, y) => (x + y) * (x + y) / 2, g: (x, y) => [x + y, x + y] },
++    { t: "f = ½(y² − x²)", gT: "[−x, y]", px: "−x", py: "y", f: (x, y) => (y * y - x * x) / 2, g: (x, y) => [-x, y] }] },
+   { kind: "field", perm: [2, 3, 1, 0], items: [
+     { t: "F = [y, 0]", g: (x, y) => [y, 0] },
+     { t: "F = [−x, −y]", g: (x, y) => [-x, -y] },
+     { t: "F = [−x − y, x − y]", g: (x, y) => [-x - y, x - y] },
+     { t: "F = [−2, 1]", g: () => [-2, 1] }] },
+   { kind: "grad", perm: [1, 2, 3, 0], items: [
+-    { t: "f = ¼(x² + y²)²", gT: "(x² + y²) · [x, y]", f: (x, y) => Math.pow(x * x + y * y, 2) / 4, g: (x, y) => { const r = x * x + y * y; return [x * r, y * r]; } },
+-    { t: "f = x − y²", gT: "[1, −2y]", f: (x, y) => x - y * y, g: (x, y) => [1, -2 * y] },
+-    { t: "f = sin x + sin y", gT: "[cos x, cos y]", f: (x, y) => Math.sin(x) + Math.sin(y), g: (x, y) => [Math.cos(x), Math.cos(y)] },
+-    { t: "f = ½x² + 2y²", gT: "[x, 4y]", f: (x, y) => x * x / 2 + 2 * y * y, g: (x, y) => [x, 4 * y] }] },
++    { t: "f = ¼(x² + y²)²", gT: "(x² + y²) · [x, y]", px: "x(x² + y²)", py: "y(x² + y²)", f: (x, y) => Math.pow(x * x + y * y, 2) / 4, g: (x, y) => { const r = x * x + y * y; return [x * r, y * r]; } },
++    { t: "f = x − y²", gT: "[1, −2y]", px: "1", py: "−2y", f: (x, y) => x - y * y, g: (x, y) => [1, -2 * y] },
++    { t: "f = sin x + sin y", gT: "[cos x, cos y]", px: "cos x", py: "cos y", f: (x, y) => Math.sin(x) + Math.sin(y), g: (x, y) => [Math.cos(x), Math.cos(y)] },
++    { t: "f = ½x² + 2y²", gT: "[x, 4y]", px: "x", py: "4y", f: (x, y) => x * x / 2 + 2 * y * y, g: (x, y) => [x, 4 * y] }] },
+   { kind: "field", perm: [3, 0, 2, 1], items: [
+     { t: "F = [−y, x] / (1 + x² + y²)", g: (x, y) => { const d = 1 + x * x + y * y; return [-y / d, x / d]; } },
+     { t: "F = [x, y] / (1 + x² + y²)", g: (x, y) => { const d = 1 + x * x + y * y; return [x / d, y / d]; } },
+     { t: "F = [x², 0]", g: x => [x * x, 0] },
+-    { t: "F = [1, x]", g: (x, y) => [1, x] }] },
++    { t: "F = [cos y, sin y]", g: (x, y) => [Math.cos(y), Math.sin(y)] }] },
+ ];
+-FM6_SETS.forEach(S => S.items.forEach(it => { it.th = fm6V(it.t); if (it.gT) it.tg = fm6V(it.gT); }));
++FM6_SETS.forEach(S => S.items.forEach(it => { it.th = fm6V(it.t); if (it.gT) { it.tg = fm6V(it.gT); it.tpx = fm6V(it.px).replace(/ f$/, " · f"); it.tpy = fm6V(it.py).replace(/ f$/, " · f"); } }));
+ // layouts of the four plots: on the stage (600 × 450), and on a phone in the panel (378 × 392); ph = height of a matched tag
+ const FM6_LAY = { st: { W: 600, H: 450, S: 160, FX: [82, 362], FY: [34, 250], fs: 13, ml: 15, pf: 14, ph: 24 },
+   ph: { W: 378, H: 392, S: 146, FX: [28, 212], FY: [28, 222], fs: 12, ml: 13.6, pf: 12.5, ph: 21 } };
+-const FM6_KEYS = [["line", VZ.ink, "longer arrow = stronger"], ["line", VZ.red, "test arrow"], ["line", VZ.grey, "crossed out"], ["line", FM6_GREEN, "matched"]];
++const FM6_KEYS = [["line", VZ.ink, "longer arrow = stronger"], ["line", VZ.red, "test mark"], ["line", VZ.grey, "crossed out"], ["line", FM6_GREEN, "matched"]];
+ // easy test points first: the axes, the centre, then the diagonals and farther out
+ const FM6_EASY = [[1, 0], [0, 1], [-1, 0], [0, -1], [0, 0], [1, 1], [-1, 1], [-1, -1], [1, -1], [2, 0], [0, 2], [-2, 0], [0, -2], [2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2], [2, -1], [2, 2], [-2, 2], [-2, -2], [2, -2]];
+ const FM6_DIR = ["right", "right and a bit up", "up and right", "up and a bit right", "straight up", "up and a bit left", "up and left", "left and a bit up",
+@@ -24854,20 +24856,93 @@
+   return c < .866 ? 1 : c > .985 ? 0 : -1;                         // more than 30° apart: a different direction
+ }
+ const fm6Nice = (A, p) => fm6Ex(A.g(p[0], p[1])) && A.g(p[0], p[1]).every(c => Math.abs(c - Math.round(c)) < 1e-9);
+-// the cheapest few test points (easy points, whole-number answers) that cross out every wrong plot in R
++/* The checks a student can make, each read straight off the plots: where the field is zero, how long its arrows are,
++   whether it changes along rows or columns only, and the arrow at a test point. fm6Tests lists those that apply to a
++   card; fm6Judge says, for one plot, whether it clearly disagrees (1), agrees (0) or can't be told from the picture (-1). */
++const fm6Rel = (it, p) => { const v = fm6Vec(it)[fm6Ix(p)]; return Math.hypot(v[0], v[1]); };
++const fm6Raw = (it, p) => { const v = it.g(p[0], p[1]); return Math.hypot(v[0], v[1]); };
++function fm6LenS(v) {                                                  // a length as a student would write it: 2, √5, 0.5
++  const r = Math.round(v); if (Math.abs(v - r) < 1e-9) return String(r);
++  const s = Math.round(v * v); if (Math.abs(v * v - s) < 1e-9) return "√" + s;
++  return (fm6Ex([v]) ? "" : "≈ ") + fm6N(v);
++}
++function fm6ZeroSet(it) {                                              // the grid points where the formula is exactly zero, and how to say it
++  const Z = FM6_PTS.filter(p => fm6Raw(it, p) < 1e-9);
++  if (!Z.length) return { Z, say: "never zero" };
++  if (Z.length === 1) return { Z, say: `zero only at ${fm6Pt(Z[0])}`, pt: 1 };
++  const sx = Z.every(p => p[0] === Z[0][0]), sy = Z.every(p => p[1] === Z[0][1]), d1 = Z.every(p => p[0] + p[1] === 0), d2 = Z.every(p => p[0] === p[1]);
++  const line = sx ? (Z[0][0] === 0 ? "the y-axis" : `the line x = ${fm6N(Z[0][0])}`) : sy ? (Z[0][1] === 0 ? "the x-axis" : `the line y = ${fm6N(Z[0][1])}`) : d1 ? "the line y = −x" : d2 ? "the line y = x" : null;
++  return line ? { Z, say: `zero along ${line}`, line: sx ? ["x", Z[0][0]] : sy ? ["y", Z[0][1]] : d1 ? ["d", -1] : ["d", 1] } : { Z: [], say: "" };
++}
++const FM6_RING4 = [[-1.5, 1.5], [1.5, 1.5], [0, 0], [1.5, -1.5], [-1.5, -1.5]];
++const FM6_PAIRS = [[[.5, 0], [2, 0]], [[0, .5], [0, 2]], [[-.5, 0], [-2, 0]], [[0, -.5], [0, -2]], [[1, 0], [2, 0]], [[0, 1], [0, 2]], [[.5, .5], [1.5, 1.5]], [[.5, 0], [1, 0]]];
++function fm6Tests(set, k) {
++  const A = set.items[k], nm = set.kind === "grad" ? "∇f" : "F", T = [], L = FM6_PTS.map(p => fm6Raw(A, p)), mx = Math.max(...L), mn = Math.min(...L);
++  const same = (a, b) => Math.abs(a[0] - b[0]) < 1e-9 && Math.abs(a[1] - b[1]) < 1e-9;
++  const col = FM6_PTS.every(p => same(A.g(p[0], p[1]), A.g(p[0], 0))), row = FM6_PTS.every(p => same(A.g(p[0], p[1]), A.g(0, p[1])));
++  const ftxt = set.kind === "grad" ? `∇f = ${A.tg}` : A.th;
++  if (mx - mn < 1e-9) T.push({ kind: "lenC", pts: FM6_RING4, cap: `Check the length: |${nm}| = ${fm6LenS(mx)} everywhere, so every arrow matches.`, why: "with arrows of different lengths", w: .9 });
++  else if (col !== row) {
++    const c = [1, -1, 1.5, .5, 2].find(v => col ? fm6Rel(A, [v, 0]) >= .3 && fm6Rel(A, [v, 0]) <= 1 : fm6Rel(A, [0, v]) >= .3);
++    if (c != null) T.push({ kind: "strip", ax: col ? "x" : "y", c, cap: `${ftxt} depends on ${col ? "x" : "y"} only: each ${col ? "column" : "row"} of arrows matches.`, why: `whose ${col ? "column" : "row"} changes`, w: 1 });
++  }
++  if (mn > 1e-9) T.push({ kind: "still", cap: `Where is ${nm} zero? ${ftxt.replace(/^.*= /, nm + " = ")} is never zero.`, why: "with a still point", w: 1 });
++  else if (mn <= 1e-9) { const z = fm6ZeroSet(A); if (z.Z.length) T.push({ kind: "zero", Z: z.Z, line: z.line, cap: `Where is ${nm} zero? ${z.say[0].toUpperCase() + z.say.slice(1)}.`, why: "with an arrow there", w: 1 }); }
++  if (mx - mn > 1e-9) FM6_PAIRS.forEach(pr => {
++    const a = fm6Raw(A, pr[0]), b = fm6Raw(A, pr[1]);
++    if (a < 1e-9 || Math.max(fm6Rel(A, pr[0]), fm6Rel(A, pr[1])) < .5) return;
++    const r = b / a, kd = r >= 1.8 ? "grows" : r <= .55 ? "shrinks" : r >= .8 && r <= 1.25 ? "same" : null; if (!kd) return;
++    T.push({ kind: "lenG", pts: pr, r, kd, cap: `Check the length: |${nm}| is ${fm6LenS(a)} at ${fm6Pt(pr[0])}, ${fm6LenS(b)} at ${fm6Pt(pr[1])}${kd === "grows" ? ": longer farther out" : kd === "shrinks" ? ": shorter farther out" : ": about the same"}.`,
++      why: kd === "same" ? "whose two arrows differ" : `whose arrows ${kd === "grows" ? "shrink" : "grow"} instead`, w: kd === "same" ? 2.6 : 1.4 });
++  });
++  FM6_EASY.forEach((p, d) => {
++    const a = A.g(p[0], p[1]), z = Math.hypot(a[0], a[1]) < 1e-9;
++    T.push({ kind: "pt", p, a, cap: `Test point ${fm6Pt(p)}: ${nm} ${fm6Ex(a) ? "=" : "≈"} ${fm6Vc(a)}${z ? ", no arrow" : `, ${fm6Dir(a)}`}.`, why: z ? "with an arrow there" : "pointing another way", w: 1.35 + .35 * d + (fm6Nice(A, p) ? 0 : 1.2) });
++  });
++  return T;
++}
++function fm6Judge(A, B, t) {
++  if (t.kind === "pt") { const c = fm6Cmp(A, B, t.p); return c === 1 && fm6Look(B, t.p).z ? 1 : c; }
++  if (t.kind === "zero") { const r = t.Z.map(p => fm6Raw(B, p) < 1e-9 ? 0 : fm6Rel(B, p)); return r.some(v => v >= .3) ? 1 : r.every(v => v < .08) ? 0 : -1; }
++  if (t.kind === "still") { const m = Math.min(...FM6_PTS.map(p => fm6Rel(B, p))); return m < .04 ? 1 : m > .12 ? 0 : -1; }
++  if (t.kind === "lenC") { const r = FM6_PTS.map(p => fm6Rel(B, p)); return Math.min(...r) < .5 ? 1 : Math.min(...r) > .9 ? 0 : -1; }
++  if (t.kind === "lenG") {
++    const a = fm6Rel(B, t.pts[0]), b = fm6Rel(B, t.pts[1]);
++    if (Math.max(a, b) < .3) return -1;
++    const r = b / Math.max(a, 1e-9);
++    if (t.kd === "grows") return r <= 1.1 ? 1 : r >= 1.6 ? 0 : -1;
++    if (t.kd === "shrinks") return r >= .9 ? 1 : r <= .6 ? 0 : -1;
++    return r >= 1.8 || r <= .55 ? 1 : r >= .8 && r <= 1.25 ? 0 : -1;
++  }
++  if (t.kind === "strip") {
++    const ps = FM6_PTS.filter(p => (t.ax === "x" ? p[0] : p[1]) === t.c), v = ps.map(p => fm6Vec(B)[fm6Ix(p)]), l = v.map(q => Math.hypot(q[0], q[1]));
++    const vis = v.filter((q, i) => l[i] >= .3), lmx = Math.max(...l), lmn = Math.min(...l);
++    if (lmx < .3) return -1;
++    let ang = 0; vis.forEach(a => vis.forEach(b => { ang = Math.max(ang, Math.acos(vzClamp((a[0] * b[0] + a[1] * b[1]) / Math.hypot(...a) / Math.hypot(...b), -1, 1))); }));
++    if (ang > .61 || lmn < .08 || lmx / lmn > 2) return 1;
++    return ang < .2 && lmx / lmn < 1.2 ? 0 : -1;
++  }
++  return -1;
++}
++// the plan for one card: the cheapest few checks (structural ones first, then test points) that leave only its plot.
++// A natural first check that rules nothing out is still shown, with "all still agree", the way a student would meet it.
+ function fm6Plan(set, k, R) {
+   const A = set.items[k], right = set.perm.indexOf(k), wrong = R.filter(j => j !== right);
+-  const P = FM6_EASY.map((p, d) => ({ p, x: wrong.filter(j => fm6Cmp(A, set.items[set.perm[j]], p) === 1), c: 1 + .35 * d + (fm6Nice(A, p) ? 0 : 1.2) }))
+-    .filter(o => fm6Cmp(A, A, o.p) === 0 && o.x.length);
++  const T = fm6Tests(set, k).filter(t => fm6Judge(A, A, t) === 0).map(t => Object.assign(t, { x: wrong.filter(j => fm6Judge(A, set.items[set.perm[j]], t) === 1) }));
++  const P = T.filter(t => t.x.length);
+   let best = null;
+   const go = (seq, cov, cost) => {
+     if (best && cost >= best.cost) return;
+     if (wrong.every(j => cov.has(j))) { best = { seq, cost }; return; }
+     if (seq.length === 3) return;
+-    P.forEach(o => { if (o.x.some(j => !cov.has(j))) go(seq.concat(o), new Set([...cov, ...o.x]), cost + o.c); });
++    P.forEach(o => { if (o.x.some(j => !cov.has(j))) go(seq.concat(o), new Set([...cov, ...o.x]), cost + o.w + (seq.length && seq[seq.length - 1].kind === o.kind ? .8 : 0)); });
+   };
+   go([], new Set(), 0);
+-  return best ? best.seq : null;
++  if (!best) return null;
++  const seq = best.seq.slice().sort((a, b) => T.indexOf(a) - T.indexOf(b));
++  const first = T.find(t => t.kind !== "pt");
++  if (first && !first.x.length && seq.length < 3 && wrong.length) seq.unshift(Object.assign({}, first, { miss: true }));
++  return seq;
+ }
+ // why a wrong plot is wrong, in one line: the easiest test point that tells them apart
+ function fm6Nudge(set, k, j) {
+@@ -24884,7 +24959,7 @@
+ function fm6Arrow(px, py, dx, dy, op, w, col) {
+   const L = Math.hypot(dx, dy), c = col || VZ.ink;
+   if (L < 2.6) return `<circle cx="${q2(px)}" cy="${q2(py)}" r="${w > 1.5 ? 1.9 : 1.3}" fill="${c}" opacity="${q2(op)}"/>`;
+-  const ux = dx / L, uy = dy / L, hl = Math.min(w > 1.5 ? 6 : 4.8, L * .5), hw = hl * .4, tx = px + dx / 2, ty = py + dy / 2, sx = px - dx / 2, sy = py - dy / 2, bx = tx - ux * hl, by = ty - uy * hl;
++  const ux = dx / L, uy = dy / L, hl = Math.min(w > 2.6 ? 12 : w > 1.5 ? 6 : 4.8, L * .5), hw = hl * .4, tx = px + dx / 2, ty = py + dy / 2, sx = px - dx / 2, sy = py - dy / 2, bx = tx - ux * hl, by = ty - uy * hl;
+   return `<g opacity="${q2(op)}" fill="${c}" stroke="${c}" stroke-linecap="round" stroke-linejoin="round"><line x1="${q2(sx)}" y1="${q2(sy)}" x2="${q2(bx + ux * .6)}" y2="${q2(by + uy * .6)}" stroke-width="${w || 1.15}"/>` +
+     `<path d="M${q2(tx)} ${q2(ty)}L${q2(bx - uy * hw)} ${q2(by + ux * hw)}L${q2(bx + uy * hw)} ${q2(by - ux * hw)}Z" stroke-width=".5"/></g>`;
+ }
+@@ -24934,9 +25009,10 @@
+     `<text x="${q2(g.tx)}" y="${q2(g.cy + L.pf * .36)}" font-family="'Fraunces', Georgia, serif" font-size="${L.pf}" fill="${VZ.ink}">${fm6Tsp(it.th)}</text></g>`;
+ }
+ // the red test arrow at a test point (fixed length: its direction is what to compare), inside a red ring
++const fm6Ring = (px, py, L) => { const R = L.ml * .95; return `<circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="${VZ.red}" fill-opacity=".07" stroke="#fff" stroke-width="3.6" stroke-opacity=".9"/><circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="1.5"/>`; };
+ function fm6Red(px, py, a, L, op, gr) {
+-  const l = Math.hypot(a[0], a[1]), R = L.ml * .95;
+-  let o = `<circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="${VZ.red}" fill-opacity=".07" stroke="#fff" stroke-width="3.6" stroke-opacity=".9"/><circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="1.5"/>`;
++  const l = Math.hypot(a[0], a[1]);
++  let o = fm6Ring(px, py, L);
+   if (l < 1e-9) o += `<circle cx="${q2(px)}" cy="${q2(py)}" r="3.4" fill="${VZ.red}"/>`;
+   else if (gr > .02) {
+     const len = L.ml * 1.3 * gr, dx = a[0] / l * len, dy = -a[1] / l * len;
+@@ -24944,6 +25020,46 @@
+   }
+   return `<g opacity="${q2(op)}">${o}</g>`;
+ }
++// what one check marks on a plot: the ring and red arrow at a test point, a band along a zero line, rings round the
++// arrows being compared, or a strip along a column or row. The plot's own arrows there are drawn bolder, so they can be compared.
++function fm6Mark(t, it, L, F, op, gr) {
++  if (op <= .005) return "";
++  const u = L.S / (2 * FM6_D), P = p => [F.cx + p[0] * u, F.cy - p[1] * u];
++  const own = p => { const [px, py] = P(p), v = fm6Vec(it)[fm6Ix(p)]; return fm6Arrow(px, py, v[0] * L.ml, -v[1] * L.ml, 1, 1.9); };
++  let o = "";
++  if (t.kind === "pt") { const [px, py] = P(t.p); return fm6Red(px, py, t.a, L, op, gr) + `<g opacity="${q2(op)}">${own(t.p)}</g>`; }
++  if (t.kind === "zero" && t.line) {
++    const E = FM6_D, ax = t.line[0], c = t.line[1], ends = ax === "x" ? [[c, -E], [c, E]] : ax === "y" ? [[-E, c], [E, c]] : [[-E, -E * c], [E, E * c]];
++    const [a, b] = ends.map(P), d = `M${q2(a[0])} ${q2(a[1])}L${q2(b[0])} ${q2(b[1])}`, pen = `pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${q2(1 - gr)}" fill="none" stroke-linecap="round"`;
++    o += `<path d="${d}" ${pen} stroke="${VZ.red}" stroke-width="${q2(L.ml * 1.1)}" stroke-opacity=".12"/><path d="${d}" ${pen} stroke="${VZ.red}" stroke-width="1.6"/>` + t.Z.map(own).join("");
++  } else if (t.kind === "zero") o += t.Z.map(p => { const [px, py] = P(p); return fm6Red(px, py, [0, 0], L, 1, 1) + own(p); }).join("");
++  else if (t.kind === "still") o += FM6_PTS.filter(p => fm6Rel(it, p) < .04).sort((a, b) => Math.hypot(a[0], a[1]) - Math.hypot(b[0], b[1])).slice(0, 5).map(p => fm6Ring(...P(p), L) + own(p)).join("");
++  else if (t.kind === "lenC" || t.kind === "lenG") o += t.pts.map(p => fm6Ring(...P(p), L) + own(p)).join("");
++  else if (t.kind === "strip") {
++    const w = u * .62, h = L.S * vzClamp(gr, .02, 1), X = t.ax === "x";
++    const r = X ? [F.cx + t.c * u - w / 2, F.cy - h / 2, w, h] : [F.cx - h / 2, F.cy - t.c * u - w / 2, h, w];
++    o += `<rect x="${q2(r[0])}" y="${q2(r[1])}" width="${q2(r[2])}" height="${q2(r[3])}" rx="${q2(w / 2)}" fill="${VZ.red}" fill-opacity=".07" stroke="${VZ.red}" stroke-width="1.5"/>`;
++    o += FM6_PTS.filter(p => (X ? p[0] : p[1]) === t.c).map(own).join("");
++  }
++  return `<g opacity="${q2(op)}">${o}</g>`;
++}
++// the index card: two bold plots and one test point. The plot that disagrees is crossed out; the one left gets its card.
++function fm6Thumb() {
++  const set = FM6_SETS[1], L = { S: 272, FX: [16, 312], FY: [128, 128], ml: 34, pf: 30, ph: 54 }, u = L.S / 5.2, a = [0, 1];
++  let o = "";
++  [[3, false], [0, true]].forEach(([k, ok], j) => {
++    const it = set.items[k], ox = L.FX[j], oy = L.FY[0], cx = ox + L.S / 2, cy = oy + L.S / 2;
++    let g = `<rect x="${ox}" y="${oy}" width="${L.S}" height="${L.S}" fill="#fff"/><path d="M${ox} ${cy}H${ox + L.S}M${cx} ${oy}V${oy + L.S}" stroke="${VZ.ink}" stroke-width="1.5" opacity=".2"/>`;
++    for (let i = -2; i <= 2; i++) for (let q = -2; q <= 2; q++) { if (i === 1 && q === 0) continue; const v = it.g(i, q), l = Math.hypot(v[0], v[1]) / Math.SQRT2 / 2; if (l > .01) g += fm6Arrow(cx + i * u, cy - q * u, v[0] / (Math.SQRT2 * 2) * 50, -v[1] / (Math.SQRT2 * 2) * 50, 1, 3.6); }
++    g += `<rect x="${ox}" y="${oy}" width="${L.S}" height="${L.S}" fill="none" stroke="${ok ? FM6_GREEN : VZ.ink}" stroke-width="${ok ? 5 : 2.5}"/>`;
++    o += ok ? g : `<g opacity=".4">${g}</g>`;
++    o += fm6Red(cx + u, cy, it.g(1, 0), { ml: 34 }, 1, 1);
++    o += fm6Arrow(cx + u, cy, it.g(1, 0)[0] / (Math.SQRT2 * 2) * 50, -it.g(1, 0)[1] / (Math.SQRT2 * 2) * 50, 1, 3.6);
++    if (!ok) o += `<path d="M${ox + 28} ${oy + 28}L${ox + L.S - 28} ${oy + L.S - 28}M${ox + L.S - 28} ${oy + 28}L${ox + 28} ${oy + L.S - 28}" stroke="${VZ.grey}" stroke-width="8" stroke-linecap="round" opacity=".85"/>`;
++    else o += fm6Pill({ FX: [0, ox], FY: [oy], S: L.S, pf: L.pf, ph: L.ph }, 1, it, 1).replace('stroke-width="1.6"', 'stroke-width="3"');
++  });
++  return o;
++}
+ // the four plots, with whatever the game shows on them (V: matched, hovered, crossed out, test arrows, a nudge)
+ function fm6Plots(set, L, V, phone) {
+   const u = L.S / (2 * FM6_D);
+@@ -24963,11 +25079,7 @@
+       if (V.hov === j && open) o += `<rect x="${ox - 1.5}" y="${oy - 1.5}" width="${L.S + 3}" height="${L.S + 3}" fill="${VZ.gold}" fill-opacity=".07" stroke="${VZ.gold}" stroke-width="3"/>`;
+       const reds = V.tests.filter(t => t.js.includes(j));
+       if (V.hint && V.hint.j === j && V.hint.p) reds.push(V.hint);
+-      reds.forEach(t => {
+-        const [px, py] = P(t.p), v = fm6Vec(it)[fm6Ix(t.p)];
+-        const op = t.op * (1 - .55 * cx);
+-        o += fm6Red(px, py, t.a, L, op, t.gr) + `<g opacity="${q2(op)}">${fm6Arrow(px, py, v[0] * L.ml, -v[1] * L.ml, 1, 1.9)}</g>`;
+-      });
++      reds.forEach(t => { o += fm6Mark(t, it, L, F, t.op * (1 - .55 * cx), t.gr); });
+       if (V.xx[j] > .005) {
+         const m = L.S * .12, d = `M${ox + m} ${oy + m}L${ox + L.S - m} ${oy + L.S - m}M${ox + L.S - m} ${oy + m}L${ox + m} ${oy + L.S - m}`;
+         o += `<path d="${d}" pathLength="2" stroke-dasharray="2 2" stroke-dashoffset="${q2(2 - 2 * V.pen[j])}" fill="none" stroke="${VZ.grey}" stroke-width="3" stroke-linecap="round" opacity="${q2(V.xx[j] * .85)}"/>`;
+@@ -25069,7 +25181,7 @@
+   const D = FM6, m = D.m[D.set]; if (m[k] >= 0) return;
+   m[k] = j; D.tm[D.set + ":" + j] = performance.now(); D.sel = null; D.hint = null; fm6Save();
+   const left = fm6Left();
+-  D.say = left ? (D.walk ? "The one left is the match." : `Right. ${left} to go.`) : "All four match. Well done.";
++  D.say = left ? `${FM6_SETS[D.set].items[k].th} is matched. ${left} to go.` : "All four match. Well done.";
+   D.sayC = "ok";
+   fm6Later();
+ }
+@@ -25085,28 +25197,31 @@
+     return;
+   }
+   const n = fm6Nudge(set, k, j);
+-  D.hint = { j, p: n.p, a: n.a, t0: performance.now(), op: 0, gr: 1 }; D.say = n.txt; D.sayC = "bad";
++  D.hint = { kind: "pt", j, p: n.p, a: n.a, t0: performance.now(), op: 0, gr: 1 }; D.say = n.txt; D.sayC = "bad";
+   if (el) fm6Home(el, k);
+ }
+ 
+ /* "Show me one": the reasoning for the next card, in beats. (∇f first,) a test point and its arrow in red on every
+    plot still in play, the plots that disagree crossed out (another point if needed), then the card flies to the one left. */
+ function fm6Walk() {
+-  const D = FM6, set = FM6_SETS[D.set], m = D.m[D.set], grad = set.kind === "grad", nm = grad ? "∇f" : "F";
++  const D = FM6, set = FM6_SETS[D.set], m = D.m[D.set], grad = set.kind === "grad";
+   if (m.every(j => j >= 0)) return;
+   const k = D.sel != null && m[D.sel] < 0 ? D.sel : m.indexOf(-1), it = set.items[k], j = set.perm.indexOf(k);
+   const R = [0, 1, 2, 3].filter(q => m[set.perm[q]] !== q), plan = (R.length > 1 && fm6Plan(set, k, R)) || [];
+   const beats = [], steps = []; let t = 0, out = [];
+-  if (grad) { beats.push({ t, cap: `${it.th}, so ∇f = ${it.tg}.` }); t += 2300; }
+-  plan.forEach((o, i) => {
+-    const a = it.g(o.p[0], o.p[1]), z = Math.hypot(a[0], a[1]) < 1e-9, x = o.x.filter(q => !out.includes(q));
+-    const v = `${nm} ${fm6Ex(a) ? "=" : "≈"} ${fm6Vc(a)}`;
+-    beats.push({ t, cap: `${i ? "Another test point" : "Test point"} ${fm6Pt(o.p)}: ${v}${z ? ", no arrow" : `, ${fm6Dir(a)}`}.` });
+-    const kinds = x.map(q => fm6Look(set.items[set.perm[q]], o.p).z ? "dot" : "arr");
+-    const why = z ? "with an arrow there" : kinds.every(c => c === "dot") ? "with no arrow there" : kinds.every(c => c === "arr") ? "pointing another way" : "that disagree";
+-    steps.push({ p: o.p, a, x, js: R.filter(q => !out.includes(q)), tb: t, tc: t + 2000 });
+-    beats.push({ t: t + 2000, cap: `Cross out ${x.length === 1 ? "the plot" : `the ${x.length} plots`} ${why}.` });
+-    out = out.concat(x); t += 3700;
++  if (grad && R.length > 1) {                                       // (a) take the gradient, one partial at a time
++    beats.push({ t, cap: `Take the gradient of ${it.th}: ∂f/∂x = ${it.tpx}.` }); t += 2000;
++    beats.push({ t, cap: `∂f/∂x = ${it.tpx} and ∂f/∂y = ${it.tpy}.` }); t += 1700;
++    beats.push({ t, cap: `So ∇f = ${it.tg}. Now test it.` }); t += 1700;
++  }
++  plan.forEach(o => {
++    const x = o.x.filter(q => !out.includes(q)), show = o.kind === "pt" ? 2100 : 2600;
++    let why = o.why;
++    if (o.kind === "pt" && Math.hypot(o.a[0], o.a[1]) > 1e-9) { const dots = x.map(q => !!fm6Look(set.items[set.perm[q]], o.p).z); why = dots.every(Boolean) ? "with no arrow there" : dots.some(Boolean) ? "that disagree" : why; }
++    beats.push({ t, cap: o.cap });
++    steps.push({ t: o, x, js: R.filter(q => !out.includes(q)), tb: t, tc: t + show });
++    beats.push({ t: t + show, cap: x.length ? `Cross out ${x.length === 1 ? "the plot" : `the ${x.length} plots`} ${why}.` : "All still agree: try another test." });
++    out = out.concat(x); t += show + (x.length ? 1700 : 1600);
+   });
+   beats.push({ t, cap: R.length === 1 ? "Only one plot is left, so that is the match." : "The one left is the match." });
+   D.sel = null; D.hint = null;
+@@ -25139,7 +25254,7 @@
+     const u = (w.stop != null ? w.stop : now) - w.T0, f = w.stop != null ? 1 - E(now, w.stop, 320) : 1;
+     w.steps.forEach((s, i) => {
+       const nx = i + 1 < w.steps.length ? w.steps[i + 1].tb : w.fb + 1200, op = E(u, s.tb, 450) * (1 - E(u, nx, 400)) * f;
+-      if (op > .005) V.tests.push({ p: s.p, a: s.a, op, gr: E(u, s.tb + 150, 550), js: s.js });
++      if (op > .005) V.tests.push(Object.assign({}, s.t, { op, gr: E(u, s.tb + 150, 650), js: s.js }));
+       const back = 1 - E(u, w.fb + 1300, 600);
+       s.x.forEach(q => { V.cx[q] = Math.max(V.cx[q], E(u, s.tc + 250, 600) * back * f); V.xx[q] = Math.max(V.xx[q], E(u, s.tc, 150) * back * f); V.pen[q] = Math.max(V.pen[q], E(u, s.tc, 650)); });
+     });
+@@ -25290,7 +25405,7 @@
+     fm6Place(D.sel, j, null); return true;
+   },
+   draw(s, t, thumb) {
+-    if (thumb) return fm6Plots(FM6_SETS[0], FM6_LAY.st, null, false);
++    if (thumb) return fm6Thumb();
+     const D = fm6Ensure(), set = FM6_SETS[D.set], V = fm6View(performance.now());
+     if (VzView.def === this && window.matchMedia && matchMedia("(max-width: 640px)").matches) {
+       const ph = document.getElementById("fm6Ph"); if (ph) ph.innerHTML = fm6Plots(set, FM6_LAY.ph, V, true);
