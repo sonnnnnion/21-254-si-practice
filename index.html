@@ -14551,7 +14551,7 @@ function f3Ce(m) {
 vzAdd({
   id: "complexeig", group: "Eigenvalues and eigenvectors", title: "Complex eigenvalues: a turn", card: "Complex eigenvalues",
   tagline: "No line stays put, so Aᵏv spirals.",
-  blurb: "A real matrix with eigenvalues \\(a\\pm bi\\) turns every vector, so no line is mapped to itself: there is no real eigenvector. Applying \\(A\\) again and again spirals: outward if \\(|\\lambda|>1\\), inward if \\(|\\lambda|<1\\), round a closed loop if \\(|\\lambda|=1\\). Each step turns by \\(\\arg\\lambda\\) (in the frame of the eigenvector's real and imaginary parts).",
+  blurb: "A real matrix with eigenvalues \\(a\\pm bi\\) turns every vector, so no line is mapped to itself: there is no real eigenvector. Applying \\(A\\) again and again spirals: outward if \\(|\\lambda|>1\\), inward if \\(|\\lambda|<1\\), round a closed loop if \\(|\\lambda|=1\\). Each step turns by the angle of \\(\\lambda\\) (in the frame of the eigenvector's real and imaginary parts).",
   tryIt: "Press Play: each step applies A once more.",
   state: { m: 0, k: 0, test: false, ang: 30 },
   thumb: { k: 6 },
@@ -14605,7 +14605,7 @@ vzAdd({
   readout(s) {
     const C = f3Ce(s.m), [[p, q], [r, w]] = C.A, deg = C.ph * 180 / Math.PI, Rr = Math.round(C.R * 1000) / 1000;
     const head = `<div class="vz-mat"><span class="vz-mat-name">A =</span><span class="vz-brk"><table><tr><td>${vzShort(p)}</td><td>${vzShort(q)}</td></tr><tr><td>${vzShort(r)}</td><td>${vzShort(w)}</td></tr></table></span></div>
-      <div class="vz-eq">λ = ${vzShort(C.a)} ± ${vzShort(Math.round(C.b * 1000) / 1000)}<i>i</i>, |λ| = ${vzShort(Rr)}, arg λ ≈ ${Math.round(deg)}°</div>`;
+      <div class="vz-eq">λ = ${vzShort(C.a)} ± ${vzShort(Math.round(C.b * 1000) / 1000)}<i>i</i>, |λ| = ${vzShort(Rr)}, angle ≈ ${Math.round(deg)}°</div>`;
     if (s.test) {
       const th = vzRad(s.ang), u = [Math.cos(th), Math.sin(th)], Au = C.Ax(u); let d = Math.atan2(Au[1], Au[0]) - th; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
       return head + `<div class="vz-status warn">Au is ${Math.round(Math.abs(d) * 180 / Math.PI)}° off u's line. It never lines up, so A has no real eigenvector.</div>`;
@@ -18430,7 +18430,7 @@ stAdd({
       why: "\\(A\\) has real entries, so conjugating \\(A\\mathbf v=\\lambda\\mathbf v\\) gives \\(A\\bar{\\mathbf v}=\\bar\\lambda\\bar{\\mathbf v}\\). Flip every \\(i\\) to \\(-i\\): no second row reduction.", sum: "\\(\\bar{\\mathbf v}=[2-i,\\ 1]\\) for \\(1-i\\)" },
     { t: "Check Av = λv", tex: ["A\\mathbf v=\\begin{bmatrix}3(2+i)-5\\\\(2+i)-1\\end{bmatrix}=\\begin{bmatrix}1+3i\\\\1+i\\end{bmatrix}", "(1+i)\\,\\mathbf v=\\begin{bmatrix}(1+i)(2+i)\\\\1+i\\end{bmatrix}=\\begin{bmatrix}1+3i\\\\1+i\\end{bmatrix}"],
       why: "\\((1+i)(2+i)=2+i+2i+i^2=1+3i\\). Both entries match.", sum: "\\(A\\mathbf v=(1+i)\\,\\mathbf v\\) ✓" },
-    { t: "What it means: turn and stretch", tex: ["|1+i|=\\sqrt2,\\qquad \\arg(1+i)=\\tfrac{\\pi}{4}", "(1\\pm i)^4=-4\\ \\Rightarrow\\ A^4=-4I"],
+    { t: "What it means: turn and stretch", tex: ["|1+i|=\\sqrt2,\\qquad \\text{angle of } 1+i=\\tfrac{\\pi}{4}", "(1\\pm i)^4=-4\\ \\Rightarrow\\ A^4=-4I"],
       why: "In coordinates built from \\(\\mathbf v\\), each step of \\(A\\) stretches by \\(\\sqrt2\\) and turns by \\(\\pi/4\\). Four steps make half a turn and a stretch by 4, so \\(A^4\\mathbf x=-4\\mathbf x\\).", sum: "\\(A^4=-4I\\)" },
   ],
 });
