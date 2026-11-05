@@ -1,0 +1,75 @@
+diff -ru base11/index.html h2/index.html
+--- base11/index.html	2026-11-04 22:27:05
++++ h2/index.html	2026-11-04 22:30:04
+@@ -26230,6 +26230,7 @@
+ 
+ const G1_PARAM = {
+   id: "m-param", title: "Parametrize a curve", card: "Parametrize a curve",
++  draw() { return h2CardParam(); },   // the index card (h2, wave 11)
+   tagline: "Pick t, then write x, y (and z) in terms of it.",
+   blurb: "To parametrize, pick a parameter \\(t\\) and write \\(x\\), \\(y\\), \\(z\\) as functions of \\(t\\) so the point traces \\(C\\) once, in the right direction. Each standard shape has its recipe: a segment, a circle, a cylinder meeting a plane, a graph.",
+   picLive: true, picDur: 3200,
+@@ -27129,6 +27130,7 @@
+   blurb: "Check \\(P_y=Q_x\\) (curl \\(\\mathbf 0\\) in 3-D) first. Then integrate one component, and use the others to find the part the integral can't see; or integrate every component and merge the terms, listing each once. Always finish by checking \\(\\nabla f=\\mathbf F\\).",
+   sits: G2_MG, picLive: true,
+   pic(k, b, u) { return g2MgPic(this, k, b, u); },
++  draw() { return h2CardMerge(); },   // the index card (h2, wave 11)
+   mount(given, rebuild) { g2Mount(this, given, rebuild); },
+ };
+ g2Load(G2_MG_DEF, 0);
+@@ -27918,6 +27920,7 @@
+   picLive: true, picDur: 3600,
+   mount(given, rebuild) { g3Chips(this, given, rebuild, G3T, G3T_SITS, "Kind of surface"); },
+   pic(k, b, u) { return g3tPic(this, k, b, u); },
++  draw() { return h2CardTanPlane(); },   // the index card (h2, wave 11)
+ });
+ 
+ /* ---------- m-chain (g3): partial derivatives and the chain rule; three situations ---------- */
+@@ -28960,6 +28963,47 @@
+   return o + `<circle cx="${q2(fl[0][0])}" cy="${q2(fl[0][1])}" r="11" fill="${VZ.ink}" stroke="#fff" stroke-width="3"/><circle cx="${q2(fl[n][0])}" cy="${q2(fl[n][1])}" r="11" fill="${VZ.ink}" stroke="#fff" stroke-width="3"/>`;
+ }
+ // m-work: a path C through a field F, its direction, the field pushing along it
++// m-param: the t-line below, a red dot on it, mapped up to the moving point on the curve (the part traced so far in red)
++function h2CardParam() {
++  const T = .8, cx = 300, cy = 182, R = 128, P = s => [cx + R * Math.cos(2 * Math.PI * s), cy - R * Math.sin(2 * Math.PI * s)], tx = s => 100 + 400 * s;
++  const arc = []; for (let i = 0; i <= 64; i++) arc.push(P(T * i / 64));
++  let o = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${VZ.ink}" stroke-width="6" opacity=".85"/>` + h2Path(arc, `stroke="${VZ.red}" stroke-width="10" stroke-linecap="round"`);
++  const a = P(.2), b = P(.3); o += vzArrow(a[0], a[1], b[0], b[1], "I", 9);   // the direction it runs
++  o += `<line x1="${tx(0)}" y1="404" x2="${tx(1)}" y2="404" stroke="${VZ.ink}" stroke-width="6" stroke-linecap="round"/><line x1="${tx(0)}" y1="404" x2="${tx(T)}" y2="404" stroke="${VZ.red}" stroke-width="10" stroke-linecap="round"/>`;
++  o += `<path d="M${tx(0)} 390v28M${tx(1)} 390v28" stroke="${VZ.ink}" stroke-width="5" stroke-linecap="round"/>` + h2Big(tx(1) + 24, 418, "t", VZ.ink, 46, "start");
++  const p = P(T), c1 = [tx(T) + 40, 340], end = [p[0] + 14, p[1] + 20], pre = [end[0] + 10, end[1] + 22];
++  o += `<path d="M${tx(T)} 386Q${c1[0]} ${c1[1]} ${q2(pre[0])} ${q2(pre[1])}" fill="none" stroke="${VZ.ink}" stroke-width="6" stroke-linecap="round"/>` + vzArrow(pre[0], pre[1], end[0], end[1], "I", 6);
++  return o + `<circle cx="${tx(T)}" cy="404" r="15" fill="${VZ.red}" stroke="#fff" stroke-width="4"/><circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="16" fill="${VZ.red}" stroke="#fff" stroke-width="4"/>`;
++}
++// m-tanplane: a dome, a point on it, the tangent-plane patch there and its two slope lines in red
++function h2CardTanPlane() {
++  const cam = vzCam(300, 346, 100, vzRad(-32), .38), f = (x, y) => 2.4 - .45 * (x * x + y * y), a = .75, b = -.65, z0 = f(a, b), fx = -.9 * a, fy = -.9 * b, pl = (x, y) => z0 + fx * (x - a) + fy * (y - b);
++  const S = p => cam(p[0], p[1], p[2]), Q = (r, t) => { const x = r * Math.cos(t), y = r * Math.sin(t); return S([x, y, f(x, y)]); };
++  const cells = [], NR = 5, NT = 20, RM = 2.1;   // a polar mesh, painted far to near so the dome reads as a solid
++  for (let i = 0; i < NR; i++) for (let k = 0; k < NT; k++) {
++    const r0 = RM * i / NR, r1 = RM * (i + 1) / NR, t0 = 2 * Math.PI * k / NT, t1 = 2 * Math.PI * (k + 1) / NT, c = [Q(r0, t0), Q(r1, t0), Q(r1, t1), Q(r0, t1)];
++    cells.push([c.reduce((m, p) => m + p[2], 0) / 4, c]);
++  }
++  cells.sort((p, q) => q[0] - p[0]);
++  let o = cells.map(([, c]) => `<path d="M${c.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="#F6E3E6" stroke="${VZ.grey}" stroke-width="2.2" stroke-opacity=".5" stroke-linejoin="round"/>`).join("");
++  const h = .72, cs = [[a - h, b - h], [a + h, b - h], [a + h, b + h], [a - h, b + h]].map(([x, y]) => S([x, y, pl(x, y)]));
++  o += `<path d="M${cs.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="${VZ.gold}" fill-opacity=".42" stroke="${G4_GOLD}" stroke-width="4.5" stroke-linejoin="round"/>`;
++  [[[a - .95, b], [a + .95, b]], [[a, b - .95], [a, b + .95]]].forEach(([p, q]) => { const A = S([p[0], p[1], pl(p[0], p[1])]), B = S([q[0], q[1], pl(q[0], q[1])]); o += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${VZ.red}" stroke-width="8" stroke-linecap="round"/>`; });
++  const P = S([a, b, z0]);
++  return o + `<circle cx="${q2(P[0])}" cy="${q2(P[1])}" r="15" fill="${VZ.deep}" stroke="#fff" stroke-width="4"/>`;
++}
++// m-merge: big level curves of f, with ∇f crossing them at right angles, and the check ∇f = F
++function h2CardMerge() {
++  const cx = 280, cy = 215, s = 58, lev = [.6, 1.8, 3.6], E = (c, t) => { const u = Math.sqrt(c / 1.5) * Math.cos(t), v = Math.sqrt(c / .5) * Math.sin(t); return [(u + v) / Math.SQRT2, (u - v) / Math.SQRT2]; };   // f = x² + xy + y²
++  const X = p => [cx + s * p[0], cy - s * p[1]];
++  let o = "";
++  lev.forEach(c => { const pts = []; for (let i = 0; i <= 96; i++) pts.push(X(E(c, i / 96 * 2 * Math.PI))); o += `<path d="M${pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L")}Z" fill="none" stroke="${VZ.gold}" stroke-width="6"/>`; });
++  [.3, 1.2, 2.1, 3.0, 3.9, 5.2].forEach((t, i) => {
++    const p = E(lev[1 + (i % 2)], t), g = [2 * p[0] + p[1], p[0] + 2 * p[1]], l = Math.hypot(...g), A = X(p);   // ∇f = [2x + y, x + 2y]
++    o += vzArrow(A[0], A[1], A[0] + g[0] / l * 62, A[1] - g[1] / l * 62, "R", 7) + `<circle cx="${q2(A[0])}" cy="${q2(A[1])}" r="6" fill="${VZ.red}"/>`;
++  });
++  return o + h2Big(578, 425, "∇f = F ✓", VZ.green, 44, "end");
++}
+ function h2CardWork() {
+   const Fv = (x, y) => [1 + .35 * y, .5 + .25 * x], C = t => [110 + 380 * t, 370 - 300 * t + 90 * Math.sin(Math.PI * t) * (1 - t)];
+   let o = "";
