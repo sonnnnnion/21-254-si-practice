@@ -26,3 +26,11 @@ Owner's latest ask: "make everything at its best level". Owner greenlights befor
 - g2: clear flags in m-work, m-dblint, m-greencheck, m-lineint, m-surfint (list above, desktop run) → zero flags.
 - g1: m-param level-curve x clip + ∇f label; m-tangent circle-chip tangent-line label off the circle.
 - Phone (390) run of all 16 was in progress; re-run it after the merge.
+
+## Final QA (2026-11-04, build a0b3301)
+- student.mjs, 16 new ids, every chip and step: 350 frames at 1440 and 350 at 390, 0 flags. The only hits are the intended m-chain "▢" slots.
+- Contact sheets checked by eye: nothing hidden, clipped or overlapping; legends present.
+- steps.mjs on all methods: clean (merr 0, raw 0, phone overflow 0).
+- methflicker on the new ids: all smooth.
+- monkey: 100 pages, 0 errors.
+- Status: done; waiting for the owner's greenlight before merging dev into main.
