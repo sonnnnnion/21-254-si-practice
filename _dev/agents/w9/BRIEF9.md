@@ -101,3 +101,72 @@ Use the same words in both pieces: "test point", "cross out", "the one left".
 - What you verified (tools and their flag counts, sympy, your visual check at 1440 and 390).
 - The contact-sheet paths.
 - Known limits.
+
+## h3: a new method `m-choosepar`, "Choose how to parametrize"
+The owner's words: "there should be a method on literally choosing how to parameterize a surface with the different
+cases too, like cylinder and plane intersection, a literal circle, or like a line between points yknow? you should
+teach better based on whats on the lectures."
+
+### What already exists, and what is new
+`m-param` already works through each curve recipe: segment, circle arc, cylinder ∩ plane, graph and level curve.
+`m-paramsurf` does the same for surfaces: plane, graph, cylinder, sphere and cone. Read both fully.
+
+What is missing is the **choosing**. Before any recipe, a student has to read the problem, spot the clue and pick the
+strategy. The lectures list the strategies; quote their substance, not their wording or examples.
+- **L18, the three strategies for curves:**
+  1. Everything is in terms of one variable: set that variable equal to t.
+  2. A circle or a similar shape: use cos and sin.
+  3. A line: r(t) = p + t v.
+- **L31, the three strategies for surfaces:**
+  1. z is a function of x and y: set x = u and y = v.
+  2. A circular shape: use a version of polar coordinates.
+  3. A plane: r(u, v) = p + u a + v b.
+
+Read `~/dev-21254/ref/lintxt/Lecture 18 Complete.txt` and `Lecture 31 Complete.txt`. Never copy their examples or
+numbers.
+
+### Teaching sentence
+"Find the clue in the problem, and it tells you which of the three recipes to use."
+
+### Steps (adapt them per situation)
+1. **Curve or surface?** Count the free directions: a curve gets one parameter t, a surface gets two, u and v.
+2. **Find the clue.** Highlight it in the problem statement itself:
+   - "x² + y² = 4" → round;
+   - "from P to Q" → straight;
+   - "y = …" or "z = …" → a graph;
+   - "where the cylinder meets the plane" → round for x and y, then solve the plane for z.
+3. **Pick the recipe.** The picture shows the three strategy cards, with the chosen one lit and the others faded.
+4. **Fill it in.**
+5. **The range** of t, or of u and v.
+6. **A quick check:** plug one point back in.
+
+### Situations (chips, grouped in two labelled rows if that reads well)
+- **Curves:**
+  - a segment between two points;
+  - a circle (not centred at the origin is fine);
+  - cylinder ∩ plane (this combines strategies 2 and 1);
+  - a graph y = g(x) or a curve given as a level set.
+- **Surfaces:**
+  - a graph z = g(x, y) over a region;
+  - a round surface: a cylinder, a paraboloid or a cone in polar form;
+  - a plane through a point containing two vectors, or through three points.
+
+Use our own examples, different from the numbers in m-param and m-paramsurf, and verify everything with sympy.
+
+### Picture
+- The three strategy cards ("curves" or "surfaces", depending on the situation), with the chosen card lit.
+- The shape drawn in 2-D or 3-D, built up as the recipe is filled in: the clue's shape appears first, then the
+  parametrization traces it.
+- The clue phrase highlighted in the problem box, if you can do that cleanly. Otherwise echo the clue in the picture.
+- A legend for any colour that carries meaning.
+
+Reuse the site's vz 3-D helpers (see how m-paramsurf and m-param draw). Match the polish of m-potential, m-critical
+and m-stokes.
+
+### Workspace
+- Your copy: `~/dev-21254/w9/h3/` on http://127.0.0.1:8393/.
+- The id is already registered in your copy. Your code replaces `/* @@AGENT-H3 PLACEHOLDER ... @@ */`, just before
+  the `m-param (a)` helper block. CSS goes below `/* @@CSS-H3 ... @@ */`; never edit the spacer line.
+- Helper names start with `H3_` or `h3`.
+- Patch: `cd ~/dev-21254/w9 && diff -ru base9 h3 > h3.patch`. The patch includes the registry lines, which is
+  expected.

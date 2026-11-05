@@ -1,0 +1,17 @@
+# Wave 9 handoff (2026-11-04)
+- The probe and zoo pictures are deleted (the owner said they don't help students).
+- fieldmatch is rebuilt as drag-and-drop matching (h1).
+  - A wrong drop shows a nudge worked out from a test point.
+  - "Show me one" animates the test-and-cross-out reasoning.
+  - Its storage key is pl254:fieldmatch2.
+- New method m-fieldmatch, "Match a field to its plot" (h2), with three chips: linear, one variable, gradient.
+- New method m-choosepar, "Choose how to parametrize" (h3), with seven chips (4 curves, 3 surfaces).
+  - It is built on the three strategies for curves in L18 and the three for surfaces in L31.
+- QA on the merged build:
+  - student.mjs: 0 flags at 1440 and 0 at 390.
+  - steps.mjs on all methods: clean, phone overflow 0.
+  - methflicker: smooth.
+  - h1's fm.mjs: 23/23 at desktop and on phone.
+  - monkey: 100 pages, 0 errors.
+- To rebuild: `cd ~/dev-21254/w9 && ./merge9.sh 1 2 3`, then copy merged/index.html to site/.
+- main is still 36ea9ad. It waits for the owner's greenlight.

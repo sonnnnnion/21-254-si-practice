@@ -1,0 +1,956 @@
+diff -ru base9/index.html h1/index.html
+--- base9/index.html	2026-11-04 19:29:57
++++ h1/index.html	2026-11-04 20:12:08
+@@ -4357,64 +4357,51 @@
+   .fm6-chips .vz-chip { min-width: 38px; justify-content: center; }
+   .fm6-chips .vz-chip.fm6-done:not(.on) { border-color: #2F7A4A; color: #245F3A; }
+   .fm6-what { margin: 0; font: 600 14px var(--font-sans); color: var(--ink); }
+-  .fm6-steps { display: flex; gap: 6px; flex-wrap: wrap; }
+-  .fm6-steps span { padding: 3px 10px; border: 1px solid var(--border); border-radius: 99px; font: 700 11.5px var(--font-sans); color: var(--ink-mute); }
+-  .fm6-steps span.on { border-color: var(--ink); color: var(--ink); background: #fff; }
+-  .fm6-steps span.ok { border-color: #2F7A4A; color: #245F3A; }
+-  .fm6-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 7px 9px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+-  .fm6-row.sel { border-color: var(--gold); background: #FBF4E4; }
+-  .fm6-row.ok { border-color: #2F7A4A; background: #EAF4EE; }
+-  .fm6-row.bad { border-color: var(--red); background: var(--red-tint); }
+-  .fm6-n, .fm6-L { flex: none; min-width: 22px; height: 22px; border-radius: 11px; background: var(--ink); color: #fff; font: 800 12px/22px var(--font-sans); text-align: center; padding: 0 4px; }
+-  .fm6-f { flex: 1 1 140px; font-family: var(--font-display); font-size: 15px; line-height: 1.35; }
+-  .fm6-pick { display: flex; align-items: center; gap: 8px; flex: 1 1 150px; min-width: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; color: inherit; }
+-  .fm6-g { font-size: 13px; color: var(--ink-soft); }
+-  .fm6-ab, .fm6-yn { display: flex; gap: 4px; }
+-  .fm6-ab button, .fm6-yn button { min-width: 30px; height: 30px; padding: 0 8px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font: 700 13px var(--font-sans); color: var(--ink-soft); cursor: pointer; }
+-  .fm6-ab button { min-width: 34px; }
+-  .fm6-ab button.taken { opacity: .45; }
+-  .fm6-ab button.on, .fm6-yn button.on { background: var(--ink); border-color: var(--ink); color: #fff; opacity: 1; }
+-  .fm6-yn button.on.ok { background: #2F7A4A; border-color: #2F7A4A; }
+-  .fm6-yn button.on.bad { background: var(--red); border-color: var(--red); }
+-  .fm6-ask, .fm6-look, .fm6-why, .fm6-tip, .fm6-eq, .fm6-sf { margin: 0; font-size: 13px; line-height: 1.45; color: var(--ink-soft); }
+-  .fm6-ask:empty { display: none; }
+-  .fm6-tip { font-weight: 600; color: var(--ink); }
+-  .fm6-look { color: var(--red-deep); }
+-  .fm6-note { color: var(--ink-soft); }
+-  .fm6-card { display: grid; gap: 6px; padding: 9px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+-  .fm6-ch { display: flex; gap: 8px; align-items: flex-start; }
+-  .fm6-q { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--ink-soft); }
++  /* fieldmatch: formula cards are pills that are dragged (or tapped, then a plot tapped) onto the plots */
++  .fm6-cards { display: flex; flex-wrap: wrap; gap: 8px; }
++  .fm6-card { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 6px 14px; border: 1.5px solid var(--border-strong); border-radius: 99px; background: #fff;
++    font: 15px/1.35 var(--font-display); color: var(--ink); white-space: nowrap; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
++    box-shadow: 0 1px 2px rgba(31, 41, 51, .08); transition: border-color .2s, background-color .2s, opacity .2s, box-shadow .2s; }
++  .fm6-card:hover { box-shadow: 0 2px 8px rgba(31, 41, 51, .14); }
++  .fm6-card:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 2px; }
++  .fm6-card.sel { border-color: var(--gold); background: #FBF4E4; }
++  .fm6-card.walk { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-tint); }
++  .fm6-card.lift { opacity: .3; box-shadow: none; }
++  .fm6-card.done { border-color: #2F7A4A; background: #EAF4EE; color: #245F3A; cursor: default; box-shadow: none; }
++  .fm6-ck { font: 800 12px var(--font-sans); color: #2F7A4A; }
++  .fm6-fly { position: fixed; z-index: 1000; pointer-events: none; transform-origin: 50% 50%; box-sizing: border-box; transition: none; }
++  .fm6-fly.held { box-shadow: 0 10px 24px rgba(31, 41, 51, .22); cursor: grabbing; }
++  .fm6-sayrow { display: flex; gap: 10px; align-items: flex-start; }
++  .fm6-say { flex: 1; margin: 0; min-height: 2.9em; font-size: 13.5px; line-height: 1.45; color: var(--ink-soft); }
++  .fm6-say.bad { color: var(--red-deep); }
++  .fm6-say.ok { color: #245F3A; font-weight: 600; }
++  .fm6-say.walk { color: var(--ink); font-weight: 600; }
++  .fm6-pick { flex: none; display: inline-grid; grid-template-columns: 24px 24px; gap: 3px; }
++  .fm6-pick[hidden] { display: none; }
++  .fm6-pick button { width: 24px; height: 24px; padding: 0; border: 1.5px solid var(--gold); border-radius: 4px; background: #fff; cursor: pointer; }
++  .fm6-pick button:hover, .fm6-pick button:focus-visible { background: #FBF4E4; outline: none; box-shadow: 0 0 0 2px var(--red-soft); }
++  .fm6-btns { align-items: center; gap: 8px 14px; margin: 0; }
++  .fm6-how { font: 600 13px var(--font-sans); color: var(--red-deep); text-decoration: none; }
++  .fm6-how:hover { text-decoration: underline; }
+   .fm6-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-mute); }
+   .fm6-link { border: 0; background: none; padding: 2px; font: 600 12px var(--font-sans); color: var(--ink-mute); text-decoration: underline; cursor: pointer; }
+   .fm6 button:disabled { opacity: .4; cursor: default; }
+-  .fm6-strat { display: grid; gap: 8px; padding-top: 2px; }
+-  .fm6-so { justify-self: start; border: 0; background: none; padding: 2px 0; font: 700 13px var(--font-sans); color: var(--red-deep); cursor: pointer; }
+-  .fm6-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+-  .fm6-tabs button { padding: 5px 11px; border: 1px solid var(--border); border-radius: 99px; background: #fff; font: 600 12.5px var(--font-sans); color: var(--ink-soft); cursor: pointer; }
+-  .fm6-tabs button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+-  .fm6-sf { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 14.5px; color: var(--ink); }
+-  .fm6-eq { font-family: var(--font-display); font-size: 15px; color: var(--ink); }
+-  .fm6-test { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+-  .fm6-mini { width: 190px; max-width: 100%; height: auto; flex: none; }
+-  .fm6-vals { margin: 0; padding: 0; list-style: none; font: 600 13px/1.7 var(--font-sans); color: var(--ink); }
+-  .fm6-surf { width: 100%; max-width: 340px; height: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; cursor: grab; touch-action: pan-y; }
+-  .fm6-surf:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 2px; }
+-  /* fieldmatch: the surface key; on phones the four plots sit in the panel (2 x 2, full width) and the stage is hidden */
+-  .f3-sk { display: flex; gap: 14px; flex-wrap: wrap; font: 600 12.5px var(--font-sans); color: var(--ink-soft); }
+-  .f3-sk span { display: inline-flex; align-items: center; gap: 5px; }
+-  .f3-sk i { display: inline-block; width: 14px; height: 10px; border-radius: 3px; }
+-  .f3-sk b { color: var(--ink); font-size: 14px; }
+-  .f3-lk { flex-direction: column; gap: 6px; }
+-  .f3-ph { display: none; }
++  /* on phones the four plots sit in the panel (2 x 2, full width, kept in view) and the stage is hidden */
++  .fm6-ph { display: none; }
++  .fm6-play { display: contents; }
+   @media (max-width: 640px) {
+-    .vz-stage-wrap.f3-wrap { display: none; }
+-    .f3-ph { display: block; margin: 0 -12px; padding: 4px 0 6px; background: var(--surface); }
+-    .f3-ph.f3-stick { position: sticky; top: var(--nav-h); z-index: 3; box-shadow: 0 6px 8px -8px rgba(0, 0, 0, .25); }
+-    .f3-ph svg { display: block; width: 100%; height: auto; }
+-    .f3-phkey { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 2px 12px 0; font-size: 12.5px; color: var(--ink-soft); }
+-    .fm6-ab button, .fm6-yn button { min-width: 40px; height: 36px; font-size: 14px; }
+-    .fm6-ask, .fm6-look, .fm6-why, .fm6-tip { font-size: 14px; }
+-    .fm6-f { font-size: 16px; }
++    .vz-stage-wrap.fm6-wrap { display: none; }
++    /* in normal flow, plots to Show me one in one screen: plots, key, the caption line, the cards, the buttons */
++    .fm6-play { display: flex; flex-direction: column; gap: 7px; }
++    .fm6-ph { display: block; order: 0; margin: 0 -12px; padding: 0 0 2px; }
++    .fm6-ph svg { display: block; width: 100%; height: auto; touch-action: manipulation; }
++    .fm6-cards { gap: 6px; }
++    .fm6-phkey { display: flex; flex-wrap: wrap; gap: 2px 12px; padding: 0 12px; font-size: 12px; color: var(--ink-soft); }
++    .fm6-phkey .vz-kh { display: inline-flex; align-items: center; gap: 5px; }
++    .fm6-phkey .vz-kh i { display: inline-block; width: 14px; height: 0; border-top: 3px solid var(--c); border-radius: 2px; }
++    .fm6-card { font-size: 16px; padding: 7px 14px; }
++    .fm6-say { font-size: 14px; min-height: 0; }
++    .fm6-sayrow { order: 1; } .fm6-cards { order: 2; } .fm6-btns { order: 3; }   /* the caption right under the plots, then the cards, then Show me one */
+   }
+   /* g1 css begin */
+   .g1-chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 2px 0 8px; }
+@@ -7011,7 +6998,7 @@
+ 
+ // a small card above a section's problems that links to a Visualize practice; add a section here to give it one
+ const SECTION_TOOLS = {
+-  8: { id: "fieldmatch", kicker: "Interactive practice", title: "Match the field", note: "Formulas to plots, then spin and spread." },
++  8: { id: "fieldmatch", kicker: "Interactive practice", title: "Match the field", note: "Drag each formula onto its plot." },
+ };
+ function renderSectionTool(pos) {
+   const box = $("#sectionTool"); if (!box) return;
+@@ -24778,62 +24765,59 @@
+ };
+ TFL.load(TFL_DEF);
+ stAdd(TFL);
+-/* ---------- fieldmatch: six sets of four fields to match to their plots, then classify ---------- */
+-const FM6_KEY = "pl254:fm6", FM6_GREEN = "#2F7A4A", FM6_RN = ["I", "II", "III", "IV"];
+-const FM6_S = 176, FM6_FX = [84, 352], FM6_FY = [22, 240], FM6_D = 2.4, FM6_MAXL = 16.5;
++/* ---------- fieldmatch: six sets of four fields; drag each formula onto its plot ----------
++   The move it teaches: you never sketch the whole field, you test it. Plug in an easy point, see which plots have
++   that arrow there, cross out the rest; the one left is the match (for f, find ∇f first). A wrong drop answers with
++   a real test point; "Show me one" animates the same reasoning for the next card. */
++const FM6_KEY = "pl254:fieldmatch2", FM6_GREEN = "#2F7A4A", FM6_D = 2.4;
+ const FM6_PTS = (() => { const a = []; for (let j = 0; j < 9; j++) for (let i = 0; i < 9; i++) a.push([-2 + i * .5, 2 - j * .5]); return a; })();
+-const FM6_Q = [[1, 1], [-1, 1], [-1, -1], [1, -1]];
+ const fm6V = s => s.replace(/[xy]/g, m => `<i>${m}</i>`);       // variables in italic (only used on formula text, which has no other x or y)
+-const fm6N = v => { const r = Math.round(v); return (Math.abs(v - r) < 1e-9 ? String(r) : Math.abs(v) < .005 ? "0" : v.toFixed(2)).replace("-", "−"); };
++const fm6N = v => { const r = Math.round(v); return (Math.abs(v - r) < 1e-9 ? String(r) : Math.abs(v) < .005 ? "0" : String(+v.toFixed(2))).replace("-", "−"); };
+ const fm6Vc = a => `[${fm6N(a[0])}, ${fm6N(a[1])}]`;
+-// hs: the strategy worth trying first (pts = test points, len = arrow lengths, surf = the surface); lk: kind of length behaviour (checked in tests)
++const fm6Ex = a => a.every(c => Math.abs(c * 100 - Math.round(c * 100)) < 1e-7);   // shown exactly with two decimals (else "≈")
+ const FM6_SETS = [
+   { kind: "grad", perm: [2, 0, 3, 1], items: [
+-    { t: "f = 2x + y", gT: "[2, 1]", f: (x, y) => 2 * x + y, g: () => [2, 1], lenT: "√5", lenS: "Constant: every arrow has the same length.", lk: "const", hs: "len", cT: "0", dT: "0", ir: 1, inc: 1 },
+-    { t: "f = x² − 2y²", gT: "[2x, −4y]", f: (x, y) => x * x - 2 * y * y, g: (x, y) => [2 * x, -4 * y], lenT: "2√(x² + 4y²)", lenS: "Zero at the centre, grows farther out, faster up and down.", lk: "out", hs: "pts", cT: "0", dT: "2 − 4 = −2", ir: 1, inc: 0 },
+-    { t: "f = e<sup>−(x²+y²)/2</sup>", gT: "−f · [x, y]", f: (x, y) => Math.exp(-(x * x + y * y) / 2), g: (x, y) => { const e = Math.exp(-(x * x + y * y) / 2); return [-x * e, -y * e]; }, lenT: "√(x² + y²) · e<sup>−(x²+y²)/2</sup>", lenS: "Zero at the centre, longest at distance 1, then shrinking.", lk: "peak", hs: "surf", cT: "0", dT: "(x² + y² − 2) f", ir: 1, inc: 0 },
+-    { t: "f = sin x", gT: "[cos x, 0]", f: x => Math.sin(x), g: x => [Math.cos(x), 0], lenT: "|cos x|", lenS: "Depends on x only; zero at x = ±π/2.", lk: "dir", hs: "len", cT: "0", dT: "−sin x", ir: 1, inc: 0 }] },
++    { t: "f = 2x + y", gT: "[2, 1]", f: (x, y) => 2 * x + y, g: () => [2, 1] },
++    { t: "f = x² − 2y²", gT: "[2x, −4y]", f: (x, y) => x * x - 2 * y * y, g: (x, y) => [2 * x, -4 * y] },
++    { t: "f = e<sup>−(x²+y²)/2</sup>", gT: "−f · [x, y]", f: (x, y) => Math.exp(-(x * x + y * y) / 2), g: (x, y) => { const e = Math.exp(-(x * x + y * y) / 2); return [-x * e, -y * e]; } },
++    { t: "f = sin x", gT: "[cos x, 0]", f: x => Math.sin(x), g: x => [Math.cos(x), 0] }] },
+   { kind: "field", perm: [1, 3, 0, 2], items: [
+-    { t: "F = [−y, x]", g: (x, y) => [-y, x], lenT: "√(x² + y²)", lenS: "Zero at the centre, grows farther out, the same in every direction.", lk: "out", hs: "pts", cT: "1 − (−1) = 2", dT: "0", ir: 0, inc: 1 },
+-    { t: "F = [x − y, x + y]", g: (x, y) => [x - y, x + y], lenT: "√2 · √(x² + y²)", lenS: "Zero at the centre, grows farther out, the same in every direction.", lk: "out", hs: "pts", cT: "1 − (−1) = 2", dT: "1 + 1 = 2", ir: 0, inc: 0 },
+-    { t: "F = [x, −y]", g: (x, y) => [x, -y], lenT: "√(x² + y²)", lenS: "Zero at the centre, grows farther out, the same in every direction.", lk: "out", hs: "pts", cT: "0", dT: "1 − 1 = 0", ir: 1, inc: 1 },
+-    { t: "F = [x, y]", g: (x, y) => [x, y], lenT: "√(x² + y²)", lenS: "Zero at the centre, grows farther out, the same in every direction.", lk: "out", hs: "pts", cT: "0", dT: "1 + 1 = 2", ir: 1, inc: 0 }] },
++    { t: "F = [−y, x]", g: (x, y) => [-y, x] },
++    { t: "F = [x − y, x + y]", g: (x, y) => [x - y, x + y] },
++    { t: "F = [x, −y]", g: (x, y) => [x, -y] },
++    { t: "F = [x, y]", g: (x, y) => [x, y] }] },
+   { kind: "grad", perm: [3, 0, 2, 1], items: [
+-    { t: "f = ½x² + y", gT: "[x, 1]", f: (x, y) => x * x / 2 + y, g: x => [x, 1], lenT: "√(x² + 1)", lenS: "Depends on x only: grows as |x| grows.", lk: "dir", hs: "pts", cT: "0", dT: "1", ir: 1, inc: 0 },
+-    { t: "f = ln(1 + x² + y²)", gT: "[2x, 2y] / (1 + x² + y²)", f: (x, y) => Math.log(1 + x * x + y * y), g: (x, y) => { const d = 1 + x * x + y * y; return [2 * x / d, 2 * y / d]; }, lenT: "2√(x² + y²) / (1 + x² + y²)", lenS: "Zero at the centre, longest at distance 1, then shrinking.", lk: "peak", hs: "len", cT: "0", dT: "4 / (1 + x² + y²)²", ir: 1, inc: 0 },
+-    { t: "f = ½(x + y)²", gT: "[x + y, x + y]", f: (x, y) => (x + y) * (x + y) / 2, g: (x, y) => [x + y, x + y], lenT: "√2 · |x + y|", lenS: "Zero on the line y = −x, grows moving away from it.", lk: "dir", hs: "len", cT: "0", dT: "1 + 1 = 2", ir: 1, inc: 0 },
+-    { t: "f = ½(y² − x²)", gT: "[−x, y]", f: (x, y) => (y * y - x * x) / 2, g: (x, y) => [-x, y], lenT: "√(x² + y²)", lenS: "Zero at the centre, grows farther out, the same in every direction.", lk: "out", hs: "pts", cT: "0", dT: "−1 + 1 = 0", ir: 1, inc: 1 }] },
++    { t: "f = ½x² + y", gT: "[x, 1]", f: (x, y) => x * x / 2 + y, g: x => [x, 1] },
++    { t: "f = ln(1 + x² + y²)", gT: "[2x, 2y] / (1 + x² + y²)", f: (x, y) => Math.log(1 + x * x + y * y), g: (x, y) => { const d = 1 + x * x + y * y; return [2 * x / d, 2 * y / d]; } },
++    { t: "f = ½(x + y)²", gT: "[x + y, x + y]", f: (x, y) => (x + y) * (x + y) / 2, g: (x, y) => [x + y, x + y] },
++    { t: "f = ½(y² − x²)", gT: "[−x, y]", f: (x, y) => (y * y - x * x) / 2, g: (x, y) => [-x, y] }] },
+   { kind: "field", perm: [2, 3, 1, 0], items: [
+-    { t: "F = [y, 0]", g: (x, y) => [y, 0], lenT: "|y|", lenS: "Depends on y only: zero on the x-axis, grows with |y|.", lk: "dir", hs: "len", cT: "0 − 1 = −1", dT: "0", ir: 0, inc: 1 },
+-    { t: "F = [−x, −y]", g: (x, y) => [-x, -y], lenT: "√(x² + y²)", lenS: "Zero at the centre, grows farther out, the same in every direction.", lk: "out", hs: "pts", cT: "0", dT: "−1 − 1 = −2", ir: 1, inc: 0 },
+-    { t: "F = [−x − y, x − y]", g: (x, y) => [-x - y, x - y], lenT: "√2 · √(x² + y²)", lenS: "Zero at the centre, grows farther out, the same in every direction.", lk: "out", hs: "pts", cT: "1 − (−1) = 2", dT: "−1 − 1 = −2", ir: 0, inc: 0 },
+-    { t: "F = [−2, 1]", g: () => [-2, 1], lenT: "√5", lenS: "Constant: every arrow has the same length.", lk: "const", hs: "len", cT: "0", dT: "0", ir: 1, inc: 1 }] },
++    { t: "F = [y, 0]", g: (x, y) => [y, 0] },
++    { t: "F = [−x, −y]", g: (x, y) => [-x, -y] },
++    { t: "F = [−x − y, x − y]", g: (x, y) => [-x - y, x - y] },
++    { t: "F = [−2, 1]", g: () => [-2, 1] }] },
+   { kind: "grad", perm: [1, 2, 3, 0], items: [
+-    { t: "f = ¼(x² + y²)²", gT: "(x² + y²) · [x, y]", f: (x, y) => Math.pow(x * x + y * y, 2) / 4, g: (x, y) => { const r = x * x + y * y; return [x * r, y * r]; }, lenT: "(x² + y²)<sup>3/2</sup>", lenS: "Tiny near the centre, grows very fast farther out.", lk: "out", hs: "len", cT: "0", dT: "4(x² + y²)", ir: 1, inc: 0 },
+-    { t: "f = x − y²", gT: "[1, −2y]", f: (x, y) => x - y * y, g: (x, y) => [1, -2 * y], lenT: "√(1 + 4y²)", lenS: "Depends on y only: grows as |y| grows.", lk: "dir", hs: "pts", cT: "0", dT: "−2", ir: 1, inc: 0 },
+-    { t: "f = sin x + sin y", gT: "[cos x, cos y]", f: (x, y) => Math.sin(x) + Math.sin(y), g: (x, y) => [Math.cos(x), Math.cos(y)], lenT: "√(cos²x + cos²y)", lenS: "A repeating pattern, between 0 and √2.", lk: "per", hs: "surf", cT: "0", dT: "−sin x − sin y", ir: 1, inc: 0 },
+-    { t: "f = ½x² + 2y²", gT: "[x, 4y]", f: (x, y) => x * x / 2 + 2 * y * y, g: (x, y) => [x, 4 * y], lenT: "√(x² + 16y²)", lenS: "Zero at the centre, grows farther out, much faster up and down.", lk: "out", hs: "pts", cT: "0", dT: "1 + 4 = 5", ir: 1, inc: 0 }] },
++    { t: "f = ¼(x² + y²)²", gT: "(x² + y²) · [x, y]", f: (x, y) => Math.pow(x * x + y * y, 2) / 4, g: (x, y) => { const r = x * x + y * y; return [x * r, y * r]; } },
++    { t: "f = x − y²", gT: "[1, −2y]", f: (x, y) => x - y * y, g: (x, y) => [1, -2 * y] },
++    { t: "f = sin x + sin y", gT: "[cos x, cos y]", f: (x, y) => Math.sin(x) + Math.sin(y), g: (x, y) => [Math.cos(x), Math.cos(y)] },
++    { t: "f = ½x² + 2y²", gT: "[x, 4y]", f: (x, y) => x * x / 2 + 2 * y * y, g: (x, y) => [x, 4 * y] }] },
+   { kind: "field", perm: [3, 0, 2, 1], items: [
+-    { t: "F = [−y, x] / (1 + x² + y²)", g: (x, y) => { const d = 1 + x * x + y * y; return [-y / d, x / d]; }, lenT: "√(x² + y²) / (1 + x² + y²)", lenS: "Zero at the centre, longest at distance 1, then shrinking.", lk: "peak", hs: "pts", cT: "2 / (1 + x² + y²)²", dT: "0", ir: 0, inc: 1 },
+-    { t: "F = [x, y] / (1 + x² + y²)", g: (x, y) => { const d = 1 + x * x + y * y; return [x / d, y / d]; }, lenT: "√(x² + y²) / (1 + x² + y²)", lenS: "Zero at the centre, longest at distance 1, then shrinking.", lk: "peak", hs: "pts", cT: "0", dT: "2 / (1 + x² + y²)²", ir: 1, inc: 0 },
+-    { t: "F = [x², 0]", g: x => [x * x, 0], lenT: "x²", lenS: "Depends on x only: zero on the y-axis, grows with |x|.", lk: "dir", hs: "len", cT: "0", dT: "2x", ir: 1, inc: 0 },
+-    { t: "F = [1, x]", g: (x, y) => [1, x], lenT: "√(1 + x²)", lenS: "Depends on x only: grows as |x| grows.", lk: "dir", hs: "len", cT: "1", dT: "0", ir: 0, inc: 1 }] },
++    { t: "F = [−y, x] / (1 + x² + y²)", g: (x, y) => { const d = 1 + x * x + y * y; return [-y / d, x / d]; } },
++    { t: "F = [x, y] / (1 + x² + y²)", g: (x, y) => { const d = 1 + x * x + y * y; return [x / d, y / d]; } },
++    { t: "F = [x², 0]", g: x => [x * x, 0] },
++    { t: "F = [1, x]", g: (x, y) => [1, x] }] },
+ ];
+-FM6_SETS.forEach(S => S.items.forEach(it => { it.th = fm6V(it.t); if (it.gT) it.tg = fm6V(it.gT); it.tc = fm6V(it.cT); it.td = fm6V(it.dT); it.tl = fm6V(it.lenT); }));
+-let FM6 = null;
+-const fm6Blank = () => ({ st: 0, asg: [-1, -1, -1, -1], ck: false, ms: null, cl: [-1, -1, -1, -1, -1, -1, -1, -1], cck: false, cs: null, fin: false });
+-function fm6Ensure() {
+-  if (FM6) return FM6;
+-  let d = null;
+-  try { d = JSON.parse(localStorage.getItem(FM6_KEY)); } catch (_) {}
+-  const okS = x => x && [0, 1, 2].includes(x.st) && Array.isArray(x.asg) && x.asg.length === 4 && x.asg.every(v => [-1, 0, 1, 2, 3].includes(v)) && Array.isArray(x.cl) && x.cl.length === 8 && x.cl.every(v => [-1, 0, 1].includes(v));
+-  if (!d || d.v !== 1 || !Array.isArray(d.sets) || d.sets.length !== FM6_SETS.length) d = { v: 1, set: 0, sets: FM6_SETS.map(fm6Blank) };
+-  d.sets = d.sets.map(x => okS(x) ? Object.assign(fm6Blank(), x) : fm6Blank());
+-  if (!(d.set >= 0 && d.set < FM6_SETS.length)) d.set = 0;
+-  d.sel = null; d.pk = null; d.so = false; d.tab = 0; d.az = .7;
+-  return (FM6 = d);
+-}
+-function fm6Save() { try { localStorage.setItem(FM6_KEY, JSON.stringify({ v: 1, set: FM6.set, sets: FM6.sets })); } catch (_) {} }
++FM6_SETS.forEach(S => S.items.forEach(it => { it.th = fm6V(it.t); if (it.gT) it.tg = fm6V(it.gT); }));
++// layouts of the four plots: on the stage (600 × 450), and on a phone in the panel (378 × 392); ph = height of a matched tag
++const FM6_LAY = { st: { W: 600, H: 450, S: 160, FX: [82, 362], FY: [34, 250], fs: 13, ml: 15, pf: 14, ph: 24 },
++  ph: { W: 378, H: 392, S: 146, FX: [28, 212], FY: [28, 222], fs: 12, ml: 13.6, pf: 12.5, ph: 21 } };
++const FM6_KEYS = [["line", VZ.ink, "longer arrow = stronger"], ["line", VZ.red, "test arrow"], ["line", VZ.grey, "crossed out"], ["line", FM6_GREEN, "matched"]];
++// easy test points first: the axes, the centre, then the diagonals and farther out
++const FM6_EASY = [[1, 0], [0, 1], [-1, 0], [0, -1], [0, 0], [1, 1], [-1, 1], [-1, -1], [1, -1], [2, 0], [0, 2], [-2, 0], [0, -2], [2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2], [2, -1], [2, 2], [-2, 2], [-2, -2], [2, -2]];
++const FM6_DIR = ["right", "right and a bit up", "up and right", "up and a bit right", "straight up", "up and a bit left", "up and left", "left and a bit up",
++  "left", "left and a bit down", "down and left", "down and a bit left", "straight down", "down and a bit right", "down and right", "right and a bit down"];
++const fm6Dir = a => FM6_DIR[((Math.round(Math.atan2(a[1], a[0]) / (Math.PI / 8)) % 16) + 16) % 16];
++const fm6Pt = p => `(${fm6N(p[0])}, ${fm6N(p[1])})`;
+ // arrow vectors of one field at the 81 grid points, divided by the longest (so 1 = the longest arrow on the plot)
+ function fm6Vec(it) {
+   if (!it._v) {
+@@ -24842,32 +24826,61 @@
+   }
+   return it._v;
+ }
+-const fm6Truth = (set, j) => { const it = set.items[set.perm[j]]; return [it.ir, it.inc]; };
+-const fm6Free = S => { const k = S.asg.indexOf(-1); return k < 0 ? null : k; };
+-function fm6Cell(x, y) {
+-  if (y < 4 || y > 440 || x < 20 || x > 585) return -1;
+-  return (y < 230 ? 0 : 2) + (x < 300 ? 0 : 1);
++const fm6Ix = p => Math.round((2 - p[1]) * 2) * 9 + Math.round((p[0] + 2) * 2);
++// what a plot shows at a grid point: no arrow (z), a clear arrow, or something too short to judge (u)
++function fm6Look(it, p) {
++  const v = fm6Vec(it)[fm6Ix(p)], r = Math.hypot(v[0], v[1]), raw = it.g(p[0], p[1]);
++  return Math.hypot(raw[0], raw[1]) < 1e-9 ? { z: 1, v } : r < .08 ? { z: 1, v, small: 1 } : r < .3 ? { u: 1, v } : { v };
+ }
+-function fm6Assign(S, k, j) {
+-  const had = S.asg[k] === j;
+-  S.asg = S.asg.map(v => v === j ? -1 : v);
+-  S.asg[k] = had ? -1 : j; S.ck = false; FM6.pk = k;
+-  FM6.sel = had ? k : fm6Free(S);
++// formula A tested at p against the plot of B: 1 = clearly disagrees, 0 = agrees, -1 = can't tell from the picture
++function fm6Cmp(A, B, p) {
++  const a = fm6Look(A, p), b = fm6Look(B, p);
++  if (a.u || b.u || a.small) return -1;
++  if (a.z && b.z) return 0;
++  if (!a.z !== !b.z) return b.small ? -1 : 1;
++  const c = (a.v[0] * b.v[0] + a.v[1] * b.v[1]) / Math.hypot(...a.v) / Math.hypot(...b.v);
++  return c < .866 ? 1 : c > .985 ? 0 : -1;                         // more than 30° apart: a different direction
+ }
+-function fm6Score(S) { return (S.ms || 0) + (S.cs || 0); }
++const fm6Nice = (A, p) => fm6Ex(A.g(p[0], p[1])) && A.g(p[0], p[1]).every(c => Math.abs(c - Math.round(c)) < 1e-9);
++// the cheapest few test points (easy points, whole-number answers) that cross out every wrong plot in R
++function fm6Plan(set, k, R) {
++  const A = set.items[k], right = set.perm.indexOf(k), wrong = R.filter(j => j !== right);
++  const P = FM6_EASY.map((p, d) => ({ p, x: wrong.filter(j => fm6Cmp(A, set.items[set.perm[j]], p) === 1), c: 1 + .35 * d + (fm6Nice(A, p) ? 0 : 1.2) }))
++    .filter(o => fm6Cmp(A, A, o.p) === 0 && o.x.length);
++  let best = null;
++  const go = (seq, cov, cost) => {
++    if (best && cost >= best.cost) return;
++    if (wrong.every(j => cov.has(j))) { best = { seq, cost }; return; }
++    if (seq.length === 3) return;
++    P.forEach(o => { if (o.x.some(j => !cov.has(j))) go(seq.concat(o), new Set([...cov, ...o.x]), cost + o.c); });
++  };
++  go([], new Set(), 0);
++  return best ? best.seq : null;
++}
++// why a wrong plot is wrong, in one line: the easiest test point that tells them apart
++function fm6Nudge(set, k, j) {
++  const A = set.items[k], B = set.items[set.perm[j]], nm = set.kind === "grad" ? "∇f" : "F";
++  const o = FM6_EASY.map((p, d) => ({ p, d, c: d + (fm6Nice(A, p) ? 0 : 3.5) })).filter(o => fm6Cmp(A, A, o.p) === 0 && fm6Cmp(A, B, o.p) === 1).sort((a, b) => a.c - b.c)[0];
++  if (!o) return { p: null, txt: `<b>Not this one.</b> Compare how the arrows grow.` };
++  const a = A.g(o.p[0], o.p[1]), lb = fm6Look(B, o.p), at = `at ${fm6Pt(o.p)} ${nm} ${fm6Ex(a) ? "=" : "≈"} ${fm6Vc(a)}`;
++  const txt = Math.hypot(a[0], a[1]) < 1e-9 ? `${at}, no arrow, but this plot has one there.`
++    : lb.z ? `${at} points ${fm6Dir(a)}, but this plot has almost no arrow there.`
++    : `${at} points ${fm6Dir(a)}, but here it points ${fm6Dir(lb.v)}.`;
++  return { p: o.p, a, txt: `<b>Not this one:</b> ${txt}` };
++}
+ // a thin arrow centred on (px, py): shaft plus a small filled head; a dot when the field is (nearly) zero there
+-function fm6Arrow(px, py, dx, dy, op, w) {
+-  const L = Math.hypot(dx, dy);
+-  if (L < 2.6) return `<circle cx="${q2(px)}" cy="${q2(py)}" r="1.3" fill="${VZ.ink}" opacity="${q2(op)}"/>`;
+-  const ux = dx / L, uy = dy / L, hl = Math.min(4.8, L * .5), hw = hl * .38, tx = px + dx / 2, ty = py + dy / 2, sx = px - dx / 2, sy = py - dy / 2, bx = tx - ux * hl, by = ty - uy * hl;
+-  return `<g opacity="${q2(op)}" fill="${VZ.ink}" stroke="${VZ.ink}" stroke-linecap="round" stroke-linejoin="round"><line x1="${q2(sx)}" y1="${q2(sy)}" x2="${q2(bx + ux * .6)}" y2="${q2(by + uy * .6)}" stroke-width="${w || 1.15}"/>` +
++function fm6Arrow(px, py, dx, dy, op, w, col) {
++  const L = Math.hypot(dx, dy), c = col || VZ.ink;
++  if (L < 2.6) return `<circle cx="${q2(px)}" cy="${q2(py)}" r="${w > 1.5 ? 1.9 : 1.3}" fill="${c}" opacity="${q2(op)}"/>`;
++  const ux = dx / L, uy = dy / L, hl = Math.min(w > 1.5 ? 6 : 4.8, L * .5), hw = hl * .4, tx = px + dx / 2, ty = py + dy / 2, sx = px - dx / 2, sy = py - dy / 2, bx = tx - ux * hl, by = ty - uy * hl;
++  return `<g opacity="${q2(op)}" fill="${c}" stroke="${c}" stroke-linecap="round" stroke-linejoin="round"><line x1="${q2(sx)}" y1="${q2(sy)}" x2="${q2(bx + ux * .6)}" y2="${q2(by + uy * .6)}" stroke-width="${w || 1.15}"/>` +
+     `<path d="M${q2(tx)} ${q2(ty)}L${q2(bx - uy * hw)} ${q2(by + ux * hw)}L${q2(bx + uy * hw)} ${q2(by - ux * hw)}Z" stroke-width=".5"/></g>`;
+ }
+-// the frame of an exam-style plot: white square, faint axes (back) and ticks, numbers, x and y (front)
+-function fm6Frame(ox, oy, S, fs, stroke, sw, dash) {
++// the frame of a plot: white square, faint axes (back) and ticks, numbers, x and y (front)
++function fm6Frame(ox, oy, S, fs) {
+   const u = S / (2 * FM6_D), cx = ox + S / 2, cy = oy + S / 2;
+   const back = `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" fill="#fff"/><path d="M${ox} ${q2(cy)}H${ox + S}M${q2(cx)} ${oy}V${oy + S}" stroke="${VZ.ink}" stroke-width="1" opacity=".2" fill="none"/>`;
+-  let fr = `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" fill="none" stroke="${stroke || VZ.ink}" stroke-width="${sw || 1.3}"${dash ? ' stroke-dasharray="2 3" stroke-opacity=".7"' : ""}/>`, tk = "";
++  let tk = `<rect x="${ox}" y="${oy}" width="${S}" height="${S}" fill="none" stroke="${VZ.ink}" stroke-width="1.3"/>`;
+   for (let v = -2; v <= 2; v++) {
+     const X = cx + v * u, Y = cy - v * u, t = fm6N(v);
+     tk += `<path d="M${ox - 4} ${q2(Y)}H${ox}M${q2(X)} ${oy + S}V${oy + S + 4}" stroke="${VZ.ink}" stroke-width="1"/>` +
+@@ -24875,295 +24888,402 @@
+       `<text x="${q2(X)}" y="${oy + S + fs + 4}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="${fs}" fill="#3C4650">${t}</text>`;
+   }
+   tk += `<text x="${ox + S + 12}" y="${oy + S + 5}" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="${fs + 2}" fill="${VZ.ink}">x</text><text x="${ox - 3}" y="${oy - 6}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="${fs + 2}" fill="${VZ.ink}">y</text>`;
+-  return { back, front: fr + tk, u, cx, cy };
++  return { back, front: tk, u, cx, cy };
+ }
+-// a small sketch of four test arrows, in the panel
+-function fm6Mini(it) {
+-  const S = 140, ox = 34, oy = 14, F = fm6Frame(ox, oy, S, 11), vs = FM6_Q.map(p => it.g(p[0], p[1])), mx = Math.max(1e-9, ...vs.map(a => Math.hypot(a[0], a[1])));
+-  let g = "";
+-  FM6_Q.forEach((p, i) => {
+-    const px = F.cx + p[0] * F.u, py = F.cy - p[1] * F.u, l = Math.hypot(vs[i][0], vs[i][1]) / mx * 46;
+-    g += `<circle cx="${q2(px)}" cy="${q2(py)}" r="7" fill="none" stroke="${VZ.red}" stroke-opacity=".5"/>` + (l < 1e-6 ? "" : fm6Arrow(px, py, vs[i][0] / mx * 46, -vs[i][1] / mx * 46, 1, 1.6));
+-  });
+-  return `<svg class="fm6-mini" viewBox="0 0 196 184" role="img" aria-label="Your sketch of the four test arrows">${F.back}${g}${F.front}</svg>`;
++// formula text (with <i> and <sup>) as runs, for SVG tspans and for measuring
++function fm6Runs(html) {
++  const out = [], re = /<(\/?)(i|sup)>/g; let it = false, sup = false, last = 0, m;
++  while ((m = re.exec(html))) { if (m.index > last) out.push({ t: html.slice(last, m.index), it, sup }); if (m[2] === "i") it = !m[1]; else sup = !m[1]; last = re.lastIndex; }
++  if (last < html.length) out.push({ t: html.slice(last), it, sup });
++  return out;
+ }
+-// the length of the field over the plot square, as colour (pale = short, red = the longest on this plot)
+-function f3LenMap(it) {
+-  const S = 140, ox = 34, oy = 14, F = fm6Frame(ox, oy, S, 11), n = 24, c = S / n, v = [];
+-  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const x = -FM6_D + (i + .5) * 2 * FM6_D / n, y = FM6_D - (j + .5) * 2 * FM6_D / n, g = it.g(x, y); v.push(Math.hypot(g[0], g[1])); }
+-  const mx = Math.max(1e-9, ...v), mix = t => [252 - 52 * t, 239 - 223 * t, 241 - 195 * t].map(Math.round).join(",");
+-  const cells = v.map((l, q) => `<rect x="${q2(ox + (q % n) * c)}" y="${q2(oy + Math.floor(q / n) * c)}" width="${q2(c + .3)}" height="${q2(c + .3)}" fill="rgb(${mix(l / mx)})"/>`).join("");
+-  return `<svg class="fm6-mini" viewBox="0 0 196 184" role="img" aria-label="Arrow length over the plot: pale is short, red is long">${F.back}${cells}<path d="M${ox} ${q2(F.cy)}H${ox + S}M${q2(F.cx)} ${oy}V${oy + S}" stroke="${VZ.ink}" stroke-width="1" opacity=".25"/>${F.front}</svg>`;
++const fm6Tsp = html => fm6Runs(html).map(r => `<tspan${r.it ? ' font-style="italic"' : ""}${r.sup ? ' baseline-shift="super" font-size="70%"' : ""}>${r.t}</tspan>`).join("");
++let fm6Cv = null; const FM6_TW = {};
++function fm6TextW(html, px) {
++  const key = px + "|" + html; if (FM6_TW[key]) return FM6_TW[key];
++  const runs = fm6Runs(html); let w = 0, ok = false;
++  try {
++    fm6Cv = fm6Cv || document.createElement("canvas").getContext("2d");
++    runs.forEach(r => { fm6Cv.font = `${r.it ? "italic " : ""}${r.sup ? px * .7 : px}px Fraunces, Georgia, serif`; w += fm6Cv.measureText(r.t).width; });
++    ok = !document.fonts || document.fonts.check(`${px}px Fraunces`);
++  } catch (_) { w = runs.reduce((a, r) => a + r.t.length * px * (r.sup ? .36 : .52), 0); }
++  if (ok) FM6_TW[key] = w;
++  return w;
+ }
+-// the surface z = f(x, y), seen from az, with the floor axes and ∇f drawn ON the surface (so the arrows visibly climb); painted far to near
+-function f3Surf(it, az) {
+-  const N = 16, el = .55, s = 33, cam = vzCam(160, 114, s, az, el), v = [];
+-  let lo = Infinity, hi = -Infinity;
+-  for (let j = 0; j <= N; j++) { v.push([]); for (let i = 0; i <= N; i++) { const z = it.f(-2 + 4 * i / N, -2 + 4 * j / N); v[j].push(z); lo = Math.min(lo, z); hi = Math.max(hi, z); } }
+-  const rg = Math.max(1e-6, hi - lo), Z = z => (z - (hi + lo) / 2) / rg * 2.4, z0 = -1.45, P = (i, j) => cam(-2 + 4 * i / N, -2 + 4 * j / N, Z(v[j][i]));
+-  const mix = t => [252 - 60 * t, 239 - 215 * t, 241 - 189 * t].map(Math.round).join(",");
+-  const L = [], pt = p => q2(p[0]) + " " + q2(p[1]);
+-  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+-    const a = P(i, j), b = P(i + 1, j), c = P(i + 1, j + 1), d = P(i, j + 1), t = ((v[j][i] + v[j][i + 1] + v[j + 1][i + 1] + v[j + 1][i]) / 4 - lo) / rg;
+-    L.push([(a[2] + b[2] + c[2] + d[2]) / 4, `<path d="M${[a, b, c, d].map(pt).join("L")}Z" fill="rgb(${mix(t)})" stroke="${VZ.ink}" stroke-opacity=".16" stroke-width=".6" stroke-linejoin="round"/>`]);
+-  }
+-  // ∇f at a 5 × 5 grid, each arrow laid along the surface: it starts on the surface and ends on it, uphill
+-  const G = [];
+-  for (let j = 0; j < 5; j++) for (let i = 0; i < 5; i++) { const x = -1.6 + .8 * i, y = -1.6 + .8 * j, g = it.g(x, y); G.push([x, y, g, Math.hypot(g[0], g[1])]); }
+-  const gm = Math.max(1e-9, ...G.map(a => a[3]));
+-  G.forEach(([x, y, g, l]) => {
+-    const r = l / gm, on = (X, Y) => cam(X, Y, Z(it.f(X, Y)) + .07);
+-    if (r < .14) { const p = on(x, y); L.push([p[2] - .3, `<circle cx="${q2(p[0])}" cy="${q2(p[1])}" r="1.8" fill="${VZ.ink}" stroke="#fff" stroke-width="1"/>`]); return; }
+-    let h = Math.min(.66 * r, ...[[x, g[0]], [y, g[1]]].map(([c, d]) => Math.abs(d) < 1e-9 ? 9 : ((d > 0 ? 2 : -2) - c) * l / d * .98));   // stays on the surface
+-    const dz = Math.abs(Z(it.f(x + g[0] / l * h, y + g[1] / l * h)) - Z(it.f(x, y))), L3 = Math.hypot(h, dz);
+-    if (L3 > .8) h *= .8 / L3;                                          // steep: shorter, so a climbing arrow never towers
+-    const ps = [0, .25, .5, .75, 1].map(f => on(x + g[0] / l * h * f, y + g[1] / l * h * f)), e = ps[4], q = ps[3];
+-    const dx = e[0] - q[0], dy = e[1] - q[1], dl = Math.hypot(dx, dy) || 1, ux = dx / dl, uy = dy / dl, hl = 5.2, hw = 2.4, bx = e[0] - ux * hl, by = e[1] - uy * hl;
+-    const line = `M${ps.slice(0, 4).map(pt).join("L")}L${q2(bx)} ${q2(by)}`, head = `M${pt(e)}L${q2(bx - uy * hw)} ${q2(by + ux * hw)}L${q2(bx + uy * hw)} ${q2(by - ux * hw)}Z`;
+-    L.push([ps[2][2] - .3, `<g stroke-linecap="round" stroke-linejoin="round"><path d="${line}" fill="none" stroke="#fff" stroke-width="3.6" stroke-opacity=".9"/><path d="${head}" fill="#fff" stroke="#fff" stroke-width="2.4" stroke-opacity=".9"/><path d="${line}" fill="none" stroke="${VZ.ink}" stroke-width="1.5"/><path d="${head}" fill="${VZ.ink}" stroke="${VZ.ink}" stroke-width=".6"/></g>`]);
+-  });
+-  L.sort((p, q) => q[0] - p[0]);
+-  // the floor: a square under everything, and the x and y axes along its two near edges (arrowheads = the + direction)
+-  const fl = (x, y) => cam(x, y, z0), sq = [[-2, -2], [2, -2], [2, 2], [-2, 2]].map(c => fl(c[0], c[1]));
+-  const ca = Math.cos(az), sa = Math.sin(az), yE = ca > 0 ? -2.25 : 2.25, xE = sa > 0 ? -2.25 : 2.25;
+-  const axis = (a, b, t, lp) => {
+-    const p = fl(a[0], a[1]), q = fl(b[0], b[1]), dx = q[0] - p[0], dy = q[1] - p[1], dl = Math.hypot(dx, dy) || 1, ux = dx / dl, uy = dy / dl, m = fl(lp[0], lp[1]);
+-    return `<line x1="${q2(p[0])}" y1="${q2(p[1])}" x2="${q2(q[0] - ux * 5)}" y2="${q2(q[1] - uy * 5)}" stroke="${VZ.ink}" stroke-width="1.3"/>` +
+-      `<path d="M${pt(q)}L${q2(q[0] - ux * 7 - uy * 3.2)} ${q2(q[1] - uy * 7 + ux * 3.2)}L${q2(q[0] - ux * 7 + uy * 3.2)} ${q2(q[1] - uy * 7 - ux * 3.2)}Z" fill="${VZ.ink}"/>` +
+-      `<text x="${q2(m[0])}" y="${q2(m[1] + 5)}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="15" fill="${VZ.ink}">${t}</text>`;
+-  };
+-  return `<path d="M${sq.map(pt).join("L")}Z" fill="${VZ.ink}" fill-opacity=".05" stroke="${VZ.ink}" stroke-opacity=".22"/>` + L.map(a => a[1]).join("") +
+-    axis([-1.2, yE], [1.2, yE], "x", [0, yE * 1.2]) + axis([xE, -1.2], [xE, 1.2], "y", [xE * 1.2, 0]);
++// a matched tag above plot j: a white pill with a green check and the formula (geometry shared with the flying card)
++function fm6PillGeo(L, j, it) {
++  const tw = fm6TextW(it.th, L.pf), h = L.ph, w = tw + h * 1.5, cx = L.FX[j % 2] + L.S / 2, cy = L.FY[j >> 1] - h / 2 - 5;
++  return { x0: cx - w / 2, cy, w, h, tx: cx - w / 2 + h * 1.05, tw };
+ }
+-// why a wrong match is wrong: the first test point (quadrants first, then whole numbers) where the formula and the chosen plot disagree
+-const F3_DIRS = ["right", "up-right", "up", "up-left", "left", "down-left", "down", "down-right"];
+-const f3Dir = a => F3_DIRS[((Math.round(Math.atan2(a[1], a[0]) / (Math.PI / 4)) % 8) + 8) % 8];
+-const F3_CAND = FM6_Q.concat([[0, 1], [-1, 0], [0, -1], [1, 0], [2, 1], [-1, 2], [-2, -1], [1, -2], [2, 2], [-2, 2], [-2, -2], [2, -2], [0, 2], [-2, 0], [0, -2], [2, 0], [1, 2], [-2, 1], [-1, -2], [2, -1], [0, 0]]);
+-function f3Why(set, k, j) {
+-  const A = set.items[k], B = set.items[set.perm[j]], nm = set.kind === "grad" ? "∇f" : "F";
+-  const mx = it => Math.max(1e-9, ...FM6_PTS.map(p => Math.hypot(...it.g(p[0], p[1])))), ma = mx(A), mb = mx(B);
+-  for (const p of F3_CAND) {
+-    // the plot draws a dot where its arrow is under 16% of its longest; the formula's own vector is what a student computes
+-    const a = A.g(p[0], p[1]), b = B.g(p[0], p[1]), la = Math.hypot(a[0], a[1]), lb = Math.hypot(b[0], b[1]), z0 = la < 1e-9, zb = lb / mb < .16;
+-    const at = `At (${fm6N(p[0])}, ${fm6N(p[1])}), ${nm} = ${fm6Vc(a)}`, pl = `plot ${FM6_RN[j]}`;
+-    if (z0 && !zb) return { p, txt: `${at}, but ${pl} has an arrow there.` };
+-    if (!z0 && zb && la / ma >= .16) return { p, txt: `${at} points ${f3Dir(a)}, but ${pl} has almost no arrow.` };
+-    if (!z0 && !zb && (a[0] * b[0] + a[1] * b[1]) / (la * lb) < .866) return { p, txt: `${at} points ${f3Dir(a)}, but ${pl} points ${f3Dir(b)}.` };   // more than 30° apart
++function fm6Pill(L, j, it, op) {
++  const g = fm6PillGeo(L, j, it), r = g.h * .3, ccx = g.x0 + g.h * .55;
++  return `<g opacity="${q2(op)}"><rect x="${q2(g.x0)}" y="${q2(g.cy - g.h / 2)}" width="${q2(g.w)}" height="${g.h}" rx="${g.h / 2}" fill="#fff" stroke="${FM6_GREEN}" stroke-width="1.6"/>` +
++    `<circle cx="${q2(ccx)}" cy="${q2(g.cy)}" r="${q2(r)}" fill="${FM6_GREEN}"/><path d="M${q2(ccx - r * .5)} ${q2(g.cy)}l${q2(r * .35)} ${q2(r * .38)}l${q2(r * .62)} ${q2(-r * .75)}" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>` +
++    `<text x="${q2(g.tx)}" y="${q2(g.cy + L.pf * .36)}" font-family="'Fraunces', Georgia, serif" font-size="${L.pf}" fill="${VZ.ink}">${fm6Tsp(it.th)}</text></g>`;
++}
++// the red test arrow at a test point (fixed length: its direction is what to compare), inside a red ring
++function fm6Red(px, py, a, L, op, gr) {
++  const l = Math.hypot(a[0], a[1]), R = L.ml * .95;
++  let o = `<circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="${VZ.red}" fill-opacity=".07" stroke="#fff" stroke-width="3.6" stroke-opacity=".9"/><circle cx="${q2(px)}" cy="${q2(py)}" r="${q2(R)}" fill="none" stroke="${VZ.red}" stroke-width="1.5"/>`;
++  if (l < 1e-9) o += `<circle cx="${q2(px)}" cy="${q2(py)}" r="3.4" fill="${VZ.red}"/>`;
++  else if (gr > .02) {
++    const len = L.ml * 1.3 * gr, dx = a[0] / l * len, dy = -a[1] / l * len;
++    o += fm6Arrow(px, py, dx, dy, .9, 4.6, "#fff") + fm6Arrow(px, py, dx, dy, 1, 2.3, VZ.red);
+   }
+-  return { p: null, txt: `Plot ${FM6_RN[j]} points the same ways. Compare lengths: |${nm}| = ${A.tl}.` };
++  return `<g opacity="${q2(op)}">${o}</g>`;
+ }
+-// layouts of the four plots: on the stage (600 × 450), and on a phone in the panel (378 × 384)
+-const F3_LAY = { st: { S: 176, FX: [84, 352], FY: [22, 240], fs: 13, tf: 16, ml: 16.5, rr: 8.5, br: 9 }, ph: { S: 146, FX: [28, 212], FY: [24, 216], fs: 12, tf: 14, ml: 13.6, rr: 7.5, br: 8 } };
+-function f3Plots(set, S, D, sh, L, k, phone) {
+-  const chk = !!(S && S.st === 1 && S.ck), SZ = L.S, u = SZ / (2 * FM6_D), rings = !!(S && S.st === 1 && D.so && D.tab === 0 && k != null);
++// the four plots, with whatever the game shows on them (V: matched, hovered, crossed out, test arrows, a nudge)
++function fm6Plots(set, L, V, phone) {
++  const u = L.S / (2 * FM6_D);
+   let o = "";
+   for (let j = 0; j < 4; j++) {
+-    const ox = L.FX[j % 2], oy = L.FY[j >> 1], it = set.items[set.perm[j]], own = S ? S.asg.indexOf(j) : -1, badge = !!(S && S.st === 1 && own >= 0);
+-    let stroke = VZ.ink, sw = 1.3, dash = false;
+-    if (S && S.st === 1) {
+-      if (chk && own >= 0) { stroke = set.perm[j] === own ? FM6_GREEN : VZ.red; sw = 2.4; }
+-      else if (D.sel != null) dash = true;
+-    }
+-    const F = fm6Frame(ox, oy, SZ, L.fs, stroke, sw, dash);
+-    o += (phone && S && S.st === 1 ? `<g data-fm="pl:${j}" style="cursor:pointer">` : "<g>") + F.back;
+-    if (sh > .005) {
+-      const v = fm6Vec(it);
+-      FM6_PTS.forEach((p, i) => {
+-        if (badge && p[0] === 2 && p[1] === 2) return;                 // the number badge takes the top-right arrow's place
+-        const gr = vzEase(vzClamp((sh * 1.4 - Math.hypot(p[0], p[1]) / 2.83) / .4, 0, 1)); if (gr <= 0) return;
+-        o += fm6Arrow(F.cx + p[0] * u, F.cy - p[1] * u, v[i][0] * L.ml * gr, -v[i][1] * L.ml * gr, gr);
++    const ox = L.FX[j % 2], oy = L.FY[j >> 1], it = set.items[set.perm[j]], F = fm6Frame(ox, oy, L.S, L.fs), mt = V ? V.mt[j] : 0, cx = V ? V.cx[j] : 0;
++    const P = p => [F.cx + p[0] * u, F.cy - p[1] * u];
++    let g = F.back;
++    fm6Vec(it).forEach((v, i) => { const [px, py] = P(FM6_PTS[i]); g += fm6Arrow(px, py, v[0] * L.ml, -v[1] * L.ml, 1); });
++    g += F.front;
++    o += phone ? `<g data-fm="pl:${j}" style="cursor:pointer">` : "<g>";
++    o += cx > .002 ? `<g opacity="${q2(1 - .7 * cx)}">${g}</g>` : g;
++    if (V) {
++      const open = mt < .5;
++      if (V.slots && open) o += `<rect x="${ox + L.S / 2 - 48}" y="${oy - L.ph - 5}" width="96" height="${L.ph}" rx="${L.ph / 2}" fill="#FBF4E4" fill-opacity=".6" stroke="${VZ.gold}" stroke-width="1.3" stroke-dasharray="4 3"/>`;
++      if (V.sel && open) o += `<rect x="${ox}" y="${oy}" width="${L.S}" height="${L.S}" fill="none" stroke="${VZ.gold}" stroke-width="1.6" stroke-dasharray="5 4"/>`;
++      if (V.hov === j && open) o += `<rect x="${ox - 1.5}" y="${oy - 1.5}" width="${L.S + 3}" height="${L.S + 3}" fill="${VZ.gold}" fill-opacity=".07" stroke="${VZ.gold}" stroke-width="3"/>`;
++      const reds = V.tests.filter(t => t.js.includes(j));
++      if (V.hint && V.hint.j === j && V.hint.p) reds.push(V.hint);
++      reds.forEach(t => {
++        const [px, py] = P(t.p), v = fm6Vec(it)[fm6Ix(t.p)];
++        const op = t.op * (1 - .55 * cx);
++        o += fm6Red(px, py, t.a, L, op, t.gr) + `<g opacity="${q2(op)}">${fm6Arrow(px, py, v[0] * L.ml, -v[1] * L.ml, 1, 1.9)}</g>`;
+       });
++      if (V.xx[j] > .005) {
++        const m = L.S * .12, d = `M${ox + m} ${oy + m}L${ox + L.S - m} ${oy + L.S - m}M${ox + L.S - m} ${oy + m}L${ox + m} ${oy + L.S - m}`;
++        o += `<path d="${d}" pathLength="2" stroke-dasharray="2 2" stroke-dashoffset="${q2(2 - 2 * V.pen[j])}" fill="none" stroke="${VZ.grey}" stroke-width="3" stroke-linecap="round" opacity="${q2(V.xx[j] * .85)}"/>`;
++      }
++      if (mt > .002) o += `<rect x="${ox}" y="${oy}" width="${L.S}" height="${L.S}" fill="none" stroke="${FM6_GREEN}" stroke-width="2.6" opacity="${q2(mt)}"/>` + fm6Pill(L, j, it, mt);
+     }
+-    if (sh < .995) o += `<text x="${F.cx}" y="${F.cy + 5}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="${L.fs + 1}" fill="${VZ.grey}" opacity="${q2(1 - sh)}">plot hidden</text>`;
+-    if (rings) FM6_Q.forEach(p => { o += `<circle cx="${q2(F.cx + p[0] * u)}" cy="${q2(F.cy - p[1] * u)}" r="${L.rr}" fill="none" stroke="${VZ.red}" stroke-opacity=".55" stroke-width="1.3"/>`; });
+-    if (chk && own >= 0 && set.perm[j] !== own) {                     // where the wrong match shows: the point the feedback names
+-      const w = f3Why(set, own, j);
+-      if (w.p) o += `<circle cx="${q2(F.cx + w.p[0] * u)}" cy="${q2(F.cy - w.p[1] * u)}" r="${L.rr + 1.5}" fill="none" stroke="#fff" stroke-width="4.4" stroke-opacity=".85"/><circle cx="${q2(F.cx + w.p[0] * u)}" cy="${q2(F.cy - w.p[1] * u)}" r="${L.rr + 1.5}" fill="none" stroke="${VZ.red}" stroke-width="2.2"/>`;
+-    }
+-    if (badge) {
+-      const c = chk ? (set.perm[j] === own ? FM6_GREEN : VZ.red) : VZ.red, bx = F.cx + 2 * u, by = F.cy - 2 * u;
+-      o += `<circle cx="${q2(bx)}" cy="${q2(by)}" r="${L.br}" fill="${c}"/><text x="${q2(bx)}" y="${q2(by + L.br * .5)}" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="${L.br + 4}" font-weight="800" fill="#fff">${own + 1}</text>`;
+-    }
+-    o += F.front + `<text x="${F.cx}" y="${oy - 7}" text-anchor="middle" font-family="'Fraunces', Georgia, serif" font-size="${L.tf}" font-weight="600" fill="${VZ.ink}">(${FM6_RN[j]})</text></g>`;
++    o += "</g>";
+   }
+-  const key = [["line", VZ.ink, "longer arrow = stronger"]];
+-  if (chk) key.push(["line", FM6_GREEN, "right"], ["line", VZ.red, "not yet"]);
+-  else if (rings) key.push(["dot", VZ.red, "test points"]);
+-  return { o, key };
++  return o;
+ }
+ 
++/* the game's state: the set shown and, for each set, which plot each formula sits on (only right matches are kept).
++   Saved under a new key; anything stale or garbled is dropped entry by entry, so it can never break the page. */
++let FM6 = null;
++function fm6Ensure() {
++  if (FM6) return FM6;
++  let d = null;
++  try { d = JSON.parse(localStorage.getItem(FM6_KEY)); } catch (_) {}
++  const ok = !!d && typeof d === "object" && d.v === 1 && Array.isArray(d.m);
++  const m = FM6_SETS.map((set, si) => {
++    const a = ok && Array.isArray(d.m[si]) && d.m[si].length === 4 ? d.m[si] : [];
++    return [0, 1, 2, 3].map(k => { const j = a[k]; return Number.isInteger(j) && j >= 0 && j < 4 && set.perm[j] === k ? j : -1; });
++  });
++  const set = ok && Number.isInteger(d.set) && d.set >= 0 && d.set < FM6_SETS.length ? d.set : 0;
++  return (FM6 = { set, m, sel: null, hov: -1, slots: false, hint: null, say: "", sayC: "", walk: null, fx: null, pd: null, tm: {}, noClick: 0 });
++}
++function fm6Save() { try { localStorage.setItem(FM6_KEY, JSON.stringify({ v: 1, set: FM6.set, m: FM6.m })); } catch (_) {} }
++const fm6Done = si => FM6.m[si].every(j => j >= 0);
++const fm6Left = () => FM6.m[FM6.set].filter(j => j < 0).length;
++let fm6Q = 0;                                                         // a panel refresh asked for from inside a drawing
++function fm6Later() { if (fm6Q) return; fm6Q = setTimeout(() => { fm6Q = 0; if (VzView.def && VzView.def.id === "fieldmatch" && document.getElementById("fm6Body")) vzChanged(); }, 0); }
++
++// which picture holds the plots right now (the stage, or the phone's copy in the panel), and where things are on screen
++function fm6Svg() {
++  const ph = document.getElementById("fm6Ph");
++  if (ph && ph.getBoundingClientRect().width > 0) return { el: ph, L: FM6_LAY.ph };
++  const st = document.getElementById("vzStage");
++  return st && st.getBoundingClientRect().width > 0 ? { el: st, L: FM6_LAY.st } : null;
++}
++function fm6HitL(L, x, y) {
++  for (let j = 0; j < 4; j++) { const ox = L.FX[j % 2], oy = L.FY[j >> 1]; if (x > ox - 14 && x < ox + L.S + 14 && y > oy - L.ph - 10 && y < oy + L.S + 12) return j; }
++  return -1;
++}
++function fm6Hit(X, Y) {
++  const s = fm6Svg(); if (!s) return -1;
++  const r = s.el.getBoundingClientRect();
++  return fm6HitL(s.L, (X - r.left) * s.L.W / r.width, (Y - r.top) * s.L.H / r.height);
++}
++function fm6PillScreen(k, j) {
++  const s = fm6Svg(); if (!s) return null;
++  const r = s.el.getBoundingClientRect(), sc = r.width / s.L.W, g = fm6PillGeo(s.L, j, FM6_SETS[FM6.set].items[k]);
++  return { x: r.left + (g.tx + g.tw / 2) * sc, y: r.top + g.cy * sc, tw: g.tw * sc };
++}
++const fm6CardEl = k => document.querySelector(`#fm6Body .fm6-card[data-fm="card:${k}"]`);
++// a copy of a card that floats above the page (dragging, gliding home, flying to its plot)
++function fm6Clone(card) {
++  const r = card.getBoundingClientRect(), el = card.cloneNode(true);
++  el.removeAttribute("data-fm"); el.removeAttribute("id"); el.setAttribute("aria-hidden", "true");
++  el.className = "fm6-card fm6-fly";
++  Object.assign(el.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px" });
++  document.body.appendChild(el);
++  const t = card.querySelector(".fm6-cf"), tr = t ? t.getBoundingClientRect() : r;
++  el._b = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, tw: tr.width || r.width, ox: tr.left + tr.width / 2 - (r.left + r.width / 2), oy: tr.top + tr.height / 2 - (r.top + r.height / 2) };
++  el._t = [0, 0, 1];
++  card.classList.add("lift");
++  return el;
++}
++const fm6Tf = t => `translate(${q2(t[0])}px, ${q2(t[1])}px) scale(${Math.round(t[2] * 1000) / 1000})`;
++function fm6Move(el, t, dur, ease, done) {
++  const from = fm6Tf(el._t); el._t = t;
++  const a = el.animate([{ transform: from }, { transform: fm6Tf(t) }], { duration: dur, easing: ease || "cubic-bezier(.45,0,.25,1)", fill: "forwards" });
++  a.onfinish = done || null;
++  return a;
++}
++// end whatever card is floating: with home = true it is simply removed (its card shows again)
++function fm6DropFx() {
++  const D = FM6; if (!D || !D.fx) return;
++  const { el, k } = D.fx; D.fx = null;
++  try { el.getAnimations().forEach(a => { a.onfinish = null; a.cancel(); }); } catch (_) {}
++  el.remove();
++  const c = fm6CardEl(k); if (c) c.classList.remove("lift");
++}
++function fm6Home(el, k) {                                         // glide back to the card, then show the card again
++  const D = FM6;
++  fm6Move(el, [0, 0, 1], 340, "cubic-bezier(.3,0,.2,1)", () => { if (D.fx && D.fx.el === el) fm6DropFx(); });
++}
++function fm6Land(el, k, j, dur, done) {                          // fly onto plot j's tag, then the tag takes over
++  const T = fm6PillScreen(k, j), b = el._b, D = FM6;
++  if (!T) { done(); fm6DropFx(); return; }
++  const s = vzClamp(T.tw / b.tw, .5, 3);
++  fm6Move(el, [T.x - b.cx - s * b.ox, T.y - b.cy - s * b.oy, s], dur, null, () => {
++    if (!D.fx || D.fx.el !== el) return;
++    done();
++    D.fx = null; el.classList.add("out");
++    el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, fill: "forwards" }).onfinish = () => el.remove();
++  });
++}
++function fm6Commit(k, j) {
++  const D = FM6, m = D.m[D.set]; if (m[k] >= 0) return;
++  m[k] = j; D.tm[D.set + ":" + j] = performance.now(); D.sel = null; D.hint = null; fm6Save();
++  const left = fm6Left();
++  D.say = left ? (D.walk ? "The one left is the match." : `Right. ${left} to go.`) : "All four match. Well done.";
++  D.sayC = "ok";
++  fm6Later();
++}
++// a card put on plot j (dropped, or tapped then tapped): right ones land, wrong ones go home with a real test
++function fm6Place(k, j, el) {
++  const D = FM6, set = FM6_SETS[D.set], m = D.m[D.set];
++  if (m[k] >= 0) { if (el) fm6Home(el, k); return; }
++  if (j < 0) { if (el) fm6Home(el, k); return; }
++  if (m[set.perm[j]] === j) { D.say = "That plot already has its formula."; D.sayC = "bad"; D.hint = null; if (el) fm6Home(el, k); return; }
++  if (set.perm[j] === k) {
++    if (!el) { const c = fm6CardEl(k); if (c && c.getBoundingClientRect().width) { el = fm6Clone(c); D.fx = { el, k }; } }
++    if (el) fm6Land(el, k, j, el._t[2] === 1 && !el._t[0] ? 520 : 240, () => fm6Commit(k, j)); else fm6Commit(k, j);
++    return;
++  }
++  const n = fm6Nudge(set, k, j);
++  D.hint = { j, p: n.p, a: n.a, t0: performance.now(), op: 0, gr: 1 }; D.say = n.txt; D.sayC = "bad";
++  if (el) fm6Home(el, k);
++}
++
++/* "Show me one": the reasoning for the next card, in beats. (∇f first,) a test point and its arrow in red on every
++   plot still in play, the plots that disagree crossed out (another point if needed), then the card flies to the one left. */
++function fm6Walk() {
++  const D = FM6, set = FM6_SETS[D.set], m = D.m[D.set], grad = set.kind === "grad", nm = grad ? "∇f" : "F";
++  if (m.every(j => j >= 0)) return;
++  const k = D.sel != null && m[D.sel] < 0 ? D.sel : m.indexOf(-1), it = set.items[k], j = set.perm.indexOf(k);
++  const R = [0, 1, 2, 3].filter(q => m[set.perm[q]] !== q), plan = (R.length > 1 && fm6Plan(set, k, R)) || [];
++  const beats = [], steps = []; let t = 0, out = [];
++  if (grad) { beats.push({ t, cap: `${it.th}, so ∇f = ${it.tg}.` }); t += 2300; }
++  plan.forEach((o, i) => {
++    const a = it.g(o.p[0], o.p[1]), z = Math.hypot(a[0], a[1]) < 1e-9, x = o.x.filter(q => !out.includes(q));
++    const v = `${nm} ${fm6Ex(a) ? "=" : "≈"} ${fm6Vc(a)}`;
++    beats.push({ t, cap: `${i ? "Another test point" : "Test point"} ${fm6Pt(o.p)}: ${v}${z ? ", no arrow" : `, ${fm6Dir(a)}`}.` });
++    const kinds = x.map(q => fm6Look(set.items[set.perm[q]], o.p).z ? "dot" : "arr");
++    const why = z ? "with an arrow there" : kinds.every(c => c === "dot") ? "with no arrow there" : kinds.every(c => c === "arr") ? "pointing another way" : "that disagree";
++    steps.push({ p: o.p, a, x, js: R.filter(q => !out.includes(q)), tb: t, tc: t + 2000 });
++    beats.push({ t: t + 2000, cap: `Cross out ${x.length === 1 ? "the plot" : `the ${x.length} plots`} ${why}.` });
++    out = out.concat(x); t += 3700;
++  });
++  beats.push({ t, cap: R.length === 1 ? "Only one plot is left, so that is the match." : "The one left is the match." });
++  D.sel = null; D.hint = null;
++  D.walk = { k, j, beats, steps, fb: t, end: t + 2100, T0: performance.now(), stop: null, bi: -1, flown: false };
++}
++// on a phone the plots are in the panel: Show me one brings them (and the caption under them) into view, smoothly
++function fm6Into() {
++  const ph = document.getElementById("fm6Ph"), bt = document.querySelector("#fm6Body .fm6-btns");
++  if (!ph || !bt || !ph.getBoundingClientRect().width) return;
++  const nav = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 64, a = ph.getBoundingClientRect().top, b = bt.getBoundingClientRect().bottom;
++  if (a < nav - 1 || b > innerHeight + 1) window.scrollTo({ top: Math.max(0, scrollY + a - nav - 6), behavior: "smooth" });
++}
++function fm6StopWalk() {
++  const w = FM6 && FM6.walk; if (!w || w.stop != null) return;
++  w.stop = performance.now();
++  if (FM6.fx && FM6.fx.k === w.k) fm6DropFx();
++  FM6.say = ""; FM6.sayC = "";
++}
++function fm6Halt() { const D = FM6; if (!D) return; D.walk = null; fm6DropFx(); D.pd = null; D.hov = -1; D.slots = false; }
++// everything drawn this frame, worked out from the clocks (and VzView.again while anything still moves)
++function fm6View(now) {
++  const D = FM6, si = D.set, set = FM6_SETS[si], m = D.m[si], E = (u, a, d) => vzEase(vzClamp((u - a) / d, 0, 1));
++  const V = { mt: [0, 0, 0, 0], cx: [0, 0, 0, 0], xx: [0, 0, 0, 0], pen: [0, 0, 0, 0], tests: [], hint: null, hov: D.hov, slots: D.slots, sel: D.sel != null && !D.walk };
++  let moving = false;
++  for (let j = 0; j < 4; j++) if (m[set.perm[j]] === j) { const t0 = D.tm[si + ":" + j], e = t0 ? E(now, t0, 240) : 1; V.mt[j] = e; if (e < 1) moving = true; }
++  if (D.hint) { const e = E(now, D.hint.t0, 380); V.hint = Object.assign({}, D.hint, { op: e }); if (e < 1) moving = true; }
++  const w = D.walk;
++  if (w) {
++    moving = true;
++    const u = (w.stop != null ? w.stop : now) - w.T0, f = w.stop != null ? 1 - E(now, w.stop, 320) : 1;
++    w.steps.forEach((s, i) => {
++      const nx = i + 1 < w.steps.length ? w.steps[i + 1].tb : w.fb + 1200, op = E(u, s.tb, 450) * (1 - E(u, nx, 400)) * f;
++      if (op > .005) V.tests.push({ p: s.p, a: s.a, op, gr: E(u, s.tb + 150, 550), js: s.js });
++      const back = 1 - E(u, w.fb + 1300, 600);
++      s.x.forEach(q => { V.cx[q] = Math.max(V.cx[q], E(u, s.tc + 250, 600) * back * f); V.xx[q] = Math.max(V.xx[q], E(u, s.tc, 150) * back * f); V.pen[q] = Math.max(V.pen[q], E(u, s.tc, 650)); });
++    });
++    if (w.stop == null) {
++      let bi = 0; w.beats.forEach((b, i) => { if (u >= b.t) bi = i; });
++      if (bi !== w.bi) { w.bi = bi; D.say = w.beats[bi].cap; D.sayC = "walk"; fm6Later(); }
++      if (!w.flown && u >= w.fb + 200) {
++        w.flown = true;
++        const c = fm6CardEl(w.k);
++        if (c && c.getBoundingClientRect().width && D.m[si][w.k] < 0) { fm6DropFx(); const el = fm6Clone(c); D.fx = { el, k: w.k }; fm6Land(el, w.k, w.j, 1000, () => fm6Commit(w.k, w.j)); }
++        else w.late = true;
++      }
++      if (w.late && u >= w.fb + 1200) { w.late = false; fm6Commit(w.k, w.j); }
++      if (u >= w.end) { D.walk = null; fm6Later(); }
++    } else if (now - w.stop > 330) { D.walk = null; fm6Later(); }
++  }
++  if (moving && VzView.live) VzView.again = true;
++  return V;
++}
++// pointer dragging of the cards: mouse, pen and touch alike (wired once; it acts only while this picture is open)
++let fm6Wired = false;
++function fm6Wire() {
++  if (fm6Wired) return; fm6Wired = true;
++  const here = () => VzView.def && VzView.def.id === "fieldmatch" && FM6 && document.getElementById("fm6Body");
++  document.addEventListener("pointerdown", e => {
++    if (!here()) return;
++    const c = e.target.closest && e.target.closest("#fm6Body .fm6-card[data-fm]");
++    if (FM6.pd && FM6.pd.on && FM6.fx) fm6Home(FM6.fx.el, FM6.fx.k);
++    FM6.pd = null;
++    if (!c || c.disabled || (e.pointerType === "mouse" && e.button !== 0)) return;
++    FM6.pd = { k: +c.dataset.fm.split(":")[1], id: e.pointerId, x0: e.clientX, y0: e.clientY, on: false };
++  });
++  document.addEventListener("pointermove", e => {
++    const p = FM6 && FM6.pd; if (!p || e.pointerId !== p.id || !here()) return;
++    const D = FM6;
++    if (!p.on) {
++      if (Math.hypot(e.clientX - p.x0, e.clientY - p.y0) < 6) return;
++      if (D.walk) { fm6StopWalk(); D.walk = null; }
++      fm6DropFx(); D.sel = null; D.hint = null; D.say = ""; D.sayC = ""; D.slots = true;
++      vzChanged();
++      const c = fm6CardEl(p.k); if (!c) { D.pd = null; D.slots = false; return; }
++      p.on = true; D.fx = { el: fm6Clone(c), k: p.k }; D.fx.el.classList.add("held");
++    }
++    if (!D.fx) return;
++    D.fx.el._t = [e.clientX - p.x0, e.clientY - p.y0, 1.04];
++    D.fx.el.style.transform = fm6Tf(D.fx.el._t);
++    const j = fm6Hit(e.clientX, e.clientY);
++    if (j !== D.hov) { D.hov = j; vzChanged(); }
++  });
++  const end = (e, cancel) => {
++    const p = FM6 && FM6.pd; if (!p || e.pointerId !== p.id) return;
++    const D = FM6; D.pd = null;
++    if (!p.on || !D.fx) return;
++    D.noClick = performance.now();
++    const j = cancel ? -1 : fm6Hit(e.clientX, e.clientY), el = D.fx.el; el.classList.remove("held");
++    D.hov = -1; D.slots = false;
++    fm6Place(p.k, j, el);
++    if (here()) vzChanged();
++  };
++  document.addEventListener("pointerup", e => end(e, false));
++  document.addEventListener("pointercancel", e => end(e, true));
++  window.addEventListener("hashchange", () => { if (FM6) { fm6Halt(); FM6.sel = null; FM6.hint = null; } document.querySelectorAll(".fm6-fly").forEach(el => el.remove()); });
++}
++
+ vzAdd({
+   id: "fieldmatch", title: "Match the fields", card: "Match the fields",
+-  tagline: "Four formulas, four plots. Match them, then classify.",
+-  blurb: "A field spreads out where its divergence is positive and spins where its curl is not zero. For F = [P, Q], div F = P<sub>x</sub> + Q<sub>y</sub> and curl F = Q<sub>x</sub> − P<sub>y</sub>. A gradient field ∇f points uphill, crosses the level curves at right angles and is longer where f is steeper.",
+-  tryIt: "Guess each plot from its formula, then look.",
+-  state: { sh: 0 },
++  tagline: "Test a point, cross out the plots that disagree.",
++  blurb: "Don't sketch the whole field. Plug in an easy test point like (1, 0) and cross out every plot whose arrow there points another way; the one left is the match. For a function f, find ∇f first.",
++  tryIt: "Drag each formula onto its plot. Stuck? Press Show me one.",
++  state: { sh: 1 },
+   thumb: { sh: 1 },
+   controls: [],
+-  variants: [{ sh: 0 }, { sh: 1 }, { sh: .5 }],
+   reset() {
+-    fm6Ensure(); this._rc = false; FM6.sel = null; FM6.pk = null;
+-    const S = FM6.sets[FM6.set]; if (VzView.st) VzView.st.sh = S.st >= 1 ? 1 : 0;
+-    if (S.st === 1) FM6.sel = fm6Free(S);
++    fm6Ensure(); fm6Halt(); FM6.sel = null; FM6.hint = null; FM6.say = ""; FM6.sayC = ""; FM6.tm = {};
++    document.querySelectorAll(".fm6-fly").forEach(el => el.remove());
+   },
+   panelTop() { fm6Ensure(); return `<div id="fm6Body" class="fm6">${this.html()}</div>`; },
+-  target() { const D = fm6Ensure(); return D.sel != null ? D.sel : D.pk; },
+-  strat(set, k) {
+-    const D = FM6, grad = set.kind === "grad";
+-    let o = `<div class="fm6-strat"><button type="button" class="fm6-so" data-fm="so" aria-expanded="${D.so}">Stuck? Try a strategy <span aria-hidden="true">${D.so ? "▾" : "▸"}</span></button>`;
+-    if (!D.so) return o + `</div>`;
+-    const tabs = ["Test points", "Arrow lengths", "See the surface"];
+-    o += `<div class="fm6-tabs" role="group" aria-label="Strategy">${tabs.map((n, i) => `<button type="button" data-fm="tab:${i}" class="${D.tab === i ? "on" : ""}" aria-pressed="${D.tab === i}">${n}</button>`).join("")}</div>`;
+-    if (k == null) return o + `<p class="fm6-ask">Tap a formula above first.</p></div>`;
+-    const it = set.items[k], nm = grad ? "∇f" : "F";
+-    o += `<p class="fm6-sf"><b class="fm6-n">${k + 1}</b><span>${it.th}</span></p>`;
+-    if (D.tab === 0) {
+-      o += `<p class="fm6-eq">${nm} = ${grad ? it.tg : it.th.replace(/^F = /, "")}</p><div class="fm6-test">${fm6Mini(it)}<ul class="fm6-vals">${FM6_Q.map(p => `<li>(${fm6N(p[0])}, ${fm6N(p[1])}) → ${fm6Vc(it.g(p[0], p[1]))}</li>`).join("")}</ul></div><p class="fm6-ask">Sketch these four arrows. The rings on the plots mark the same points.</p>`;
+-    } else if (D.tab === 1) {
+-      o += `<p class="fm6-eq">|${nm}| = ${it.tl}</p><div class="fm6-test">${f3LenMap(it)}<div class="f3-sk f3-lk"><span><i style="background:#FCEFF1;border:1px solid #E2C8CC"></i>short</span><span><i style="background:#C8102E"></i>long</span></div></div><p class="fm6-ask">${it.lenS} Find the plot whose arrows grow the same way.</p>`;
+-    } else if (grad) {
+-      o += `<svg id="fm6Surf" class="fm6-surf" viewBox="0 0 320 228" tabindex="0" role="img" aria-label="The surface z = f(x, y) with ∇f drawn on it. Drag to turn it."></svg>` +
+-        `<div class="f3-sk"><span><i style="background:#C0182F"></i>high</span><span><i style="background:#FCEFF1;border:1px solid #E2C8CC"></i>low</span><span><b>→</b>∇f, uphill</span></div><p class="fm6-ask">Drag to turn it. Find the plot whose arrows climb the same way.</p>`;
+-    } else o += `<p class="fm6-ask">F need not be a gradient, so there may be no surface. Use test points or lengths.</p>`;
+-    return o + `</div>`;
+-  },
+   html() {
+-    const D = fm6Ensure(), si = D.set, set = FM6_SETS[si], S = D.sets[si], grad = set.kind === "grad";
+-    const total = D.sets.reduce((a, x) => a + (x.fin ? fm6Score(x) : 0), 0), nfin = D.sets.filter(x => x.fin).length;
+-    let o = `<div><div class="vz-ptop-k">Set</div><div class="fm6-chips" role="group" aria-label="Choose a set">${D.sets.map((x, i) =>
+-      `<button type="button" class="vz-chip${i === si ? " on" : ""}${x.fin ? " fm6-done" : ""}" data-fm="set:${i}" aria-label="Set ${i + 1}${x.fin ? ", finished" : ""}">${i + 1}${x.fin ? " ✓" : ""}</button>`).join("")}</div></div>`;
+-    o += `<p class="fm6-what">${grad ? "The gradient ∇f of each f" : "Each vector field F"}</p>`;
+-    const step = (n, name) => `<span class="${S.st === n ? "on" : S.st > n || S.fin ? "ok" : ""}">${n + 1} ${name}</span>`;
+-    o += `<div class="fm6-steps">${step(0, "Try")}${step(1, "Match")}${step(2, "Classify")}</div>`;
+-    const row = (k, extra, cls) => { const lab = `<b class="fm6-n">${k + 1}</b><span class="fm6-f">${set.items[k].th}</span>`, on = S.st === 1 ? D.sel === k : D.pk === k; return `<div class="fm6-row${cls || ""}">${S.st <= 1 ? `<button type="button" class="fm6-pick" data-fm="sel:${k}" aria-pressed="${on}">${lab}</button>` : lab}${extra || ""}</div>`; };
+-    if (S.st < 2) o += `<div class="f3-ph${S.st ? " f3-stick" : ""}"><svg id="f3Ph" viewBox="0 0 378 384" role="img" aria-label="The four plots"></svg><div class="f3-phkey" id="f3PhKey"></div></div>`;
+-    if (S.st === 0) {
+-      o += [0, 1, 2, 3].map(k => row(k, "", D.pk === k ? " sel" : "")).join("");
+-      o += `<p class="fm6-tip">On paper first: ${grad ? "find ∇f, then " : ""}sketch a few arrows of each.</p>`;
+-      o += `<div class="vz-btnrow"><button type="button" class="btn btn-red btn-sm" data-fm="show">Show the plots</button></div>`;
+-      o += this.strat(set, D.pk);
+-    } else if (S.st === 1) {
+-      const full = S.asg.every(v => v >= 0), bad = S.ck ? S.asg.filter((j, k) => set.perm[j] !== k).length : 0;
+-      o += [0, 1, 2, 3].map(k => {
+-        const j = S.asg[k], right = S.ck && j >= 0 && set.perm[j] === k, wrong = S.ck && j >= 0 && !right;
+-        const ab = `<span class="fm6-ab" role="group" aria-label="Plot for formula ${k + 1}">${[0, 1, 2, 3].map(q =>
+-          `<button type="button" data-fm="a:${k}:${q}" class="${j === q ? "on" : S.asg.includes(q) ? "taken" : ""}" aria-pressed="${j === q}" aria-label="Plot ${FM6_RN[q]}">${FM6_RN[q]}</button>`).join("")}</span>`;
+-        return row(k, ab, (D.sel === k ? " sel" : "") + (right ? " ok" : "") + (wrong ? " bad" : "")) +
+-          (wrong ? `<p class="fm6-look">${f3Why(set, k, j).txt}</p>` : "");
+-      }).join("");
+-      if (S.ck) o += bad ? `<div class="vz-conclude no">${4 - bad} of 4 match. The ringed point shows why.</div>` : `<div class="vz-conclude yes">All four match.</div>`;
+-      else o += `<p class="fm6-ask">Tap a formula, then its plot. Or press a number.</p>`;
+-      o += `<div class="vz-btnrow">` + (S.ck && !bad
+-        ? `<button type="button" class="btn btn-red btn-sm" data-fm="to2">Next: classify</button>`
+-        : `<button type="button" class="btn btn-red btn-sm" data-fm="chk"${full && !S.ck ? "" : " disabled"}>Check</button>` + (S.ck ? `<button type="button" class="btn btn-ghost btn-sm" data-fm="mshow">Show the match</button>` : "")) + `</div>`;
+-      if (!(S.ck && !bad)) o += this.strat(set, this.target());
+-    } else {
+-      const all = S.cl.every(v => v >= 0);
+-      if (!S.fin) o += `<p class="fm6-ask"><b>Irrotational:</b> no circling, no shearing.<br><b>Incompressible:</b> as much flows into a small box as out.</p>`;
+-      for (let j = 0; j < 4; j++) {
+-        const it = set.items[set.perm[j]], tr = fm6Truth(set, j);
+-        const q = (qi, name) => {
+-          const v = S.cl[j * 2 + qi];
+-          return `<div class="fm6-q"><span>${name}</span><span class="fm6-yn" role="group" aria-label="${name}">${[1, 0].map(a =>
+-            `<button type="button" data-fm="y:${j}:${qi}:${a}" class="${v === a ? "on" : ""}${S.fin && v === a ? (a === tr[qi] ? " ok" : " bad") : ""}" aria-pressed="${v === a}">${a ? "Yes" : "No"}</button>`).join("")}</span></div>`;
+-        };
+-        o += `<div class="fm6-card"><div class="fm6-ch"><b class="fm6-L">${FM6_RN[j]}</b><span class="fm6-f">${it.th}${grad ? `<br><span class="fm6-g">∇f = ${it.tg}</span>` : ""}</span></div>${q(0, "Irrotational?")}${q(1, "Incompressible?")}` +
+-          (S.fin ? `<p class="fm6-why">${grad ? "curl ∇f" : "curl F"} = ${it.tc}${it.ir ? ": irrotational" : " ≠ 0: not irrotational"}.<br>div = ${it.td}${it.inc ? ": incompressible" : " ≠ 0: not incompressible"}.</p>` : "") + `</div>`;
+-      }
+-      if (S.fin) {
+-        o += `<div class="vz-conclude ${fm6Score(S) >= 10 ? "yes" : "no"}">Set ${si + 1}: ${fm6Score(S)} of 12.</div>`;
+-        if (grad) o += `<p class="fm6-look fm6-note">Every gradient field is irrotational: curl ∇f = 0 always, since f<sub>xy</sub> = f<sub>yx</sub>.</p>`;
+-        o += `<div class="vz-btnrow"><button type="button" class="btn btn-red btn-sm" data-fm="next">${si === FM6_SETS.length - 1 ? "Back to set 1" : "Next set"}</button><button type="button" class="btn btn-ghost btn-sm" data-fm="redo">Redo this set</button></div>`;
+-      } else o += `<div class="vz-btnrow"><button type="button" class="btn btn-red btn-sm" data-fm="cchk"${all ? "" : " disabled"}>Check</button></div>`;
+-    }
+-    o += `<div class="fm6-foot"><span>${nfin} of ${FM6_SETS.length} sets finished${nfin ? ` · ${total} of ${nfin * 12}` : ""}</span>${nfin || D.sets.some(x => x.st) ? `<button type="button" class="fm6-link" data-fm="resetall">${this._rc ? "Really reset everything?" : "Reset all"}</button>` : ""}</div>`;
++    const D = fm6Ensure(), si = D.set, set = FM6_SETS[si], m = D.m[si], grad = set.kind === "grad", done = fm6Done(si), nd = FM6_SETS.filter((_, i) => fm6Done(i)).length;
++    let o = `<div><div class="vz-ptop-k">Set</div><div class="fm6-chips" role="group" aria-label="Choose a set">${FM6_SETS.map((_, i) =>
++      `<button type="button" class="vz-chip${i === si ? " on" : ""}${fm6Done(i) ? " fm6-done" : ""}" data-fm="set:${i}" aria-pressed="${i === si}" aria-label="Set ${i + 1}${fm6Done(i) ? ", done" : ""}">${i + 1}${fm6Done(i) ? " ✓" : ""}</button>`).join("")}</div></div>`;
++    o += `<p class="fm6-what">${grad ? "Each card is a function f. The plots show ∇f." : "Each card is a vector field F."}</p>`;
++    o += `<div class="fm6-play"><div class="fm6-ph"><svg id="fm6Ph" viewBox="0 0 ${FM6_LAY.ph.W} ${FM6_LAY.ph.H}" role="img" aria-label="The four plots"></svg><div class="fm6-phkey">${FM6_KEYS.map(([, c, l]) => `<span class="vz-kh"><i class="vz-kh-line" style="--c:${c}"></i>${l}</span>`).join("")}</div></div>`;
++    o += `<div class="fm6-cards" role="group" aria-label="Formula cards">${set.items.map((it, k) => m[k] >= 0
++      ? `<span class="fm6-card done"><span class="fm6-ck" aria-hidden="true">✓</span><span class="fm6-cf">${it.th}</span></span>`
++      : `<button type="button" class="fm6-card" data-fm="card:${k}" aria-pressed="false" aria-label="${it.t.replace(/<[^>]+>/g, "")}: drag onto its plot, or tap it and then its plot"><span class="fm6-cf">${it.th}</span></button>`).join("")}</div>`;
++    o += `<div class="fm6-sayrow"><p class="fm6-say" id="fm6Say" aria-live="polite"></p><span class="fm6-pick" role="group" aria-label="Put it on a plot" hidden>${["top left", "top right", "bottom left", "bottom right"].map((n, j) =>
++      `<button type="button" data-fm="pl:${j}" aria-label="The ${n} plot" title="The ${n} plot"></button>`).join("")}</span></div>`;
++    o += `<div class="vz-btnrow fm6-btns">${done
++      ? `<button type="button" class="btn btn-red btn-sm" data-fm="next">${nd === FM6_SETS.length ? "Back to set 1" : "Next set"} →</button>`
++      : `<button type="button" class="btn btn-red btn-sm" data-fm="show">Show me one</button>`}<a class="fm6-how" href="#/visualize/m-fieldmatch">How to match, step by step →</a></div></div>`;
++    o += `<div class="fm6-foot"><span>${nd} of ${FM6_SETS.length} sets done</span>${m.some(j => j >= 0) ? `<button type="button" class="fm6-link" data-fm="redo">Start this set again</button>` : ""}</div>`;
+     return o;
+   },
+-  paintSurf() {
+-    const sv = document.getElementById("fm6Surf"), k = this.target(), D = fm6Ensure(), set = FM6_SETS[D.set];
+-    if (sv && k != null && set.items[k].f) sv.innerHTML = f3Surf(set.items[k], D.az);
+-  },
+-  wire(panel) {
+-    let drag = null;
+-    panel.addEventListener("pointerdown", e => {
+-      const sv = e.target.closest && e.target.closest("#fm6Surf"); if (!sv) return;
+-      drag = { x: e.clientX, id: e.pointerId }; try { sv.setPointerCapture(e.pointerId); } catch (_) {}
+-    });
+-    panel.addEventListener("pointermove", e => {
+-      if (!drag || e.pointerId !== drag.id) return;
+-      FM6.az += (e.clientX - drag.x) * .012; drag.x = e.clientX; this.paintSurf();
+-    });
+-    const end = e => { if (drag && e.pointerId === drag.id) drag = null; };
+-    panel.addEventListener("pointerup", end); panel.addEventListener("pointercancel", end);
+-    panel.addEventListener("keydown", e => {
+-      if (!(e.target.id === "fm6Surf") || (e.key !== "ArrowLeft" && e.key !== "ArrowRight")) return;
+-      e.preventDefault(); FM6.az += (e.key === "ArrowLeft" ? -1 : 1) * .15; this.paintSurf();
+-    });
+-  },
+   sync(s, panel) {
+     if (!panel) return;
+     const body = panel.querySelector("#fm6Body"); if (!body) return;
+-    if (!panel._fm6) { panel._fm6 = true; this.wire(panel); }
+-    const wrap = document.querySelector(".vz-stage-wrap"); if (wrap && !wrap.classList.contains("f3-wrap")) wrap.classList.add("f3-wrap");
+-    const D = fm6Ensure(), html = this.html();
+-    if (body._h === html) return;
+-    const key = D.set + ":" + D.sets[D.set].st + ":" + D.sets[D.set].fin, act = document.activeElement, keep = act && body.contains(act) && act.dataset ? act.dataset.fm : null;
+-    body._h = html; body.innerHTML = html;
+-    if (body._k !== key) { body._k = key; body.classList.remove("fm6-in"); void body.offsetWidth; body.classList.add("fm6-in"); }
+-    this.paintSurf();
+-    if (keep) { const e = body.querySelector(`[data-fm="${keep}"]`); if (e && !e.disabled) e.focus({ preventScroll: true }); }
++    fm6Wire();
++    const wrap = document.querySelector(".vz-stage-wrap"); if (wrap && !wrap.classList.contains("fm6-wrap")) wrap.classList.add("fm6-wrap");
++    const D = fm6Ensure(), set = FM6_SETS[D.set], html = this.html();
++    if (body._h !== html) {
++      const act = document.activeElement, keep = act && body.contains(act) && act.dataset ? act.dataset.fm : null;
++      body._h = html; body.innerHTML = html;
++      if (body._k !== D.set) { body._k = D.set; body.classList.remove("fm6-in"); void body.offsetWidth; body.classList.add("fm6-in"); }
++      const f = keep && (body.querySelector(`[data-fm="${keep}"]`) || (keep.startsWith("card") || keep === "show" ? body.querySelector('.fm6-card[data-fm], [data-fm="show"], [data-fm="next"]') : null));
++      if (f && !f.disabled) f.focus({ preventScroll: true });
++    }
++    const walking = !!(D.walk && D.walk.stop == null);
++    body.querySelectorAll(".fm6-card[data-fm]").forEach(c => {
++      const k = +c.dataset.fm.split(":")[1];
++      c.classList.toggle("sel", D.sel === k); c.classList.toggle("walk", walking && D.walk.k === k); c.classList.toggle("lift", !!(D.fx && D.fx.k === k));
++      c.setAttribute("aria-pressed", String(D.sel === k));
++    });
++    const say = body.querySelector("#fm6Say"), txt = D.say || (set.kind === "grad" ? "Find ∇f, then test a point like (1, 0)." : "Test a point like (1, 0): which plots have that arrow?"), cls = "fm6-say" + (D.say && D.sayC ? " " + D.sayC : "");
++    if (say && (say._t !== txt || say.className !== cls)) {
++      say._t = txt; say.innerHTML = txt; say.className = cls;
++      if (say.animate) say.animate([{ opacity: .2 }, { opacity: 1 }], { duration: 260, easing: "ease-out" });
++    }
++    const sb = body.querySelector('[data-fm="show"]'); if (sb) { const l = walking ? "Stop" : "Show me one"; if (sb.textContent !== l) sb.textContent = l; }
++    const pk = body.querySelector(".fm6-pick"); if (pk) pk.hidden = !(D.sel != null && !D.walk);
+   },
+   onClick(el, s) {
+     const b = el.closest && el.closest("[data-fm]"); if (!b || b.disabled) return false;
+-    const D = fm6Ensure(), set = FM6_SETS[D.set], S = D.sets[D.set], a = b.dataset.fm.split(":");
++    const D = fm6Ensure(), m = D.m[D.set], a = b.dataset.fm.split(":"), now = performance.now();
+     switch (a[0]) {
+-      case "set": { const i = +a[1]; if (i === D.set) return false; D.set = i; VzView.tweens = null; s.sh = D.sets[i].st >= 1 ? 1 : 0; D.sel = D.sets[i].st === 1 ? fm6Free(D.sets[i]) : null; D.pk = null; break; }
+-      case "show": S.st = 1; D.sel = fm6Free(S); vzTweenTo({ sh: 1 }, 1000); break;
+-      case "sel": { const k = +a[1]; if (S.st > 1) return false; if (S.st === 0) { D.pk = D.pk === k ? null : k; break; } D.sel = D.sel === k ? null : k; D.pk = k; break; }
+-      case "pl": {                                                        // a plot tapped on a phone: the same as a click on the stage
+-        const j = +a[1], own = S.asg.indexOf(j); if (S.st !== 1) return false;
+-        if (D.sel != null) fm6Assign(S, D.sel, j); else if (own >= 0) { S.asg[own] = -1; S.ck = false; D.sel = own; D.pk = own; } else return false;
++      case "set": { const i = +a[1]; if (i === D.set || !(i >= 0 && i < FM6_SETS.length)) return false; fm6Halt(); D.set = i; D.sel = null; D.hint = null; D.say = ""; break; }
++      case "card": {
++        const k = +a[1]; if (now - D.noClick < 450 || m[k] >= 0 || D.fx) return false;
++        if (D.walk) { fm6StopWalk(); D.walk = null; }
++        D.sel = D.sel === k ? null : k; D.hint = null; D.say = D.sel != null ? "Now tap its plot." : ""; D.sayC = "";
+         break;
+       }
+-      case "a": fm6Assign(S, +a[1], +a[2]); break;
+-      case "so": D.so = !D.so; break;
+-      case "tab": D.tab = +a[1]; break;
+-      case "chk": if (!S.asg.every(v => v >= 0)) return false; S.ck = true; if (S.ms == null) S.ms = S.asg.filter((j, k) => set.perm[j] === k).length; D.sel = null; break;
+-      case "mshow": S.asg = [0, 1, 2, 3].map(k => set.perm.indexOf(k)); S.ck = true; if (S.ms == null) S.ms = 0; D.sel = null; break;
+-      case "to2": S.st = 2; break;
+-      case "y": { const i = +a[1] * 2 + +a[2]; if (S.fin) return false; S.cl[i] = S.cl[i] === +a[3] ? -1 : +a[3]; break; }
+-      case "cchk": if (!S.cl.every(v => v >= 0)) return false; S.cs = S.cl.filter((v, i) => v === fm6Truth(set, i >> 1)[i & 1]).length; S.fin = true; break;
+-      case "next": D.set = (D.set + 1) % FM6_SETS.length; VzView.tweens = null; s.sh = D.sets[D.set].st >= 1 ? 1 : 0; D.sel = D.sets[D.set].st === 1 ? fm6Free(D.sets[D.set]) : null; D.pk = null; break;
+-      case "redo": D.sets[D.set] = fm6Blank(); VzView.tweens = null; s.sh = 0; D.sel = null; D.pk = null; break;
+-      case "resetall": if (!this._rc) { this._rc = true; clearTimeout(this._rt); this._rt = setTimeout(() => { this._rc = false; if (VzView.def === this) vzChanged(); }, 4000); fm6Save(); return true; }
+-        this._rc = false; D.sets = FM6_SETS.map(fm6Blank); D.set = 0; D.sel = null; D.pk = null; VzView.tweens = null; s.sh = 0; break;
++      case "pl": { const j = +a[1]; if (D.sel == null || D.walk || D.fx) return false; fm6Place(D.sel, j, null); break; }
++      case "show":
++        if (D.walk && D.walk.stop == null) fm6StopWalk();
++        else { if (D.fx) return false; D.walk = null; fm6Walk(); fm6Into(); }
++        break;
++      case "next": { fm6Halt(); const n = FM6_SETS.map((_, i) => (D.set + 1 + i) % FM6_SETS.length).find(i => !fm6Done(i)); D.set = n != null ? n : 0; D.sel = null; D.hint = null; D.say = ""; break; }
++      case "redo": fm6Halt(); D.m[D.set] = [-1, -1, -1, -1]; D.sel = null; D.hint = null; D.say = ""; break;
+       default: return false;
+     }
+-    if (a[0] !== "resetall") this._rc = false;
+     fm6Save(); return true;
+   },
+   handles() { return []; },
+-  onStageClick(s, x, y) {
+-    const D = fm6Ensure(), S = D.sets[D.set];
+-    if (S.st !== 1) return false;
+-    const j = fm6Cell(x, y); if (j < 0) return false;
+-    const own = S.asg.indexOf(j);
+-    if (D.sel != null) fm6Assign(S, D.sel, j);
+-    else if (own >= 0) { S.asg[own] = -1; S.ck = false; D.sel = own; D.pk = own; }
+-    else return false;
+-    fm6Save(); vzSwap(true, 300); return true;
++  onStageClick(s, x, y) {                                          // tap a card, then tap its plot on the picture
++    const D = fm6Ensure(); if (D.sel == null || D.walk || D.fx) return false;
++    const j = fm6HitL(FM6_LAY.st, x, y); if (j < 0) return false;
++    fm6Place(D.sel, j, null); return true;
+   },
+   draw(s, t, thumb) {
+-    const D = fm6Ensure(), si = thumb ? 0 : D.set, set = FM6_SETS[si], S = thumb ? null : D.sets[si], sh = thumb ? 1 : vzClamp(s.sh, 0, 1), k = S && S.st === 1 ? this.target() : null;
+-    if (!thumb && VzView.def === this && window.matchMedia && matchMedia("(max-width: 640px)").matches) {
+-      const ph = document.getElementById("f3Ph"), pk = document.getElementById("f3PhKey");
+-      if (ph) {
+-        const r = f3Plots(set, S, D, sh, F3_LAY.ph, k, true), h = r.key.map(([kd, c, l]) => `<span class="vz-kh"><i class="vz-kh-${kd === "dot" ? "dot" : "line"}" style="--c:${c}"></i>${l}</span>`).join("");
+-        ph.innerHTML = r.o; if (pk && pk._h !== h) { pk._h = h; pk.innerHTML = h; }
+-      }
++    if (thumb) return fm6Plots(FM6_SETS[0], FM6_LAY.st, null, false);
++    const D = fm6Ensure(), set = FM6_SETS[D.set], V = fm6View(performance.now());
++    if (VzView.def === this && window.matchMedia && matchMedia("(max-width: 640px)").matches) {
++      const ph = document.getElementById("fm6Ph"); if (ph) ph.innerHTML = fm6Plots(set, FM6_LAY.ph, V, true);
+     }
+-    const r = f3Plots(set, S, D, sh, F3_LAY.st, k, false);
+-    return r.o + vzKey(r.key, 16, 447);
++    return fm6Plots(set, FM6_LAY.st, V, false) + vzKey(FM6_KEYS, 16, 447);
+   },
+ });
+ /* wave-8 G1 BEGIN (m-param, m-tangent) */

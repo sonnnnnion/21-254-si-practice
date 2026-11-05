@@ -1,0 +1,473 @@
+diff -ru base9/index.html h3/index.html
+--- base9/index.html	2026-11-04 19:29:57
++++ h3/index.html	2026-11-04 20:17:04
+@@ -4434,6 +4434,18 @@
+   .g4-chips { margin: 0 0 8px; }
+   .g4-ask p { margin: 0; }
+   .st-given.small .g4-chips { margin-bottom: 4px; }
++  /* @@CSS-H3 (m-choosepar css below) @@ */
++  .h3-chips { display: flex; flex-direction: column; gap: 5px; margin: 2px 0 8px; }
++  .h3-row { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
++  .h3-row-k { font: 700 11px var(--font-sans); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); min-width: 68px; }
++  .h3-row .vz-chip { font-size: 12px; padding: 3px 10px; }
++  .h3-row .vz-chip.on { border-color: var(--red); color: var(--red-deep); background: var(--surface); }
++  .h3-ask { margin: 0; }
++  .st-given.small .h3-chips { margin-bottom: 5px; }
++  .h3-clue { border-radius: 4px; padding: 0 2px; margin: 0 -2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; transition: background-color .7s ease, box-shadow .7s ease, color .7s ease; }
++  #stGiven.h3-on .h3-clue { background: rgba(184, 150, 66, .26); box-shadow: inset 0 -2px 0 rgba(184, 150, 66, .8); color: var(--ink); }
++  @media (max-width: 640px) { .h3-row-k { min-width: 100%; } }
++  /* wave-9 css spacer h3 */
+   /* @@CSS-H2 (m-fieldmatch css below) @@ */
+ </style>
+ </head>
+@@ -12640,14 +12652,14 @@
+   "Surfaces and flux": ["surface", "orient", "flux", "stokes", "divthm"],
+   // the topic pictures lead; the tools and the (long) list of methods come after them
+   "Check your own work": ["tool-rref", "tool-det", "tool-eigen", "tool-vec", "tool-crit", "tool-field"],
+-  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-param", "m-tangent", "m-sketch", "m-chain", "m-dirderiv", "m-tanplane", "m-critical", "m-extrema", "m-fieldmatch", "m-curldiv", "m-isgrad", "m-merge", "m-setup", "m-lineint", "m-work", "m-wire", "m-potential", "m-square", "m-dblint", "m-switch", "m-polar", "m-green", "m-greencheck", "m-paramsurf", "m-surfarea", "m-surfint", "m-flux", "m-stokes", "m-divthm", "m-dome", "m-cylinder"],
++  "Methods, step by step": ["m-matmul", "m-gauss", "m-nullcol", "m-subspace", "m-span", "m-reflect", "m-det3", "m-inverse", "m-eigen", "m-complex", "m-markov", "m-planedist", "m-plane3", "m-choosepar", "m-param", "m-tangent", "m-sketch", "m-chain", "m-dirderiv", "m-tanplane", "m-critical", "m-extrema", "m-fieldmatch", "m-curldiv", "m-isgrad", "m-merge", "m-setup", "m-lineint", "m-work", "m-wire", "m-potential", "m-square", "m-dblint", "m-switch", "m-polar", "m-green", "m-greencheck", "m-paramsurf", "m-surfarea", "m-surfint", "m-flux", "m-stokes", "m-divthm", "m-dome", "m-cylinder"],
+ };
+ const VZ_GROUPS = Object.keys(VZ_GROUP_OF);
+ const VZ_ORDER = VZ_GROUPS.flatMap(g => VZ_GROUP_OF[g]);
+ // "Practice this": the Practice Lab section that matches each picture (a few pictures sit in a different section from the
+ // rest of their group). A picture with no entry here and no group entry below simply shows no link.
+ const VZ_SECTION_OF = {
+-  "m-chain": 7, "m-dblint": 9, "m-surfint": 10, "m-param": 7, "m-tangent": 7, "m-tanplane": 7, "m-lineint": 8, "m-work": 8, "m-polar": 9, "m-paramsurf": 10, "m-stokes": 10, "m-sketch": 7, "m-greencheck": 9, "m-divthm": 10,
++  "m-chain": 7, "m-dblint": 9, "m-surfint": 10, "m-choosepar": 7, "m-param": 7, "m-tangent": 7, "m-tanplane": 7, "m-lineint": 8, "m-work": 8, "m-polar": 9, "m-paramsurf": 10, "m-stokes": 10, "m-sketch": 7, "m-greencheck": 9, "m-divthm": 10,
+   compose: 1, transpose: 1, "m-matmul": 1,
+   systems: 2, gauss: 2, "m-gauss": 2, "tool-rref": 2,
+   span: 3, independence: 3, coords: 3, subspace: 3, vectors: 1, nullcol: 3, ranknull: 3, "m-nullcol": 3, "m-subspace": 3, "m-span": 3,
+@@ -25224,6 +25236,433 @@
+   return g1Op(op, o);
+ }
+ 
++/* @@AGENT-H3 PLACEHOLDER (m-choosepar method goes here) @@ */
++/* ---------- m-choosepar: choose how to parametrize (Lectures 18 and 31) ----------
++   Before any recipe: is it a curve or a surface, what is the clue, and so which of the three recipes? The picture
++   shows the three recipe cards (the clue's card lights up), the clue echoed as a gold tag that points to its card,
++   and the shape, which the chosen recipe then traces. The clue is also highlighted in the problem box itself. */
++const h3R = String.raw, H3_SIT = { i: 0 }, H3_GREEN = "#2F7A4A", H3_GOLD = "#7A5C0F";
++const H3_CARDS = {
++  c: [["a graph", "x = t"], ["round", "cos t, sin t"], ["a line", `<tspan font-weight="700">p</tspan> + t<tspan font-weight="700">v</tspan>`]],
++  s: [["a graph", "x = u, y = v"], ["round", "u cos v, u sin v"], ["a plane", `<tspan font-weight="700">p</tspan> + u<tspan font-weight="700">a</tspan> + v<tspan font-weight="700">b</tspan>`]],
++};
++const h3Op = (op, s) => op > .01 ? `<g opacity="${q2(Math.min(1, op))}">${s}</g>` : "";
++const h3D = pts => "M" + pts.map(p => q2(p[0]) + " " + q2(p[1])).join("L");
++const h3Mix = (a, c, f) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)), A = p(a), B = p(c); return `rgb(${A.map((x, i) => Math.round(x + (B[i] - x) * f)).join(",")})`; };
++const h3Sans = (x, y, s, size, col, anchor = "middle", w = 600) => `<text x="${q2(x)}" y="${q2(y)}" font-family="'Manrope', sans-serif" font-size="${size}" font-weight="${w}" fill="${col}" text-anchor="${anchor}">${s}</text>`;
++const h3Serif = (x, y, s, size, col, anchor = "middle") => `<text x="${q2(x)}" y="${q2(y)}" font-family="'Fraunces', Georgia, serif" font-size="${size}" font-style="italic" fill="${col}" text-anchor="${anchor}">${s}</text>`;
++// one trip of the moving point: a short wait at the start, the run (eased), a rest at the end, a fade, again
++// (u: seconds since the step began, so the first trip starts with the step)
++function h3Run(per, u) {
++  const p = (Math.max(0, u) / per) % 1;
++  return { e: vzEase(vzClamp((p - .08) / .62, 0, 1)), op: vzClamp(Math.min(p / .07, (1 - p) / .07), 0, 1) };
++}
++// a surface's height factor while its floor lifts to it, again and again: down to the floor, a rest, up, a rest
++function h3Lift(per, u) {
++  const p = (Math.max(0, u) / per) % 1;
++  return p < .14 ? 1 - vzEase(p / .14) : p < .26 ? 0 : p < .7 ? vzEase((p - .26) / .44) : 1;
++}
++// "you can move this way": a two-headed arrow through screen point m along the screen direction d
++function h3Two(m, d, h, lab, lp, op) {
++  const l = Math.hypot(d[0], d[1]) || 1, x = d[0] / l * h, y = d[1] / l * h;
++  return h3Op(op, vzArrow(m[0], m[1], m[0] + x, m[1] + y, "D", 2.6) + vzArrow(m[0], m[1], m[0] - x, m[1] - y, "D", 2.6) +
++    `<circle cx="${q2(m[0])}" cy="${q2(m[1])}" r="4" fill="${VZ.deep}" stroke="#fff" stroke-width="1.5"/>` + vzLabel(lp[0], lp[1], lab, VZ.deep, 17));
++}
++// the quick check: a green point with what it is
++const h3Ok = (q, lab, dx, dy, anchor, op) => h3Op(op, `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="6.5" fill="${H3_GREEN}" stroke="#fff" stroke-width="2"/>` + vzLabel(q[0] + dx, q[1] + dy, lab, H3_GREEN, 15, anchor));
++const h3Dot = (q, col, r = 6.5) => `<circle cx="${q2(q[0])}" cy="${q2(q[1])}" r="${r}" fill="${col}" stroke="#fff" stroke-width="2"/>`;
++// a small arrowhead at screen point c, pointing from a to c: which way it is traced
++function h3Chev(a, c) { const dx = c[0] - a[0], dy = c[1] - a[1], l = Math.hypot(dx, dy) || 1; return vzArrow(c[0] - dx / l * 7, c[1] - dy / l * 7, c[0] + dx / l * 7, c[1] + dy / l * 7, "R", 2.6); }
++// how far the chosen card (or cards) has lit up: step 3, one card per line of it
++const h3Lit = (s, k, L, i) => { const q = s.pick.find(p => p[0] === i); return !q ? 0 : k > 2 ? 1 : k === 2 ? L(2, q[1], .15, .8) : 0; };
++// the three recipe cards along the top
++function h3Cards(s, k, L) {
++  const set = H3_CARDS[s.kind], Y = 24, W = 108, H = 52, any = Math.max(...s.pick.map(p => h3Lit(s, k, L, p[0])));
++  let o = h3Sans(180, 15, s.kind === "c" ? "the three recipes for a curve: one t" : "the three recipes for a surface: u and v", 12, VZ.grey, "middle", 600);
++  set.forEach(([ti, fo], i) => {
++    const x = 12 + i * 114, w = h3Lit(s, k, L, i), op = 1 - .62 * any * (1 - w), lift = 2 * w;
++    o += `<g opacity="${q2(op)}" transform="translate(0 ${q2(-lift)})"><rect x="${x}" y="${Y}" width="${W}" height="${H}" rx="9" fill="${h3Mix(VZ.paper, VZ.tint, w)}" stroke="${h3Mix("#B9C0C7", VZ.red, w)}" stroke-width="${q2(1.1 + 1.3 * w)}"/>` +
++      h3Sans(x + W / 2, Y + 20, `${i + 1} · ${ti}`, 12.5, h3Mix(VZ.ink, VZ.deep, w)) + h3Serif(x + W / 2, Y + 41, fo, 14, VZ.ink) + `</g>`;
++  });
++  return o;
++}
++// the clue, echoed as a gold tag under the cards; on step 3 it glides under its card and an arrow points up into it
++function h3Tags(s, k, L) {
++  if (k < 1) return "";
++  const e = k === 1 ? L(1, 0, .1, 1.4) : 1, Y = 108;
++  let o = "";
++  s.tags.forEach(([math, word, w, xa, card, xb]) => {
++    const g = h3Lit(s, k, L, card), x = xa + (xb - xa) * vzEase(g), cx = 12 + card * 114 + 54;
++    o += h3Op(e, `<g><rect x="${q2(x - w / 2)}" y="${Y - 13}" width="${w}" height="25" rx="12.5" fill="${VZ.paper}"/><rect x="${q2(x - w / 2)}" y="${Y - 13}" width="${w}" height="25" rx="12.5" fill="${VZ.gold}" fill-opacity=".24" stroke="${VZ.gold}" stroke-width="1.3"/>` +
++      `<text x="${q2(x)}" y="${Y + 4.5}" text-anchor="middle" fill="${H3_GOLD}"><tspan font-family="'Fraunces', Georgia, serif" font-style="italic" font-size="14">${math}</tspan><tspan font-family="'Manrope', sans-serif" font-size="12.5" font-weight="700"> → ${word}</tspan></text></g>`);
++    if (g > .01) { const y1 = Y - 15, y0 = 24 + 52 + 3; o += h3Op(Math.min(1, g * 2), vzArrow(cx, y1, cx, y1 - (y1 - y0) * g, "O", 2.4)); }
++  });
++  return o;
++}
++
++/* the seven situations: each draws its own shape in the middle band (y about 130 to 375) */
++function h3DrawSeg(k, L, T, u) {
++  const P = stPlane(138, 271, 42), A = [-1, 2], B = [3, -1], S = p => [P.X(p[0]), P.Y(p[1])], run = h3Run(4.2, u), at = t => [A[0] + 4 * t, A[1] - 3 * t];
++  let o = g1Grid(P, -2.2, 4.4, -2.1, 3.2) + P.path([A, B], `stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 5" opacity=".6"`);
++  const ink = k >= 1 ? (k === 1 ? L(1, 0, .1, 1) : 1) : 0;
++  o += g1Pen(h3D([S(A), S(B)]), VZ.ink, ink, 3, `opacity="${k >= 3 ? .3 : .85}"`);
++  if (k === 0) { const m = S(at(.5)); o += h3Two(m, [4, 3], 46, "t", [m[0] + 18, m[1] - 14], L(0, 0, .2, .7)); }
++  // the direction v = Q − P, just beside the segment
++  if (k === 3) {
++    const e = L(3, 0, .1, .8), n = [-.36, -.48], a0 = S([A[0] + n[0], A[1] + n[1]]), b0 = S([B[0] + n[0], B[1] + n[1]]);
++    o += h3Op(Math.min(1, e * 2), vzArrow(a0[0], a0[1], a0[0] + (b0[0] - a0[0]) * e, a0[1] + (b0[1] - a0[1]) * e, "D", 2.6) + h3Op(vzClamp((e - .6) / .4, 0, 1), vzLabel(P.X(.3), P.Y(-.42) + 5, `<tspan font-weight="700">v</tspan> = [4, −3]`, VZ.deep, 15)));
++  }
++  // r(t) = P + t v: the red arrow from P is t v
++  if (k >= 3) {
++    const e = k === 3 ? L(3, 1, .1, .6) : 1, done = k === 5 ? 1 : 0, t = done ? 1 : run.e, q = S(at(t)), p0 = S(A);
++    o += h3Op(e * (done || run.op), `<path d="${h3D([p0, q])}" stroke="${VZ.red}" stroke-width="3.4" stroke-linecap="round" fill="none"/>` + (done ? "" : h3Dot(q, VZ.red)));
++    if (k >= 4) { const c = S(at(.72)), a = S(at(.66)); o += h3Op(k === 4 ? L(4, 0, .1, .6) : 1, h3Chev(a, c)); }
++  }
++  o += h3Dot(S(A), VZ.ink, 5) + h3Dot(S(B), VZ.ink, 5);
++  const nm = k >= 1 ? (k === 1 ? L(1, 0, .5, 1.1) : 1) : 0;
++  o += h3Op(1 - nm, vzLabel(S(A)[0] - 10, S(A)[1] - 10, "P", VZ.ink, 16, "end") + vzLabel(S(B)[0], S(B)[1] + 26, "Q", VZ.ink, 16));
++  o += h3Op(nm, vzLabel(S(A)[0] - 8, S(A)[1] - 12, "P = (−1, 2)", VZ.ink, 15, "end") + vzLabel(S(B)[0] - 8, S(B)[1] + 26, "Q = (3, −1)", VZ.ink, 15));
++  if (k >= 4) { const e = k === 4 ? L(4, 0, .3, .6) : 1; o += h3Op(e, vzLabel(S(A)[0] - 10, S(A)[1] + 22, "t = 0", VZ.red, 14, "end") + vzLabel(S(B)[0] + 12, S(B)[1] - 8, "t = 1", VZ.red, 14, "start")); }
++  if (k === 5) o += h3Ok(S(at(.5)), "r(½) = (1, ½) ✓", 12, -10, "start", L(5, 0, .2, .6));
++  return o;
++}
++function h3DrawCirc(k, L, T, u) {
++  const P = stPlane(140, 170, 40), C = [1, -2], R = 2, S = p => [P.X(p[0]), P.Y(p[1])], run = h3Run(4.6, u), at = a => S([C[0] + R * Math.cos(a), C[1] + R * Math.sin(a)]);
++  const ring = (a0, a1, n = 72) => Array.from({ length: n + 1 }, (_, i) => at(a0 + (a1 - a0) * i / n)), c0 = S(C);
++  let o = g1Grid(P, -1.8, 4.2, -4.6, 1);
++  o += `<path d="${h3D(ring(0, 2 * Math.PI))}Z" fill="none" stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 5" opacity=".6"/>`;
++  const ink = k >= 1 ? (k === 1 ? L(1, 0, .1, 1.2) : 1) : 0;
++  o += g1Pen(h3D(ring(0, 2 * Math.PI)), VZ.ink, ink, 3, `opacity="${k >= 3 ? .3 : .85}"`);
++  if (k === 0) { const m = at(Math.PI / 4); o += h3Two(m, [1, 1], 44, "t", [m[0] + 18, m[1] + 6], L(0, 0, .2, .7)); }
++  // the centre and the radius, read off the equation
++  const cr = k >= 1 ? (k === 1 ? L(1, 1, .1, .7) : 1) : 0;
++  o += h3Op(cr, `<circle cx="${q2(c0[0])}" cy="${q2(c0[1])}" r="4.5" fill="${VZ.ink}"/>` + vzLabel(c0[0], c0[1] + 40, "(1, −2)", VZ.ink, 14));
++  if (k >= 1 && k <= 2) { const E = at(Math.PI); o += h3Op(cr, vzArrow(c0[0], c0[1], E[0], E[1], "I", 2.2) + vzLabel((c0[0] + E[0]) / 2, c0[1] - 9, "R = 2", VZ.ink, 15)); }
++  // r(t): the angle t at the centre, the legs 2 cos t across and 2 sin t up, the red trail
++  if (k >= 3) {
++    const e = k === 3 ? L(3, 0, .1, .6) : 1, done = k === 5, a = done ? 2 * Math.PI : 2 * Math.PI * run.e, E = at(a), op = e * (done ? 1 : run.op);
++    let s = `<path d="${h3D(ring(0, a, Math.max(2, Math.ceil(a * 12))))}" fill="none" stroke="${VZ.red}" stroke-width="3.4" stroke-linecap="round"/>`;
++    if (!done) {
++      const r0 = 22, n = Math.max(2, Math.ceil(a * 8)), ap = Array.from({ length: n + 1 }, (_, i) => [c0[0] + r0 * Math.cos(a * i / n), c0[1] - r0 * Math.sin(a * i / n)]);
++      s += `<line x1="${q2(c0[0])}" y1="${q2(c0[1])}" x2="${q2(E[0])}" y2="${q2(E[1])}" stroke="${VZ.deep}" stroke-width="1.6"/>` + (a > .05 ? `<path d="${h3D(ap)}" fill="none" stroke="${VZ.deep}" stroke-width="1.6"/>` : "");
++      if (k === 3) s += `<path d="M${q2(c0[0])} ${q2(c0[1])}H${q2(E[0])}V${q2(E[1])}" fill="none" stroke="${VZ.deep}" stroke-width="1.4" stroke-dasharray="3 4"/>`;
++      s += h3Dot(E, VZ.red);
++    }
++    o += h3Op(op, s);
++    if (k === 3) o += h3Op(e, vzLabel(c0[0] + 30, c0[1] - 8, "t", VZ.deep, 16, "start"));
++    if (k >= 4) { const ee = k === 4 ? L(4, 0, .2, .6) : 1; o += h3Op(ee, h3Chev(at(Math.PI * .5 - .14), at(Math.PI * .5 + .02)) + h3Chev(at(Math.PI * 1.5 - .14), at(Math.PI * 1.5 + .02)) + vzLabel(at(0)[0] + 10, at(0)[1] + 5, "t = 0, 2π", VZ.red, 14, "start")); }
++  }
++  if (k === 5) o += h3Ok(at(Math.PI / 2), "(1, 0) ✓", 12, -10, "start", L(5, 0, .2, .6));
++  return o;
++}
++// cylinder x² + y² = 9 meets plane x + 3z = 12: the curve [3 cos t, 3 sin t, 4 − cos t]
++function h3DrawCyl(k, L, T, u) {
++  const c0 = vzCam(0, 0, 28, vzRad(-28 + 4 * Math.sin(T / 3.6)), .4), cam = (x, y, z) => { const q = c0(x, y, z - 3); return [180 + q[0], 262 + q[1], q[2]]; }, run = h3Run(5.2, u);
++  const v = c0.view, back = a => Math.cos(a) * v[0] + Math.sin(a) * v[1] < 0, ZT = 6, Cp = t => [3 * Math.cos(t), 3 * Math.sin(t), 4 - Math.cos(t)];
++  const ring = (z, a0, a1, n = 48) => Array.from({ length: n + 1 }, (_, i) => { const a = a0 + (a1 - a0) * i / n; return cam(3 * Math.cos(a), 3 * Math.sin(a), z); });
++  const rim = (z, front, attrs) => { let s = ""; for (let i = 0; i < 48; i++) { const a = 2 * Math.PI * (i + .5) / 48; if (back(a) !== front) s += `<path d="${h3D(ring(z, 2 * Math.PI * i / 48, 2 * Math.PI * (i + 1) / 48, 2))}" fill="none" ${attrs}/>`; } return s; };
++  const sa = Math.atan2(v[1], v[0]), sil = [sa + Math.PI / 2, sa - Math.PI / 2];
++  const cyO = k >= 1 ? (k === 1 ? .35 + .65 * L(1, 0, .2, 1.2) : 1) : .35, plO = k >= 1 ? (k === 1 ? .35 + .65 * L(1, 1, .1, 1.2) : 1) : .35;
++  let o = "";
++  [[3.9, 0, 0, "x"], [0, 3.9, 0, "y"]].forEach(([x, y, z, n]) => { const A = cam(0, 0, 0), B = cam(x, y, z), Tq = cam(x * 1.1, y * 1.1, z); o += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${VZ.ink}" stroke-width="1" opacity=".28"/>` + vzLabel(Tq[0], Tq[1] + 5, n, VZ.grey, 14); });
++  // the floor circle: the shadow of the curve
++  o += `<path d="${h3D(ring(0, 0, 2 * Math.PI, 72))}Z" fill="${VZ.ink}" fill-opacity=".05" stroke="${VZ.ink}" stroke-width="1.3" opacity=".55"/>`;
++  o += `<g opacity="${q2(cyO * .7)}">${rim(ZT, false, `stroke="${VZ.ink}" stroke-width="1" stroke-dasharray="3 4" opacity=".5"`)}${sil.map(a => vzPath3(cam, [[3 * Math.cos(a), 3 * Math.sin(a), 0], [3 * Math.cos(a), 3 * Math.sin(a), ZT]], `stroke="${VZ.ink}" stroke-width="1.2" opacity=".6"`)).join("")}</g>`;
++  // the plane, a tilted sheet
++  const pc = [[-3.9, -3.9], [3.9, -3.9], [3.9, 3.9], [-3.9, 3.9]].map(([x, y]) => cam(x, y, 4 - x / 3));
++  o += `<path d="${h3D(pc)}Z" fill="${VZ.ink}" fill-opacity="${q2(.09 * plO)}" stroke="${VZ.ink}" stroke-opacity="${q2(.45 * plO)}" stroke-width="1.2"/>`;
++  const lc = pc.reduce((a, q) => q[0] < a[0] ? q : a), cl = cam(-3, 0, ZT);
++  o += h3Op(Math.max(.35, plO), vzLabel(lc[0] + 6, lc[1] + 22, "x + 3z = 12", VZ.ink, 14, "start")) + h3Op(Math.max(.35, cyO), vzLabel(cl[0] - 4, cl[1] - 8, "x² + y² = 9", VZ.ink, 14, "end"));
++  // the curve itself
++  const cP = Array.from({ length: 97 }, (_, i) => cam(...Cp(2 * Math.PI * i / 96)));
++  o += `<path d="${h3D(cP)}Z" fill="none" stroke="${VZ.ink}" stroke-width="2.6" opacity="${k >= 3 ? .3 : k >= 1 ? .85 : .55}" stroke-linecap="round"/>`;
++  o += `<g opacity="${q2(cyO)}">${rim(ZT, true, `stroke="${VZ.ink}" stroke-width="1.2" opacity=".55"`)}</g>`;
++  if (k === 0) { const a = sa, m = cam(...Cp(a)), m2 = cam(...Cp(a + .2)); o += h3Two(m, [m2[0] - m[0], m2[1] - m[1]], 40, "t", [m[0], m[1] + 26], L(0, 0, .2, .7)); }
++  // t drives a point round the floor circle (round for x, y); it is lifted straight up to the plane (z from the plane)
++  if (k >= 3) {
++    const e = k === 3 ? L(3, 0, .1, .6) : 1, done = k === 5, t = done ? 2 * Math.PI : 2 * Math.PI * run.e, op = e * (done ? 1 : run.op), p = Cp(t), F = cam(p[0], p[1], 0), top = cam(...p);
++    const up = k === 3 ? L(3, 1, .1, .8) : 1, n = Math.max(2, Math.ceil(t * 10));
++    let s = "";
++    if (k === 3) s += `<path d="${h3D(ring(0, 0, t, n))}" fill="none" stroke="${VZ.deep}" stroke-width="2.6" stroke-linecap="round" opacity="${q2(1 - .6 * up)}"/>`;
++    s += h3Op(up, `<path d="${h3D(Array.from({ length: n + 1 }, (_, i) => cam(...Cp(t * i / n))))}" fill="none" stroke="${VZ.red}" stroke-width="3.4" stroke-linecap="round"/>`);
++    if (!done) {
++      const mid = cam(p[0], p[1], p[2] * up);
++      s += `<line x1="${q2(F[0])}" y1="${q2(F[1])}" x2="${q2(mid[0])}" y2="${q2(mid[1])}" stroke="${VZ.deep}" stroke-width="1.6" stroke-dasharray="4 3"/>` + h3Dot(F, VZ.deep, 5) + h3Op(up, h3Dot(top, VZ.red));
++    }
++    o += h3Op(op, s);
++    if (k >= 4) { const a = cam(...Cp(sa - .12)), c = cam(...Cp(sa + .02)); o += h3Op(k === 4 ? L(4, 0, .2, .6) : 1, h3Chev(a, c)); }
++  }
++  if (k === 5) { const q = cam(...Cp(0)); o += h3Ok(q, "(3, 0, 3) ✓", 12, 18, "start", L(5, 0, .2, .6)); }
++  return o;
++}
++// the curve x = y² − 1 from (−1, 0) to (3, 2): y is the free one, so y = t
++function h3DrawGraph(k, L, T, u) {
++  const P = stPlane(110, 285, 50), S = (x, y) => [P.X(x), P.Y(y)], run = h3Run(4.4, u), at = t => S(t * t - 1, t);
++  const full = Array.from({ length: 61 }, (_, i) => { const y = -1.15 + 3.4 * i / 60; return S(y * y - 1, y); }), piece = Array.from({ length: 41 }, (_, i) => at(2 * i / 40));
++  let o = g1Grid(P, -1.7, 4.4, -1.3, 2.6) + `<path d="${h3D(full)}" fill="none" stroke="${VZ.grey}" stroke-width="2" stroke-dasharray="5 5" opacity=".6"/>`;
++  const ink = k >= 1 ? (k === 1 ? L(1, 0, .1, 1) : 1) : 0;
++  o += g1Pen(h3D(piece), VZ.ink, ink, 3, `opacity="${k >= 3 ? .3 : .85}"`);
++  o += h3Op(Math.max(.6, ink), vzLabel(S(2.05, 1.68)[0] + 6, S(2.05, 1.68)[1] + 22, "x = y² − 1", VZ.ink, 15, "start"));
++  if (k === 0) { const m = at(1), m2 = at(1.1); o += h3Two(m, [m2[0] - m[0], m2[1] - m[1]], 42, "t", [m[0] - 22, m[1] - 8], L(0, 0, .2, .7)); }
++  // the clue: y is free (the y-axis lights up); x follows
++  if (k >= 1 && k <= 2) { const e = k === 1 ? L(1, 0, .6, .7) : 1; o += h3Op(e, `<line x1="${q2(P.X(0))}" y1="${q2(P.Y(0))}" x2="${q2(P.X(0))}" y2="${q2(P.Y(2))}" stroke="${VZ.deep}" stroke-width="4" stroke-linecap="round" opacity=".5"/>` + vzLabel(P.X(0) - 10, P.Y(2.2) + 4, "y free", VZ.deep, 15, "end")); }
++  // y = t walks up the y-axis; x = t² − 1 goes across to the curve
++  if (k >= 3) {
++    const e = k === 3 ? L(3, 0, .1, .6) : 1, done = k === 5, t = done ? 2 : 2 * run.e, op = e * (done ? 1 : run.op), q = at(t), base = S(0, t), ac = k === 3 ? L(3, 0, .3, .8) : 1;
++    let s = `<path d="${h3D(Array.from({ length: 31 }, (_, i) => at(t * i / 30)))}" fill="none" stroke="${VZ.red}" stroke-width="3.4" stroke-linecap="round" opacity="${q2(ac)}"/>`;
++    if (!done) s += `<line x1="${q2(base[0])}" y1="${q2(base[1])}" x2="${q2(base[0] + (q[0] - base[0]) * ac)}" y2="${q2(q[1])}" stroke="${VZ.deep}" stroke-width="1.6" stroke-dasharray="4 3"/>` + h3Dot(base, VZ.deep, 5) + h3Op(ac, h3Dot(q, VZ.red));
++    o += h3Op(op, s);
++    if (k === 3) o += h3Op(e, vzLabel(P.X(0) - 10, P.Y(2.2) + 4, "y = t", VZ.deep, 15, "end"));
++    if (k >= 4) { const ee = k === 4 ? L(4, 1, .1, .6) : 1; o += h3Op(ee, h3Chev(at(1.38), at(1.48))); }
++  }
++  // the two ends
++  const A = at(0), B = at(2);
++  o += h3Dot(A, VZ.ink, 5) + h3Dot(B, VZ.ink, 5);
++  const nm = k >= 1 ? (k === 1 ? L(1, 0, .5, .6) : 1) : 1;
++  o += h3Op(nm, vzLabel(A[0] - 10, A[1] + 22, "(−1, 0)", VZ.ink, 14, "end") + vzLabel(B[0] - 4, B[1] - 12, "(3, 2)", VZ.ink, 14, "end"));
++  if (k >= 4) { const ee = k === 4 ? L(4, 0, .1, .6) : 1; o += h3Op(ee, vzLabel(A[0] - 10, A[1] - 10, "t = 0", VZ.red, 14, "end") + vzLabel(B[0] + 6, B[1] + 22, "t = 2", VZ.red, 14, "start")); }
++  if (k === 5) o += h3Ok(at(1), "(0, 1) ✓", -12, -10, "end", L(5, 0, .2, .6));
++  return o;
++}
++// a surface in patches, far ones first, shaded by how squarely each faces us; F(i, j) gives the patch corners
++function h3Patches(cam, view, NU, NV, F, col, op = 1, grid = 0) {
++  const P2 = q => q2(q[0]) + " " + q2(q[1]), qs = [];
++  for (let i = 0; i < NU; i++) for (let j = 0; j < NV; j++) {
++    const Q = [F(i, j), F(i + 1, j), F(i + 1, j + 1), F(i, j + 1)], C = Q.map(p => cam(...p));
++    const a = Q[2].map((x, m) => x - Q[0][m]), c = Q[3].map((x, m) => x - Q[1][m]), n = [a[1] * c[2] - a[2] * c[1], a[2] * c[0] - a[0] * c[2], a[0] * c[1] - a[1] * c[0]], nl = Math.hypot(...n);
++    qs.push({ d: C.reduce((s, q) => s + q[2], 0) / 4, C, sh: nl > 1e-9 ? Math.abs(n[0] * view[0] + n[1] * view[1] + n[2] * view[2]) / nl : .5 });
++  }
++  let o = "";
++  qs.sort((A, B) => B.d - A.d).forEach(q => {
++    const d = `M${q.C.map(P2).join("L")}Z`;
++    o += `<path d="${d}" fill="${VZ.paper}" fill-opacity="${q2(.9 * op)}" stroke="${VZ.paper}" stroke-width=".6" stroke-opacity="${q2(op)}"/><path d="${d}" fill="${col}" fill-opacity="${q2((.12 + .2 * q.sh) * op)}" stroke="${VZ.ink}" stroke-opacity="${q2((.14 + .3 * grid) * op)}" stroke-width="${q2(.7 + .3 * grid)}"/>`;
++  });
++  return o;
++}
++// the graph z = 1 + x + y² over 0 ≤ x ≤ 2, −1 ≤ y ≤ 1: x = u, y = v, and the floor rectangle lifts to the surface
++function h3DrawGsurf(k, L, T, u) {
++  const c0 = vzCam(0, 0, 54, vzRad(-32 + 4 * Math.sin(T / 3.6)), .42), cam = (x, y, z) => { const q = c0(x - 1, y, z - 2); return [184 + q[0], 268 + q[1], q[2]]; }, run = h3Run(5.4, u);
++  const g = (x, y) => 1 + x + y * y, NU = 8, NV = 8, U = i => 2 * i / NU, V = j => -1 + 2 * j / NV;
++  const lam = k === 3 ? L(3, 0, .1, .8) : 0, rise = 1 + (h3Lift(5.4, u) - 1) * lam;
++  let o = "";
++  const ax = [[2.7, 0, 0, "x"], [0, 1.9, 0, "y"], [0, 0, 4.3, "z"]];
++  ax.forEach(([x, y, z, n]) => { const A = cam(0, 0, 0), B = cam(x, y, z), Tq = cam(x * 1.08, y * 1.12, z * 1.04); o += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${VZ.ink}" stroke-width="1" opacity=".3"/>` + vzLabel(Tq[0], Tq[1] + 5, n, VZ.grey, 14); });
++  // the floor rectangle: x and y are free
++  const fl = k >= 1 ? (k === 1 ? L(1, 0, .4, .7) : 1) : 0, Fc = [[0, -1], [2, -1], [2, 1], [0, 1]];
++  o += h3Op(fl, `<path d="${h3D(Fc.map(([x, y]) => cam(x, y, 0)))}Z" fill="${VZ.ink}" fill-opacity=".06" stroke="${VZ.ink}" stroke-width="1.3" stroke-dasharray="5 4" opacity=".7"/>`);
++  if (k >= 1) o += h3Op(fl * (k >= 4 ? .5 : 1), Fc.map(([x, y]) => vzPath3(cam, [[x, y, 0], [x, y, g(x, y) * rise]], `stroke="${VZ.ink}" stroke-width="1" stroke-dasharray="3 4" opacity=".55"`)).join(""));
++  const gr = k === 3 ? 1 : k > 3 ? .6 : 0;
++  o += h3Patches(cam, c0.view, NU, NV, (i, j) => [U(i), V(j), g(U(i), V(j)) * rise], VZ.red, k < 0 ? .75 : 1, gr);
++  o += h3Op(k >= 1 ? 1 : .7, vzLabel(cam(2, 1, g(2, 1))[0] + 10, cam(2, 1, g(2, 1))[1] - 8, "z = 1 + x + y²", VZ.ink, 15, "start"));
++  if (k === 1) o += h3Op(L(1, 0, .8, .6), vzLabel(cam(0, -1, 0)[0] - 10, cam(0, -1, 0)[1] + 4, "x, y free", VZ.deep, 15, "end"));
++  if (k === 0) { const p = [1, 0, g(1, 0)], m = cam(...p), a = cam(1.2, 0, g(1.2, 0)), b = cam(1, .2, g(1, .2)), e = L(0, 0, .2, .7); o += h3Two(m, [a[0] - m[0], a[1] - m[1]], 38, "u", [m[0] + 2, m[1] + 30], e) + h3Two(m, [b[0] - m[0], b[1] - m[1]], 38, "v", [m[0] + 40, m[1] - 4], e); }
++  if (k >= 4) {
++    const e = k === 4 ? L(4, 0, .2, .6) : 1, A = cam(1, -1, 0), B = cam(2, .65, 0);
++    o += h3Op(e, vzLabel(A[0] - 6, A[1] + 24, "0 ≤ u ≤ 2", VZ.red, 14) + vzLabel(B[0] + 12, B[1] + 6, "−1 ≤ v ≤ 1", VZ.red, 14, "start"));
++  }
++  if (k === 5) { const e = L(5, 0, .2, .6), q = cam(1, 1, 3); o += h3Op(e, vzPath3(cam, [[1, 1, 0], [1, 1, 3]], `stroke="${H3_GREEN}" stroke-width="1.4" stroke-dasharray="3 3"`)) + h3Ok(q, "(1, 1, 3) ✓", 12, -10, "start", e); }
++  return o;
++}
++// the cap z = 9 − (x² + y²), z ≥ 5: polar in x and y (u the distance from the axis, v the angle), then z = 9 − u²
++function h3DrawCap(k, L, T, u) {
++  const c0 = vzCam(0, 0, 46, vzRad(-30 + 4 * Math.sin(T / 3.6)), .48), cam = (x, y, z) => { const q = c0(x, y, z - 7); return [180 + q[0], 248 + q[1], q[2]]; }, run = h3Run(5.4, u);
++  const NU = 5, NV = 24, U = i => 2 * i / NU, V = j => 2 * Math.PI * j / NV, pol = (r, a, z) => [r * Math.cos(a), r * Math.sin(a), z];
++  const lam = k === 3 ? L(3, 0, .1, .8) : 0, rise = 1 + (h3Lift(5.4, u) - 1) * lam;
++  const H = r => 5 + (4 - r * r) * rise;
++  let o = vzPath3(cam, [[0, 0, 5], [0, 0, 9.9]], `stroke="${VZ.ink}" stroke-width="1" opacity=".3"`) + vzLab3(cam, [0, 0, 9.9], "z", VZ.grey, -10, 4, 14);
++  // the disk x² + y² ≤ 4 at the height z = 5: the cap's shadow
++  const disk = Array.from({ length: 73 }, (_, i) => cam(...pol(2, 2 * Math.PI * i / 72, 5)));
++  const dO = k >= 1 ? 1 : .6;
++  o += `<path d="${h3D(disk)}Z" fill="${VZ.ink}" fill-opacity=".05" stroke="${VZ.ink}" stroke-width="1.3" stroke-dasharray="5 4" opacity="${q2(.7 * dO)}"/>`;
++  o += h3Op(dO, vzLabel(cam(...pol(2, -2.2, 5))[0] - 6, cam(...pol(2, -2.2, 5))[1] + 22, "z = 5", VZ.grey, 14, "end"));
++  const gr = k === 3 ? 1 : k > 3 ? .6 : 0;
++  o += h3Patches(cam, c0.view, NU, NV, (i, j) => pol(U(i), V(j), H(U(i))), VZ.red, k < 0 ? .75 : 1, gr);
++  // the clue: every level slice is a circle
++  if (k >= 1 && k <= 2) {
++    const e = k === 1 ? L(1, 0, .3, .9) : 1;
++    [1, 1.5, 1.85].forEach((r, i) => { const pts = Array.from({ length: 61 }, (_, m) => cam(...pol(r, 2 * Math.PI * m / 60, 9 - r * r))); o += g1Pen(h3D(pts), VZ.deep, vzClamp(e * 1.4 - i * .2, 0, 1), 2); });
++    const lft = Array.from({ length: 24 }, (_, m) => cam(...pol(1, 2 * Math.PI * m / 24, 8))).reduce((a, q) => q[0] < a[0] ? q : a);
++    o += h3Op(e, vzLabel(lft[0] - 8, lft[1] + 5, "slices: circles", VZ.deep, 15, "end"));
++  }
++  const top = cam(0, 0, H(0));
++  o += vzLabel(top[0] + 10, top[1] - 14, "z = 9 − (x² + y²)", VZ.ink, 15, "start");
++  if (k === 0) { const r = 1.3, a = -.9, p = pol(r, a, 9 - r * r), m = cam(...p), A = cam(...pol(r + .2, a, 9 - (r + .2) * (r + .2))), B = cam(...pol(r, a + .2, 9 - r * r)), e = L(0, 0, .2, .7); o += h3Two(m, [A[0] - m[0], A[1] - m[1]], 36, "u", [m[0] + 16, m[1] + 30], e) + h3Two(m, [B[0] - m[0], B[1] - m[1]], 36, "v", [m[0] + 44, m[1] - 6], e); }
++  // the floor point (u, v) in polar, straight up to the surface while it lifts
++  if (k === 3) {
++    const e = L(3, 0, .1, .6), a = 2 * Math.PI * run.e - .6, r = 1.4, F = cam(...pol(r, a, 5)), Tp = cam(...pol(r, a, H(r))), C = cam(0, 0, 5);
++    o += h3Op(e * run.op, `<line x1="${q2(C[0])}" y1="${q2(C[1])}" x2="${q2(F[0])}" y2="${q2(F[1])}" stroke="${VZ.deep}" stroke-width="1.6"/>` + vzLabel((C[0] + F[0]) / 2, (C[1] + F[1]) / 2 - 7, "u", VZ.deep, 15) + h3Dot(F, VZ.deep, 5));
++  }
++  if (k >= 4) {
++    const e = k === 4 ? L(4, 0, .2, .6) : 1, rimA = cam(...pol(2, 1.2, 5)), ri = Array.from({ length: 31 }, (_, m) => cam(...pol(2.25, -1.9 + 1.3 * m / 30, 5)));
++    o += h3Op(e, vzLabel(top[0] - 10, top[1] - 14, "u = 0", VZ.red, 14, "end") + vzLabel(cam(...pol(2, 2.6, 5))[0] - 10, cam(...pol(2, 2.6, 5))[1] + 4, "u = 2", VZ.red, 14, "end") +
++      `<path d="${h3D(ri)}" fill="none" stroke="${VZ.red}" stroke-width="1.8"/>` + h3Chev(ri[28], ri[30]) + vzLabel(ri[15][0], ri[15][1] + 22, "v: 0 to 2π", VZ.red, 14));
++  }
++  if (k === 5) o += h3Ok(cam(2, 0, 5), "(2, 0, 5) ✓", 12, 18, "start", L(5, 0, .2, .6));
++  return o;
++}
++// the plane through P(2, 0, 0), Q(0, 3, 0), R(0, 0, 3): r(u, v) = P + u a + v b with a = Q − P, b = R − P
++function h3DrawPlane(k, L, T, u) {
++  const c0 = vzCam(0, 0, 46, vzRad(-128 + 4 * Math.sin(T / 3.6)), .42), cam = (x, y, z) => { const q = c0(x - .8, y - 1, z - 1.1); return [178 + q[0], 268 + q[1], q[2]]; };
++  const P = [2, 0, 0], a = [-2, 3, 0], b = [-2, 0, 3], at = (s, t) => P.map((x, i) => x + s * a[i] + t * b[i]), Q = at(1, 0), R = at(0, 1);
++  let o = "";
++  [[3.4, 0, 0, "x"], [0, 4.3, 0, "y"], [0, 0, 3.8, "z"]].forEach(([x, y, z, n]) => { const A = cam(0, 0, 0), B = cam(x, y, z), Tq = cam(x * 1.08, y * 1.08, z * 1.06); o += `<line x1="${q2(A[0])}" y1="${q2(A[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="${VZ.ink}" stroke-width="1" opacity=".3"/>` + vzLabel(Tq[0], Tq[1] + 5, n, VZ.grey, 14); });
++  // the plane runs on past the triangle: a faint larger piece (wider once the range says "any u, v")
++  const wide = k >= 4 ? (k === 4 ? L(4, 0, .1, 1.2) : 1) : 0, lo = -.22 - .13 * wide, hi = 1.22 + .13 * wide;
++  o += `<path d="${h3D([at(lo, lo), at(hi, lo), at(hi, hi), at(lo, hi)].map(p => cam(...p)))}Z" fill="${VZ.red}" fill-opacity=".06" stroke="${VZ.red}" stroke-opacity=".25" stroke-width="1" stroke-dasharray="4 4"/>`;
++  const tri = [P, Q, R].map(p => cam(...p)), ink = k >= 1 ? (k === 1 ? L(1, 0, .1, 1) : 1) : 0;
++  o += `<path d="${h3D(tri)}Z" fill="${VZ.red}" fill-opacity=".16" stroke="${VZ.ink}" stroke-opacity=".3" stroke-width="1"/>` + g1Pen(h3D([...tri, tri[0]]), VZ.ink, ink, 2.4, `opacity=".8"`);
++  // the grid of p + u a + v b, laid line by line (step 4), and running on (step 5)
++  if (k >= 3) {
++    const e = k === 3 ? L(3, 1, .1, 1.6) : 1, g0 = k >= 4 ? lo : 0, g1 = k >= 4 ? hi : 1, n = 6, step = (g1 - g0) / n;
++    let s = "";
++    for (let i = 0; i <= n; i++) { const c = g0 + i * step, w = vzClamp(e * (n + 2) - i, 0, 1); if (w < .01) continue; const fade = k >= 4 ? 1 - .6 * Math.max(0, Math.max(-c, c - 1)) / .45 : 1;
++      s += h3Op(w * fade, vzPath3(cam, [at(c, g0), at(c, g0 + (g1 - g0) * w)], `stroke="${VZ.red}" stroke-width="1.2" opacity=".7"`) + vzPath3(cam, [at(g0, c), at(g0 + (g1 - g0) * w, c)], `stroke="${VZ.ink}" stroke-width="1.2" opacity=".5"`)); }
++    o += s;
++  }
++  // a = Q − P and b = R − P, from P
++  if (k >= 3) {
++    const e = k === 3 ? L(3, 0, .1, .8) : 1, sP = cam(...P), A = cam(...at(e, 0)), B = cam(...at(0, e)), dim = k >= 5 ? .5 : 1;
++    o += h3Op(dim, `<line x1="${q2(sP[0])}" y1="${q2(sP[1])}" x2="${q2(A[0])}" y2="${q2(A[1])}" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".8"/>` + vzArrow(sP[0], sP[1], A[0], A[1], "D", 2.8) + `<line x1="${q2(sP[0])}" y1="${q2(sP[1])}" x2="${q2(B[0])}" y2="${q2(B[1])}" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".8"/>` + vzArrow(sP[0], sP[1], B[0], B[1], "I", 2.8));
++    const mA = cam(...at(.5, -.08)), mB = cam(...at(-.08, .5));
++    o += h3Op(vzClamp((e - .6) / .4, 0, 1) * dim, vzLabel(mA[0], mA[1] + 20, `<tspan font-weight="700">a</tspan>`, VZ.deep, 17) + vzLabel(mB[0] - 12, mB[1] + 4, `<tspan font-weight="700">b</tspan>`, VZ.ink, 17, "end"));
++  }
++  if (k === 0) { const m = cam(...at(1 / 3, 1 / 3)), A = cam(...at(.43, 1 / 3)), B = cam(...at(1 / 3, .43)), e = L(0, 0, .2, .7); o += h3Two(m, [A[0] - m[0], A[1] - m[1]], 36, "u", [m[0] + 14, m[1] + 32], e) + h3Two(m, [B[0] - m[0], B[1] - m[1]], 36, "v", [m[0] + 22, m[1] - 26], e); }
++  // the three points
++  const nm = [[P, "P", "P(2, 0, 0)", -10, -8, "end"], [Q, "Q", "Q(0, 3, 0)", -8, 24, "end"], [R, "R", "R(0, 0, 3)", 12, 4, "start"]];
++  nm.forEach(([p, s1, s2, dx, dy, an], i) => {
++    const q = cam(...p), ok = k === 5 && i > 0, full = k >= 1 ? (k === 1 ? L(1, 0, .4, 1.1) : 1) : 0;
++    o += h3Dot(q, VZ.ink, 5) + h3Op((1 - full) * (ok ? 0 : 1), vzLabel(q[0] + dx, q[1] + dy, s1, VZ.ink, 16, an)) + h3Op(full * (ok ? 1 - L(5, 0, .2, .6) : 1), vzLabel(q[0] + dx, q[1] + dy, s2, VZ.ink, 14, an));
++  });
++  if (k === 5) { const e = L(5, 0, .2, .6); o += h3Ok(cam(...Q), "r(1, 0) = Q ✓", -8, 24, "end", e) + h3Ok(cam(...R), "r(0, 1) = R ✓", 12, 4, "start", e); }
++  return o;
++}
++
++const H3_STEPT = ["Curve or surface?", "Find the clue", "Pick the recipe", "Fill it in", "The range", "A quick check"];
++const h3Steps = rows => rows.map((r, i) => ({ t: H3_STEPT[i], tex: r[0], why: r[1], sum: r[2] }));
++const H3_ONE = h3R`\text{one equation in }x,y:\ \text{a curve, one parameter }t`, H3_ONEW = h3R`One equation in the plane leaves one way to move along it, so one parameter \(t\).`;
++const H3_TWO = h3R`\text{one equation in }x,y,z:\ \text{a surface, two parameters }u,v`, H3_TWOW = "On a surface you can move two independent ways, so it needs two parameters.";
++const H3_SITS = [
++  { chip: "Segment", row: 0, kind: "c", pick: [[2, 0]], draw: h3DrawSeg,
++    problem: h3R`Parametrize the <span class="h3-clue">line segment from \(P=(-1,2)\) to \(Q=(3,-1)\)</span>.`,
++    tags: [["from P to Q", "straight", 160, 180, 2, 272]],
++    cap: ["the segment from P to Q", "you can only go forward or back: one t", "two points, nothing round: straight", "straight: the line recipe", "start at P, add t times v", "t = 0 at P, t = 1 at Q", "halfway along at t = ½"],
++    steps: h3Steps([
++      [[h3R`\text{a segment: one way to move}\ \Rightarrow\ \text{one parameter }t`], "Along a segment you can only go forward or back: one direction, so one parameter.", h3R`a curve: one \(t\)`],
++      [[h3R`\text{from }P\text{ to }Q:\ \text{straight}`], "Two points and nothing round: the path between them is straight.", "straight"],
++      [[h3R`\text{a line:}\quad \mathbf r(t)=\mathbf p+t\,\mathbf v`], h3R`Start at a point and add \(t\) times a direction along the line: here \(\mathbf p=P\) and \(\mathbf v=Q-P\).`, h3R`\(\mathbf r=\mathbf p+t\mathbf v\)`],
++      [[h3R`\mathbf v=Q-P=[3-(-1),\ -1-2]=[4,\ -3]`, h3R`\mathbf r(t)=[-1,2]+t\,[4,-3]=[-1+4t,\ 2-3t]`], h3R`End minus start gives the direction; add \(t\) of it on to \(P\).`, h3R`\(\mathbf r(t)=[-1+4t,\ 2-3t]\)`],
++      [[h3R`\mathbf r(0)=[-1,2]=P,\qquad \mathbf r(1)=[3,-1]=Q`, h3R`0\le t\le1`], h3R`\(t\) runs from the start to the end and no further.`, h3R`\(0\le t\le1\)`],
++      [[h3R`\mathbf r(\tfrac12)=[-1+2,\ 2-\tfrac32]=[1,\ \tfrac12]`, { html: h3R`That is the midpoint of \(P\) and \(Q\) ✓` }], h3R`Plug in one value of \(t\) and make sure you land where you should.`, "midpoint ✓"],
++    ]) },
++  { chip: "Circle", row: 0, kind: "c", pick: [[1, 0]], draw: h3DrawCirc,
++    problem: h3R`Parametrize the circle <span class="h3-clue">\((x-1)^2+(y+2)^2=4\)</span>, once counterclockwise.`,
++    tags: [["(x − 1)² + (y + 2)² = 4", "round", 230, 180, 1, 180]],
++    cap: ["the circle, once round", "one equation in x and y: a curve, one t", "two squares make a constant: round", "round: cos and sin", "t is the angle at the centre", "one full turn: t from 0 to 2π", "t = π/2 lands on the circle"],
++    steps: h3Steps([
++      [[H3_ONE], H3_ONEW, h3R`a curve: one \(t\)`],
++      [[h3R`(x-1)^2+(y+2)^2=4:\ \text{round}`, h3R`\text{centre }(1,-2),\qquad\text{radius }2`], "Two squares adding up to a constant: a circle. Read the centre and the radius off it.", h3R`round: centre \((1,-2)\), \(R=2\)`],
++      [[h3R`\text{round:}\quad x=h+R\cos t,\qquad y=k+R\sin t`], h3R`\(t\) is the angle at the centre, measured from the right.`, "cos and sin"],
++      [[h3R`\mathbf r(t)=[1+2\cos t,\ -2+2\sin t]`], h3R`Put in the centre \((1,-2)\) and the radius \(2\).`, h3R`\(\mathbf r(t)=[1+2\cos t,\ -2+2\sin t]\)`],
++      [[h3R`0\le t\le2\pi`], h3R`Once round is one full turn of the angle. As \(t\) grows the point turns counterclockwise, as asked.`, h3R`\(0\le t\le2\pi\)`],
++      [[h3R`t=\tfrac{\pi}{2}:\quad \mathbf r=[1+0,\ -2+2]=[1,\ 0]`, h3R`(1-1)^2+(0+2)^2=4\ \checkmark`], "Plug in one value of t, then put the point back into the equation.", "on the circle ✓"],
++    ]) },
++  { chip: "Cylinder ∩ plane", row: 0, kind: "c", pick: [[1, 0], [0, 1]], draw: h3DrawCyl,
++    problem: h3R`Parametrize the curve where the cylinder <span class="h3-clue">\(x^2+y^2=9\)</span> meets the plane <span class="h3-clue">\(x+3z=12\)</span>.`,
++    tags: [["x + 3z = 12", "gives z", 140, 96, 0, 78], ["x² + y² = 9", "round", 136, 262, 1, 222]],
++    cap: ["the curve where the two surfaces meet", "two surfaces meet in a curve: one t", "from above it is a circle; the plane gives z", "round for x, y, then the plane for z", "round the shadow, then up to the plane", "one turn round: t from 0 to 2π", "on the cylinder and on the plane"],
++    steps: h3Steps([
++      [[h3R`\text{surface}\cap\text{surface}=\text{a curve: one parameter }t`], "Two surfaces meet in a curve. Along it there is one way to move.", h3R`a curve: one \(t\)`],
++      [[h3R`x^2+y^2=9:\ \text{round in }x,y`, h3R`x+3z=12:\ z\text{ follows from }x`], "Seen from above, the curve sits on the circle. The plane then fixes the height.", h3R`round, then \(z\)`],
++      [[h3R`x,y:\ \text{round}\ (\cos t,\ \sin t)`, h3R`z:\ \text{solve the plane for }z`], "Two recipes together: cos and sin for the circle, then z in terms of x.", "round + solve for z"],
++      [[h3R`x=3\cos t,\qquad y=3\sin t`, h3R`z=\tfrac{12-x}{3}=4-\cos t`], h3R`The circle has radius \(3\). Solve the plane for \(z\), then put in \(x=3\cos t\).`, h3R`\(\mathbf r(t)=[3\cos t,\ 3\sin t,\ 4-\cos t]\)`],
++      [[h3R`\mathbf r(t)=[3\cos t,\ 3\sin t,\ 4-\cos t],\qquad 0\le t\le2\pi`], "One turn round the circle below is one trip round the curve.", h3R`\(0\le t\le2\pi\)`],
++      [[h3R`t=0:\quad \mathbf r(0)=[3,\ 0,\ 3]`, h3R`3^2+0^2=9\ \checkmark\qquad 3+3\cdot3=12\ \checkmark`], "The point has to be on both surfaces.", "on both ✓"],
++    ]) },
++  { chip: "Graph x = g(y)", row: 0, kind: "c", pick: [[0, 0]], draw: h3DrawGraph,
++    problem: h3R`Parametrize the curve <span class="h3-clue">\(x=y^2-1\)</span> from \((-1,0)\) to \((3,2)\).`,
++    tags: [["x = y² − 1", "y is free", 160, 180, 0, 92]],
++    cap: ["the piece from (−1, 0) to (3, 2)", "one equation in x and y: a curve, one t", "x is given by y: y is the free one", "a graph: set the free one to t", "y = t goes up; x = t² − 1 follows", "y runs from 0 to 2, so t does", "t = 1 lands on the curve"],
++    steps: h3Steps([
++      [[H3_ONE], H3_ONEW, h3R`a curve: one \(t\)`],
++      [[h3R`x=y^2-1:\ x\text{ is given by }y`], h3R`Everything is in terms of \(y\), so \(y\) is the free variable.`, h3R`\(y\) is free`],
++      [[h3R`\text{a graph: set the free variable to }t:\quad y=t`], "Let t be the variable that everything else depends on.", h3R`\(y=t\)`],
++      [[h3R`y=t,\qquad x=t^2-1`, h3R`\mathbf r(t)=[t^2-1,\ t]`], h3R`Then \(x\) follows from its formula. Keep the order \([x,\ y]\).`, h3R`\(\mathbf r(t)=[t^2-1,\ t]\)`],
++      [[h3R`(-1,0):\ y=0,\qquad (3,2):\ y=2`, h3R`0\le t\le2`], h3R`Since \(y=t\), \(t\) runs exactly where \(y\) does.`, h3R`\(0\le t\le2\)`],
++      [[h3R`t=1:\quad \mathbf r(1)=[0,\ 1]`, h3R`x=y^2-1:\quad 0=1-1\ \checkmark`], "Plug in one value of t, then check the point in the equation.", "on the curve ✓"],
++    ]) },
++  { chip: "Graph z = g(x, y)", row: 1, kind: "s", pick: [[0, 0]], draw: h3DrawGsurf,
++    problem: h3R`Parametrize the surface <span class="h3-clue">\(z=1+x+y^2\)</span> over the rectangle \(0\le x\le2,\ -1\le y\le1\).`,
++    tags: [["z = 1 + x + y²", "a graph", 170, 180, 0, 93]],
++    cap: ["the surface over the rectangle", "two ways to move on it: u and v", "z is given by x and y: they are free", "a graph: x = u, y = v", "the floor rectangle lifts to the surface", "u and v run where x and y do", "(u, v) = (1, 1) lands on it"],
++    steps: h3Steps([
++      [[H3_TWO], H3_TWOW, h3R`a surface: \(u,v\)`],
++      [[h3R`z=1+x+y^2:\ z\text{ is given by }x\text{ and }y`], h3R`\(x\) and \(y\) are free; \(z\) follows from them.`, h3R`\(x,y\) free`],
++      [[h3R`\text{a graph:}\quad x=u,\qquad y=v`], "Use the free variables themselves as the two parameters.", h3R`\(x=u,\ y=v\)`],
++      [[h3R`z=1+u+v^2`, h3R`\mathbf r(u,v)=[u,\ v,\ 1+u+v^2]`], h3R`Each point \((u,v)\) of the floor goes straight up to the height \(z\).`, h3R`\(\mathbf r=[u,\ v,\ 1+u+v^2]\)`],
++      [[h3R`0\le u\le2,\qquad -1\le v\le1`], h3R`\(u\) is \(x\) and \(v\) is \(y\), so the rectangle carries straight over.`, h3R`\(0\le u\le2,\ -1\le v\le1\)`],
++      [[h3R`\mathbf r(1,1)=[1,\ 1,\ 3]`, h3R`1+1+1^2=3\ \checkmark`], "Plug in one (u, v) and check the height against the formula.", "on the surface ✓"],
++    ]) },
++  { chip: "Paraboloid cap", row: 1, kind: "s", pick: [[1, 0]], draw: h3DrawCap,
++    problem: h3R`Parametrize the part of the surface \(z=9-\)<span class="h3-clue">\((x^2+y^2)\)</span> with \(z\ge5\).`,
++    tags: [["x² + y²", "round", 120, 180, 1, 180]],
++    cap: ["the cap above z = 5", "two ways to move on it: u and v", "x² + y² inside: every slice is a circle", "round: polar in x and y", "the polar disk lifts to the cap", "u out to the rim, v once round", "(u, v) = (2, 0) is on the rim"],
++    steps: h3Steps([
++      [[H3_TWO], H3_TWOW, h3R`a surface: \(u,v\)`],
++      [[h3R`x^2+y^2\text{ inside}:\ \text{round}`], h3R`It is a graph too, but \(x^2+y^2\) says round: every level slice is a circle.`, "round"],
++      [[h3R`\text{round:}\quad x=u\cos v,\qquad y=u\sin v`, h3R`x^2+y^2=u^2`], h3R`Polar coordinates: \(u\) is the distance from the \(z\)-axis, \(v\) the angle round it.`, "polar"],
++      [[h3R`z=9-u^2`, h3R`\mathbf r(u,v)=[u\cos v,\ u\sin v,\ 9-u^2]`], h3R`Put \(x^2+y^2=u^2\) into the formula for \(z\).`, h3R`\(\mathbf r=[u\cos v,\ u\sin v,\ 9-u^2]\)`],
++      [[h3R`z\ge5:\quad 9-u^2\ge5\ \Rightarrow\ u\le2`, h3R`0\le u\le2,\qquad 0\le v\le2\pi`], h3R`Turn the condition into one on \(u\); the angle goes once round. In \(x\) and \(y\) this would be a disk, not a rectangle.`, h3R`\(0\le u\le2,\ 0\le v\le2\pi\)`],
++      [[h3R`\mathbf r(2,0)=[2,\ 0,\ 5]`, h3R`9-(2^2+0^2)=5\ \checkmark`], h3R`This point is on the rim, where \(z=5\).`, "on the cap ✓"],
++    ]) },
++  { chip: "Plane, 3 points", row: 1, kind: "s", pick: [[2, 0]], draw: h3DrawPlane,
++    problem: h3R`Parametrize the <span class="h3-clue">plane through \(P=(2,0,0)\), \(Q=(0,3,0)\) and \(R=(0,0,3)\)</span>.`,
++    tags: [["through P, Q, R", "a plane", 170, 180, 2, 267]],
++    cap: ["the plane through P, Q and R", "a plane: two ways to move, u and v", "three points, flat: a plane", "a plane: a point plus two directions", "from P: u along a, v along b", "any u and v: the plane runs on", "(1, 0) gives Q and (0, 1) gives R"],
++    steps: h3Steps([
++      [[h3R`\text{a plane: two ways to move}\ \Rightarrow\ u,v`], H3_TWOW, h3R`a surface: \(u,v\)`],
++      [[h3R`\text{a plane through three points: flat}`], "Flat, and three of its points are known: the plane recipe.", "a plane"],
++      [[h3R`\text{a plane:}\quad \mathbf r(u,v)=\mathbf p+u\,\mathbf a+v\,\mathbf b`], "Start at a point, then add any amounts of two directions that lie in the plane.", h3R`\(\mathbf p+u\mathbf a+v\mathbf b\)`],
++      [[h3R`\mathbf a=Q-P=[-2,3,0],\qquad \mathbf b=R-P=[-2,0,3]`, h3R`\mathbf r(u,v)=[2-2u-2v,\ 3u,\ 3v]`], h3R`Both directions start at \(P\), so both lie in the plane.`, h3R`\(\mathbf r=[2-2u-2v,\ 3u,\ 3v]\)`],
++      [[h3R`u,\ v\ \text{any real numbers}`, { html: h3R`Only the triangle \(PQR\)? Then \(u,v\ge0\) and \(u+v\le1\).` }], "A whole plane runs on forever in both directions.", h3R`all \(u,v\)`],
++      [[h3R`\mathbf r(1,0)=[0,3,0]=Q,\qquad \mathbf r(0,1)=[0,0,3]=R\ \checkmark`], "Each of the three points should come out for some (u, v).", "hits P, Q, R ✓"],
++    ]) },
++];
++function h3Chips() {
++  const cur = H3_SIT.i, row = (r, name) => `<div class="h3-row" role="group" aria-label="${name}"><span class="h3-row-k">${name}</span>${H3_SITS.map((s, i) => s.row !== r ? "" : `<button type="button" class="vz-chip${i === cur ? " on" : ""}" data-h3s="${i}" aria-pressed="${i === cur}">${escapeHtml(s.chip)}</button>`).join("")}</div>`;
++  return `<div class="h3-chips">${row(0, "Curves")}${row(1, "Surfaces")}</div>`;
++}
++function h3Use(def, i) {
++  const s = H3_SITS[i]; H3_SIT.i = i;
++  def._s = s; def.steps = s.steps; def._lt = null;
++  def.problem = h3Chips() + `<p class="h3-ask">${s.problem}</p>`;
++}
++function h3Pic(def, k, b, u) {
++  const s = def._s, L = stLines(def, k, b, u), T = performance.now() / 1000;
++  // the clue lights up in the problem box itself from step 2 on
++  if (u < 99 && ST.def === def) { const gv = document.getElementById("stGiven"); if (gv && gv.classList.contains("h3-on") !== k >= 1) gv.classList.toggle("h3-on", k >= 1); }
++  let o = `<defs><clipPath id="h3-clip"><rect x="-30" y="86" width="420" height="326"/></clipPath></defs><g clip-path="url(#h3-clip)">${s.draw(k, L, T, u)}</g>` + h3Cards(s, k, L) + h3Tags(s, k, L);
++  o += stNote(180, 426, s.cap[k + 1], VZ.ink);
++  const ke = k >= 0 ? (k === 0 ? L(0, 0, .5, 1) : 1) : 0;
++  o += h3Op(ke, vzKey([["fill", VZ.gold, "clue"], ["fill", VZ.red, "its recipe"], ["line", VZ.red, s.kind === "c" ? "r(t)" : "r(u, v)"]], 16, 452));
++  return o;
++}
++const H3_CHOOSE = {
++  id: "m-choosepar", title: "Choose how to parametrize", card: "Choose how to parametrize",
++  tagline: "Find the clue in the problem: it picks one of three recipes.",
++  blurb: "Curves get one parameter \\(t\\), surfaces two, \\(u\\) and \\(v\\). Then the clue decides: something given in terms of the other variables is a graph (set the free ones to the parameters), \\(x^2+y^2\\) is round (cos and sin, or polar), and a line or plane is a point plus directions.",
++  picLive: true,
++  mount(given, rebuild) {
++    given.querySelectorAll("[data-h3s]").forEach(btn => btn.addEventListener("click", () => {
++      const i = +btn.dataset.h3s; if (i === H3_SIT.i) return;
++      h3Use(this, i); rebuild();
++      const nb = document.querySelector(`#stGiven [data-h3s="${i}"]`); if (nb) try { nb.focus({ preventScroll: true }); } catch (e) {}
++      const bd = document.getElementById("stBoard"); if (bd && bd.animate) bd.animate([{ opacity: .45 }, { opacity: 1 }], { duration: 420, easing: "ease-out" });
++    }));
++  },
++  pic(k, b, u) { return h3Pic(this, k, b, u); },
++};
++h3Use(H3_CHOOSE, 0);
++stAdd(H3_CHOOSE);
+ /* ---- m-param (a): the line segment from P to Q ---- */
+ function g1PicSeg(def, k, b, u) {
+   const L = stLines(def, k, b, u), P = stPlane(42, 290, 50), A = [1, 3], B = [5, 1], run = g1Run(4.2), S = p => [P.X(p[0]), P.Y(p[1])];
